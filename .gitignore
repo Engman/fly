@@ -11,3 +11,18 @@
 *.lai
 *.la
 *.a
+
+# Other (Robin rör i grytan)
+*.vcxproj
+*.filters
+*.user
+*.sdf
+*.sln
+*.exe
+*.suo
+*.opensdf
+*.sdf
+Dependencies/
+WorkingDir/AssemblyFiles
+WorkingDir/Bin
+FlyGameProjects/ipch
