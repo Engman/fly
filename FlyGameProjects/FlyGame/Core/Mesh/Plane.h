@@ -4,12 +4,12 @@
 #include <D3DX11\D3D11.h>
 #include <D3DX11\D3DX11.h>
 
-#include "..\Core\stdafx.h"
-#include "..\Core\D3DShell.h"
-#include "..\Util\misc.h"
-#include "..\Core\BaseBuffer.h"
-#include "..\Core\IShader.h"
-#include "..\Util\vertex.h"
+#include "..\stdafx.h"
+#include "..\D3DShell.h"
+#include "..\..\Util\misc.h"
+#include "..\BaseBuffer.h"
+#include "..\IShader.h"
+#include "..\..\Util\vertex.h"
 
 //struct Vertex
 //{

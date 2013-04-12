@@ -5,6 +5,7 @@
 #include "BaseBuffer.h"
 #include "..\Util\misc.h"
 #include "..\Util\SmartPtrs.h"
+#include <vector>
 
 namespace Type
 {
@@ -26,10 +27,10 @@ class Entity abstract
 		vec3 front;
 		vec3 right;
 		vec3 up;
-		SmartPtrArr<BaseBuffer> buffers;
+		std::vector<BaseBuffer> buffers;
 
 	public:
-		Entity(int _type, int nrOfBuffers)
+		Entity(int _type)
 			:type(_type)
 		{}
 		Entity(const Entity& origObj)
@@ -43,7 +44,7 @@ class Entity abstract
 		}
 		virtual~Entity()
 		{
-			this->buffers.Destroy();
+			
 		}
 		Entity& operator=(const Entity& origObj)
 		{
@@ -102,9 +103,9 @@ class Entity abstract
 		{
 			return this->up;
 		}
-		BaseBuffer* getBuffers()
+		std::vector<BaseBuffer>* getBuffers()
 		{
-			return this->buffers;
+			return &this->buffers;
 		}
 
 		virtual void Update(){}

@@ -5,7 +5,7 @@
 #include "D3DShell.h"
 #include "Render\GBufferShader.h"
 #include "Render\ColorShader.h"
-#include "..\Util\Plane.h"
+#include "Mesh\Plane.h"
 #include "..\Util\Camera.h"
 #include "Input.h"
 #include "..\Util\Proxy.h"
