@@ -45,11 +45,11 @@ struct PtrRefCount
 			SmartPtrStd						(const SmartPtrStd&);
 			virtual~SmartPtrStd				();
 			SmartPtrStd&	operator=		(const SmartPtrStd<T>&);
+			SmartPtrStd&	operator=		(T*);
 			bool			operator==		(const SmartPtrStd<T>&);
 			bool			operator==		(const T&);
 			T&				operator*		();
 			T*				operator->		();
-							operator T**	();
 							operator T*		();
 
 
@@ -124,6 +124,31 @@ struct PtrRefCount
 		return *this;
 	}
 		template<typename T>
+	SmartPtrStd<T>& SmartPtrStd<T>::operator= (T* p)
+	{
+		if (this->_ptr != p)
+		{
+			//Last to go?
+			if(this->_rc)
+			{
+				if(this->_rc->Release() == 0)
+				{
+					//Call child specific
+					Destroy();
+				}
+			}
+			else
+			{
+				this->_rc = new PtrRefCount();
+			}
+		
+
+			this->_ptr = p;
+			this->_rc->Add();
+		}
+		return *this;
+	}
+		template<typename T>
 	bool SmartPtrStd<T>::operator== (const SmartPtrStd<T>& d)
 	{
 		return d._ptr == this->_ptr;
@@ -142,11 +167,6 @@ struct PtrRefCount
 	T* SmartPtrStd<T>::operator-> ()
 	{
 		return this->_ptr;
-	}
-		template<typename T>
-	SmartPtrStd<T>::operator T** ()
-	{
-		return &this->_ptr;
 	}
 		template<typename T>
 	SmartPtrStd<T>::operator T* ()
@@ -392,21 +412,7 @@ bool SmartPtrCom<T>::IsValid()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	#pragma region PTR_ARRAY
+#pragma region PTR_ARRAY
 
 
 	//! Smart pointer for a regular object.

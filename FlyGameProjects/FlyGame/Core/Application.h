@@ -30,13 +30,12 @@ class Application
 		void MouseMoveEvent(Input::MouseMoveData d);
 
 	private:
-		GBufferShader gBufferShader;
-		ColorShader g_colorShader; 
+		GBufferShader			gBufferShader;
+		ColorShader				g_colorShader; 
 
-		BaseBuffer* pMatrixBuffer;
-		Plane* g_plane;
+		SmartPtrStd<BaseBuffer> pMatrixBuffer;
+		SmartPtrStd<Plane>		g_plane;
 
-		//SmartPtrStd<BaseBuffer> pMatrixBuffer;
 		Camera mainCamera;
 
 	public:
