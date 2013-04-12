@@ -11,7 +11,7 @@ void GBufferShader::draw(SHADER_PARAMETER_DATA& wMatrixData)
 	
 	this->shader->Render();
 	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_NoCullNoMs);
-	int count = this->drawData.size();
+	int count = (int)this->drawData.size();
 	for( int i = 0; i< count;i++)
 	{
 		cBufferMatrix* cb = (cBufferMatrix*)wMatrixData.cMatrixBuffer->Map();
@@ -22,7 +22,7 @@ void GBufferShader::draw(SHADER_PARAMETER_DATA& wMatrixData)
 		}
 
 		wMatrixData.cMatrixBuffer->setBuffer();
-		for(int k = 0; k <this->drawData[i].buffers.size(); k++)
+		for(int k = 0; k <(int)this->drawData[i].buffers.size(); k++)
 		{
 			this->drawData[i].buffers[k]->setBuffer();
 

@@ -6,7 +6,7 @@ Plane::Plane()
 }
 Plane::~Plane()
 {
-	DELETE_PTR(m_VertexBuffer);
+	//DELETE_PTR(m_VertexBuffer);
 	//SAFE_DELETE(g_VertexBuffer);
 }
 void Plane::Initialize(D3DXMATRIX world,  float height, float width, ID3D11Device* g_Device, ID3D11DeviceContext* g_DeviceContext, IShader* shader )
@@ -94,7 +94,7 @@ void Plane::Render( ID3D11DeviceContext* g_DeviceContext)
 }
 void Plane::SetShader(IShader* shader)
 {
-	m_shader= shader;
+	m_shader = shader;
 }
 D3DXVECTOR3 Plane::getNormal(D3DXVECTOR3 p0, D3DXVECTOR3 p1, D3DXVECTOR3 p2)
 {

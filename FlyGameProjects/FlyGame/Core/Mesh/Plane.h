@@ -22,10 +22,10 @@
 class Plane
 {
 private:
-	BaseBuffer*	m_VertexBuffer;
-	BaseBuffer* m_IndexBuffer;
-	D3DXMATRIX m_world;
-	IShader* m_shader;
+	SmartPtrStd<BaseBuffer>	m_VertexBuffer;
+	SmartPtrStd<BaseBuffer> m_IndexBuffer;
+	D3DXMATRIX				m_world;
+	IShader*				m_shader;
 	
 	D3DXVECTOR3 getNormal(D3DXVECTOR3 p0, D3DXVECTOR3 p1, D3DXVECTOR3 p2);
 	
