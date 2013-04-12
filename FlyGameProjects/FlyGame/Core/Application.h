@@ -36,7 +36,6 @@ class Application
 		SmartPtrStd<BaseBuffer> pMatrixBuffer;
 		SmartPtrStd<Plane>		g_plane;
 
-		//SmartPtrStd<BaseBuffer> pMatrixBuffer;
 		Camera mainCamera;
 
 	public:
