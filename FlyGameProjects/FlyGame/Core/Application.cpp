@@ -43,6 +43,8 @@ bool Application::Initialize(HINSTANCE hInst)
 	g_plane = new Plane();
 	g_plane->Initialize(world, 2, 2, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
 
+	this->mainCamera.GetViewFrustum();
+
 	return true;
 }
 

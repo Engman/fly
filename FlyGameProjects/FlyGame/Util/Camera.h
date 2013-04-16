@@ -9,11 +9,13 @@ class Camera
 	private:
 		float positionX, positionY, positionZ;
 		float rotationX, rotationY, rotationZ;
+		float projNear, projFar;
 
 		D3DXMATRIX viewMatrix;
 		D3DXMATRIX projectionMatrix;
 		D3DXMATRIX orthogonalMatrix;
 		D3DXVECTOR3 lookAt;
+
 
 	public:
 		Camera();
