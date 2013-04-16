@@ -1,37 +1,65 @@
 #ifndef RAW_OBJECT_DATA_H
 #define RAW_OBJECT_DATA_H
 
-#include "../../Util/misc.h"
-#include "../../Util/SmartPtrs.h"
+#include "..\..\Util\vertex.h"
+#include "..\..\Util\SmartPtrs.h"
 #include <vector>
 
-/** Contains vertecie data read from a mesh file */
+struct RawVertIndexData
+{
+	int v;
+	int vt;
+	int vn;
+	RawVertIndexData()
+		:v(0), vt(0), vn(0)
+	{}
+	RawVertIndexData(int _v, int _vt, int _vn)
+		:v(_v), vt(_vt), vn(_vn)
+	{}
+};
+struct RawVertecieFaceData
+{
+	RawVertIndexData f[3];
+
+	RawVertecieFaceData()
+	{}
+};
 struct RawVertecieData
 {
-	std::vector<int>						index;
-	std::vector<vec4>						position;
-	std::vector<vec4>						normal;
-	std::vector<vec2>						textCoord;
+	std::vector<RawVertecieFaceData>		index;
+	std::vector<D3DXVECTOR4>				position;
+	std::vector<D3DXVECTOR4>				normal;
+	std::vector<D3DXVECTOR2>				textCoord;
 };
-
-/** Contains material data read from a mesh material file */
 struct RawMaterialData
 {
-	vec4									ambient;
-	vec4									diffuse;
-	vec4									specular;
-	SmartPtrArr<wchar_t>					ambientTexture;
-	SmartPtrArr<wchar_t>					diffuseTexture;
-	SmartPtrArr<wchar_t>					specularTexture;
-	float									specualrPow;
+	std::wstring							name;
+	D3DXVECTOR4								ambient;
+	D3DXVECTOR4								diffuse;
+	D3DXVECTOR4								specular;
+	int										specualarPow;
+	std::wstring							ambientTexture;
+	std::wstring							diffuseTexture;
+	std::wstring							specularTexture;
+	std::wstring							glowTexture;
+	std::wstring							normalTexture;
 };
 
-/** Wraps [RawVertecieData] and [RawMaterialData] as two [SmartPtrStd] */
-class RawObjectData
+struct VertexObjectData
 {
-	public:
-		SmartPtrStd<RawVertecieData>		vertecieData;
-		SmartPtrStd<RawMaterialData>		materialData;
+	std::vector<VERTEX::VertexPNT>	vertex;
+	std::vector<UINT>				indecies;
+};
+
+/** Wraps imported data, contains data from ONE file */
+struct ImportedObjectData
+{
+	/** The name of the object collection */
+	std::wstring									name;
+	/** Contains n loaded objects */
+	std::vector<VertexObjectData>		MeshData;
+	/** The material loaded with the obeject */
+	//std::vector<RawMaterialData>		materialData;
 };
 
 

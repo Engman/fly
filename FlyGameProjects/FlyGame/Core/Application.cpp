@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "..\Util\vertex.h"
+#include "..\Util\Importer\ResourceImporter.h"
 
 
 
@@ -30,6 +31,7 @@ bool Application::Initialize(HINSTANCE hInst)
 	if(!InitGBuffers())				return false;
 	if(!InitColorShader())			return false;
 	if(!InitMatrixBuffer())			return false;
+	if(!LoadResources())			return false;
 
 
 	this->mainCamera.SetProjectionMatrix((float)D3DX_PI/2.0f, D3DShell::self()->getAspectRatio(), 1, 1000);
@@ -268,6 +270,14 @@ bool Application::InitMatrixBuffer()
 	if(FAILED(this->pMatrixBuffer->Initialize(matrixBufferDesc)))
 		return false;
 	
+	return true;
+}
+bool Application::LoadResources()
+{
+	//Load mesh objects
+	SmartPtrStd<ImportedObjectData> raw;
+	if(!ResourceImporter::Import(L"../Resources/Models/simplePlane.obj", raw))
+		return false;
 	return true;
 }
 

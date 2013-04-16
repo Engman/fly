@@ -1,0 +1,32 @@
+n test					#Name of the model/model group
+c 1						#The number of frames in this file
+m basic					#material name
+a 0.5 0.5 0.5 1.0		#ambient
+d 1.0 1.0 1.0 1.0		#diffuse
+s 1.0 1.0 1.0 1.0		#specular
+sp 1					#specular power
+ta 						#texture for ambient
+td 						#texture for diffuse
+ts 						#texture for specular
+tg 						#texture for glow
+tn 						#texture for normal map
+mend					#Material ends
+fr 0					#Sequence for animation / Object number
+v 4						#Position flag and number of positions below
+-50.000000 0.000000 50.000000
+50.000000 0.000000 50.000000
+50.000000 0.000000 -50.000000
+-50.000000 0.000000 -50.000000
+vt 4					#UV-coord flag and number of uv coordinates below
+0.000000 0.000000
+1.000000 0.000000
+1.000000 1.000000
+0.000000 1.000000
+vn 4					#Normal flag and number of normals below
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+f 2						#Face flag and number of faces below
+0/0/0 1/1/1 2/2/2 
+0/0/0 2/2/2 3/3/3
