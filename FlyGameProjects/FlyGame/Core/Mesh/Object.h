@@ -5,6 +5,13 @@
 #include "RawObjectData.h"
 //#include "BoundingBox"
 
+
+/** 
+*	This class is the base class handling the drawable mesh data.
+*	-----
+*	It's possible to override function [void Update()] and [void Render()]
+*	to update and render a different way than default.
+*/
 class Object		:public Entity
 {
 	protected:
@@ -15,10 +22,13 @@ class Object		:public Entity
 		Object();
 		virtual~Object();
 
+		/** Override to update logic diffrent than default */
 		virtual void Update();
+		/** Override to render with diffrent than default */
 		virtual void Render();
 
-		virtual bool Initialize(RawObjectData modelRawData);
+		/** Builds a Object than is ready for rendering */
+		bool Initialize(ImportedObjectData modelRawData);
 };
 
 

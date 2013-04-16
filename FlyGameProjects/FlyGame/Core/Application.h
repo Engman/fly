@@ -21,6 +21,7 @@ class Application
 		bool InitGBuffers();
 		bool InitColorShader();
 		bool InitMatrixBuffer();
+		bool LoadResources();
 		void ShowMenu();
 		void PlayLevel();
 
