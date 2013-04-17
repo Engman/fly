@@ -19,7 +19,7 @@ void Object::Render()
 	
 }
 
-bool Object::Initialize(RawObjectData modelRawData)
+bool Object::Initialize(ImportedObjectData modelRawData)
 {
 	
 	return true;

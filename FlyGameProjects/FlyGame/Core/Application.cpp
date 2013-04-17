@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "..\Util\vertex.h"
+#include "..\Util\Importer\ResourceImporter.h"
 
 
 
@@ -30,6 +31,7 @@ bool Application::Initialize(HINSTANCE hInst)
 	if(!InitGBuffers())				return false;
 	if(!InitColorShader())			return false;
 	if(!InitMatrixBuffer())			return false;
+	if(!LoadResources())			return false;
 
 
 	this->mainCamera.SetProjectionMatrix((float)D3DX_PI/2.0f, D3DShell::self()->getAspectRatio(), 1, 1000);
@@ -42,7 +44,6 @@ bool Application::Initialize(HINSTANCE hInst)
 
 	g_plane = new Plane();
 	g_plane->Initialize(world, 2, 2, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
-
 	
 	g_FinalPlane = new Plane();
 	g_FinalPlane->Initialize(world, 1, 1, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &g_colorShader);
@@ -50,6 +51,9 @@ bool Application::Initialize(HINSTANCE hInst)
 	g_cube = new Cube();
 	D3DXMatrixTranslation(&world, 2,2,0);
 	g_cube->Initialize(world, 2, 2, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
+
+	this->mainCamera.GetViewFrustum();
+
 	return true;
 }
 
@@ -299,6 +303,7 @@ bool Application::InitMatrixBuffer()
 	
 	return true;
 }
+
 IShader::SHADER_PARAMETER_DATA Application::getWVPBuffer()
 {
 	IShader::SHADER_PARAMETER_DATA gBufferDrawData;
@@ -347,6 +352,14 @@ IShader::SHADER_PARAMETER_DATA Application::getWVPBuffer()
 	
 	
 	return gBufferDrawData;
+
+bool Application::LoadResources()
+{
+	//Load mesh objects
+	SmartPtrStd<ImportedObjectData> raw;
+	if(!ResourceImporter::Import(L"../Resources/Models/simplePlane.obj", raw))
+		return false;
+	return true;
 }
 
 

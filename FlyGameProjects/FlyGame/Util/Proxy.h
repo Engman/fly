@@ -57,7 +57,7 @@ struct cBufferLights
 
 struct ViewFrustum
 {
-	D3DXVECTOR4 plane[6];
+	D3DXPLANE planes[6];
 
 	D3DXVECTOR3 spherePoint;
 	float radius;

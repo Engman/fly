@@ -10,6 +10,10 @@ Camera::Camera()
 	this->rotationY = 0.0f;
 	this->rotationZ = 0.0f;
 
+	this->projNear = 0.0f;
+	this->projFar = 0.0f;
+	
+
 	this->lookAt = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 }
 
@@ -22,6 +26,9 @@ Camera::Camera(const Camera& other)
 	this->rotationX = other.rotationX;
 	this->rotationY = other.rotationY;
 	this->rotationZ = other.rotationZ;
+
+	this->projNear = other.projNear;
+	this->projFar = other.projFar;
 
 	this->lookAt = other.lookAt;
 
@@ -51,6 +58,8 @@ void Camera::SetRotation(float x, float y, float z)
 
 void Camera::SetProjectionMatrix(float fieldOfView, float aspectRatio, float nearPlane, float farPlane)
 {
+	this->projFar = farPlane;
+	this->projNear = nearPlane;
 	D3DXMatrixPerspectiveFovLH(&this->projectionMatrix, fieldOfView, aspectRatio, nearPlane, farPlane);
 }
 
@@ -218,4 +227,66 @@ void Camera::SetRotationY(float y)
 void Camera::SetRotationZ(float z)
 {
 	this->rotationZ = z;
+}
+
+ViewFrustum Camera::GetViewFrustum()
+{
+	float zMinimum, r;
+	D3DXMATRIX matrix;
+	ViewFrustum frustum;
+	
+	
+	// Calculate the minimum Z distance in the frustum.
+	zMinimum = -projectionMatrix._43 / projectionMatrix._33;
+	r = this->projFar / (this->projFar - zMinimum);
+	projectionMatrix._33 = r;
+	projectionMatrix._43 = -r * zMinimum;
+
+	// Create the frustum matrix from the view matrix and updated projection matrix.
+	D3DXMatrixMultiply(&matrix, &this->viewMatrix, &this->projectionMatrix);
+
+	// Calculate near plane of frustum.
+	frustum.planes[0].a = matrix._14 + matrix._13;
+	frustum.planes[0].b = matrix._24 + matrix._23;
+	frustum.planes[0].c = matrix._34 + matrix._33;
+	frustum.planes[0].d = matrix._44 + matrix._43;
+	D3DXPlaneNormalize(&frustum.planes[0], &frustum.planes[0]);
+
+	// Calculate far plane of frustum.
+	frustum.planes[1].a = matrix._14 - matrix._13; 
+	frustum.planes[1].b = matrix._24 - matrix._23;
+	frustum.planes[1].c = matrix._34 - matrix._33;
+	frustum.planes[1].d = matrix._44 - matrix._43;
+	D3DXPlaneNormalize(&frustum.planes[1], &frustum.planes[1]);
+
+	// Calculate left plane of frustum.
+	frustum.planes[2].a = matrix._14 + matrix._11; 
+	frustum.planes[2].b = matrix._24 + matrix._21;
+	frustum.planes[2].c = matrix._34 + matrix._31;
+	frustum.planes[2].d = matrix._44 + matrix._41;
+	D3DXPlaneNormalize(&frustum.planes[2], &frustum.planes[2]);
+
+	// Calculate right plane of frustum.
+	frustum.planes[3].a = matrix._14 - matrix._11; 
+	frustum.planes[3].b = matrix._24 - matrix._21;
+	frustum.planes[3].c = matrix._34 - matrix._31;
+	frustum.planes[3].d = matrix._44 - matrix._41;
+	D3DXPlaneNormalize(&frustum.planes[3], &frustum.planes[3]);
+
+	// Calculate top plane of frustum.
+	frustum.planes[4].a = matrix._14 - matrix._12; 
+	frustum.planes[4].b = matrix._24 - matrix._22;
+	frustum.planes[4].c = matrix._34 - matrix._32;
+	frustum.planes[4].d = matrix._44 - matrix._42;
+	D3DXPlaneNormalize(&frustum.planes[4], &frustum.planes[4]);
+
+	// Calculate bottom plane of frustum.
+	frustum.planes[5].a = matrix._14 + matrix._12;
+	frustum.planes[5].b = matrix._24 + matrix._22;
+	frustum.planes[5].c = matrix._34 + matrix._32;
+	frustum.planes[5].d = matrix._44 + matrix._42;
+	D3DXPlaneNormalize(&frustum.planes[5], &frustum.planes[5]);
+
+
+	return frustum;
 }
