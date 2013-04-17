@@ -100,7 +100,8 @@ class D3DShell
 
 		/** Clears and sets the G-buffers and depth stencil views as the render target */
 		void						BeginGBufferRenderTargets();
-		ID3D11ShaderResourceView*	getDefferedSRV();
+		ID3D11ShaderResourceView**	getDefferedSRV();   /**returns the shader recourse view array*/
+		int getNrOfSRV();	
 };
 
 

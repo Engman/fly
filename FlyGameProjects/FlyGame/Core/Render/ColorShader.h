@@ -3,6 +3,7 @@
 
 #include "..\IShader.h"
 #include "..\D3DShell.h"
+#include "..\..\Util\misc.h"
 
 class ColorShader : public IShader
 {

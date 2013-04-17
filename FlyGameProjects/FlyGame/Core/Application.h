@@ -9,6 +9,7 @@
 #include "..\Util\Camera.h"
 #include "Input.h"
 #include "..\Util\Proxy.h"
+#include "Mesh\Cube.h"
 
 typedef Input::KeyCodes Key;
 
@@ -23,6 +24,7 @@ class Application
 		bool InitMatrixBuffer();
 		void ShowMenu();
 		void PlayLevel();
+		IShader::SHADER_PARAMETER_DATA getWVPBuffer();
 
 		static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam); 
 
@@ -35,6 +37,8 @@ class Application
 
 		SmartPtrStd<BaseBuffer> pMatrixBuffer;
 		SmartPtrStd<Plane>		g_plane;
+		SmartPtrStd<Cube>		g_cube;
+		SmartPtrStd<Plane>		g_FinalPlane;
 
 		Camera mainCamera;
 
@@ -47,6 +51,7 @@ class Application
 		void Run();
 		void Shutdown();
 		bool Render();
+		void Update();
 };
 
 #endif

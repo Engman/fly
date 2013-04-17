@@ -13,6 +13,7 @@ struct PSIn
 {
 	float4 Pos		: SV_Position;
 	//float3 Color	: COLOR;
+	float4 Texture  : TEXTCOORD; 
 };
 
 //-----------------------------------------------------------------------------------------
@@ -21,7 +22,11 @@ struct PSIn
 float4 FPixelShader(PSIn input) :  SV_Target
 {	
   float2 textCoord;
-  textCoord = float2(0.5f*input.Pos.x, -0.5f*input.Pos.y) + 0.5f;
-	float4 diffuse = colorSRV.Sample( SampleTypeClamp, textCoord );
+  //textCoord = float2(0.5f*input.Pos.x, -0.5f*input.Pos.y) + 0.5f;
+	float4 diffuse = colorSRV.Sample( SampleTypeClamp, input.Texture.xy); //textCoord );
+	
   return diffuse;
+  
+  //float4 normal = normal_depthSRV.Sample( SampleTypeClamp, input.Texture.xy);
+  //return normal;
 }

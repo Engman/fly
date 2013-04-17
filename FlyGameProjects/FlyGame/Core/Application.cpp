@@ -43,6 +43,13 @@ bool Application::Initialize(HINSTANCE hInst)
 	g_plane = new Plane();
 	g_plane->Initialize(world, 2, 2, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
 
+	
+	g_FinalPlane = new Plane();
+	g_FinalPlane->Initialize(world, 1, 1, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &g_colorShader);
+
+	g_cube = new Cube();
+	D3DXMatrixTranslation(&world, 2,2,0);
+	g_cube->Initialize(world, 2, 2, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
 	return true;
 }
 
@@ -59,6 +66,7 @@ void Application::Run()
 		  }
 		 else
 		 {
+			Update();
 			Render();
 		 }
 
@@ -116,38 +124,61 @@ void Application::MouseMoveEvent(Input::MouseMoveData d)
 	static int idCounter = 0;
 	idCounter ++;
 }
-
+void Application::Update()
+{
+	g_cube->Update();
+}
 bool Application::Render()
 {
 	D3DXMATRIX world;
 	D3DXMatrixIdentity(&world);
 	
 	IShader::SHADER_PARAMETER_DATA gBufferDrawData;
+	gBufferDrawData = getWVPBuffer();
 
-	cBufferMatrix* dataPtr = (cBufferMatrix*)(this->pMatrixBuffer->Map());
-	dataPtr->world = world;
-	D3DXMatrixLookAtLH(&dataPtr->view, &D3DXVECTOR3(0.0f, 0.0f, -5.0f), &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
-	D3DXMatrixOrthoLH(&dataPtr->projection, 800, 600, 1.0f, 100.0f);
-
-	D3DXMatrixTranspose(&dataPtr->world, &dataPtr->world);
-	D3DXMatrixTranspose(&dataPtr->projection,& dataPtr->projection);
-	D3DXMatrixTranspose(&dataPtr->view,&dataPtr->view);
-	dataPtr->worldInvTranspose = world;
-	this->pMatrixBuffer->Unmap();
-	gBufferDrawData.cMatrixBuffer = this->pMatrixBuffer;
-	gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
 	
+	//draw g-buffers
+	//render plane
 	D3DShell::self()->BeginGBufferRenderTargets();
-	g_plane->SetShader(&this->gBufferShader);
+	//g_plane->SetShader(&this->gBufferShader);
 	g_plane->Render(D3DShell::self()->getDeviceContext());
 	this->gBufferShader.draw(gBufferDrawData);
 
+	//reset the world matrix
+	cBufferMatrix* cb = (cBufferMatrix*)gBufferDrawData.cMatrixBuffer->Map();
+	cb->world = world; // add the world matrix of the object
+	D3DXMatrixLookAtLH(&cb->view, &D3DXVECTOR3(0.0f, 0.0f, -5.0f), &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
+	D3DXMatrixPerspectiveFovLH(&cb->projection,(float)D3DX_PI * 0.45f, 800/600, 0.1f, 100.0f);
+	cb->worldInvTranspose = world;
+	D3DXMatrixTranspose(&cb->world, &cb->world);
+	D3DXMatrixTranspose(&cb->view,&cb->view);
+	D3DXMatrixTranspose(&cb->projection,&cb->projection);
+	gBufferDrawData.cMatrixBuffer->Unmap();
+
+	
+	//render cube
+	g_cube->Render(D3DShell::self()->getDeviceContext());
+	this->gBufferShader.draw(gBufferDrawData);
+
+	//reset the world matrix
+	cb = (cBufferMatrix*)gBufferDrawData.cMatrixBuffer->Map();
+	cb->world = world; // add the world matrix of the object
+	D3DXMatrixLookAtLH(&cb->view, &D3DXVECTOR3(0.0f, 0.0f, -5.0f), &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
+	D3DXMatrixPerspectiveFovLH(&cb->projection,(float)D3DX_PI * 0.45f, 800/600, 0.1f,  100.0f);
+	cb->worldInvTranspose = world;
+	D3DXMatrixTranspose(&cb->world, &cb->world);
+	D3DXMatrixTranspose(&cb->view,&cb->view);
+	D3DXMatrixTranspose(&cb->projection,&cb->projection);
+	gBufferDrawData.cMatrixBuffer->Unmap();
+
+	//second render stage
+	//sampling from g-buffers
 	 D3DShell::self()->setRenderTarget();
 	 D3DShell::self()->beginScene();
 	 FLAGS::STATE_SAMPLING samp[1] =  { FLAGS::SAMPLER_Linear };
 	 D3DShell::self()->setSamplerState(samp, FLAGS::PS, 0,1);
-	 this->g_plane->SetShader(&g_colorShader);
-	 this->g_plane->Render(D3DShell::self()->getDeviceContext());
+	 //this->g_plane->SetShader(&g_colorShader);
+	 this->g_FinalPlane->Render(D3DShell::self()->getDeviceContext());
 	 this->g_colorShader.draw(gBufferDrawData);
 
 	 D3DShell::self()->endScene();
@@ -267,6 +298,55 @@ bool Application::InitMatrixBuffer()
 		return false;
 	
 	return true;
+}
+IShader::SHADER_PARAMETER_DATA Application::getWVPBuffer()
+{
+	IShader::SHADER_PARAMETER_DATA gBufferDrawData;
+	cBufferMatrix* dataPtr = (cBufferMatrix*)(this->pMatrixBuffer->Map());
+	D3DXMATRIX world;
+	D3DXMatrixIdentity(&world); //game world
+	dataPtr->world = world;
+
+
+	D3DXVECTOR3 m_vUp		 (0,1,0);
+	D3DXVECTOR3 m_vLookAtPt  (0,0,1);
+
+	D3DXVECTOR3 m_position (0,-0,-5);
+
+
+	D3DXMatrixLookAtLH(&dataPtr->view, &m_position, &m_vLookAtPt, &m_vUp);
+	//D3DXMatrixLookAtLH(&dataPtr->view, &D3DXVECTOR3(0.0f, 0.0f, -5.0f), &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
+	D3DXMatrixPerspectiveFovLH(&dataPtr->projection,(float)D3DX_PI * 0.45f, 800/600, 0.1f, 100.0f);
+	
+
+	D3DXMatrixTranspose(&dataPtr->world, &dataPtr->world);
+	D3DXMatrixTranspose(&dataPtr->view,&dataPtr->view);
+	D3DXMatrixTranspose(&dataPtr->projection,&dataPtr->projection);
+	
+	dataPtr->worldInvTranspose = world;
+	D3DXMATRIX test;
+	
+	test = dataPtr->world;
+	test = dataPtr->view;
+	test = dataPtr->projection;
+	test = dataPtr->worldInvTranspose;
+
+	D3DXVECTOR4 pos(1,1,0,1); 
+	D3DXVec4Transform(&pos, &pos, &dataPtr->world);
+	D3DXVec4Transform(&pos, &pos, &dataPtr->view);
+	D3DXVec4Transform(&pos, &pos, &dataPtr->projection);
+	
+
+	pos;
+
+
+	this->pMatrixBuffer->Unmap();
+	gBufferDrawData.cMatrixBuffer = this->pMatrixBuffer;
+	gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
+
+	
+	
+	return gBufferDrawData;
 }
 
 

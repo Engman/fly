@@ -16,13 +16,13 @@ void Plane::Initialize(D3DXMATRIX world,  float height, float width, ID3D11Devic
 
 	VERTEX::VertexPNC3 mesh[] =
 	{
-		{D3DXVECTOR4(-width, -height,0, 1 ), n1, D3DXVECTOR4(200,200, 200 ,0)},
-		{D3DXVECTOR4(-width,height,0,1)		, n1, D3DXVECTOR4(200,200, 200 ,0)},
-		{D3DXVECTOR4(width,height,0,1)	, n1, D3DXVECTOR4(200,200, 200 ,0)},
+		{D3DXVECTOR4(-width, -height,0, 1 ), n1, D3DXVECTOR4(0,0, 1 ,0)},
+		{D3DXVECTOR4(-width,height,0,1)		, n1, D3DXVECTOR4(0,0, 1 ,0)},
+		{D3DXVECTOR4(width,height,0,1)	, n1, D3DXVECTOR4(0,0, 1 ,0)},
 
-		{D3DXVECTOR4(-width, -height,0, 1)	, n2, D3DXVECTOR4(200,200, 200 ,0)},
-		{D3DXVECTOR4(width,height,0, 1)		, n2, D3DXVECTOR4(200,200, 200 ,0)},
-		{D3DXVECTOR4(width,-height, 0,1)	, n2, D3DXVECTOR4(200,200, 200 ,0)}
+		{D3DXVECTOR4(-width, -height,0, 1)	, n2, D3DXVECTOR4(0,0, 1 ,0)},
+		{D3DXVECTOR4(width,height,0, 1)		, n2, D3DXVECTOR4(0,0, 1 ,0)},
+		{D3DXVECTOR4(width,-height, 0,1)	, n2, D3DXVECTOR4(0,0, 1 ,0)}
 
 	};
 

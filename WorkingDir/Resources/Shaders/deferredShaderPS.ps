@@ -17,7 +17,8 @@ PS_OUT FPixelShader( PS_IN input )
 {
   PS_OUT output= ( PS_OUT )0;
   output.ColorRGBA = input.color;
-  output.NormalRGB_DepthA = float4( input.normal.xy, 1, input.position.w);
+  float3 normal = input.normal * 0.5 + 0.5;
+  output.NormalRGB_DepthA = float4( normal, input.position.w);
   
   return output;
 }

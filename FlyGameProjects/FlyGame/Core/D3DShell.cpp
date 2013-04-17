@@ -496,7 +496,7 @@ bool D3DShell::PrDat::InitMRTS()
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvd;
 	ZeroMemory(&dsvd, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
 	dsvd.Format = dstex.Format;
-	dsvd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+	dsvd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
     dsvd.Texture2DArray.FirstArraySlice = 0;
     dsvd.Texture2DArray.ArraySize = 1;
     dsvd.Texture2DArray.MipSlice = 0;
@@ -527,7 +527,7 @@ bool D3DShell::PrDat::InitMRTS()
 	D3D11_RENDER_TARGET_VIEW_DESC DescRT;
 	ZeroMemory(&DescRT, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
 	DescRT.Format = dstex.Format;
-	DescRT.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
+	DescRT.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	DescRT.Texture2DArray.FirstArraySlice = 0;
 	DescRT.Texture2DArray.ArraySize = 1;
 	DescRT.Texture2DArray.MipSlice = 0;
@@ -546,7 +546,7 @@ bool D3DShell::PrDat::InitMRTS()
 	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
 	ZeroMemory( &SRVDesc, sizeof( SRVDesc ) );
 	SRVDesc.Format = dstex.Format;
-	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
+	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	SRVDesc.Texture2DArray.ArraySize = 1;
 	SRVDesc.Texture2DArray.FirstArraySlice = 0;
 	SRVDesc.Texture2DArray.MipLevels = 1;
@@ -742,6 +742,8 @@ void D3DShell::endScene()
 		// Present as fast as possible.
 		this->_prDatPtr->swapChain->Present(0, 0);
 	}
+	ID3D11ShaderResourceView *const pSRV[5] = {NULL, NULL, NULL, NULL, NULL};
+	getDeviceContext()->PSSetShaderResources(0, 5, pSRV);
 }
 
 
@@ -841,7 +843,11 @@ void D3DShell::BeginGBufferRenderTargets()
 	this->getDeviceContext()->OMSetRenderTargets(DeferredRenderLayout::MRT_COUNT, this->_prDatPtr->deffRTV, this->_prDatPtr->deffDepthStencil[0]);
 
 }
-ID3D11ShaderResourceView*	D3DShell::getDefferedSRV()
+ID3D11ShaderResourceView**	D3DShell::getDefferedSRV()
 {
-	return this->_prDatPtr->deffSRV[0];
+	return this->_prDatPtr->deffSRV;
+}
+int D3DShell::getNrOfSRV()
+{
+	return DeferredRenderLayout::MRT_COUNT;
 }
