@@ -10,23 +10,19 @@ td 						#texture for diffuse
 ts 						#texture for specular
 tg 						#texture for glow
 tn 						#texture for normal map
-mend					#Material ends
-fr 0					#Sequence for animation / Object number
-v 4						#Position flag and number of positions below
+fr 0 4					#Sequence for animation / Object number / Vertex count
+v
 -50.000000 0.000000 50.000000
 50.000000 0.000000 50.000000
 50.000000 0.000000 -50.000000
 -50.000000 0.000000 -50.000000
-vt 4					#UV-coord flag and number of uv coordinates below
+vt
 0.000000 0.000000
 1.000000 0.000000
 1.000000 1.000000
 0.000000 1.000000
-vn 4					#Normal flag and number of normals below
+vn
 0.000000 1.000000 0.000000
 0.000000 1.000000 0.000000
 0.000000 1.000000 0.000000
 0.000000 1.000000 0.000000
-f 2						#Face flag and number of faces below
-0/0/0 1/1/1 2/2/2 
-0/0/0 2/2/2 3/3/3
