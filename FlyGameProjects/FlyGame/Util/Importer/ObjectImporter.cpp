@@ -3,31 +3,57 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include "..\..\Core\Mesh\MaterialHandler.h"
 
+
+#pragma region FROWARD DELERATION
+
+bool ParseAnimationFile			(std::wifstream& in, ImportedObjectData* d);
+bool ParseStandardFile			(std::wifstream& in, ImportedObjectData* d);
+
+int  ParseMaterial				(std::wifstream& in);
+
+bool ParseV						(std::wifstream& in, ObjectData& o);
+bool ParseVT					(std::wifstream& in, ObjectData& o);
+bool ParseVN					(std::wifstream& in, ObjectData& o);
+
+bool ParseVector4				(std::wifstream& in, vec4& v);
+bool ParseVector3				(std::wifstream& in, vec4& v);
+bool ParseVector3				(std::wifstream& in, vec3& v);
+bool ParseVector2				(std::wifstream& in, vec2& v);
+bool ParseInteger				(std::wifstream& in, int& v);
+bool ParseFloat					(std::wifstream& in, float& v);
+std::wstring ParseLine			(std::wifstream& in, bool trash = false);
 
 
 namespace ObjImpFormat
 {
-	const std::wstring	name			= L"n";					//Name of the mesh collection
-	const wchar_t		comment			= '#';					//A simple comment
-	const std::wstring	count			= L"c";					//The number of frames in this file
-	const std::wstring	material		= L"m";					//material name
-	const std::wstring	ambient			= L"a";					//ambient
-	const std::wstring	diffuse			= L"d";					//diffuse
-	const std::wstring	specluar		= L"s";					//specular
-	const std::wstring	specularPower	= L"sp";				//specular power
-	const std::wstring	textureAmbient	= L"ta";				//texture for ambient
-	const std::wstring	textureDiffuse	= L"td";				//texture for diffuse
-	const std::wstring	textureSpecular	= L"ts";				//texture for specular
-	const std::wstring	textureGlow		= L"tg";				//texture for glow
-	const std::wstring	textureNormal	= L"tn";				//texture for normal map
-	const std::wstring	frame			= L"fr";				//Sequence for animation / Object number
-	const std::wstring	v				= L"v";					//Position flag and number of positions below
-	const std::wstring	vt				= L"vt";				//UV-coord flag and number of uv coordinates below
-	const std::wstring	vn				= L"vn";				//Normal flag and number of normals below
-	const std::wstring	f				= L"f";					//Face flag and number of faces below
-	const std::wstring	mend			= L"mend";				//The end of materials
+	const std::wstring		comment				= L"#";			//Comment
+	const std::wstring		name				= L"n";			//#Name of the model/model group
+	const std::wstring		animationCount		= L"ac";		//#The number of frames in this file
+	const std::wstring		vertexCount			= L"vc";		//#The number of frames in this file
+	const std::wstring		material			= L"m";			//#material name, meaning a new material
+	const std::wstring		ambient				= L"a";			//#ambient
+	const std::wstring		diffuse				= L"d";			//#diffuse
+	const std::wstring		specular			= L"s";			//#specular
+	const std::wstring		specularPower		= L"sp";		//#specular power
+	const std::wstring		ambientTexture		= L"ta";		//#texture for ambient
+	const std::wstring		diffuseTexture		= L"td";		//#texture for diffuse
+	const std::wstring		specularTexture		= L"ts";		//#texture for specular
+	const std::wstring		glowTexture			= L"tg";		//#texture for glow
+	const std::wstring		normalTexture		= L"tn";		//#texture for normal map
+	const std::wstring		animation			= L"an";		//#The animation number (since there will be more than one in a file)
+	const std::wstring		frame				= L"fr";		//#Sequence for animation / Object number / Vertecie count
+	const std::wstring		v					= L"v";			//#Position flag
+	const std::wstring		vt					= L"vt";		//#UV-coord flag
+	const std::wstring		vn					= L"vn";		//#Normal flag
+
+	//Material flags
+	
 };
+
+#pragma endregion
+
 
 
 bool ObjectImporter::Import(wchar_t* file, SmartPtrStd<ImportedObjectData>& rawData)
@@ -35,6 +61,8 @@ bool ObjectImporter::Import(wchar_t* file, SmartPtrStd<ImportedObjectData>& rawD
 	if(!rawData.IsValid())
 		rawData = new ImportedObjectData();
 
+	rawData->objects.clear();
+	rawData->objects.clear();
 
 	std::wifstream in (file);
 	if(!in.is_open())
@@ -52,212 +80,346 @@ bool ObjectImporter::Import(wchar_t* file, SmartPtrStd<ImportedObjectData>& rawD
 	}
 	else
 	{
-		std::wstring buffer;
-		int frame = 0;
-		RawVertecieData rawVert;
-		RawMaterialData rawMat;
+		std::wstring buff;
+
 		while (!in.eof())
 		{
-			in >> buffer;
+			in >> buff;
 
-				 if(buffer		== ObjImpFormat::count)			{ ParseMeshCount(in, rawData); }
-			else if(buffer		== ObjImpFormat::frame)			{ in >> frame; }
-			else if(buffer[0]	== ObjImpFormat::comment)		{ ParseText			(in, true);		}
-			else if(buffer		== ObjImpFormat::material)		{ ParseMaterial		(rawMat, in);  }
-			else if(buffer		== ObjImpFormat::v)				{ ParsePositions	(rawVert, in, frame);  }
-			else if(buffer		== ObjImpFormat::vt)			{ ParseUVs			(rawVert, in, frame);  }
-			else if(buffer		== ObjImpFormat::vn)			{ ParseNormals		(rawVert, in, frame);  }
-			else if(buffer		== ObjImpFormat::f)				{ ParseFace			(rawVert, in, frame, rawData);  }
-			else if(buffer		== ObjImpFormat::name)			{ rawData->name = ParseText(in);	}
+			if(buff.size())
+			{
+					 if(buff == ObjImpFormat::name) { rawData->name = ParseLine(in); }
+				else if(buff == ObjImpFormat::animationCount) 
+				{ 
+					int count = 0;
+					if(!ParseInteger(in, count))
+						return false;
 
+					if(count)
+					{
+						rawData->animations.resize(count);
+						if(!ParseAnimationFile(in, rawData))
+							return false;
+					}
+					else		
+						if(!ParseStandardFile(in, rawData))
+							return false;
+				}
+				else { ParseLine(in, true); }
+			}
+		}
+	}
+
+	return true;
+}
+bool ObjectImporter::Import(wchar_t* file, __out std::vector<int>& identifiers)
+{
+	if(identifiers.size() != 0)
+		identifiers.resize(0);
+	if(file == L"")
+		return false;
+
+	std::wifstream in (file);
+	
+	if(!in.is_open())
+		return false;
+
+	std::wstring buff;
+	int mid = -1;
+
+	while (!in.eof())
+	{
+		in >> buff;
+
+		if(buff == ObjImpFormat::material)
+		{
+			mid = ParseMaterial(in);
+			if(mid != -1)
+			{
+				identifiers.push_back(mid);
+			}
 		}
 	}
 
 	return true;
 }
 
-
-void ObjectImporter::ParseUVs(RawVertecieData& rawVert, std::wifstream& in, int frame)
+bool ParseAnimationFile			(std::wifstream& in, ImportedObjectData* d)
 {
-	int count = 0;
-	in >> count;
+	std::wstring flag;
+	bool result = true;
+	int vCount = 0;
+	int currFrame = -1;
+	int currObject = -1;
+	int currAnimation = -1;
+	int currMaterial = -1;
 
-	if(count > 0)
+	while(!in.eof())
 	{
-		rawVert.textCoord.resize(count);
-		vec2 uv;
-		std::wstring buff;
-		int i = 0;
-		while (i < count)
-		{
-			in >> buff;
-			if( buff[0] == ObjImpFormat::comment)
-				ParseText(in, true);
-			else
-			{
-				uv.x = (float)_wtof(buff.c_str());
-				in >> buff;
-				uv.y = 1.0f - (float)_wtof(buff.c_str());
+		in >> flag;
 
-				rawVert.textCoord[i++] = uv;
+		if(flag == ObjImpFormat::vertexCount)	
+		{
+			if(!ParseInteger(in, vCount))
+			{
+				DisplayText("File:\n" + in.getloc().name() + "\nDoes not contain any vertex information");
+				return false;
 			}
 		}
-	}
-}
-void ObjectImporter::ParsePositions(RawVertecieData& rawVert, std::wifstream& in, int frame)
-{
-	int count = 0;
-	in >> count;
 
-	if(count > 0)
-	{
-		rawVert.position.resize(count);
-		vec4 p;
-		std::wstring buff;
-		p.w = 1.0f;
-		int i = 0;
-		while (i < count)
+		else if(flag == ObjImpFormat::animation)	
 		{
-			in >> buff;
-			if( buff[0] == ObjImpFormat::comment)
-				ParseText(in, true);
-			else
-			{
-				p.x = (float)_wtof(buff.c_str());
-				in >> buff;
-				p.y = (float)_wtof(buff.c_str());
-				in >> buff;
-				p.z = (float)_wtof(buff.c_str());
+			currAnimation++;
+			int frameCount = 0;
+			if(!ParseInteger(in, d->animations[currAnimation].id))
+				return false;
+			if(!ParseInteger(in, frameCount))
+				return false;
 
-				rawVert.position[i++] = p;
+			if(!frameCount)
+				return false;
+
+			d->animations[currAnimation].frames.resize(frameCount);
+			currFrame = -1;
+		}
+		else if(flag == ObjImpFormat::frame)
+		{
+			float frameTime = 0.0f;
+			int frameNum = -1;
+			if(!ParseInteger(in, frameNum))
+				return false;
+			if(!ParseFloat(in, frameTime))
+			{
+				char temp1[2];
+				_itoa_s(frameNum, temp1, 10);
+				DisplayText("File:\n" + in.getloc().name() + "\nFrame: " + temp1 + "\nInvalid frame time");
+				return false;
+			}
+
+			if(frameTime <= 0.0f)
+				return false;
+
+			d->objects.push_back(ObjectData());
+			currObject = (int)d->objects.size()-1;
+			currFrame++;
+
+			d->animations[currAnimation].frames[currFrame].frameNumber = frameNum;
+			d->animations[currAnimation].frames[currFrame].frameTime = frameTime;
+			d->animations[currAnimation].frames[currFrame].objectIndex = currFrame;
+
+			d->objects[currObject].vertex.resize(vCount);
+			d->objects[currObject].material = currMaterial;
+		}
+		else if(flag == ObjImpFormat::material)		{ currMaterial = ParseMaterial(in);	}
+		else if(flag == ObjImpFormat::v)			{ result = ParseV(in,d->objects[currFrame]); 	}
+		else if(flag == ObjImpFormat::vt)			{ result = ParseVT(in,d->objects[currFrame]);	}
+		else if(flag == ObjImpFormat::vn)			{ result = ParseVN(in,d->objects[currFrame]);	}
+		else if(flag == ObjImpFormat::comment)		{ ParseLine(in, true); }
+		
+		if(!result)
+			return result;
+	}
+
+	return result;
+}
+bool ParseStandardFile			(std::wifstream& in, ImportedObjectData* d)
+{
+	std::wstring flag;
+	bool result = true;
+	while(!in.eof())
+	{
+		in >> flag;
+
+		if(flag == ObjImpFormat::vertexCount)	
+		{
+			int count = 0;
+			if(!ParseInteger(in, count))
+			{
+				DisplayText("File:\n" + in.getloc().name() + "\nDoes not contain any vertex information");
+				return false;
+			}
+
+			//No animations, then only one mesh is valid
+			d->objects.resize(1);
+			d->objects[0].vertex.resize(count);
+			d->objects[0].material = 0;
+		}
+		else if(flag == ObjImpFormat::material)		{ d->objects[0].material = ParseMaterial(in); }
+		else if(flag == ObjImpFormat::v)			{ result = ParseV(in,d->objects[0]);  }
+		else if(flag == ObjImpFormat::vt)			{ result = ParseVT(in,d->objects[0]); }
+		else if(flag == ObjImpFormat::vn)			{ result = ParseVN(in,d->objects[0]); }
+		else if(flag == ObjImpFormat::comment)		{ ParseLine(in, true); }
+		
+		if(!result)
+			return result;
+	}
+
+	return result;
+}
+
+int ParseMaterial				(std::wifstream& in)			
+{
+	
+	ObjectMaterial::OBJECT_MATERIAL_DESC md;
+	md.name = ParseLine(in);
+	std::wstring buffer = L"";
+	bool done = false;
+	do
+	{
+		std::streamoff b = in.tellg();
+		in >> buffer;
+		if(buffer.size())
+		{
+				 if(buffer		== ObjImpFormat::ambient)			{ ParseVector4(in, md.ambient); }
+			else if(buffer		== ObjImpFormat::diffuse)			{ ParseVector4(in, md.diffuse); }
+			else if(buffer		== ObjImpFormat::specular)			{ ParseVector4(in, md.specular); }
+			else if(buffer		== ObjImpFormat::specularPower)		{ ParseInteger(in, md.specualarPow); }
+			else if(buffer		== ObjImpFormat::ambientTexture)	{ md.ambientTexture		= ParseLine(in); }
+			else if(buffer		== ObjImpFormat::diffuseTexture)	{ md.diffuseTexture		= ParseLine(in);  }
+			else if(buffer		== ObjImpFormat::specularTexture)	{ md.specularTexture	= ParseLine(in);  }
+			else if(buffer		== ObjImpFormat::glowTexture)		{ md.glowTexture		= ParseLine(in);  }
+			else if(buffer		== ObjImpFormat::normalTexture)		{ md.normalTexture		= ParseLine(in);  }
+			else if(buffer		== ObjImpFormat::comment)			{ ParseLine(in, true); }
+			else 
+			{
+				in.seekg(b);
+				done = true;
+
+				//Return newly created material id
+				return MaterialHandler::AddMaterial(md);
 			}
 		}
-	}
-}
-void ObjectImporter::ParseNormals(RawVertecieData& rawVert, std::wifstream& in, int frame)
-{
-	int count = 0;
-	in >> count;
+	
+	} while (!done);
 
-	if(count > 0)
+	return -1;
+}	
+
+
+bool ParseV						(std::wifstream& in, ObjectData& o)			
+{
+	int total = (int)o.vertex.size();
+	int i = 0;
+
+	while (i < total)
 	{
-		rawVert.normal.resize(count);
-		vec4 p;
-		std::wstring buff;
-		p.w = 0.0f;
-		int i = 0;
-		while (i < count)
-		{
-			in >> buff;
-			if( buff[0] == ObjImpFormat::comment)
-				ParseText(in, true);
-			else
-			{
-				p.x = (float)_wtof(buff.c_str());
-				in >> buff;
-				p.y = (float)_wtof(buff.c_str());
-				in >> buff;
-				p.z = (float)_wtof(buff.c_str());
-
-				rawVert.normal[i++] = p;
-			}
-		}
+		if(!ParseVector3(in, o.vertex[i++].position))
+			return false;
 	}
-}
-void ObjectImporter::ParseFace(RawVertecieData& rawVert, std::wifstream& in, int frame, ImportedObjectData* rawData)		
-{
-	int count = 0;
-	in >> count;
 
-	if(count > 0)
+	return true;
+}
+bool ParseVT					(std::wifstream& in, ObjectData& o)	
+{
+	int total = (int)o.vertex.size();
+	int i = 0;
+
+	while (i < total)
 	{
-		rawData->MeshData[frame].indecies.resize(count*3);
-		rawData->MeshData[frame].vertex.resize(rawVert.position.size());
-
-		int i = 0, c = 0;
-		std::wstring buff;
-		bool comment = true;
-		do
-		{
-			buff = ParseText(in);
-			if(buff.size())
-				if(buff[0] != ObjImpFormat::comment)
-					comment = false;
-
-		} while (comment);
-
-		//For all faces
-		for(int q = 0; q<count; q++)
-		{
-			//For each face
-			std::vector<std::wstring> f = stringSplit(buff,' ');
-
-			//For each vertex
-			for (int k = 0; k < (int)f.size(); k++)
-			{
-				std::vector<std::wstring> v = stringSplit(f[k], '/');
-
-				if(rawVert.position.size())
-					i = (int)_wtoi(v[0].c_str());
-					rawData->MeshData[frame].vertex[i].position = rawVert.position[i];
-
-				if(rawVert.textCoord.size())
-				{
-					i = (int)_wtoi(v[1].c_str());
-					rawData->MeshData[frame].vertex[i].texcoord = rawVert.textCoord[i];
-
-					if(rawVert.normal.size())
-						i = (int)_wtoi(v[2].c_str());
-						rawData->MeshData[frame].vertex[i].normal = rawVert.normal[i];
-				}	
-				else
-					if(rawVert.normal.size())
-						i = (int)_wtoi(v[1].c_str());
-						rawData->MeshData[frame].vertex[i].normal = rawVert.normal[i];
-
-				rawData->MeshData[frame].indecies[c++] = i;
-			}
-			
-			buff = ParseText(in);
-		}
+		if(!ParseVector2(in, o.vertex[i++].texcoord))
+			return false;
 	}
+	
+	return true;
 }
-void ObjectImporter::ParseMaterial(RawMaterialData& rawData, std::wifstream& in)
+bool ParseVN					(std::wifstream& in, ObjectData& o)				
 {
-	//static int materialCount = 0;
-	//rawData->materialData.push_back(RawMaterialData());
-	//materialCount ++;
-	//
-	//in >> rawData->materialData[materialCount-1] .name;
-	//
-	//std::wstring buffer = L"";
-	//bool done = false;
-	//do
-	//{
-	//	in >> buffer;
-	//	if(buffer.size())
-	//	{
-	//			 if(buffer		== ObjImpFormat::ambient)			{ ParseVector4(in, rawData->materialData[materialCount-1].ambient); }
-	//		else if(buffer[0]	== ObjImpFormat::comment)			{ ParseText(in, true); }
-	//		else if(buffer		== ObjImpFormat::diffuse)			{ ParseVector4(in, rawData->materialData[materialCount-1].diffuse); }
-	//		else if(buffer		== ObjImpFormat::specluar)			{ ParseVector4(in, rawData->materialData[materialCount-1].specular); }
-	//		else if(buffer		== ObjImpFormat::specularPower)		{ rawData->materialData[materialCount-1].specualrPow = _wtoi(ParseText(in).c_str()); }
-	//		else if(buffer		== ObjImpFormat::textureAmbient)	{ rawData->materialData[materialCount-1].ambientTexture = ParseText(in); }
-	//		else if(buffer		== ObjImpFormat::textureDiffuse)	{ rawData->materialData[materialCount-1].diffuseTexture = ParseText(in);  }
-	//		else if(buffer		== ObjImpFormat::textureSpecular)	{ rawData->materialData[materialCount-1].specularTexture = ParseText(in);  }
-	//		else if(buffer		== ObjImpFormat::textureGlow)		{ rawData->materialData[materialCount-1].glowTexture = ParseText(in);  }
-	//		else if(buffer		== ObjImpFormat::textureNormal)		{ rawData->materialData[materialCount-1].normalTexture = ParseText(in);  }
-	//		else 
-	//		{
-	//			//Move stream pointer back
-				//in.unget();
-	//			done = true;
-	//		}
-	//	}
-	//
-	//} while (!done);
+	int total = (int)o.vertex.size();
+	int i = 0;
+
+	while (i < total)
+	{
+		if(!ParseVector3(in, o.vertex[i++].normal))
+			return false;
+	}
+	
+	return true;
 }
-std::wstring ObjectImporter::ParseText(std::wifstream& in, bool trash)		   
+
+
+bool ParseVector4				(std::wifstream& in, vec4& v)				
+{
+	std::wstring buff;
+	in >> buff;
+	if(!isdigit(buff[0]) && buff[0] != '-')	return false;
+	v.x = (FLOAT)_wtof(buff.c_str());
+	in >> buff;
+	if(!isdigit(buff[0]) && buff[0] != '-')	return false;
+	v.y = (FLOAT)_wtof(buff.c_str());
+	in >> buff;
+	if(!isdigit(buff[0]) && buff[0] != '-')	return false;
+	v.z = (FLOAT)_wtof(buff.c_str());
+	in >> buff;
+	if(!isdigit(buff[0]) && buff[0] != '-')	return false;
+	v.w = (FLOAT)_wtof(buff.c_str());
+
+	return true;
+}
+bool ParseVector3				(std::wifstream& in, vec3& v)				
+{
+	std::wstring buff;
+
+	in >> buff;
+	if(!isdigit(buff[0]) && buff[0] != '-')	return false;
+	v.x = (FLOAT)_wtof(buff.c_str());
+	in >> buff;
+	if(!isdigit(buff[0]) && buff[0] != '-')	return false;
+	v.y = (FLOAT)_wtof(buff.c_str());
+	in >> buff;
+	if(!isdigit(buff[0]) && buff[0] != '-')	return false;
+	v.z = (FLOAT)_wtof(buff.c_str());
+
+	return true;
+}
+bool ParseVector3				(std::wifstream& in, vec4& v)				
+{
+	std::wstring buff;
+
+	in >> buff;
+	if(!isdigit(buff[0]) && buff[0] != '-')	return false;
+	v.x = (FLOAT)_wtof(buff.c_str());
+	in >> buff;
+	if(!isdigit(buff[0]) && buff[0] != '-')	return false;
+	v.y = (FLOAT)_wtof(buff.c_str());
+	in >> buff;
+	if(!isdigit(buff[0]) && buff[0] != '-')	return false;
+	v.z = (FLOAT)_wtof(buff.c_str());
+
+	return true;
+}
+bool ParseVector2				(std::wifstream& in, vec2& v)				
+{
+	std::wstring buff;
+	in >> buff;
+	if(!isdigit(buff[0]) && buff[0] != '-')	return false;
+	v.x = (FLOAT)_wtof(buff.c_str());
+	in >> buff;
+	if(!isdigit(buff[0]) && buff[0] != '-')	return false;
+	v.y = (FLOAT)_wtof(buff.c_str());
+
+	return true;
+}
+bool ParseInteger					(std::wifstream& in, int& v)
+{
+	std::wstring buff;
+	in >> buff;
+
+	if(!isdigit(buff[0]) && buff[0] == '-')	return false;
+	v = _wtoi(buff.c_str());
+
+	return true;
+}
+bool ParseFloat					(std::wifstream& in, float& v)
+{
+	std::wstring buff;
+	in >> buff;
+
+	if(!isdigit(buff[0]) && buff[0] == '-')	return false;
+	v = (float)_wtof(buff.c_str());
+
+	return true;
+}
+std::wstring ParseLine			(std::wifstream& in, bool trash)		   
 {
 	wchar_t line[255];
 	in.getline(line, 255, '\n');
@@ -266,21 +428,21 @@ std::wstring ObjectImporter::ParseText(std::wifstream& in, bool trash)
 	if(!trash)
 	{
 		//Find junk stuff, we are only interested in "real" data
-		int a = 0;
+		int first = 0;
 		int tab = text.find_first_of('\t');
 		int comment = text.find_first_of(ObjImpFormat::comment);
 
-		if(tab > comment)
+		if(tab != -1)
 		{
-			//Comment
+			if(tab < comment || comment == -1)
+				text.erase(tab, text.back());
+			else
+				text.erase(comment, text.back());
+		}
+		else if(comment != -1)
 			text.erase(comment, text.back());
-		}
-		else if(comment > tab)
-		{
-			text.erase(tab, text.back());
-		}
+		
 
-		//Remove junk, aka spacing
 		int left = 0;
 		int right = (int)text.length()-1;
 		while(left < right && text[left] == ' ')
@@ -297,34 +459,49 @@ std::wstring ObjectImporter::ParseText(std::wifstream& in, bool trash)
 
 	return text;
 }
-void ObjectImporter::ParseVector4(std::wifstream& in, vec4& v)
-{
-	std::wstring buff;
-	in >> buff;
-	v.x = (FLOAT)_wtof(buff.c_str());
-	in >> buff;
-	v.y = (FLOAT)_wtof(buff.c_str());
-	in >> buff;
-	v.z = (FLOAT)_wtof(buff.c_str());
-	in >> buff;
-	v.w = (FLOAT)_wtof(buff.c_str());
-}
-int ObjectImporter::ParseMeshCount(std::wifstream& in, ImportedObjectData* rawData)
+
+
+/*
+void ParseFaces					(std::wifstream& in, RawVertecieData& rawVert, ImportedObjectData* rawData)	
 {
 	int count = 0;
 	in >> count;
 
-	if(count <= 0)
+	if(count > 0)
 	{
-#if defined(_DEBUG) || defined(DEBUG)
-		MessageBox(0, L"Failed to parse mesh count in function:\n[void ObjectImporter::ParseMeshCount(std::wifstream& in, int &count)]", L"Size error", 0);
-		return 0;
-#else
-		return 0;
-#endif
+		rawData->objects.push_back(LoadedObject());
+		int objIndex = (int)rawData->objects.size();
+		rawData->objects[objIndex].vertex.resize(rawVert.position.size());
+
+		std::wstring buff;
+		
+		//For all faces
+		for(int q = 0; q<count; q++)
+		{
+			//For each vertecie
+			for (int k = 0; k < 3; k++)
+			{
+				int iv = -1, ivt = -1, ivn = -1;
+
+				if(rawVert.position.size())
+					if(ParseInteger(in, iv))
+						rawData->objects[objIndex].vertex[iv].position = rawVert.position[iv];
+
+				if(rawVert.textCoord.size())
+				{
+					if(ParseInteger(in, ivt))
+						rawData->objects[objIndex].vertex[ivt].texcoord = rawVert.textCoord[ivt];
+
+					if(rawVert.normal.size())
+						if(ParseInteger(in, ivn))
+						rawData->objects[objIndex].vertex[ivn].normal = rawVert.normal[ivn];
+				}	
+				else
+					if(rawVert.normal.size())
+						if(ParseInteger(in, ivn))
+							rawData->objects[objIndex].vertex[ivn].normal = rawVert.normal[ivn];
+			}
+		}
 	}
-
-	rawData->MeshData.resize(count);
-
-	return true;
 }
+*/

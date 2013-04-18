@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "..\Util\vertex.h"
 #include "..\Util\Importer\ResourceImporter.h"
+#include "Mesh\MaterialHandler.h"
 
 
 
@@ -38,13 +39,13 @@ bool Application::Initialize(HINSTANCE hInst)
 	this->mainCamera.SetOrthogonalMatrix(D3DShell::self()->getWidth(), D3DShell::self()->getHeight(), 1, 1000);
 	this->mainCamera.SetPosition(0.0f, 0.0f, 0.0f);
 	this->mainCamera.SetRotation(0.0f, 0.0f, 0.0f);
-
+	
 	D3DXMATRIX world; 
 	D3DXMatrixIdentity(&world);
-
+	
 	g_plane = new Plane();
 	g_plane->Initialize(world, 2, 2, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
-
+	
 	this->mainCamera.GetViewFrustum();
 
 	return true;
@@ -129,15 +130,17 @@ bool Application::Render()
 	IShader::SHADER_PARAMETER_DATA gBufferDrawData;
 
 	cBufferMatrix* dataPtr = (cBufferMatrix*)(this->pMatrixBuffer->Map());
-	dataPtr->world = world;
-	D3DXMatrixLookAtLH(&dataPtr->view, &D3DXVECTOR3(0.0f, 0.0f, -5.0f), &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
-	D3DXMatrixOrthoLH(&dataPtr->projection, 800, 600, 1.0f, 100.0f);
+	{
+		dataPtr->world = world;
+		D3DXMatrixLookAtLH(&dataPtr->view, &D3DXVECTOR3(0.0f, 0.0f, -5.0f), &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
+		D3DXMatrixOrthoLH(&dataPtr->projection, 800, 600, 1.0f, 100.0f);
 
-	D3DXMatrixTranspose(&dataPtr->world, &dataPtr->world);
-	D3DXMatrixTranspose(&dataPtr->projection,& dataPtr->projection);
-	D3DXMatrixTranspose(&dataPtr->view,&dataPtr->view);
-	dataPtr->worldInvTranspose = world;
-	this->pMatrixBuffer->Unmap();
+		D3DXMatrixTranspose(&dataPtr->world, &dataPtr->world);
+		D3DXMatrixTranspose(&dataPtr->projection,& dataPtr->projection);
+		D3DXMatrixTranspose(&dataPtr->view,&dataPtr->view);
+		dataPtr->worldInvTranspose = world;
+		this->pMatrixBuffer->Unmap();
+	}
 	gBufferDrawData.cMatrixBuffer = this->pMatrixBuffer;
 	gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
 	
@@ -276,8 +279,12 @@ bool Application::LoadResources()
 {
 	//Load mesh objects
 	SmartPtrStd<ImportedObjectData> raw;
-	if(!ResourceImporter::Import(L"../Resources/Models/simplePlane.obj", raw))
+	if(!ResourceImporter::ImportObject(L"../Resources/Models/simplePlane.obj", raw))
 		return false;
+
+	
+	//MaterialHandler::GetMaterial(raw->objects[0].material);
+
 	return true;
 }
 

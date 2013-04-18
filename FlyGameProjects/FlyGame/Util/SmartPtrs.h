@@ -240,6 +240,8 @@ bool SmartPtrStd<T>::IsValid()
 		private:
 			PtrRefCount						*_rc;
 			T								*_ptr;
+			
+			void makeValid();
 
 		public:
 			SmartPtrCom						();
@@ -301,7 +303,15 @@ bool SmartPtrStd<T>::IsValid()
 			Destroy();
 		}
 	}
-
+		template<typename T>
+	void SmartPtrCom<T>::makeValid()
+	{
+		if(!this->_rc)
+		{
+			this->_rc = new PtrRefCount();
+			this->_rc->Add();
+		}
+	}
 
 	#pragma region OVERLOADING
 
@@ -336,21 +346,25 @@ bool SmartPtrStd<T>::IsValid()
 			template<typename T>
 		T& SmartPtrCom<T>::operator* ()
 		{
+			makeValid();
 			return *this->_ptr;
 		}
 			template<typename T>
 		T* SmartPtrCom<T>::operator-> ()
 		{
+			makeValid();
 			return this->_ptr;
 		}
 			template<typename T>
 		SmartPtrCom<T>::operator T** ()
 		{
+			makeValid();
 			return &this->_ptr;
 		}
 			template<typename T>
 		SmartPtrCom<T>::operator T* ()
 		{
+			makeValid();
 			return this->_ptr;
 		}
 

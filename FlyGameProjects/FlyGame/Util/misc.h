@@ -50,6 +50,15 @@ struct Point
 	}
 };
 
+static void DisplayText(std::wstring text, std::wstring message = L"Error")
+{
+	MessageBoxW(0, text.c_str(), message.c_str(), 0);
+}
+static void DisplayText(std::string text, std::string message = "Error")
+{
+	MessageBoxA(0, text.c_str(), message.c_str(), 0);
+}
+
 static std::vector<std::wstring> stringSplit(std::wstring& p_sstring, char p_cDel, bool ignoreEmpty = true) 
 {
 	std::vector<std::wstring> parts;

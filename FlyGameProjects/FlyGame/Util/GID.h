@@ -8,17 +8,27 @@ class GID
 {
 	private:
 		int id;	/**< A uniuqe application identity */
+		int usft()
+		{
+			static int ID = 0;
+			return ID++;
+		}
 
 	public:
 		/** Creates a uniuqe identity using static id counter */
 		GID() 
 		{ 
-			static int ID = 1; 
-			this->id = ID;
-			ID++;
+			this->id = usft();
 		}  
-		/** Returns the unique identity */
-		int get() const { return id; }
+		GID(const GID& o)
+		{
+			this->id = usft();
+		}
+		const GID& operator=(const GID& o)
+		{
+			this->id = usft();
+			return *this;
+		}
 		operator int() const
 		{
 			return this->id;
@@ -27,6 +37,10 @@ class GID
 		{
 			return this->id == object.id;
 		}
+
+
+		/** Returns the unique identity */
+		int get() const { return id; }
 };
 
 
