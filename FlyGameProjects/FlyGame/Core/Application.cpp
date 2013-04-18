@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "..\Util\vertex.h"
 #include "..\Util\Importer\ResourceImporter.h"
+#include "Mesh\MaterialHandler.h"
 
 
 
@@ -44,7 +45,7 @@ bool Application::Initialize(HINSTANCE hInst)
 
 	g_plane = new Plane();
 	g_plane->Initialize(world, 2, 2, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
-	
+
 	g_FinalPlane = new Plane();
 	g_FinalPlane->Initialize(world, 1, 1, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &g_colorShader);
 
@@ -140,9 +141,21 @@ bool Application::Render()
 	IShader::SHADER_PARAMETER_DATA gBufferDrawData;
 	gBufferDrawData = getWVPBuffer();
 
+	cBufferMatrix* dataPtr = (cBufferMatrix*)(this->pMatrixBuffer->Map());
+	{
+		dataPtr->world = world;
+		D3DXMatrixLookAtLH(&dataPtr->view, &D3DXVECTOR3(0.0f, 0.0f, -5.0f), &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
+		D3DXMatrixOrthoLH(&dataPtr->projection, 800, 600, 1.0f, 100.0f);
+
+		D3DXMatrixTranspose(&dataPtr->world, &dataPtr->world);
+		D3DXMatrixTranspose(&dataPtr->projection,& dataPtr->projection);
+		D3DXMatrixTranspose(&dataPtr->view,&dataPtr->view);
+		dataPtr->worldInvTranspose = world;
+		this->pMatrixBuffer->Unmap();
+	}
+	gBufferDrawData.cMatrixBuffer = this->pMatrixBuffer;
+	gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
 	
-	//draw g-buffers
-	//render plane
 	D3DShell::self()->BeginGBufferRenderTargets();
 	//g_plane->SetShader(&this->gBufferShader);
 	g_plane->Render(D3DShell::self()->getDeviceContext());
@@ -357,8 +370,12 @@ bool Application::LoadResources()
 {
 	//Load mesh objects
 	SmartPtrStd<ImportedObjectData> raw;
-	if(!ResourceImporter::Import(L"../Resources/Models/simplePlane.obj", raw))
+	if(!ResourceImporter::ImportObject(L"../Resources/Models/simplePlane.obj", raw))
 		return false;
+
+	
+	//MaterialHandler::GetMaterial(raw->objects[0].material);
+
 	return true;
 }
 

@@ -1,16 +1,20 @@
-n test					#Name of the model/model group
-c 1						#The number of frames in this file
-m basic					#material name
-a 0.5 0.5 0.5 1.0		#ambient
-d 1.0 1.0 1.0 1.0		#diffuse
-s 1.0 1.0 1.0 1.0		#specular
-sp 1					#specular power
-ta 						#texture for ambient
-td 						#texture for diffuse
-ts 						#texture for specular
-tg 						#texture for glow
-tn 						#texture for normal map
-fr 0 4					#Sequence for animation / Object number / Vertex count
+n test
+ac 1
+vc 4
+
+m basic			
+a 0.5 0.5 0.5 1.0
+d 1.0 1.0 1.0 1.0
+s 1.0 1.0 1.0 1.0
+sp 1
+ta
+td
+ts
+tg
+tn
+
+an 0 2
+fr 10 2.0
 v
 -50.000000 0.000000 50.000000
 50.000000 0.000000 50.000000
@@ -26,3 +30,24 @@ vn
 0.000000 1.000000 0.000000
 0.000000 1.000000 0.000000
 0.000000 1.000000 0.000000
+
+fr 20 1.321
+v
+-50.000000 0.000000 50.000000
+50.000000 0.000000 50.000000
+50.000000 0.000000 -50.000000
+-50.000000 0.000000 -50.000000
+vt
+0.000000 0.000000
+1.000000 0.000000
+1.000000 1.000000
+0.000000 1.000000
+vn
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+s 2
+0 0 0 1 1 1 2 2 2
+0 0 0 2 2 2 3 3 3 
+

@@ -1,27 +1,68 @@
 #ifndef OBJECT_MATERIAL_H
 #define OBJECT_MATERIAL_H
 
-#include "SmartPtrs.h"
-#include "misc.h"
 
+#include "..\..\Util\SmartPtrs.h"
+#include "..\..\Util\misc.h"
+#include "..\..\Util\GID.h"
+#include "..\Texture2D.h"
+#include "..\BaseBuffer.h"
+
+
+
+struct ObjectMaterialProxy
+{
+	vec4 ambient;
+	vec4 diffuse;
+	vec4 specular;
+	int specularPower;
+	ObjectMaterialProxy()
+		:ambient(0.0, 0.0, 0.0, 0.0), diffuse(0.0, 0.0, 0.0, 0.0), 
+		specular(0.0, 0.0, 0.0, 0.0), specularPower(0)
+	{}
+};
 
 class ObjectMaterial
 {
+	public:
+		struct OBJECT_MATERIAL_DESC
+		{
+			std::wstring		name;
+			vec4				ambient;
+			vec4				diffuse;
+			vec4				specular;
+			int					specualarPow;
+			std::wstring		ambientTexture;
+			std::wstring		diffuseTexture;
+			std::wstring		specularTexture;
+			std::wstring		glowTexture;
+			std::wstring		normalTexture;
+		};
+
 	private:
-		vec4 ambient;
-		vec4 diffuse;
-		vec4 specular;
+		std::wstring			_name;
+		GID						_id;
 
-		
+		SmartPtrStd<BaseBuffer> _buffer;
 
-		float specualrPow;
+		ObjectMaterialProxy		_data;
 
-
+		SmartPtrStd<Texture2D> _ambientTex;
+		SmartPtrStd<Texture2D> _diffuseTex;
+		SmartPtrStd<Texture2D> _specularTex;
+		SmartPtrStd<Texture2D> _glowTex;
+		SmartPtrStd<Texture2D> _normalTex;
 
 	public:
 		ObjectMaterial();
 		virtual~ObjectMaterial();
 
+		/** Creates a material from given description */
+		bool CreateMaterial(OBJECT_MATERIAL_DESC& desc);
+
+		ObjectMaterialProxy* GetProxy();
+		std::wstring GetName() const;
+		int GetID() const;
 };
 
 
