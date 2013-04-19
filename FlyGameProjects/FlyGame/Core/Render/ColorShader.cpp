@@ -14,22 +14,37 @@ void ColorShader::draw(SHADER_PARAMETER_DATA& wMatrixData)
 
 	this->shader->Render();
 	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_NoCullNoMs);
+	
+	//------------------Light
+	/*float blend[4] = {1,1,1,1};
+
+	D3DShell::self()->setBlendModeState(FLAGS::BLEND_MODE_AlphaBlend);
+
+
+
+	D3DShell::self()->setBlendModeState(FLAGS::BLEND_MODE_DisabledBlend);
+	*///-------------------
+	
 	int count = (int)this->drawData.size();
 	for( int i = 0; i< count;i++)
 	{
-		cBufferMatrix* cb = (cBufferMatrix*)wMatrixData.cMatrixBuffer->Map();
-		if(cb)
+		if(this->drawData[i].worldMatrix) //if the object have a world matrix
 		{
-			cb->world = *this->drawData[i].worldMatrix; // add the world matrix of the object
-			D3DXMatrixLookAtLH(&cb->view, &D3DXVECTOR3(0.0f, 0.0f, -5.0f), &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
-			D3DXMatrixOrthoLH(&cb->projection, 800, 600, 0.1f, 100.0f);
-			cb->worldInvTranspose = cb->world;
 
-			D3DXMatrixTranspose(&cb->world, &cb->world);
-			D3DXMatrixTranspose(&cb->view,&cb->view);
-			D3DXMatrixTranspose(&cb->projection,&cb->projection);
+			cBufferMatrix* cb = (cBufferMatrix*)wMatrixData.cMatrixBuffer->Map();
+			if(cb)
+			{
+				cb->world = *this->drawData[i].worldMatrix; // add the world matrix of the object
+				D3DXMatrixLookAtLH(&cb->view, &D3DXVECTOR3(0.0f, 0.0f, -5.0f), &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
+				D3DXMatrixOrthoLH(&cb->projection, 800, 600, 0.1f, 100.0f);
+				cb->worldInvTranspose = cb->world;
 
-			wMatrixData.cMatrixBuffer->Unmap();
+				D3DXMatrixTranspose(&cb->world, &cb->world);
+				D3DXMatrixTranspose(&cb->view,&cb->view);
+				D3DXMatrixTranspose(&cb->projection,&cb->projection);
+
+				wMatrixData.cMatrixBuffer->Unmap();
+			}
 		}
 
 		wMatrixData.cMatrixBuffer->setBuffer();

@@ -1,22 +1,19 @@
-#ifndef COLORSHADER_H
-#define COLORSHADER_H
+#ifndef LIGHTSHADER_H
+#define LIGHTSHADER_H
 
 #include "..\IShader.h"
 #include "..\D3DShell.h"
 #include "..\..\Util\misc.h"
-#include "..\Light\LightHolder.h"
 
-class ColorShader : public IShader
+class LightShader : public IShader
 {
 public:
-	ColorShader();
+	LightShader();
 
 	void draw(SHADER_PARAMETER_DATA& drawData);
 	void setSRVBuffer();
 
 private:
-
-	
 
 };
 #endif

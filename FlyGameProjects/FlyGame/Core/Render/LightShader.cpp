@@ -1,17 +1,17 @@
-#include "GBufferShader.h"
+#include "LightShader.h"
 
-GBufferShader::GBufferShader()
+LightShader::LightShader()
 {
-	
 
-	
+
 }
 
-void GBufferShader::draw(SHADER_PARAMETER_DATA& wMatrixData)
-{	
-
+void LightShader::draw(SHADER_PARAMETER_DATA& wMatrixData)
+{
 	int indexC = 0;
-	
+
+	this->setSRVBuffer();
+
 	this->shader->Render();
 	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_NoCullNoMs);
 	int count = (int)this->drawData.size();
@@ -22,8 +22,9 @@ void GBufferShader::draw(SHADER_PARAMETER_DATA& wMatrixData)
 		{
 			cb->world = *this->drawData[i].worldMatrix; // add the world matrix of the object
 			D3DXMatrixLookAtLH(&cb->view, &D3DXVECTOR3(0.0f, 0.0f, -5.0f), &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
-			D3DXMatrixPerspectiveFovLH(&cb->projection,(float)D3DX_PI * 0.45f, 800/600, 0.1f, 100.0f);
+			D3DXMatrixOrthoLH(&cb->projection, 800, 600, 0.1f, 100.0f);
 			cb->worldInvTranspose = cb->world;
+
 			D3DXMatrixTranspose(&cb->world, &cb->world);
 			D3DXMatrixTranspose(&cb->view,&cb->view);
 			D3DXMatrixTranspose(&cb->projection,&cb->projection);
@@ -31,10 +32,8 @@ void GBufferShader::draw(SHADER_PARAMETER_DATA& wMatrixData)
 			wMatrixData.cMatrixBuffer->Unmap();
 		}
 
-		wMatrixData.cMatrixBuffer->setBuffer(); // set wvp matrix
-		
-
-		for(int k = 0; k <(int)this->drawData[i].buffers.size(); k++)	// set vertex and index buffers
+		wMatrixData.cMatrixBuffer->setBuffer();
+		for(int k = 0; k <(int)this->drawData[i].buffers.size(); k++)
 		{
 			this->drawData[i].buffers[k]->setBuffer();
 
@@ -42,18 +41,17 @@ void GBufferShader::draw(SHADER_PARAMETER_DATA& wMatrixData)
 				indexC = this->drawData[i].buffers[k]->getNrOfElements();
 		}
 
-		if(this->drawData[i].textures ) //if there is any textures
-		{
-			ID3D11ShaderResourceView* srv[3];
-			int nr = this->drawData[i].textures->size();
-			for(int k= 0; k<(int)this->drawData[i].textures->size(); k++)
-			{
-				srv[k] = this->drawData[i].textures->at(i).getSRV();
-			}
-			D3DShell::self()->getDeviceContext()->PSSetShaderResources(0,nr, srv);
-		}
 		this->shader->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		this->shader->GetDeviceContext()->DrawIndexed(indexC, 0, 0);
 	}
 	this->clearData();
 }
+void LightShader::setSRVBuffer()
+{
+	// gets the srv with the normal, depth and specular data
+	int nr = D3DShell::self()->getNrOfSRV();
+	ID3D11ShaderResourceView** srv; 
+	srv = D3DShell::self()->getDefferedSRV();
+	D3DShell::self()->getDeviceContext()->PSSetShaderResources(0,nr, srv);
+}
+

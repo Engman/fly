@@ -18,7 +18,7 @@ class Texture2D
 		Texture2D& operator=(const Texture2D& obj);
 		virtual~Texture2D();
 
-		ID3D11ShaderResourceView* const* getSRV();
+		ID3D11ShaderResourceView* getSRV();
 		bool loadTexture(ID3D11Device *device, WCHAR* filename);
 		bool loadTexture(ID3D11Device *device, ID3D11DeviceContext* dc, std::vector<WCHAR*>& filename);
 

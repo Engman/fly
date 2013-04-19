@@ -53,9 +53,9 @@ namespace VERTEX
 	{
 		D3DXVECTOR4 position;
 		D3DXVECTOR2 texcoord;
-		VertexPT()
+	/*	VertexPT()
 			:position(0.0f, 0.0f, 0.0f, 1.0f), texcoord(0.0f, 0.0f)
-		{}
+		{}*/
 
 	};
 	static D3D11_INPUT_ELEMENT_DESC VertexPT_InputElementDesc[] = 
@@ -96,9 +96,9 @@ namespace VERTEX
 		D3DXVECTOR4 position;
 		D3DXVECTOR4 normal;
 		D3DXVECTOR2 texcoord;
-		VertexPNT()
-			:position(0.0f, 0.0f, 0.0f, 1.0f), normal(0.0f, 0.0f, 0.0f, 1.0f), texcoord(0.0f, 0.0f)
-		{}
+		/*VertexPNT()
+		:position(0.0f, 0.0f, 0.0f, 1.0f), normal(0.0f, 0.0f, 0.0f, 1.0f), texcoord(0.0f, 0.0f)
+		{}*/
 	};
 	static D3D11_INPUT_ELEMENT_DESC VertexPNT_InputElementDesc[] = 
 	{

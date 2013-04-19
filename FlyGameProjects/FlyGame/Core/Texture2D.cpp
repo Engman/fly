@@ -67,6 +67,7 @@ Texture2D::Texture2D()
 
 Texture2D::Texture2D(const Texture2D& obj)
 {
+	this->_data = new _Data();
 	this->_data->texture = obj._data->texture;
 	this->_data->texture->userCount++;
 }
@@ -88,12 +89,12 @@ Texture2D::~Texture2D()
 	delete this->_data;
 }
 
-ID3D11ShaderResourceView* const* Texture2D::getSRV()
+ID3D11ShaderResourceView* Texture2D::getSRV()
 {
 	if(!this->_data->texture)
 		return NULL;
 
-	return &this->_data->texture->texture;
+	return this->_data->texture->texture;
 }
 
 
@@ -149,8 +150,11 @@ bool Texture2D::loadTexture(ID3D11Device *device, WCHAR* file)
 
 
 		newTex->userCount++;
+		newTex->filename.push_back(file);
+		
 		this->_data->resources.push_back(newTex);
 		this->_data->texture = newTex;
+		
 
 	}
 	return true;
@@ -240,6 +244,7 @@ bool Texture2D::loadTexture(ID3D11Device *device, ID3D11DeviceContext* dc, std::
 	desc.Texture2DArray.MostDetailedMip = 0;
 	desc.Texture2DArray.FirstArraySlice = 0;
 	desc.Texture2DArray.ArraySize		= (UINT)tex.size();
+	
 
 	if(FAILED(device->CreateShaderResourceView( textureArray, &desc, &newTex->texture ) ) )
 		return false;

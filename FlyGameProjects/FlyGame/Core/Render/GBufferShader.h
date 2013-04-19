@@ -13,6 +13,7 @@ class GBufferShader : public IShader
 
 	private:
 		
+		
 };
 
 #endif

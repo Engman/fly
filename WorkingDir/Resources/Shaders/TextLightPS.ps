@@ -1,0 +1,32 @@
+Texture2D colorSRV : register(t0);
+Texture2D LightSRV : register(t1);
+
+SamplerState SampleTypeClamp : register(s0);
+//SamplerState SampleTypeWrap : register(s1);
+
+
+//-----------------------------------------------------------------------------------------
+// Input and Output Structures
+//-----------------------------------------------------------------------------------------
+
+struct PSIn
+{
+	float4 Pos		: SV_Position;
+	float2 TextCoord  : TEXCOORD; 
+};
+
+//-----------------------------------------------------------------------------------------
+// PixelShader: PSSceneMain
+//-----------------------------------------------------------------------------------------
+float4 FPixelShader(PSIn input) :  SV_Target
+{	
+  float2 textCoord;
+  //textCoord = float2(0.5f*input.Pos.x, -0.5f*input.Pos.y) + 0.5f;
+	float4 color = colorSRV.Sample( SampleTypeClamp, input.TextCoord); //textCoord );
+	return color;
+  
+  float4 lighting = LightSRV.Sample( SampleTypeClamp, input.TextCoord);
+ 
+  float4 finalColor = float4(color.xyz * lighting.xyz + lighting.w, 1);
+  return finalColor;
+}

@@ -742,8 +742,6 @@ void D3DShell::endScene()
 		// Present as fast as possible.
 		this->_prDatPtr->swapChain->Present(0, 0);
 	}
-	ID3D11ShaderResourceView *const pSRV[5] = {NULL, NULL, NULL, NULL, NULL};
-	getDeviceContext()->PSSetShaderResources(0, 5, pSRV);
 }
 
 
@@ -850,4 +848,30 @@ ID3D11ShaderResourceView**	D3DShell::getDefferedSRV()
 int D3DShell::getNrOfSRV()
 {
 	return DeferredRenderLayout::MRT_COUNT;
+}
+void D3DShell::releaseSRV()
+{
+	ID3D11ShaderResourceView *const pSRV[5] = {NULL, NULL, NULL, NULL, NULL};
+	getDeviceContext()->PSSetShaderResources(0, 5, pSRV);
+}
+
+//--------------------Light shader---------------------//
+void D3DShell::BeginLightRenderTarget()
+{
+
+	//float clearColor[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+
+	//for(int i = 0; i < DeferredRenderLayout::MRT_COUNT; i++)
+	//{
+	//	this->getDeviceContext()->ClearRenderTargetView(this->_prDatPtr->deffRTV[i], clearColor);
+	//}
+	//this->getDeviceContext()->ClearDepthStencilView(this->_prDatPtr->deffDepthStencil[0], D3D11_CLEAR_DEPTH, 1.0, 0);
+
+	//this->getDeviceContext()->OMSetRenderTargets(DeferredRenderLayout::MRT_COUNT, this->_prDatPtr->deffRTV, this->_prDatPtr->deffDepthStencil[0]);
+
+}
+
+ID3D11ShaderResourceView** D3DShell::getLightSRV()
+{
+	return NULL;
 }

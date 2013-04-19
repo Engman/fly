@@ -1,0 +1,39 @@
+Texture2D objTexture[3] : register(t0);		//albedo RGBA, normalRGB_depthA, specular
+SamplerState SampleTypeClamp : register(s0);
+
+#include "LightHelp.fx"
+
+DirLight dirLight;
+Material mat;
+
+struct PS_IN
+{
+  float4 position : SV_POSITION;
+  float3 normal : NORMAL;
+  //float4 tangent :TANGENT;
+  float2 textCoord : TEXCOORD;
+};
+
+struct PS_OUT
+{
+  float4 ColorRGBA : SV_TARGET0;
+  float4 NormalRGB_DepthA : SV_TARGET1;
+};
+
+PS_OUT FPixelShader( PS_IN input ) 
+{
+  PS_OUT output= ( PS_OUT )0;
+
+  output.ColorRGBA  = objTexture[0].Sample(SampleTypeClamp, input.textCoord);
+  
+  float4 bumpNormal;
+  bumpNormal = objTexture[1].Sample(SampleTypeClamp, input.textCoord)* 2.0f -1;
+  
+  float3 normal = input.normal * 0.5 + 0.5;
+  
+  normal += bumpNormal.xyz;
+  
+  output.NormalRGB_DepthA = float4( normal, input.position.w);
+  
+  return output;
+}

@@ -2,72 +2,69 @@
 
 Cube::Cube()
 {
-	//m_VertexBuffer = NULL;
 }
 Cube::~Cube()
 {
-	//DELETE_PTR(m_VertexBuffer);
-	//SAFE_DELETE(g_VertexBuffer);
 }
 void Cube::Initialize(D3DXMATRIX world,  float height, float width, ID3D11Device* g_Device, ID3D11DeviceContext* g_DeviceContext, IShader* shader )
 {	
-	VERTEX::VertexPNC3 mesh[] =
+	VERTEX::VertexPNT mesh[] =
 	{
-		{D3DXVECTOR4(-1, 1,-1	,1)	,D3DXVECTOR3(0,0,-1), D3DXVECTOR4(0 ,1, 0 , 0)},
-		{D3DXVECTOR4(1,1,-1		,1)	,D3DXVECTOR3(0,0,-1), D3DXVECTOR4(0 ,1, 0 , 0)},
-		{D3DXVECTOR4(-1,-1,-1	,1)	,D3DXVECTOR3(0,0,-1), D3DXVECTOR4(0 ,1, 0 , 0)},
+		{D3DXVECTOR4(-1, 1,-1	,1)	,D3DXVECTOR4(0,0,-1, 0), D3DXVECTOR2(0 ,0)},
+		{D3DXVECTOR4(1,1,-1		,1)	,D3DXVECTOR4(0,0,-1, 0), D3DXVECTOR2(1 ,0)},
+		{D3DXVECTOR4(-1,-1,-1	,1)	,D3DXVECTOR4(0,0,-1, 0), D3DXVECTOR2(0 ,1)},
+									
+		{D3DXVECTOR4(-1, -1,-1	,1)	,D3DXVECTOR4(0,0,-1, 0), D3DXVECTOR2(0, 1)},
+		{D3DXVECTOR4(1,1,-1		,1)	,D3DXVECTOR4(0,0,-1, 0), D3DXVECTOR2(1, 0)},
+		{D3DXVECTOR4(1,-1, -1	,1)	,D3DXVECTOR4(0,0,-1, 0), D3DXVECTOR2(1, 1)},
 
-		{D3DXVECTOR4(-1, -1,-1	,1)	,D3DXVECTOR3(0,0,-1), D3DXVECTOR4(0, 1, 0 , 0)},
-		{D3DXVECTOR4(1,1,-1		,1)	,D3DXVECTOR3(0,0,-1), D3DXVECTOR4(0, 1, 0 , 0)},
-		{D3DXVECTOR4(1,-1, -1	,1)	,D3DXVECTOR3(0,0,-1), D3DXVECTOR4(0, 1, 0 , 0)},
 
+		{D3DXVECTOR4(1, 1, -1	,1)	,D3DXVECTOR4(1,0,0,0), D3DXVECTOR2(0, 0)},
+		{D3DXVECTOR4(1,1,1		,1)	,D3DXVECTOR4(1,0,0,0), D3DXVECTOR2(1,0)},
+		{D3DXVECTOR4(1,-1,-1	,1)	,D3DXVECTOR4(1,0,0,0), D3DXVECTOR2(0, 1)},
+																	 
+		{D3DXVECTOR4(1,-1, -1	,1)	,D3DXVECTOR4(1,0,0,0), D3DXVECTOR2(0, 1)},
+		{D3DXVECTOR4(1,1,1		,1)	,D3DXVECTOR4(1,0,0,0), D3DXVECTOR2(1, 0)},
+		{D3DXVECTOR4(1,-1, 1	,1)	,D3DXVECTOR4(1,0,0,0), D3DXVECTOR2(1, 1)},
 
-		{D3DXVECTOR4(1, 1, -1	,1)	,D3DXVECTOR3(1,0,0), D3DXVECTOR4(1,0 , 0 , 0)},
-		{D3DXVECTOR4(1,1,1		,1)	,D3DXVECTOR3(1,0,0), D3DXVECTOR4(1,0 , 0 , 0)},
-		{D3DXVECTOR4(1,-1,-1	,1)	,D3DXVECTOR3(1,0,0), D3DXVECTOR4(1,0 , 0 , 0)},
+		{D3DXVECTOR4(1, 1, 1	,1)	,D3DXVECTOR4(0,0,1,0), D3DXVECTOR2(0,0 )},
+		{D3DXVECTOR4(-1,1,1		,1)	,D3DXVECTOR4(0,0,1,0), D3DXVECTOR2( 1 , 0)},
+		{D3DXVECTOR4(1,-1,1		,1)	,D3DXVECTOR4(0,0,1,0), D3DXVECTOR2(0 , 1)},
+																	 
+		{D3DXVECTOR4(1,-1, 1	,1)	,D3DXVECTOR4(0,0,1,0), D3DXVECTOR2(0 , 1)},
+		{D3DXVECTOR4(-1,1,1		,1)	,D3DXVECTOR4(0,0,1,0), D3DXVECTOR2( 1 , 0)},
+		{D3DXVECTOR4(-1,-1, 1	,1)	,D3DXVECTOR4(0,0,1,0), D3DXVECTOR2( 1 , 1)},
 
-		{D3DXVECTOR4(1,-1, -1	,1)	,D3DXVECTOR3(1,0,0), D3DXVECTOR4(1,0 , 0 , 0)},
-		{D3DXVECTOR4(1,1,1		,1)	,D3DXVECTOR3(1,0,0), D3DXVECTOR4(1,0 , 0 , 0)},
-		{D3DXVECTOR4(1,-1, 1	,1)	,D3DXVECTOR3(1,0,0), D3DXVECTOR4(1,0 , 0 , 0)},
+		{D3DXVECTOR4(-1, 1, 1	,1)	,D3DXVECTOR4(-1,0,0,0), D3DXVECTOR2(0 , 0)},
+		{D3DXVECTOR4(-1,1,-1	,1)	,D3DXVECTOR4(-1,0,0,0), D3DXVECTOR2(1, 0)},
+		{D3DXVECTOR4(-1,-1,1	,1)	,D3DXVECTOR4(-1,0,0,0), D3DXVECTOR2(0,1)},
+																	  
+		{D3DXVECTOR4(-1,-1, 1	,1)	,D3DXVECTOR4(-1,0,0,0), D3DXVECTOR2(0, 1)},
+		{D3DXVECTOR4(-1,1,-1	,1)	,D3DXVECTOR4(-1,0,0,0), D3DXVECTOR2( 1, 0)},
+		{D3DXVECTOR4(-1,-1, -1	,1)	,D3DXVECTOR4(-1,0,0,0), D3DXVECTOR2(1,1)},
 
-		{D3DXVECTOR4(1, 1, 1	,1)	,D3DXVECTOR3(0,0,1), D3DXVECTOR4(0,0 , 1 , 0)},
-		{D3DXVECTOR4(-1,1,1		,1)	,D3DXVECTOR3(0,0,1), D3DXVECTOR4(0,0 , 1 , 0)},
-		{D3DXVECTOR4(1,-1,1		,1)	,D3DXVECTOR3(0,0,1), D3DXVECTOR4(0,0 , 1 , 0)},
-												
-		{D3DXVECTOR4(1,-1, 1	,1)	,D3DXVECTOR3(0,0,1), D3DXVECTOR4(0,0 , 1 , 0)},
-		{D3DXVECTOR4(-1,1,1		,1)	,D3DXVECTOR3(0,0,1), D3DXVECTOR4(0,0 , 1 , 0)},
-		{D3DXVECTOR4(-1,-1, 1	,1)	,D3DXVECTOR3(0,0,1), D3DXVECTOR4(0,0 , 1 , 0)},
+		{D3DXVECTOR4(-1, 1, 1	,1)	,D3DXVECTOR4(0,1,0,0), D3DXVECTOR2( 0 , 0)},
+		{D3DXVECTOR4(1,1,1		,1)	,D3DXVECTOR4(0,1,0,0), D3DXVECTOR2(1, 0)},
+		{D3DXVECTOR4(-1,1,-1	,1)	,D3DXVECTOR4(0,1,0,0), D3DXVECTOR2( 0,1)},
+																	 
+		{D3DXVECTOR4(-1,1, -1	,1)	,D3DXVECTOR4(0,1,0,0), D3DXVECTOR2( 0,1)},
+		{D3DXVECTOR4(1,1,1		,1)	,D3DXVECTOR4(0,1,0,0), D3DXVECTOR2(1, 0)},
+		{D3DXVECTOR4(1,1, -1	,1)	,D3DXVECTOR4(0,1,0,0), D3DXVECTOR2(1, 1)},
 
-		{D3DXVECTOR4(-1, 1, 1	,1)	,D3DXVECTOR3(-1,0,0), D3DXVECTOR4(0.5,0 , 0.5 , 0)},
-		{D3DXVECTOR4(-1,1,-1	,1)	,D3DXVECTOR3(-1,0,0), D3DXVECTOR4(0.5,0 , 0.5 , 0)},
-		{D3DXVECTOR4(-1,-1,1	,1)	,D3DXVECTOR3(-1,0,0), D3DXVECTOR4(0.5,0 , 0.5 , 0)},
-
-		{D3DXVECTOR4(-1,-1, 1	,1)	,D3DXVECTOR3(-1,0,0), D3DXVECTOR4(0.5,0 , 0.5 , 0)},
-		{D3DXVECTOR4(-1,1,-1	,1)	,D3DXVECTOR3(-1,0,0), D3DXVECTOR4(0.5,0 , 0.5 , 0)},
-		{D3DXVECTOR4(-1,-1, -1	,1)	,D3DXVECTOR3(-1,0,0), D3DXVECTOR4(0.5,0 , 0.5 , 0)},
-
-		{D3DXVECTOR4(-1, 1, 1	,1)	,D3DXVECTOR3(0,1,0), D3DXVECTOR4(0.5,0.5 , 0 , 0)},
-		{D3DXVECTOR4(1,1,1		,1)	,D3DXVECTOR3(0,1,0), D3DXVECTOR4(0.5,0.5 , 0 , 0)},
-		{D3DXVECTOR4(-1,1,-1	,1)	,D3DXVECTOR3(0,1,0), D3DXVECTOR4(0.5,0.5 , 0 , 0)},
-																
-		{D3DXVECTOR4(-1,1, -1	,1)	,D3DXVECTOR3(0,1,0), D3DXVECTOR4(0.5,0.5 , 0 , 0)},
-		{D3DXVECTOR4(1,1,1		,1)	,D3DXVECTOR3(0,1,0), D3DXVECTOR4(0.5,0.5 , 0 , 0)},
-		{D3DXVECTOR4(1,1, -1	,1)	,D3DXVECTOR3(0,1,0), D3DXVECTOR4(0.5,0.5 , 0 , 0)},
-
-		{D3DXVECTOR4(-1, -1, -1	,1)	,D3DXVECTOR3(0,-1,0), D3DXVECTOR4(0,0.5 , 0.5 , 0)},
-		{D3DXVECTOR4(1,-1,-1	,1)	,D3DXVECTOR3(0,-1,0), D3DXVECTOR4(0,0.5 , 0.5 , 0)},
-		{D3DXVECTOR4(-1,-1,1	,1)	,D3DXVECTOR3(0,-1,0), D3DXVECTOR4(0,0.5 , 0.5 , 0)},
-
-		{D3DXVECTOR4(-1,-1, 1	,1)	,D3DXVECTOR3(0,-1,0), D3DXVECTOR4(0,0.5 , 0.5 , 0)},
-		{D3DXVECTOR4(1,-1,-1	,1)	,D3DXVECTOR3(0,-1,0), D3DXVECTOR4(0,0.5 , 0.5 , 0)},
-		{D3DXVECTOR4(1,-1, 1	,1)	,D3DXVECTOR3(0,-1,0), D3DXVECTOR4(0,0.5 , 0.5 , 0)}
+		{D3DXVECTOR4(-1, -1, -1	,1)	,D3DXVECTOR4(0,-1,0,0), D3DXVECTOR2(0, 0)},
+		{D3DXVECTOR4(1,-1,-1	,1)	,D3DXVECTOR4(0,-1,0,0), D3DXVECTOR2(1, 0)},
+		{D3DXVECTOR4(-1,-1,1	,1)	,D3DXVECTOR4(0,-1,0,0), D3DXVECTOR2(0,1)},
+																	  
+		{D3DXVECTOR4(-1,-1, 1	,1)	,D3DXVECTOR4(0,-1,0,0), D3DXVECTOR2(0,1)},
+		{D3DXVECTOR4(1,-1,-1	,1)	,D3DXVECTOR4(0,-1,0,0), D3DXVECTOR2(1, 0)},
+		{D3DXVECTOR4(1,-1, 1	,1)	,D3DXVECTOR4(0,-1,0,0), D3DXVECTOR2(1, 1)}
 	};
 
 
 	BaseBuffer::BUFFER_INIT_DESC bufferDesc;
 	bufferDesc.dc = D3DShell::self()->getDeviceContext();
 	bufferDesc.device = D3DShell::self()->getDevice();
-	bufferDesc.elementSize = sizeof(VERTEX::VertexPNC3);
+	bufferDesc.elementSize = sizeof(VERTEX::VertexPNT);
 	bufferDesc.data = mesh;
 	bufferDesc.nrOfElements = 36;
 	bufferDesc.type = BUFFER_FLAG::TYPE_VERTEX_BUFFER;
@@ -98,6 +95,12 @@ void Cube::Initialize(D3DXMATRIX world,  float height, float width, ID3D11Device
 	D3DXMatrixIdentity(&m_scale);
 	m_tranlate = world;
 	m_shader = shader;
+
+	std::vector<WCHAR*> text;
+	text.push_back(L"..\\Resources\\Textures\\Baron_Nashor.png");
+	text.push_back(L"..\\Resources\\Textures\\Baron_NashorBump.png");
+	text.push_back(L"..\\Resources\\Textures\\Baron_NashorSpec.png");
+	addTextures(text);
 }
 
 
@@ -125,6 +128,7 @@ void Cube::Render( ID3D11DeviceContext* g_DeviceContext)
 	IShader::DRAW_DATA draw_data;
 	draw_data.buffers.push_back(m_VertexBuffer);
 	draw_data.buffers.push_back(m_IndexBuffer);
+	draw_data.textures = &m_texture;
 	draw_data.worldMatrix = &m_world;
 	m_shader->addDrawData(draw_data);
 }
@@ -144,3 +148,15 @@ D3DXVECTOR3 Cube::getNormal(D3DXVECTOR3 p0, D3DXVECTOR3 p1, D3DXVECTOR3 p2)
 
 	return n;
 } 
+
+void Cube::addTextures(std::vector<WCHAR*> textNames)
+{
+	SmartPtrArr<Texture2D>  text;
+	text = new Texture2D[textNames.size()];
+
+	for(int i=0; i< (int)textNames.size(); i++)
+	{	
+		text[i].loadTexture(D3DShell::self()->getDevice(), textNames[i]);
+		m_texture.push_back(text[i]);
+	}
+}

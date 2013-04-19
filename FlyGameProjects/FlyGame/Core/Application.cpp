@@ -24,6 +24,7 @@ Application::~Application()
 
 bool Application::Initialize(HINSTANCE hInst)
 {
+	ID3D11Device* dev = D3DShell::self()->getDevice();
 	Point2D size(800, 600);
 	if(!InitWindow(hInst, size))	return false;
 	if(!InitD3D(size))				return false;
@@ -39,18 +40,9 @@ bool Application::Initialize(HINSTANCE hInst)
 	this->mainCamera.SetPosition(0.0f, 0.0f, 0.0f);
 	this->mainCamera.SetRotation(0.0f, 0.0f, 0.0f);
 
-	D3DXMATRIX world; 
-	D3DXMatrixIdentity(&world);
 
-	g_plane = new Plane();
-	g_plane->Initialize(world, 2, 2, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
-	
-	g_FinalPlane = new Plane();
-	g_FinalPlane->Initialize(world, 1, 1, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &g_colorShader);
+	initTestData();
 
-	g_cube = new Cube();
-	D3DXMatrixTranslation(&world, 2,2,0);
-	g_cube->Initialize(world, 2, 2, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
 
 	this->mainCamera.GetViewFrustum();
 
@@ -134,58 +126,7 @@ void Application::Update()
 }
 bool Application::Render()
 {
-	D3DXMATRIX world;
-	D3DXMatrixIdentity(&world);
-	
-	IShader::SHADER_PARAMETER_DATA gBufferDrawData;
-	gBufferDrawData = getWVPBuffer();
-
-	
-	//draw g-buffers
-	//render plane
-	D3DShell::self()->BeginGBufferRenderTargets();
-	//g_plane->SetShader(&this->gBufferShader);
-	g_plane->Render(D3DShell::self()->getDeviceContext());
-	this->gBufferShader.draw(gBufferDrawData);
-
-	//reset the world matrix
-	cBufferMatrix* cb = (cBufferMatrix*)gBufferDrawData.cMatrixBuffer->Map();
-	cb->world = world; // add the world matrix of the object
-	D3DXMatrixLookAtLH(&cb->view, &D3DXVECTOR3(0.0f, 0.0f, -5.0f), &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
-	D3DXMatrixPerspectiveFovLH(&cb->projection,(float)D3DX_PI * 0.45f, 800/600, 0.1f, 100.0f);
-	cb->worldInvTranspose = world;
-	D3DXMatrixTranspose(&cb->world, &cb->world);
-	D3DXMatrixTranspose(&cb->view,&cb->view);
-	D3DXMatrixTranspose(&cb->projection,&cb->projection);
-	gBufferDrawData.cMatrixBuffer->Unmap();
-
-	
-	//render cube
-	g_cube->Render(D3DShell::self()->getDeviceContext());
-	this->gBufferShader.draw(gBufferDrawData);
-
-	//reset the world matrix
-	cb = (cBufferMatrix*)gBufferDrawData.cMatrixBuffer->Map();
-	cb->world = world; // add the world matrix of the object
-	D3DXMatrixLookAtLH(&cb->view, &D3DXVECTOR3(0.0f, 0.0f, -5.0f), &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
-	D3DXMatrixPerspectiveFovLH(&cb->projection,(float)D3DX_PI * 0.45f, 800/600, 0.1f,  100.0f);
-	cb->worldInvTranspose = world;
-	D3DXMatrixTranspose(&cb->world, &cb->world);
-	D3DXMatrixTranspose(&cb->view,&cb->view);
-	D3DXMatrixTranspose(&cb->projection,&cb->projection);
-	gBufferDrawData.cMatrixBuffer->Unmap();
-
-	//second render stage
-	//sampling from g-buffers
-	 D3DShell::self()->setRenderTarget();
-	 D3DShell::self()->beginScene();
-	 FLAGS::STATE_SAMPLING samp[1] =  { FLAGS::SAMPLER_Linear };
-	 D3DShell::self()->setSamplerState(samp, FLAGS::PS, 0,1);
-	 //this->g_plane->SetShader(&g_colorShader);
-	 this->g_FinalPlane->Render(D3DShell::self()->getDeviceContext());
-	 this->g_colorShader.draw(gBufferDrawData);
-
-	 D3DShell::self()->endScene();
+	DeferedRendering();
 
 	return true;
 }
@@ -254,12 +195,12 @@ bool Application::InitGBuffers()
 
 	gBufferDesc.dc = D3DShell::self()->getDeviceContext();
 	gBufferDesc.device = D3DShell::self()->getDevice();
-	gBufferDesc.VSFilename = L"../Resources/Shaders/deferredShaderVS.vs";
-	gBufferDesc.PSFilename = L"../Resources/Shaders/deferredShaderPS.ps";
+	gBufferDesc.VSFilename = L"../Resources/Shaders/deferredShaderTextVS.vs";
+	gBufferDesc.PSFilename = L"../Resources/Shaders/deferredShaderTextPS.ps";
 	//gBufferDesc.VSFilename = L"../Resources/Shaders/colorVS.vs";
 	//gBufferDesc.PSFilename = L"../Resources/Shaders/colorPS.ps";
 	gBufferDesc.shaderVersion = D3DShell::self()->getSuportedShaderVersion();
-	gBufferDesc.polygonLayout = VERTEX::VertexPNC3_InputElementDesc;
+	gBufferDesc.polygonLayout = VERTEX::VertexPNT_InputElementDesc;
 	gBufferDesc.nrOfElements = 3;
 
 	if(!this->gBufferShader.init(gBufferDesc))	
@@ -267,21 +208,38 @@ bool Application::InitGBuffers()
 
 	return true;
 }
+bool Application::InitLightShader()
+{
+	BaseShader::BASE_SHADER_DESC lightShaderDesc;
+
+	lightShaderDesc.dc = D3DShell::self()->getDeviceContext();
+	lightShaderDesc.device = D3DShell::self()->getDevice();
+	lightShaderDesc.VSFilename = L"../Resources/Shaders/LightVS.vs";
+	lightShaderDesc.PSFilename = L"../Resources/Shaders/LightPS.ps";
+	lightShaderDesc.shaderVersion = D3DShell::self()->getSuportedShaderVersion();
+	lightShaderDesc.polygonLayout = VERTEX::VertexPNC3_InputElementDesc;
+	lightShaderDesc.nrOfElements = 3;
+
+	if(!this->g_lightShader.init(lightShaderDesc))	
+		return false;
+
+	return true;
+}
 bool Application::InitColorShader()
 {
-	BaseShader::BASE_SHADER_DESC gBufferDesc;
+	BaseShader::BASE_SHADER_DESC colorShaderDesc;
 
-	gBufferDesc.dc = D3DShell::self()->getDeviceContext();
-	gBufferDesc.device = D3DShell::self()->getDevice();
-	//gBufferDesc.VSFilename = L"../Resources/Shaders/deferredShaderVS.vs";
-	//gBufferDesc.PSFilename = L"../Resources/Shaders/deferredShaderPS.ps";
-	gBufferDesc.VSFilename = L"../Resources/Shaders/colorVS.vs";
-	gBufferDesc.PSFilename = L"../Resources/Shaders/colorPS.ps";
-	gBufferDesc.shaderVersion = D3DShell::self()->getSuportedShaderVersion();
-	gBufferDesc.polygonLayout = VERTEX::VertexPNC3_InputElementDesc;
-	gBufferDesc.nrOfElements = 3;
+	colorShaderDesc.dc = D3DShell::self()->getDeviceContext();
+	colorShaderDesc.device = D3DShell::self()->getDevice();
+	//colorShaderDesc.VSFilename = L"../Resources/Shaders/colorVS.vs";
+	//colorShaderDesc.PSFilename = L"../Resources/Shaders/colorPS.ps";
+	colorShaderDesc.VSFilename = L"../Resources/Shaders/TextLightVS.vs";
+	colorShaderDesc.PSFilename = L"../Resources/Shaders/TextLightPS.ps";
+	colorShaderDesc.shaderVersion = D3DShell::self()->getSuportedShaderVersion();
+	colorShaderDesc.polygonLayout = VERTEX::VertexPNC3_InputElementDesc;
+	colorShaderDesc.nrOfElements = 3;
 
-	if(!this->g_colorShader.init(gBufferDesc))	
+	if(!this->g_colorShader.init(colorShaderDesc))	
 		return false;
 
 	return true;
@@ -307,51 +265,56 @@ bool Application::InitMatrixBuffer()
 IShader::SHADER_PARAMETER_DATA Application::getWVPBuffer()
 {
 	IShader::SHADER_PARAMETER_DATA gBufferDrawData;
+	gBufferDrawData.lights = g_lightHolder->getDirLights();
 	cBufferMatrix* dataPtr = (cBufferMatrix*)(this->pMatrixBuffer->Map());
 	D3DXMATRIX world;
 	D3DXMatrixIdentity(&world); //game world
 	dataPtr->world = world;
 
-
-	D3DXVECTOR3 m_vUp		 (0,1,0);
-	D3DXVECTOR3 m_vLookAtPt  (0,0,1);
-
-	D3DXVECTOR3 m_position (0,-0,-5);
-
-
-	D3DXMatrixLookAtLH(&dataPtr->view, &m_position, &m_vLookAtPt, &m_vUp);
-	//D3DXMatrixLookAtLH(&dataPtr->view, &D3DXVECTOR3(0.0f, 0.0f, -5.0f), &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
+	D3DXMatrixLookAtLH(&dataPtr->view, &D3DXVECTOR3(0.0f, 0.0f, -5.0f), &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
 	D3DXMatrixPerspectiveFovLH(&dataPtr->projection,(float)D3DX_PI * 0.45f, 800/600, 0.1f, 100.0f);
-	
 
 	D3DXMatrixTranspose(&dataPtr->world, &dataPtr->world);
 	D3DXMatrixTranspose(&dataPtr->view,&dataPtr->view);
 	D3DXMatrixTranspose(&dataPtr->projection,&dataPtr->projection);
-	
 	dataPtr->worldInvTranspose = world;
-	D3DXMATRIX test;
-	
-	test = dataPtr->world;
-	test = dataPtr->view;
-	test = dataPtr->projection;
-	test = dataPtr->worldInvTranspose;
-
-	D3DXVECTOR4 pos(1,1,0,1); 
-	D3DXVec4Transform(&pos, &pos, &dataPtr->world);
-	D3DXVec4Transform(&pos, &pos, &dataPtr->view);
-	D3DXVec4Transform(&pos, &pos, &dataPtr->projection);
-	
-
-	pos;
 
 
 	this->pMatrixBuffer->Unmap();
 	gBufferDrawData.cMatrixBuffer = this->pMatrixBuffer;
 	gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
-
-	
-	
 	return gBufferDrawData;
+}
+void Application::initTestData()
+{
+	//test values -----------------
+	D3DXMATRIX world; 
+	D3DXMatrixIdentity(&world);
+
+	g_plane = new Plane();
+	g_plane->Initialize(world, 2, 2, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
+
+	g_FullscreenQuad = new FullScreenQuad();
+	g_FullscreenQuad->Initialize( D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &g_colorShader);
+
+	g_cube = new Cube();
+	D3DXMatrixTranslation(&world, 2,2,0);
+	g_cube->Initialize(world, 2, 2, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
+
+	g_lightHolder = new LightHolder();
+	g_lightHolder->Initialize();
+	DirectionalLightProxy dirLight;
+	dirLight.ambient = D3DXVECTOR4(1,1,1,1);
+	dirLight.diffuse= D3DXVECTOR4(1,1,1,1);
+	dirLight.specular= D3DXVECTOR4(0.2,0.2,0.2, 0);
+	D3DXVECTOR4 dir(0,-1,-1,0);
+	D3DXVec4Normalize(&dir, &dir); 
+	dirLight.direction= dir;
+	g_lightHolder->addLight(dirLight);
+
+	//-----------------------------------
+
+}
 
 bool Application::LoadResources()
 {
@@ -362,4 +325,40 @@ bool Application::LoadResources()
 	return true;
 }
 
+void Application::DeferedRendering()
+{
 
+	FLAGS::STATE_SAMPLING samp[1] =  { FLAGS::SAMPLER_Linear };
+	D3DShell::self()->setSamplerState(samp, FLAGS::PS, 0,1);
+
+	IShader::SHADER_PARAMETER_DATA gBufferDrawData;
+	gBufferDrawData = getWVPBuffer();
+
+	//--------G-buffers---------//
+	//render plane
+	D3DShell::self()->BeginGBufferRenderTargets();
+	g_plane->Render(D3DShell::self()->getDeviceContext());
+	this->gBufferShader.draw(gBufferDrawData);
+
+	//reset the world matrix
+	gBufferDrawData  = getWVPBuffer();
+
+	//render cube to g-buffer
+	g_cube->Render(D3DShell::self()->getDeviceContext());
+	this->gBufferShader.draw(gBufferDrawData);
+
+	//reset the world matrix
+	gBufferDrawData  = getWVPBuffer();
+
+	//----------Final pass add light and color together------//
+	//second render stage
+	//sampling from g-buffers
+	D3DShell::self()->setRenderTarget();
+	D3DShell::self()->beginScene();
+	//dir light
+	this->g_FullscreenQuad->Render(D3DShell::self()->getDeviceContext());
+	this->g_colorShader.draw(gBufferDrawData);
+	
+	D3DShell::self()->endScene();
+	D3DShell::self()->releaseSRV();
+}

@@ -8,6 +8,7 @@
 #include "..\Util\GID.h"
 #include "..\Util\Proxy.h"
 #include "..\Util\SmartPtrs.h"
+#include "TextureArray.h"
 
 /** Inherit to create shaders */
 class IShader
@@ -24,7 +25,8 @@ class IShader
 		{
 			D3DXMATRIX* worldMatrix;
 			std::vector<BaseBuffer*> buffers;
-			std::vector<Texture2D*> textures;
+			//TextureArray* textures;
+			std::vector<Texture2D>* textures; 
 			DRAW_DATA()
 				:worldMatrix(0)
 			{}
