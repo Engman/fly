@@ -2,7 +2,7 @@
 #define I_STATIC_OBJECT_H
 
 #include "../Entity.h"
-#include "RawObjectData.h"
+#include "../../Util/Importer/ObjectImporter.h"
 //#include "BoundingBox"
 
 
@@ -28,7 +28,7 @@ class Object		:public Entity
 		virtual void Render();
 
 		/** Builds a Object than is ready for rendering */
-		bool Initialize(ImportedObjectData modelRawData);
+		bool Initialize(ImportedObjectData RawModelData);
 };
 
 

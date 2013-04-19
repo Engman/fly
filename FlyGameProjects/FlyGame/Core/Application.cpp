@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "..\Util\vertex.h"
 #include "..\Util\Importer\ResourceImporter.h"
+#include "Mesh\MaterialHandler.h"
 
 
 
@@ -39,7 +40,6 @@ bool Application::Initialize(HINSTANCE hInst)
 	this->mainCamera.SetOrthogonalMatrix(D3DShell::self()->getWidth(), D3DShell::self()->getHeight(), 1, 1000);
 	this->mainCamera.SetPosition(0.0f, 0.0f, 0.0f);
 	this->mainCamera.SetRotation(0.0f, 0.0f, 0.0f);
-
 
 	initTestData();
 
@@ -126,6 +126,7 @@ void Application::Update()
 }
 bool Application::Render()
 {
+
 	DeferedRendering();
 
 	return true;
@@ -320,8 +321,12 @@ bool Application::LoadResources()
 {
 	//Load mesh objects
 	SmartPtrStd<ImportedObjectData> raw;
-	if(!ResourceImporter::Import(L"../Resources/Models/simplePlane.obj", raw))
+	if(!ResourceImporter::ImportObject(L"../Resources/Models/simplePlane.obj", raw))
 		return false;
+
+	
+	//MaterialHandler::GetMaterial(raw->objects[0].material);
+
 	return true;
 }
 

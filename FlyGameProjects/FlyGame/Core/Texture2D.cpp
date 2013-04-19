@@ -39,6 +39,7 @@ struct Texture2D::_Data
 {
 	static std::vector<TexUsers*> resources;	//List of all loaded textures
 	TexUsers* texture;	//Pointer to the actual texture
+
 	_Data()
 		:texture(0)
 	{}
