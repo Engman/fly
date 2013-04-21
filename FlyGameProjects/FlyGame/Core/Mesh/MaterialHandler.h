@@ -19,7 +19,11 @@ class MaterialHandler
 
 		/** Returns the specific material or NULL if fail */
 		static ObjectMaterial* GetMaterial(int GID);
-
+		/** Returns the specific material or NULL if fail 
+		*	It's recommended to not use this function in realtime,
+		*	use this to extract the material identifier in initializing phase
+		*	an use the identifier to get the material. */
+		static ObjectMaterial* GetMaterial(std::wstring materialName);
 };
 
 
