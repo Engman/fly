@@ -10,7 +10,7 @@ cbuffer CB_CAMERA
 struct VS_IN
 {
   float4 position : POSITION;
-  float3 normal : NORMAL;
+  float4 normal : NORMAL;
   //float4 tangent :TANGENT;
   float4 color : COLOR;
 };

@@ -11,7 +11,7 @@ cbuffer CB_CAMERA
 struct VSIn
 {
 	float4 position		: POSITION;
-	float3 normal     : NORMAL;
+	float4 normal     : NORMAL;
 	float4 color      : COLOR;
 };
 
