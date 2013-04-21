@@ -272,7 +272,7 @@ bool Application::InitGBuffers()
 	//gBufferDesc.VSFilename = L"../Resources/Shaders/colorVS.vs";
 	//gBufferDesc.PSFilename = L"../Resources/Shaders/colorPS.ps";
 	gBufferDesc.shaderVersion = D3DShell::self()->getSuportedShaderVersion();
-	gBufferDesc.polygonLayout = VERTEX::VertexPNC3_InputElementDesc;
+	gBufferDesc.polygonLayout = VERTEX::VertexPNC_InputElementDesc;
 	gBufferDesc.nrOfElements = 3;
 
 	if(!this->gBufferShader.init(gBufferDesc))	
@@ -291,7 +291,7 @@ bool Application::InitColorShader()
 	gBufferDesc.VSFilename = L"../Resources/Shaders/colorVS.vs";
 	gBufferDesc.PSFilename = L"../Resources/Shaders/colorPS.ps";
 	gBufferDesc.shaderVersion = D3DShell::self()->getSuportedShaderVersion();
-	gBufferDesc.polygonLayout = VERTEX::VertexPNC3_InputElementDesc;
+	gBufferDesc.polygonLayout = VERTEX::VertexPNC_InputElementDesc;
 	gBufferDesc.nrOfElements = 3;
 
 	if(!this->g_colorShader.init(gBufferDesc))	
@@ -365,14 +365,13 @@ IShader::SHADER_PARAMETER_DATA Application::getWVPBuffer()
 	
 	
 	return gBufferDrawData;
-
+}
 bool Application::LoadResources()
 {
 	//Load mesh objects
 	SmartPtrStd<ImportedObjectData> raw;
 	if(!ResourceImporter::ImportObject(L"../Resources/Models/simplePlane.obj", raw))
 		return false;
-
 	
 	//MaterialHandler::GetMaterial(raw->objects[0].material);
 

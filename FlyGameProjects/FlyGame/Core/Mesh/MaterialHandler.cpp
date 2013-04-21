@@ -84,3 +84,14 @@ ObjectMaterial* MaterialHandler::GetMaterial(int GID)
 
 	return NULL;
 }
+ObjectMaterial* MaterialHandler::GetMaterial(std::wstring materialName)
+{
+	for (int i = 0; i < (int)MaterialHandlerMaterialList.size(); i++)
+	{
+		if(MaterialHandlerMaterialList[i]->GetName() == materialName)
+			return MaterialHandlerMaterialList[i];
+	}
+
+	return NULL;
+}
+

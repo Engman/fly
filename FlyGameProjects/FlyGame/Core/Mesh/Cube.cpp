@@ -11,7 +11,7 @@ Cube::~Cube()
 }
 void Cube::Initialize(D3DXMATRIX world,  float height, float width, ID3D11Device* g_Device, ID3D11DeviceContext* g_DeviceContext, IShader* shader )
 {	
-	VERTEX::VertexPNC3 mesh[] =
+	VERTEX::VertexPNC mesh[] =
 	{
 		{D3DXVECTOR4(-1, 1,-1	,1)	,D3DXVECTOR3(0,0,-1), D3DXVECTOR4(0 ,1, 0 , 0)},
 		{D3DXVECTOR4(1,1,-1		,1)	,D3DXVECTOR3(0,0,-1), D3DXVECTOR4(0 ,1, 0 , 0)},
@@ -67,7 +67,7 @@ void Cube::Initialize(D3DXMATRIX world,  float height, float width, ID3D11Device
 	BaseBuffer::BUFFER_INIT_DESC bufferDesc;
 	bufferDesc.dc = D3DShell::self()->getDeviceContext();
 	bufferDesc.device = D3DShell::self()->getDevice();
-	bufferDesc.elementSize = sizeof(VERTEX::VertexPNC3);
+	bufferDesc.elementSize = sizeof(VERTEX::VertexPNC);
 	bufferDesc.data = mesh;
 	bufferDesc.nrOfElements = 36;
 	bufferDesc.type = BUFFER_FLAG::TYPE_VERTEX_BUFFER;
@@ -104,7 +104,7 @@ void Cube::Initialize(D3DXMATRIX world,  float height, float width, ID3D11Device
 void Cube::Update()
 {
 	D3DXMATRIX rot;
-	D3DXMatrixRotationX(&rot, 0.003);
+	D3DXMatrixRotationX(&rot, 0.003f);
 	m_rotation *= rot;
 	m_world = m_rotation * m_tranlate;
 	//m_world *= m_tranlate;

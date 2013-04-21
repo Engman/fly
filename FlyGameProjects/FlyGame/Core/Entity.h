@@ -2,15 +2,18 @@
 #define ENTITY_H
 
 #include "..\Util\GID.h"
-#include "BaseBuffer.h"
 #include "..\Util\misc.h"
 #include "..\Util\SmartPtrs.h"
+
+#include "IShader.h"
+#include "BaseBuffer.h"
+
 #include <vector>
 
 namespace Type
 {
 	const int LIGHT				=  0;
-	const int I_DRAWABLE_OBJECT	=  1;
+	const int OBJECT			=  1;
 	const int TYPELESS			= -1;
 }
 
@@ -27,7 +30,8 @@ class Entity abstract
 		vec3 front;
 		vec3 right;
 		vec3 up;
-		std::vector<BaseBuffer> buffers;
+		IShader * shader;
+		std::vector<SmartPtrStd<BaseBuffer>> buffers;
 
 	public:
 		Entity(int _type)
@@ -103,7 +107,37 @@ class Entity abstract
 		{
 			return this->up;
 		}
-		std::vector<BaseBuffer>* getBuffers()
+		IShader* getShader()
+		{
+			return this->shader;
+		}
+
+		void setPosition(vec3 _position)
+		{
+			this->position = _position;
+		}
+		void setRotation(vec3 _rotation)
+		{
+			this->rotation = _rotation;
+		}
+		void setFront(vec3 _front)
+		{
+			this->front = _front;
+		}
+		void setRight(vec3 _right)
+		{
+			this->right = _right;
+		}
+		void setUp(vec3 _up)
+		{
+			this->up = _up;
+		}
+		void setShader(IShader* _shader)
+		{
+			this->shader = _shader;
+		}
+
+		std::vector<SmartPtrStd<BaseBuffer>>* getBuffers()
 		{
 			return &this->buffers;
 		}
