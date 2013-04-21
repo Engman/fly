@@ -429,8 +429,8 @@ std::wstring ParseLine			(std::wifstream& in, bool trash)
 	{
 		//Find junk stuff, we are only interested in "real" data
 		int first = 0;
-		int tab = text.find_first_of('\t');
-		int comment = text.find_first_of(ObjImpFormat::comment);
+		int tab = (int)text.find_first_of('\t');
+		int comment = (int)text.find_first_of(ObjImpFormat::comment);
 
 		if(tab != -1)
 		{

@@ -22,7 +22,7 @@ void LightShader::draw(SHADER_PARAMETER_DATA& wMatrixData)
 		{
 			cb->world = *this->drawData[i].worldMatrix; // add the world matrix of the object
 			D3DXMatrixLookAtLH(&cb->view, &D3DXVECTOR3(0.0f, 0.0f, -5.0f), &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
-			D3DXMatrixOrthoLH(&cb->projection, 800, 600, 0.1f, 100.0f);
+			D3DXMatrixOrthoLH(&cb->projection, 800.0f, 600.0f, 0.1f, 100.0f);
 			cb->worldInvTranspose = cb->world;
 
 			D3DXMatrixTranspose(&cb->world, &cb->world);
@@ -52,6 +52,6 @@ void LightShader::setSRVBuffer()
 	int nr = D3DShell::self()->getNrOfSRV();
 	ID3D11ShaderResourceView** srv; 
 	srv = D3DShell::self()->getDefferedSRV();
-	D3DShell::self()->getDeviceContext()->PSSetShaderResources(0,nr, srv);
+	D3DShell::self()->getDeviceContext()->PSSetShaderResources(0, nr, srv);
 }
 

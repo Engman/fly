@@ -36,7 +36,7 @@ int MaterialHandler::AddMaterial(ObjectMaterial::OBJECT_MATERIAL_DESC& desc)
 	{
 		if(MaterialHandlerMaterialList[i]->GetID() > m->GetID())
 		{
-			for (int k = (MaterialHandlerMaterialList.size() - 1); !done && (k < i); k++)
+			for (int k = (int)(MaterialHandlerMaterialList.size() - 1); !done && (k < i); k++)
 			{
 				MaterialHandlerMaterialList[k] = MaterialHandlerMaterialList[k-1];
 			}

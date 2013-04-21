@@ -45,7 +45,7 @@ void GBufferShader::draw(SHADER_PARAMETER_DATA& wMatrixData)
 		if(this->drawData[i].textures ) //if there is any textures
 		{
 			ID3D11ShaderResourceView* srv[3];
-			int nr = this->drawData[i].textures->size();
+			int nr = (int)this->drawData[i].textures->size();
 			for(int k= 0; k<(int)this->drawData[i].textures->size(); k++)
 			{
 				srv[k] = this->drawData[i].textures->at(i).getSRV();

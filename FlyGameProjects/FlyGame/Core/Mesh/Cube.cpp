@@ -107,7 +107,7 @@ void Cube::Initialize(D3DXMATRIX world,  float height, float width, ID3D11Device
 void Cube::Update()
 {
 	D3DXMATRIX rot;
-	D3DXMatrixRotationX(&rot, 0.003);
+	D3DXMatrixRotationX(&rot, 0.003f);
 	m_rotation *= rot;
 	m_world = m_rotation * m_tranlate;
 	//m_world *= m_tranlate;

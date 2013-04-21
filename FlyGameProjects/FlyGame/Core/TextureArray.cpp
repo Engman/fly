@@ -15,12 +15,12 @@ TextureArray::~TextureArray()
 
 bool TextureArray::Initilize(std::vector<WCHAR*>& textNames, ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 {	
-	nrOfTextures = textNames.size();
-	m_textArray = new ID3D11ShaderResourceView* [nrOfTextures];
+	this->nrOfTextures = (int)textNames.size();
+	m_textArray = new ID3D11ShaderResourceView* [this->nrOfTextures];
 
 	D3DX11_IMAGE_LOAD_INFO info;
 	HRESULT ret;
-	for(int i=0; i<nrOfTextures; i++)
+	for(int i=0; i<this->nrOfTextures; i++)
 	{	
 		D3DX11CreateShaderResourceViewFromFile(device, textNames[i] , &info, 0, &m_textArray[i], &ret);
 		if ( FAILED( ret ) )

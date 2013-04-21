@@ -218,7 +218,7 @@ bool Application::InitLightShader()
 	lightShaderDesc.VSFilename = L"../Resources/Shaders/LightVS.vs";
 	lightShaderDesc.PSFilename = L"../Resources/Shaders/LightPS.ps";
 	lightShaderDesc.shaderVersion = D3DShell::self()->getSuportedShaderVersion();
-	lightShaderDesc.polygonLayout = VERTEX::VertexPNC3_InputElementDesc;
+	lightShaderDesc.polygonLayout = VERTEX::VertexPNC_InputElementDesc;
 	lightShaderDesc.nrOfElements = 3;
 
 	if(!this->g_lightShader.init(lightShaderDesc))	
@@ -237,7 +237,7 @@ bool Application::InitColorShader()
 	colorShaderDesc.VSFilename = L"../Resources/Shaders/TextLightVS.vs";
 	colorShaderDesc.PSFilename = L"../Resources/Shaders/TextLightPS.ps";
 	colorShaderDesc.shaderVersion = D3DShell::self()->getSuportedShaderVersion();
-	colorShaderDesc.polygonLayout = VERTEX::VertexPNC3_InputElementDesc;
+	colorShaderDesc.polygonLayout = VERTEX::VertexPNC_InputElementDesc;
 	colorShaderDesc.nrOfElements = 3;
 
 	if(!this->g_colorShader.init(colorShaderDesc))	
@@ -293,22 +293,22 @@ void Application::initTestData()
 	D3DXMatrixIdentity(&world);
 
 	g_plane = new Plane();
-	g_plane->Initialize(world, 2, 2, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
+	g_plane->Initialize(world, 2.0f, 2.0f, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
 
 	g_FullscreenQuad = new FullScreenQuad();
 	g_FullscreenQuad->Initialize( D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &g_colorShader);
 
 	g_cube = new Cube();
-	D3DXMatrixTranslation(&world, 2,2,0);
-	g_cube->Initialize(world, 2, 2, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
+	D3DXMatrixTranslation(&world, 2.0f, 2.0f, 0.0f);
+	g_cube->Initialize(world, 2.0f, 2.0f, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
 
 	g_lightHolder = new LightHolder();
 	g_lightHolder->Initialize();
 	DirectionalLightProxy dirLight;
-	dirLight.ambient = D3DXVECTOR4(1,1,1,1);
-	dirLight.diffuse= D3DXVECTOR4(1,1,1,1);
-	dirLight.specular= D3DXVECTOR4(0.2,0.2,0.2, 0);
-	D3DXVECTOR4 dir(0,-1,-1,0);
+	dirLight.ambient = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
+	dirLight.diffuse= D3DXVECTOR4(1.0f ,1.0f, 1.0f , 1.0f);
+	dirLight.specular= D3DXVECTOR4(0.2f ,0.2f ,0.2f , 0.0f);
+	D3DXVECTOR4 dir(0.0f, -1.0f, -1.0f, 0.0f);
 	D3DXVec4Normalize(&dir, &dir); 
 	dirLight.direction= dir;
 	g_lightHolder->addLight(dirLight);
