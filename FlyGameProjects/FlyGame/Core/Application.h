@@ -6,8 +6,9 @@
 #include "Render\GBufferShader.h"
 #include "Render\ColorShader.h"
 #include "Mesh\Plane.h"
-#include "..\Util\Camera.h"
 #include "Input.h"
+#include "Entity.h"
+#include "..\Util\Camera.h"
 #include "..\Util\Proxy.h"
 
 //test values
@@ -54,6 +55,7 @@ class Application
 		SmartPtrStd<FullScreenQuad>	g_FullscreenQuad;
 		SmartPtrStd<LightHolder>g_lightHolder;
 		//------ 
+		std::vector<SmartPtrStd<Entity>> objects;
 
 		Camera mainCamera;
 

@@ -6,11 +6,11 @@
 
 #pragma endregion
 
-bool ResourceImporter::ImportObject(wchar_t*  filename, __out SmartPtrStd<ImportedObjectData>& objData)
+bool ResourceImporter::ImportObject(std::wstring filename, ID3D11Device* device, __out SmartPtrStd<ImportedObjectData>& objData)
 {
-	return objectImporter.Import(filename, objData);
+	return objectImporter.Import(filename, device, objData);
 }
-bool ResourceImporter::ImportObject(std::vector<wchar_t*>  filenames, __out std::vector<SmartPtrStd<ImportedObjectData>>& objData)
+bool ResourceImporter::ImportObject(std::vector<std::wstring>  filenames, ID3D11Device* device, __out std::vector<SmartPtrStd<ImportedObjectData>>& objData)
 {
 	if(!filenames.size())
 		return false;
@@ -20,18 +20,18 @@ bool ResourceImporter::ImportObject(std::vector<wchar_t*>  filenames, __out std:
 
 	for (int i = 0; i < (int)filenames.size(); i++)
 	{
-		if(!objectImporter.Import(filenames[i], objData[i]))
+		if(!objectImporter.Import(filenames[i], device, objData[i]))
 			return false;
 	}
 
 	return true;
 }
 
-bool ResourceImporter::ImportMaterial(wchar_t* filename, __out std::vector<int>& id)
+bool ResourceImporter::ImportMaterial(std::wstring filename, ID3D11Device* device, __out std::vector<int>& id)
 {
-	return objectImporter.Import(filename, id);
+	return objectImporter.Import(filename, device, id);
 }
-bool ResourceImporter::ImportMaterial(std::vector<wchar_t*> filenames, __out std::vector<int>& id)
+bool ResourceImporter::ImportMaterial(std::vector<std::wstring> filenames, ID3D11Device* device, __out std::vector<int>& id)
 {
 	if(!filenames.size())
 		return false;
@@ -40,7 +40,7 @@ bool ResourceImporter::ImportMaterial(std::vector<wchar_t*> filenames, __out std
 
 	for (int i = 0; i < (int)filenames.size(); i++)
 	{
-		if(!objectImporter.Import(filenames[i], temp))
+		if(!objectImporter.Import(filenames[i], device, temp))
 			return false;
 
 		id.insert(id.end(), temp.begin(), temp.end());

@@ -16,6 +16,7 @@ struct ObjectMaterialProxy
 	vec4 diffuse;
 	vec4 specular;
 	int specularPower;
+	vec3 pad;
 	ObjectMaterialProxy()
 		:ambient(0.0, 0.0, 0.0, 0.0), diffuse(0.0, 0.0, 0.0, 0.0), 
 		specular(0.0, 0.0, 0.0, 0.0), specularPower(0)
@@ -27,6 +28,7 @@ class ObjectMaterial
 	public:
 		struct OBJECT_MATERIAL_DESC
 		{
+			ID3D11Device		*device;
 			std::wstring		name;
 			vec4				ambient;
 			vec4				diffuse;
@@ -63,6 +65,13 @@ class ObjectMaterial
 		ObjectMaterialProxy* GetProxy();
 		std::wstring GetName() const;
 		int GetID() const;
+
+		ID3D11ShaderResourceView*	GetAmbientTexture	();
+		ID3D11ShaderResourceView*	GetDiffuseTexture	();
+		ID3D11ShaderResourceView*	GetSpecularTexture	();
+		ID3D11ShaderResourceView*	GetGlowTexture		();
+		ID3D11ShaderResourceView*	GetNormalTexture	();
+		BaseBuffer*					GetBuffer			();
 };
 
 

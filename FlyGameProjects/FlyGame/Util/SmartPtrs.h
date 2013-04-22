@@ -46,13 +46,15 @@ struct PtrRefCount
 			virtual~SmartPtrStd				();
 			SmartPtrStd&	operator=		(const SmartPtrStd<T>&);
 			SmartPtrStd&	operator=		(T*);
-			bool			operator==		(const SmartPtrStd<T>&);
-			bool			operator==		(const T&);
+			//bool			operator==		(const SmartPtrStd<T>&);
+			//bool			operator==		(const T&);
 			T&				operator*		();
 			T*				operator->		();
 							operator T*		();
 
-
+			/**
+			*	Returns the connected pointer */
+			T* Get();
 			/** Adds a new pointer.
 				If the pointer is occupied, this will not do anything and return false. (See Swap instead) */
 			bool Add(T*);
@@ -135,29 +137,27 @@ struct PtrRefCount
 				{
 					//Call child specific
 					Destroy();
+
 				}
 			}
-			else
-			{
-				this->_rc = new PtrRefCount();
-			}
+			
+			this->_rc = new PtrRefCount();
 		
-
 			this->_ptr = p;
 			this->_rc->Add();
 		}
 		return *this;
 	}
-		template<typename T>
-	bool SmartPtrStd<T>::operator== (const SmartPtrStd<T>& d)
-	{
-		return d._ptr == this->_ptr;
-	}
-		template<typename T>
-	bool SmartPtrStd<T>::operator== (const T& p)
-	{
-		return &p == this->_ptr;
-	}
+	//	template<typename T>
+	//bool SmartPtrStd<T>::operator== (const SmartPtrStd<T>& d)
+	//{
+	//	return d._ptr == this->_ptr;
+	//}
+	//	template<typename T>
+	//bool SmartPtrStd<T>::operator== (const T& p)
+	//{
+	//	return &p == this->_ptr;
+	//}
 		template<typename T>
 	T& SmartPtrStd<T>::operator* ()
 	{
@@ -176,6 +176,12 @@ struct PtrRefCount
 
 #pragma endregion
 
+
+	template<typename T>
+T* SmartPtrStd<T>::Get()
+{
+	return this->_ptr;
+}
 	template<typename T>
 bool SmartPtrStd<T>::Add(T* p)
 {
