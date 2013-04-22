@@ -22,7 +22,13 @@
 *.suo
 *.opensdf
 *.sdf
+*.config
+*.csproj
+*.manifest
+
 Dependencies/
 WorkingDir/AssemblyFiles
 WorkingDir/Bin
 FlyGameProjects/ipch
+FlyGameProjects/FlyEditUI/obj
+FlyGameProjects/FlyEditUI/Properties
