@@ -29,6 +29,7 @@ class ObjectMaterial
 		struct OBJECT_MATERIAL_DESC
 		{
 			ID3D11Device		*device;
+			ID3D11DeviceContext *dc;
 			std::wstring		name;
 			vec4				ambient;
 			vec4				diffuse;
@@ -47,8 +48,6 @@ class ObjectMaterial
 
 		SmartPtrStd<BaseBuffer> _buffer;
 
-		ObjectMaterialProxy		_data;
-
 		SmartPtrStd<Texture2D> _ambientTex;
 		SmartPtrStd<Texture2D> _diffuseTex;
 		SmartPtrStd<Texture2D> _specularTex;
@@ -62,7 +61,7 @@ class ObjectMaterial
 		/** Creates a material from given description */
 		bool CreateMaterial(OBJECT_MATERIAL_DESC& desc);
 
-		ObjectMaterialProxy* GetProxy();
+
 		std::wstring GetName() const;
 		int GetID() const;
 

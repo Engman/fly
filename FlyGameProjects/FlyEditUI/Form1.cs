@@ -14,11 +14,22 @@ namespace FlyEditUI
 	public partial class Form1 : Form
 	{
 		FlyEditCLIWrapper FlyCLI = null;
+
 		public Form1()
 		{
 			InitializeComponent();
 			this.FlyCLI = new FlyEditCLIWrapper();
-			
+		}
+
+		public void Run()
+		{
+			this.FlyCLI.Init(RenderWin.Handle, RenderWin.Width, RenderWin.Height);
+
+			while (this.Created)
+			{
+				this.FlyCLI.ProcessFrame();
+				Application.DoEvents();
+			}
 		}
 	}
 }

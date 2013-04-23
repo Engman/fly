@@ -7,32 +7,38 @@ GBufferShader::GBufferShader()
 	
 }
 
-void GBufferShader::draw(SHADER_PARAMETER_DATA& wMatrixData)
+void GBufferShader::draw(PER_FRAME_DATA& frameData)
 {	
 	int indexC = 0;
 	int vertexC = 0;
 	
-	this->shader->Render();
+	FLAGS::STATE_SAMPLING samp[1] =  { FLAGS::SAMPLER_Linear };
 	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_NoCullNoMs);
+	D3DShell::self()->setSamplerState(samp, FLAGS::PS, 0, 1);
+
+	this->shader->Render();
+
 	int count = (int)this->drawData.size();
 	for( int i = 0; i< count;i++)
 	{
-		cBufferMatrix* cb = (cBufferMatrix*)wMatrixData.cMatrixBuffer->Map();
+		cBufferMatrix* cb = (cBufferMatrix*)this->matrixBuffer->Map();
 		if(cb)
 		{
-			cb->world = *this->drawData[i].worldMatrix; // add the world matrix of the object
-			D3DXMatrixLookAtLH(&cb->view, &D3DXVECTOR3(0.0f, 0.0f, -5.0f), &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
-			D3DXMatrixPerspectiveFovLH(&cb->projection,(float)D3DX_PI * 0.45f, 800/600, 0.1f, 100.0f);
-			cb->worldInvTranspose = cb->world;
+			cb->world = *this->drawData[i].worldMatrix;
+			cb->view = frameData.view;
+			cb->projection = frameData.projection;
+
+			Matrix temp;
+			float det = D3DXMatrixDeterminant(this->drawData[i].worldMatrix);
+			if(det)
+				cb->worldInvTranspose = *D3DXMatrixInverse(&temp, &det, this->drawData[i].worldMatrix);
+			
 			D3DXMatrixTranspose(&cb->world, &cb->world);
 			D3DXMatrixTranspose(&cb->view,&cb->view);
 			D3DXMatrixTranspose(&cb->projection,&cb->projection);
-
-			wMatrixData.cMatrixBuffer->Unmap();
+			this->matrixBuffer->Unmap();
 		}
-
-		wMatrixData.cMatrixBuffer->setBuffer(); // set wvp matrix
-		
+		this->matrixBuffer->setBuffer();
 
 		for(int k = 0; k <(int)this->drawData[i].buffers.size(); k++)	// set vertex and index buffers
 		{
@@ -44,31 +50,22 @@ void GBufferShader::draw(SHADER_PARAMETER_DATA& wMatrixData)
 				vertexC = this->drawData[i].buffers[k]->getNrOfElements();
 		}
 
-		if(this->drawData[i].textures ) //if there is any textures
-		{
-			std::vector<ID3D11ShaderResourceView*> srv;
-			int nr = (int)this->drawData[i].textures->size();
-			for(int k= 0; k<(int)this->drawData[i].textures->size(); k++)
-			{
-				std::vector<ID3D11ShaderResourceView*>* tex = this->drawData[i].textures->at(i).getTextures();
-				if(tex)
-					for (int l = 0; l < (int)tex->size(); l++)
-					{
-						srv.push_back((*tex)[l]);
-					}
-			}
-			D3DShell::self()->getDeviceContext()->PSSetShaderResources(0,nr, &srv[0]);
-		}
 		if(this->drawData[i].material)
 		{
-			//drawData[i].material->get
+			ID3D11ShaderResourceView* temp[1] = { drawData[i].material->GetDiffuseTexture() };
+			frameData.dc->PSSetShaderResources(0, 1, temp);
 		}
 
 		this->shader->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		
 		if(indexC)
 			this->shader->GetDeviceContext()->DrawIndexed(indexC, 0, 0);
 		else if(vertexC)
 			this->shader->GetDeviceContext()->Draw(vertexC, 0);
+
+		indexC = 0;
+		vertexC = 0;
 	}
+
 	this->clearData();
 }

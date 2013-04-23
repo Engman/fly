@@ -38,7 +38,7 @@ struct DirectionalLightProxy
 	DirectionalLightProxy()	{ ZeroMemory(this, sizeof(this)); }
 };
 
-/** Describes how the lightning cbuffer is used on gpu */
+/** Describes how the matrix cbuffer is structured on the gpu */
 struct cBufferMatrix
 {
 	D3DXMATRIX world;

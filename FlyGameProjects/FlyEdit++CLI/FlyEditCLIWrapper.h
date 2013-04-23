@@ -7,7 +7,8 @@
 
 //forwarddeklarationen måste ligga innan alla "using" !!! annars tolkas
 //det av visual studio som att GameEngineWrapper-klassen ligger i ett namespace
-//#include "..\C++\GameEngineWrapper.h"
+#include "..\FlyGame\EngineCLIWrapper\EngineWrapper.h"
+
 
 using namespace System;
 using namespace System::Windows;
@@ -23,7 +24,7 @@ namespace System
 			public ref class FlyEditCLIWrapper
 			{
 				protected:
-					//GameEngineWrapper* m_GameEngine;
+					EngineWrapper* flyEngine;
 
 				public:
 					FlyEditCLIWrapper();

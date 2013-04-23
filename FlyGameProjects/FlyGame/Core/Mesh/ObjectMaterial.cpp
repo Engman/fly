@@ -15,12 +15,9 @@ ObjectMaterial::~ObjectMaterial()
 
 bool ObjectMaterial::CreateMaterial(OBJECT_MATERIAL_DESC& desc)
 {
-	this->_name					= desc.name;
-	this->_data.ambient			= desc.ambient;
-	this->_data.diffuse			= desc.diffuse;
-	this->_data.specular		= desc.specular;
-	this->_data.specularPower	= desc.specualarPow;
+	this->_name			= desc.name;
 
+	//Initiate textures
 	if(desc.ambientTexture.size())
 		if(!this->_ambientTex->loadTexture(desc.device, desc.ambientTexture))
 			return false;
@@ -38,22 +35,28 @@ bool ObjectMaterial::CreateMaterial(OBJECT_MATERIAL_DESC& desc)
 			return false;
 
 
+	//Initiate buffer
+	ObjectMaterialProxy p;
+	p.ambient			= desc.ambient;
+	p.diffuse			= desc.diffuse;
+	p.specular			= desc.specular;
+	p.specularPower		= desc.specualarPow;
+
 	BaseBuffer::BUFFER_INIT_DESC bDesc;
-	bDesc.device = desc.device;
-	bDesc.elementSize = sizeof(ObjectMaterialProxy);
+	bDesc.data = &p;
+	bDesc.elementSize = sizeof(ObjectMaterial);
 	bDesc.nrOfElements = 1;
 	bDesc.type = BUFFER_FLAG::TYPE_CONSTANT_PS_BUFFER;
-	bDesc.usage = BUFFER_FLAG::USAGE_DEFAULT;
-	bDesc.data = &this->_data;
+	bDesc.usage = BUFFER_FLAG::USAGE_IMMUTABLE;
+	bDesc.device = desc.device;
+	bDesc.dc = desc.dc;
 	if( FAILED( this->_buffer->Initialize(bDesc) ) )
 		return false;
 
 	return true;
 }
-ObjectMaterialProxy* ObjectMaterial::GetProxy()
-{
-	return &this->_data;
-}
+
+
 std::wstring ObjectMaterial::GetName() const
 {
 	return this->_name;

@@ -24,12 +24,12 @@ Application::~Application()
 
 }
 
-bool Application::Initialize(HINSTANCE hInst)
+bool Application::Initialize(HINSTANCE hInst, int width, int height)
 {
 	ID3D11Device* dev = D3DShell::self()->getDevice();
-	Point2D size(800, 600);
+	Point2D size(width, height);
 	if(!InitWindow(hInst, size))	return false;
-	if(!InitD3D(size))				return false;
+	if(!InitD3D(size, WindowShell::self()->getHWND()))		return false;
 	if(!InitInput())				return false;
 	if(!InitGBuffers())				return false;
 	if(!InitColorShader())			return false;
@@ -68,6 +68,13 @@ void Application::Run()
 		 }
 
 	}
+}
+bool Application::Frame()
+{
+	Update();
+	Render();
+
+	return true;
 }
 
 void Application::Shutdown()
@@ -123,11 +130,11 @@ void Application::MouseMoveEvent(Input::MouseMoveData d)
 }
 void Application::Update()
 {
-	g_cube->Update();
+	//g_cube->Update();
 }
 bool Application::Render()
 {
-
+	this->mainCamera.Render();
 	DeferedRendering();
 
 	return true;
@@ -136,35 +143,28 @@ void Application::DeferedRendering()
 {
 	D3DShell::self()->BeginGBufferRenderTargets();
 
-	FLAGS::STATE_SAMPLING samp[1] =  { FLAGS::SAMPLER_Linear };
-	D3DShell::self()->setSamplerState(samp, FLAGS::PS, 0, 1);
+	IShader::PER_FRAME_DATA gBufferDrawData;
+	gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
+	gBufferDrawData.view = this->mainCamera.GetViewMatrix();
+	gBufferDrawData.projection = this->mainCamera.GetProjectionMatrix();
 
-	IShader::SHADER_PARAMETER_DATA gBufferDrawData;
-	gBufferDrawData = getWVPBuffer();
 
 
 //#################################//
 //########## G-buffers ############//
 //#################################//
 
+
+	//g_plane->Render(D3DShell::self()->getDeviceContext());
+	//g_cube->Render(D3DShell::self()->getDeviceContext());
+
 	for (int i = 0; i <(int)this->objects.size(); i++)
 	{
 		this->objects[i]->Render();
-		this->gBufferShader.draw(gBufferDrawData);
 	}
-	//render plane to g-buffer
-	g_plane->Render(D3DShell::self()->getDeviceContext());
 	this->gBufferShader.draw(gBufferDrawData);
+
 	
-	//reset the world matrix
-	gBufferDrawData  = getWVPBuffer();
-	
-	//render cube to g-buffer
-	g_cube->Render(D3DShell::self()->getDeviceContext());
-	this->gBufferShader.draw(gBufferDrawData);
-	
-	//reset the world matrix
-	gBufferDrawData  = getWVPBuffer();
 
 
 //##################################################################//
@@ -180,31 +180,6 @@ void Application::DeferedRendering()
 	
 	D3DShell::self()->releaseSRV();
 	D3DShell::self()->endScene();
-}
-
-
-IShader::SHADER_PARAMETER_DATA Application::getWVPBuffer()
-{
-	IShader::SHADER_PARAMETER_DATA gBufferDrawData;
-	gBufferDrawData.lights = g_lightHolder->getDirLights();
-	cBufferMatrix* dataPtr = (cBufferMatrix*)(this->pMatrixBuffer->Map());
-	D3DXMATRIX world;
-	D3DXMatrixIdentity(&world); //game world
-	dataPtr->world = world;
-
-	D3DXMatrixLookAtLH(&dataPtr->view, &D3DXVECTOR3(0.0f, 0.0f, -5.0f), &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
-	D3DXMatrixPerspectiveFovLH(&dataPtr->projection,(float)D3DX_PI * 0.45f, 800/600, 0.1f, 100.0f);
-
-	D3DXMatrixTranspose(&dataPtr->world, &dataPtr->world);
-	D3DXMatrixTranspose(&dataPtr->view,&dataPtr->view);
-	D3DXMatrixTranspose(&dataPtr->projection,&dataPtr->projection);
-	dataPtr->worldInvTranspose = world;
-
-
-	this->pMatrixBuffer->Unmap();
-	gBufferDrawData.cMatrixBuffer = this->pMatrixBuffer;
-	gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
-	return gBufferDrawData;
 }
 
 
@@ -226,7 +201,7 @@ bool Application::LoadResources()
 		tempFirst.append(FindFileData.cFileName);
 		models.push_back(tempFirst);
 
-		while (FindNextFile(hFind, &FindFileData))
+		while ( FindNextFile(hFind, &FindFileData) )
 		{
 			std::wstring file = L"..\\Resources\\Models\\"; 
 			file.append(FindFileData.cFileName);
@@ -247,8 +222,8 @@ bool Application::LoadResources()
 			desc.deviceContext = D3DShell::self()->getDeviceContext();
 			desc.material_id = MaterialHandler::GetMaterial(raw->objects[0].material)->GetID();
 			desc.shader = &this->gBufferShader;
-			desc.vertecies = &raw->objects[0].vertex;
-			desc.vCount = (int)raw->objects[0].vertex.size();
+			desc.vertecies = raw->objects[0].vertex;
+			desc.vCount = (int)raw->objects[0].vertex->size();
 			if(!model->Initialize(desc))
 				return false;
 
@@ -260,7 +235,7 @@ bool Application::LoadResources()
 
 
 
-bool Application::InitD3D(Point2D size)
+bool Application::InitD3D(Point2D size, HWND hWnd)
 {
 	D3DShell::D3D_INIT_DESC desc;
 

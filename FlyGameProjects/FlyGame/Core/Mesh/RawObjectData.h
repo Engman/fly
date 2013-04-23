@@ -10,7 +10,7 @@
 struct ObjectData
 {
 	int material;
-	std::vector<VERTEX::VertexPNT> vertex;
+	SmartPtrStd<std::vector<VERTEX::VertexPNT>> vertex;
 };
 struct FrameData
 {

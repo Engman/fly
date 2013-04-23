@@ -11,17 +11,6 @@ ts
 tg 
 tn 
 endmtl
-m lambert1
-a 0.000000 0.000000 0.000000 1.000000
-d 0.000000 0.000000 0.000000 1.000000
-s 0.000000 0.000000 0.000000 0.000000
-sp 0
-ta 
-td ..\Resources\Textures\test.jpeg
-ts 
-tg 
-tn 
-endmtl
 an 0 1 
 fr 0 0.0 
 v 

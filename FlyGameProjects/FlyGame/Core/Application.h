@@ -23,7 +23,7 @@ typedef Input::KeyCodes Key;
 class Application
 {
 	private:
-		bool InitD3D(Point2D size);
+		bool InitD3D(Point2D size, HWND hWnd);
 		bool InitWindow(HINSTANCE& hinst, Point2D size);
 		bool InitInput();
 		bool InitGBuffers();
@@ -34,7 +34,7 @@ class Application
 		void ShowMenu();
 		void PlayLevel();
 		//----------------
-		IShader::SHADER_PARAMETER_DATA getWVPBuffer();
+		//IShader::PER_FRAME_DATA getWVPBuffer();
 		void initTestData();
 
 		static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam); 
@@ -64,12 +64,14 @@ class Application
 		Application(const Application& other);
 		virtual~Application();
 
-		bool Initialize(HINSTANCE hInst);
+		bool Initialize(HINSTANCE hInst, int width, int height);
 		void Run();
 		void Shutdown();
 		bool Render();
 		void Update();
 		void DeferedRendering();
+
+		bool Frame();
 };
 
 #endif

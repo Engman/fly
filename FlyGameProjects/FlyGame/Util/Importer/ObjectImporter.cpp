@@ -206,7 +206,7 @@ bool ParseAnimationFile			(std::wifstream& in, ID3D11Device* device, ImportedObj
 			d->animations[currAnimation].frames[currFrame].frameTime = frameTime;
 			d->animations[currAnimation].frames[currFrame].objectIndex = currFrame;
 
-			d->objects[currObject].vertex.resize(vCount);
+			d->objects[currObject].vertex = new std::vector<VERTEX::VertexPNT>(vCount);
 			d->objects[currObject].material = currMaterial;
 		}
 		else if(flag == ObjImpFormat::material)		{ currMaterial = ParseMaterial(in, device);	}
@@ -246,7 +246,7 @@ bool ParseStandardFile			(std::wifstream& in, ID3D11Device* device, ImportedObje
 
 				//No animations, then only one mesh is valid
 				d->objects.resize(1);
-				d->objects[0].vertex.resize(count);
+				d->objects[0].vertex = new std::vector<VERTEX::VertexPNT>(count);
 				d->objects[0].material = 0;
 			}
 			else if(flag == ObjImpFormat::material)		{ d->objects[0].material = ParseMaterial(in, device); }
@@ -304,12 +304,12 @@ int ParseMaterial				(std::wifstream& in, ID3D11Device* device)
 
 bool ParseV						(std::wifstream& in, ObjectData& o)			
 {
-	int total = (int)o.vertex.size();
+	int total = (int)o.vertex->size();
 	int i = 0;
 
 	while (i < total)
 	{
-		if(!ParseVector3(in, o.vertex[i++].position))
+		if(!ParseVector3(in, (*o.vertex)[i++].position))
 			return false;
 	}
 
@@ -317,12 +317,12 @@ bool ParseV						(std::wifstream& in, ObjectData& o)
 }
 bool ParseVT					(std::wifstream& in, ObjectData& o)	
 {
-	int total = (int)o.vertex.size();
+	int total = (int)o.vertex->size();
 	int i = 0;
 
 	while (i < total)
 	{
-		if(!ParseVector2(in, o.vertex[i++].texcoord))
+		if(!ParseVector2(in, (*o.vertex)[i++].texcoord))
 			return false;
 	}
 	
@@ -330,15 +330,15 @@ bool ParseVT					(std::wifstream& in, ObjectData& o)
 }
 bool ParseVN					(std::wifstream& in, ObjectData& o)				
 {
-	int total = (int)o.vertex.size();
+	int total = (int)o.vertex->size();
 	int i = 0;
 
 	while (i < total)
 	{
-		o.vertex[i].normal.w = 0.0f;
+		(*o.vertex)[i].normal.w = 0.0f;
 		if(i == total-1)
 			int asd = 123;
-		if(!ParseVector3(in, o.vertex[i++].normal))
+		if(!ParseVector3(in, (*o.vertex)[i++].normal))
 			return false;
 	}
 	
