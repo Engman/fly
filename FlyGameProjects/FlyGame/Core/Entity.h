@@ -21,129 +21,128 @@ namespace Type
 class Entity abstract
 {
 	private:
-		int type;
-		GID id;
+		int			type;
+		GID			id;
 
 	protected:
-		vec3 position;
-		vec3 rotation;
-		vec3 front;
-		vec3 right;
-		vec3 up;
-		IShader * shader;
+		Matrix		world;
+		Matrix		transformation;
+		vec3		rotation;
+
+		IShader		*shader;
 		std::vector<SmartPtrStd<BaseBuffer>> buffers;
 
 	public:
-		Entity(int _type)
+		Entity					(int _type)
 			:type(_type)
 		{}
-		Entity(const Entity& origObj)
+		Entity					(const Entity& origObj)
 		{
-			this->position	= origObj.position;
-			this->rotation	= origObj.rotation;
-			this->front		= origObj.front;
-			this->right		= origObj.right;
-			this->up		= origObj.up;
-			this->buffers	= origObj.buffers;
+			this->world				= origObj.world;
+			this->transformation	= origObj.transformation;
+			this->rotation			= origObj.rotation;
+			this->buffers			= origObj.buffers;
 		}
-		virtual~Entity()
+		virtual~Entity			()
+		{}
+		Entity& operator=		(const Entity& origObj)
 		{
-			
-		}
-		Entity& operator=(const Entity& origObj)
-		{
-			this->position	= origObj.position;
-			this->rotation	= origObj.rotation;
-			this->front		= origObj.front;
-			this->right		= origObj.right;
-			this->up		= origObj.up;
-			this->buffers	= origObj.buffers;
+			this->world				= origObj.world;
+			this->transformation	= origObj.transformation;
+			this->rotation			= origObj.rotation;
+			this->buffers			= origObj.buffers;
 
 			return *this;
 		}
-		bool operator ==(const Entity& object)
+		bool operator ==		(const Entity& object)
 		{
 			return this->id == object.id;
 		}
-		bool operator ==(int id)
+		bool operator ==		(int id)
 		{
 			return this->id == id;
 		}
-		bool isOfType(int type)
+		bool isOfType			(int type)
 		{
 			return this->type == type;
 		}
-		bool isOfType(const Entity& object)
+		bool isOfType			(const Entity& object)
 		{
 			return this->type == object.type;
 		}
 		
-		int getType() const
+		int getType				()	const
 		{ 
 			return this->type; 
 		}
-		int getID() const
+		int getID				()	const
 		{
 			return this->id;
 		}
-
-		vec3 getPosition() const
+		vec3 getPosition		()	const
 		{
-			return this->position;
+			return vec3(this->transformation.m[3]);
 		}
-		vec3 getRotation()	const  
+		vec3 getRotation		()	const  
 		{
 			return this->rotation;
 		}
-		vec3 getFront()		const  
+		vec3 getFront			()	const  
 		{
-			return this->front;
+			return vec3(this->transformation.m[2]);
 		}
-		vec3 getRight()		const  
+		vec3 getRight			()	const  
 		{
-			return this->right;
+			vec3(this->transformation.m[0]);
 		}
-		vec3 getUp()		const  
+		vec3 getUp				()	const  
 		{
-			return this->up;
+			vec3(this->transformation.m[1]);
 		}
-		IShader* getShader()
+		IShader* getShader		()
 		{
 			return this->shader;
 		}
 
-		void setPosition(vec3 _position)
+		void setPosition		(vec3 _position)
 		{
-			this->position = _position;
+			this->transformation._41 = _position.x;
+			this->transformation._42 = _position.y;
+			this->transformation._43 = _position.z;
 		}
-		void setRotation(vec3 _rotation)
+		void setRotation		(vec3 _rotation)
 		{
 			this->rotation = _rotation;
 		}
-		void setFront(vec3 _front)
+		void setFront			(vec3 _front)
 		{
-			this->front = _front;
+			this->transformation._31 = _front.x;
+			this->transformation._32 = _front.y;
+			this->transformation._33 = _front.z;
 		}
-		void setRight(vec3 _right)
+		void setRight			(vec3 _right)
 		{
-			this->right = _right;
+			this->transformation._11 = _right.x;
+			this->transformation._12 = _right.y;
+			this->transformation._13 = _right.z;
 		}
-		void setUp(vec3 _up)
+		void setUp				(vec3 _up)
 		{
-			this->up = _up;
+			this->transformation._21 = _up.x;
+			this->transformation._22 = _up.y;
+			this->transformation._23 = _up.z;
 		}
-		void setShader(IShader* _shader)
+		void setShader			(IShader* _shader)
 		{
 			this->shader = _shader;
 		}
-
 		std::vector<SmartPtrStd<BaseBuffer>>* getBuffers()
 		{
 			return &this->buffers;
 		}
 
-		virtual void Update(){}
-		virtual void Render(){}
+		virtual void Update	(){}
+		virtual void Render	(){}
 
 		
 };

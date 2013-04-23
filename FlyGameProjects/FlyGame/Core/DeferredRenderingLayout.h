@@ -7,8 +7,9 @@ namespace DeferredRenderLayout
 	{
 		//MRTS_Position,
 		MRTS_Diffuse,
-		//MRTS_Normal,
-		MRTS_TextCoord,
+		MRTS_Normal,
+		MRTS_Material,
+		//MRTS_TextCoord,
 		/* Add more */
 
 		MRT_COUNT

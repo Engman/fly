@@ -27,6 +27,9 @@ struct D3DShell::PrDat
 	ID3D11Texture2D					*deffTexDepth[DeferredRenderLayout::MRT_COUNT];
 	ID3D11ShaderResourceView		*deffSRV[DeferredRenderLayout::MRT_COUNT];
 
+	ID3D11RenderTargetView			*lightRTV[1];
+	ID3D11ShaderResourceView		*lightSRV[1];
+
 
 	//States
 	RasterizerState					rasterizerState;
@@ -111,6 +114,7 @@ struct D3DShell::PrDat
 	}
 
 	bool InitMRTS();
+	bool initLigthRTV();
 };
 
 D3DShell* D3DShell::PrDat::d3dShellInstance = NULL;
@@ -565,6 +569,64 @@ bool D3DShell::PrDat::InitMRTS()
     return true;
 }
 
+bool D3DShell::PrDat::initLigthRTV()
+{
+	ID3D11Texture2D* lightTex;
+	D3D11_TEXTURE2D_DESC dstex;
+	ZeroMemory( &dstex, sizeof(dstex) );
+	dstex.Width = this->width;
+	dstex.Height = this->heigth;
+	dstex.MipLevels = 1;
+	dstex.ArraySize = 1;
+	dstex.SampleDesc.Count = this->MSAASampleCount;
+	dstex.SampleDesc.Quality = this->MSAAQuality;
+	dstex.Format = DXGI_FORMAT_D32_FLOAT;
+	dstex.Usage = D3D11_USAGE_DEFAULT;
+	dstex.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	dstex.CPUAccessFlags = 0;
+
+
+	if( FAILED( this->d3dDevice->CreateTexture2D(&dstex, NULL, &lightTex) ) )
+	{
+		MessageBox(0, L"Failed to create depth textures!", L"Error", 0);
+		return false;
+	}
+	
+
+	D3D11_RENDER_TARGET_VIEW_DESC DescRT;
+	ZeroMemory(&DescRT, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
+	DescRT.Format = dstex.Format;
+	DescRT.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	DescRT.Texture2DArray.FirstArraySlice = 0;
+	DescRT.Texture2DArray.ArraySize = 1;
+	DescRT.Texture2DArray.MipSlice = 0;
+
+
+	if( FAILED( this->d3dDevice->CreateRenderTargetView(lightTex, &DescRT, &this->lightRTV[0]) ) )
+	{
+		MessageBox(0, L"Failed to create render targets!", L"Error", 0);
+		return false;
+	}
+
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
+	ZeroMemory( &SRVDesc, sizeof( SRVDesc ) );
+	SRVDesc.Format = dstex.Format;
+	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	SRVDesc.Texture2DArray.ArraySize = 1;
+	SRVDesc.Texture2DArray.FirstArraySlice = 0;
+	SRVDesc.Texture2DArray.MipLevels = 1;
+	SRVDesc.Texture2DArray.MostDetailedMip = 0;
+
+
+	if( FAILED ( this->d3dDevice->CreateShaderResourceView( lightTex, &SRVDesc, &this->lightSRV[0] ) ) )
+	{
+		MessageBox(0, L"Failed to create shader resource!", L"Error", 0);
+		return false;
+	}
+	
+}
+
 D3DShell* D3DShell::self()
 {
 	if(!D3DShell::PrDat::d3dShellInstance)
@@ -832,6 +894,7 @@ void D3DShell::BeginGBufferRenderTargets()
 {
 	float clearColor[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 
+	int k = DeferredRenderLayout::MRT_COUNT;
 	for(int i = 0; i < DeferredRenderLayout::MRT_COUNT; i++)
 	{
 		this->getDeviceContext()->ClearRenderTargetView(this->_prDatPtr->deffRTV[i], clearColor);
@@ -859,19 +922,18 @@ void D3DShell::releaseSRV()
 void D3DShell::BeginLightRenderTarget()
 {
 
-	//float clearColor[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+	float clearColor[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 
-	//for(int i = 0; i < DeferredRenderLayout::MRT_COUNT; i++)
-	//{
-	//	this->getDeviceContext()->ClearRenderTargetView(this->_prDatPtr->deffRTV[i], clearColor);
-	//}
-	//this->getDeviceContext()->ClearDepthStencilView(this->_prDatPtr->deffDepthStencil[0], D3D11_CLEAR_DEPTH, 1.0, 0);
+	
+	this->getDeviceContext()->ClearRenderTargetView(this->_prDatPtr->lightRTV[0], clearColor);
+	
+	this->getDeviceContext()->ClearDepthStencilView(this->_prDatPtr->deffDepthStencil[0], D3D11_CLEAR_DEPTH, 1.0, 0);
 
-	//this->getDeviceContext()->OMSetRenderTargets(DeferredRenderLayout::MRT_COUNT, this->_prDatPtr->deffRTV, this->_prDatPtr->deffDepthStencil[0]);
+	this->getDeviceContext()->OMSetRenderTargets(0, this->_prDatPtr->lightRTV, this->_prDatPtr->deffDepthStencil[0]);
 
 }
 
 ID3D11ShaderResourceView** D3DShell::getLightSRV()
 {
-	return NULL;
+	return this->_prDatPtr->lightSRV;
 }

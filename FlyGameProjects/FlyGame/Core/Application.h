@@ -33,7 +33,7 @@ class Application
 		void ShowMenu();
 		void PlayLevel();
 		//----------------
-		IShader::SHADER_PARAMETER_DATA getWVPBuffer();
+		IShader::PER_FRAME_DATA getWVPBuffer();
 		void initTestData();
 
 		static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam); 

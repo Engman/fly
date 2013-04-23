@@ -4,7 +4,14 @@ SamplerState SampleTypeClamp : register(s0);
 #include "LightHelp.fx"
 
 DirLight dirLight;
-Material mat;
+
+cbuffer MaterialData
+{
+	float4 ambient;
+	float4 diffuse;
+	float4 specular;
+	int speculalrPower;
+};
 
 struct PS_IN
 {
@@ -18,6 +25,7 @@ struct PS_OUT
 {
   float4 ColorRGBA : SV_TARGET0;
   float4 NormalRGB_DepthA : SV_TARGET1;
+  float4 AmbR_diffG_specB_powA : SV_TARGET2;
 };
 
 PS_OUT FPixelShader( PS_IN input ) 
@@ -34,6 +42,8 @@ PS_OUT FPixelShader( PS_IN input )
   normal += bumpNormal.xyz;
   
   output.NormalRGB_DepthA = float4( normal, input.position.w);
+  
+  output.AmbR_diffG_specB_powA = float4( normal, 0); //Material.speculalr.xyz, Material.speculalrPower);
   
   return output;
 }

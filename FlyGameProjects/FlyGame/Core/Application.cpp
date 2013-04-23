@@ -263,9 +263,9 @@ bool Application::InitMatrixBuffer()
 	return true;
 }
 
-IShader::SHADER_PARAMETER_DATA Application::getWVPBuffer()
+IShader::PER_FRAME_DATA Application::getWVPBuffer()
 {
-	IShader::SHADER_PARAMETER_DATA gBufferDrawData;
+	IShader::PER_FRAME_DATA gBufferDrawData;
 	gBufferDrawData.lights = g_lightHolder->getDirLights();
 	cBufferMatrix* dataPtr = (cBufferMatrix*)(this->pMatrixBuffer->Map());
 	D3DXMATRIX world;
@@ -336,7 +336,7 @@ void Application::DeferedRendering()
 	FLAGS::STATE_SAMPLING samp[1] =  { FLAGS::SAMPLER_Linear };
 	D3DShell::self()->setSamplerState(samp, FLAGS::PS, 0,1);
 
-	IShader::SHADER_PARAMETER_DATA gBufferDrawData;
+	IShader::PER_FRAME_DATA gBufferDrawData;
 	gBufferDrawData = getWVPBuffer();
 
 	//--------G-buffers---------//
@@ -354,6 +354,8 @@ void Application::DeferedRendering()
 
 	//reset the world matrix
 	gBufferDrawData  = getWVPBuffer();
+
+
 
 	//----------Final pass add light and color together------//
 	//second render stage

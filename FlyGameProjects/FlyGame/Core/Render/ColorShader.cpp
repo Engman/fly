@@ -6,7 +6,7 @@ ColorShader::ColorShader()
 
 }
 
-void ColorShader::draw(SHADER_PARAMETER_DATA& wMatrixData)
+void ColorShader::draw(PER_FRAME_DATA& wMatrixData)
 {
 	int indexC = 0;
 
@@ -31,7 +31,7 @@ void ColorShader::draw(SHADER_PARAMETER_DATA& wMatrixData)
 		if(this->drawData[i].worldMatrix) //if the object have a world matrix
 		{
 
-			cBufferMatrix* cb = (cBufferMatrix*)wMatrixData.cMatrixBuffer->Map();
+			cBufferMatrix* cb = (cBufferMatrix*)this->matrixBuffer->Map();
 			if(cb)
 			{
 				cb->world = *this->drawData[i].worldMatrix; // add the world matrix of the object
@@ -43,11 +43,11 @@ void ColorShader::draw(SHADER_PARAMETER_DATA& wMatrixData)
 				D3DXMatrixTranspose(&cb->view,&cb->view);
 				D3DXMatrixTranspose(&cb->projection,&cb->projection);
 
-				wMatrixData.cMatrixBuffer->Unmap();
+				this->matrixBuffer->Unmap();
 			}
 		}
 
-		wMatrixData.cMatrixBuffer->setBuffer();
+		this->matrixBuffer->setBuffer();
 		for(int k = 0; k <(int)this->drawData[i].buffers.size(); k++)
 		{
 			this->drawData[i].buffers[k]->setBuffer();

@@ -9,7 +9,7 @@ class GBufferShader : public IShader
 	public:
 		GBufferShader();
 
-		void draw(SHADER_PARAMETER_DATA& drawData);
+		void draw(PER_FRAME_DATA& drawData);
 
 	private:
 		

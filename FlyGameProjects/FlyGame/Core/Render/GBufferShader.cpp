@@ -7,17 +7,18 @@ GBufferShader::GBufferShader()
 	
 }
 
-void GBufferShader::draw(SHADER_PARAMETER_DATA& wMatrixData)
+void GBufferShader::draw(PER_FRAME_DATA& wMatrixData)
 {	
 
 	int indexC = 0;
 	
 	this->shader->Render();
+	
 	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_NoCullNoMs);
 	int count = (int)this->drawData.size();
 	for( int i = 0; i< count;i++)
 	{
-		cBufferMatrix* cb = (cBufferMatrix*)wMatrixData.cMatrixBuffer->Map();
+		cBufferMatrix* cb = (cBufferMatrix*)this->matrixBuffer->Map();
 		if(cb)
 		{
 			cb->world = *this->drawData[i].worldMatrix; // add the world matrix of the object
@@ -28,10 +29,10 @@ void GBufferShader::draw(SHADER_PARAMETER_DATA& wMatrixData)
 			D3DXMatrixTranspose(&cb->view,&cb->view);
 			D3DXMatrixTranspose(&cb->projection,&cb->projection);
 
-			wMatrixData.cMatrixBuffer->Unmap();
+			this->matrixBuffer->Unmap();
 		}
 
-		wMatrixData.cMatrixBuffer->setBuffer(); // set wvp matrix
+		this->matrixBuffer->setBuffer(); // set wvp matrix
 		
 
 		for(int k = 0; k <(int)this->drawData[i].buffers.size(); k++)	// set vertex and index buffers
@@ -42,18 +43,29 @@ void GBufferShader::draw(SHADER_PARAMETER_DATA& wMatrixData)
 				indexC = this->drawData[i].buffers[k]->getNrOfElements();
 		}
 
-		if(this->drawData[i].textures ) //if there is any textures
+		if(this->drawData[i].material ) //if there is any textures
 		{
 			ID3D11ShaderResourceView* srv[3];
-			int nr = (int)this->drawData[i].textures->size();
-			for(int k= 0; k<(int)this->drawData[i].textures->size(); k++)
-			{
-				srv[k] = this->drawData[i].textures->at(i).getSRV();
-			}
-			D3DShell::self()->getDeviceContext()->PSSetShaderResources(0,nr, srv);
+			this->drawData[i].material->GetAmbientTexture();
+			//int nr = this->drawData[i].textures->size();
+			//for(int k= 0; k<(int)this->drawData[i].textures->size(); k++)
+			//{
+			//srv[i] = this->drawData[i].textures->at(i).getSRV();
+			//}
+			srv[0] = this->drawData[i].material->GetAmbientTexture();
+			srv[1] = this->drawData[i].material->GetDiffuseTexture();
+			D3DShell::self()->getDeviceContext()->PSSetShaderResources(0,2, srv);
+
+			this->drawData[i].material->GetBuffer();
 		}
+		//set material cBuffer
+		
+	
+
+
 		this->shader->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		this->shader->GetDeviceContext()->DrawIndexed(indexC, 0, 0);
+
 	}
 	this->clearData();
 }

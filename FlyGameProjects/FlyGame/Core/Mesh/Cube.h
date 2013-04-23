@@ -12,7 +12,7 @@
 #include "..\..\Util\vertex.h"
 #include "..\Texture2D.h"
 #include "..\TextureArray.h"
-
+#include "ObjectMaterial.h"
 
 class Cube
 {
@@ -26,7 +26,8 @@ private:
 
 	std::vector<Texture2D>	m_texture;
 	IShader*				m_shader;
-	
+	ObjectMaterial			m_material;
+
 	D3DXVECTOR3 getNormal(D3DXVECTOR3 p0, D3DXVECTOR3 p1, D3DXVECTOR3 p2);
 	
 public:

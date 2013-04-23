@@ -6,6 +6,8 @@ cbuffer CB_CAMERA
   float4x4 mProj;
   float4x4 mWorldInvTrans;
 };
+
+
   
 struct VS_IN
 {

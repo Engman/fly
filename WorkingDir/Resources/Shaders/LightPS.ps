@@ -10,6 +10,7 @@ DirLight dirLight;
 
 Texture2D colorSRV : register(t0);
 Texture2D normal_depthSRV : register(t1);
+Texture2D materialSRV : register(t2);
 
 SamplerState SampleTypeClamp : register(s0);
 //SamplerState SampleTypeWrap : register(s1);
@@ -38,7 +39,8 @@ float4 Phong(float3 Position, float3 N,float SpecularIntensity, float SpecularPo
 	//Calculate Eye vector
 	float3 E = normalize(CameraPosition - Position.xyz);
 	
-	//Calculate N.L float NL = dot(N, - dirLight.Direction);
+	//Calculate N.L
+	float NL = dot(N, - dirLight.Direction);
 
 	//Calculate Diffuse
 	float3 Diffuse = NL * dirLight.Diffuse.xyz;

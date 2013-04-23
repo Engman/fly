@@ -58,6 +58,19 @@ void Plane::Initialize(D3DXMATRIX world,  float height, float width, ID3D11Devic
 	text.push_back(L"..\\Resources\\Textures\\Baron_NashorBump.png");
 	text.push_back(L"..\\Resources\\Textures\\Baron_NashorSpec.png");
 	addTextures(text);
+
+	ObjectMaterial::OBJECT_MATERIAL_DESC mat;
+	mat.dc  = D3DShell::self()->getDeviceContext();
+	mat.device= D3DShell::self()->getDevice();
+	mat.ambientTexture = L"..\\Resources\\Textures\\Baron_Nashor.png";
+	mat.diffuseTexture = L"..\\Resources\\Textures\\Baron_NashorBump.png";
+	mat.ambient = D3DXVECTOR4(0,0,0,0);
+	mat.diffuse = D3DXVECTOR4(0,0,0,0);
+	mat.specular = D3DXVECTOR4(1,0,0,0);
+	mat.specualarPow = 2;
+
+	this->m_material.CreateMaterial(mat);
+
 }
 
 
@@ -81,7 +94,8 @@ void Plane::Render( ID3D11DeviceContext* g_DeviceContext)
 	IShader::DRAW_DATA draw_data;
 	draw_data.buffers.push_back(m_VertexBuffer);
 	draw_data.buffers.push_back(m_IndexBuffer);
-	draw_data.textures = &m_texture;
+	//draw_data.textures = &m_texture;
+	draw_data.material = &m_material;
 	draw_data.worldMatrix = &m_world;
 	m_shader->addDrawData(draw_data);
 }
