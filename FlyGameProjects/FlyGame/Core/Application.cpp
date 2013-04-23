@@ -153,7 +153,7 @@ void Application::DeferedRendering()
 //#################################//
 
 
-	//g_plane->Render(D3DShell::self()->getDeviceContext());
+	g_plane->Render(D3DShell::self()->getDeviceContext());
 	//g_cube->Render(D3DShell::self()->getDeviceContext());
 
 	for (int i = 0; i <(int)this->objects.size(); i++)
