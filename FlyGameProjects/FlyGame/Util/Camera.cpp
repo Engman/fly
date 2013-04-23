@@ -16,7 +16,6 @@ Camera::Camera()
 
 	this->lookAt = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 }
-
 Camera::Camera(const Camera& other)
 {
 	this->positionX = other.positionX;
@@ -36,7 +35,6 @@ Camera::Camera(const Camera& other)
 	this->projectionMatrix = other.projectionMatrix;
 	this->orthogonalMatrix = other.orthogonalMatrix;
 }
-
 Camera::~Camera()
 {
 
@@ -48,7 +46,6 @@ void Camera::SetPosition(float x, float y, float z)
 	this->positionY = y;
 	this->positionZ = z;
 }
-
 void Camera::SetRotation(float x, float y, float z)
 {
 	this->rotationX = x;
@@ -62,25 +59,9 @@ void Camera::SetProjectionMatrix(float fieldOfView, float aspectRatio, float nea
 	this->projNear = nearPlane;
 	D3DXMatrixPerspectiveFovLH(&this->projectionMatrix, fieldOfView, aspectRatio, nearPlane, farPlane);
 }
-
 void Camera::SetOrthogonalMatrix(float width, float height, float nearPlane, float farPlane)
 {
 	D3DXMatrixOrthoLH(&this->orthogonalMatrix, width, height, nearPlane, farPlane);
-}
-
-D3DXVECTOR3 Camera::GetPosition() const
-{
-	return D3DXVECTOR3(this->positionX, this->positionY, this->positionZ);
-}
-
-D3DXVECTOR3 Camera::GetRotation() const
-{
-	return D3DXVECTOR3(this->rotationX, this->rotationY, this->rotationZ);
-}
-
-D3DXVECTOR3 Camera::GetLookAt() const
-{
-	return D3DXVECTOR3(this->lookAt.x, this->lookAt.y, this->lookAt.z);
 }
 
 void Camera::Render()
@@ -150,16 +131,27 @@ void Camera::Render()
 
 }
 
+D3DXVECTOR3 Camera::GetPosition() const
+{
+	return D3DXVECTOR3(this->positionX, this->positionY, this->positionZ);
+}
+D3DXVECTOR3 Camera::GetRotation() const
+{
+	return D3DXVECTOR3(this->rotationX, this->rotationY, this->rotationZ);
+}
+
+D3DXVECTOR3 Camera::GetLookAt() const
+{
+	return D3DXVECTOR3(this->lookAt.x, this->lookAt.y, this->lookAt.z);
+}
 D3DXMATRIX Camera::GetViewMatrix() const
 {
 	return this->viewMatrix;
 }
-
 D3DXMATRIX Camera::GetProjectionMatrix() const
 {
 	return this->projectionMatrix;
 }
-
 D3DXMATRIX	Camera::GetOrthogonalMatrix() const
 {
 	return this->orthogonalMatrix;
@@ -169,12 +161,10 @@ D3DXVECTOR3	Camera::GetForward() const
 {
 	return D3DXVECTOR3(this->viewMatrix._11, this->viewMatrix._21, this->viewMatrix._31);
 }
-
 D3DXVECTOR3 Camera::GetRight() const
 {
 	return D3DXVECTOR3(this->viewMatrix._13, this->viewMatrix._23, this->viewMatrix._33);
 }
-
 D3DXVECTOR3	Camera::GetParallelForward() const
 {
 	D3DXVECTOR3 up, returnedValue;
@@ -188,7 +178,6 @@ D3DXVECTOR3	Camera::GetParallelForward() const
 
 	return returnedValue;
 }
-
 D3DXVECTOR3 Camera::GetParallelRight() const
 {
 	D3DXVECTOR3 up, returnedValue;
@@ -229,18 +218,16 @@ void Camera::SetRotationZ(float z)
 	this->rotationZ = z;
 }
 
-ViewFrustum Camera::GetViewFrustum()
+void Camera::ConstructViewFrustum(ViewFrustum& frustum)
 {
 	float zMinimum, r;
 	D3DXMATRIX matrix;
-	ViewFrustum frustum;
-	
-	
+		
 	// Calculate the minimum Z distance in the frustum.
-	zMinimum = -projectionMatrix._43 / projectionMatrix._33;
+	zMinimum = -this->projectionMatrix._43 / this->projectionMatrix._33;
 	r = this->projFar / (this->projFar - zMinimum);
-	projectionMatrix._33 = r;
-	projectionMatrix._43 = -r * zMinimum;
+	this->projectionMatrix._33 = r;
+	this->projectionMatrix._43 = -r * zMinimum;
 
 	// Create the frustum matrix from the view matrix and updated projection matrix.
 	D3DXMatrixMultiply(&matrix, &this->viewMatrix, &this->projectionMatrix);
@@ -287,6 +274,16 @@ ViewFrustum Camera::GetViewFrustum()
 	frustum.planes[5].d = matrix._44 + matrix._42;
 	D3DXPlaneNormalize(&frustum.planes[5], &frustum.planes[5]);
 
+	//Calculate sphere around frustum for faster culling
+	float length = this->projFar - this->projNear;
+	float height = length*tan((float)D3DX_PI*0.5f*0.5f);
+	float width = height*(800/600);
 
-	return frustum;
+	D3DXVECTOR3 p(0.0f,0.0f, 1+length*0.5f);
+	D3DXVECTOR3 q(width, height, length);
+
+	D3DXVECTOR3 vDiff(p-q);
+
+	frustum.sphere.radius = D3DXVec3Length(&vDiff);
+	frustum.sphere.center = D3DXVECTOR3(this->positionX, this->positionY, this->positionZ) + (D3DXVECTOR3(this->GetLookAt().x - this->positionX, this->GetLookAt().y - this->positionY, this->GetLookAt().z - this->positionZ)*(length*0.5f));  
 }

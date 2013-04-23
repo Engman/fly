@@ -52,8 +52,6 @@ bool Application::Initialize(HINSTANCE hInst)
 	D3DXMatrixTranslation(&world, 2,2,0);
 	g_cube->Initialize(world, 2, 2, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
 
-	this->mainCamera.GetViewFrustum();
-
 	return true;
 }
 
@@ -352,6 +350,7 @@ IShader::SHADER_PARAMETER_DATA Application::getWVPBuffer()
 	
 	
 	return gBufferDrawData;
+}
 
 bool Application::LoadResources()
 {

@@ -3,6 +3,7 @@
 
 #include <D3DX11\d3dx10math.h>
 #include "Proxy.h"
+#include "BoundingVolumes.h"
 
 class Camera
 {
@@ -51,7 +52,7 @@ class Camera
 		D3DXVECTOR3	GetParallelForward() const;
 		D3DXVECTOR3 GetParallelRight() const;
 
-		ViewFrustum GetViewFrustum();
+		 void ConstructViewFrustum(ViewFrustum& frustum);
 };
 
 #endif
