@@ -1,67 +1,42 @@
 #ifndef RAW_OBJECT_DATA_H
 #define RAW_OBJECT_DATA_H
 
+
 #include "..\..\Util\vertex.h"
 #include "..\..\Util\SmartPtrs.h"
+
 #include <vector>
 
-struct RawVertIndexData
+struct ObjectData
 {
-	int v;
-	int vt;
-	int vn;
-	RawVertIndexData()
-		:v(0), vt(0), vn(0)
-	{}
-	RawVertIndexData(int _v, int _vt, int _vn)
-		:v(_v), vt(_vt), vn(_vn)
-	{}
+	int material;
+	SmartPtrStd<std::vector<VERTEX::VertexPNT>> vertex;
 };
-struct RawVertecieFaceData
+struct FrameData
 {
-	RawVertIndexData f[3];
-
-	RawVertecieFaceData()
-	{}
+	int objectIndex;
+	int frameNumber;
+	float frameTime;
 };
-struct RawVertecieData
+struct AnimationData
 {
-	std::vector<RawVertecieFaceData>		index;
-	std::vector<D3DXVECTOR4>				position;
-	std::vector<D3DXVECTOR4>				normal;
-	std::vector<D3DXVECTOR2>				textCoord;
-};
-struct RawMaterialData
-{
-	std::wstring							name;
-	D3DXVECTOR4								ambient;
-	D3DXVECTOR4								diffuse;
-	D3DXVECTOR4								specular;
-	int										specualarPow;
-	std::wstring							ambientTexture;
-	std::wstring							diffuseTexture;
-	std::wstring							specularTexture;
-	std::wstring							glowTexture;
-	std::wstring							normalTexture;
+	int id;
+	std::vector<FrameData> frames;
 };
 
-struct VertexObjectData
-{
-	std::vector<VERTEX::VertexPNT>	vertex;
-	std::vector<UINT>				indecies;
-};
 
-/** Wraps imported data, contains data from ONE file */
+/** Wraps imported data */
 struct ImportedObjectData
 {
 	/** The name of the object collection */
-	std::wstring									name;
+	std::wstring					name;
 	/** Contains n loaded objects */
-	std::vector<VertexObjectData>		MeshData;
+	std::vector<ObjectData>			objects;
+	/** Contains animation information */
+	std::vector<AnimationData>		animations;
 	/** The material loaded with the obeject */
-	//std::vector<RawMaterialData>		materialData;
+	//std::vector<int>				materialData;
 };
-
 
 #endif
 

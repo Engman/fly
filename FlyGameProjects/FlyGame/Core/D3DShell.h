@@ -4,6 +4,7 @@
 #include <vector>
 #include <ctime>
 
+#include "D3DxLink.h"
 #include "stdafx.h"
 
 #include "RasterizerState.h"
@@ -102,6 +103,15 @@ class D3DShell
 		void						BeginGBufferRenderTargets();
 		ID3D11ShaderResourceView**	getDefferedSRV();   /**returns the shader recourse view array*/
 		int getNrOfSRV();	
+		void releaseSRV();
+
+		void BeginLightRenderTarget();
+		ID3D11ShaderResourceView** getLightSRV();
+
+
+
+
+
 };
 
 

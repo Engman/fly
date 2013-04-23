@@ -1,9 +1,11 @@
 #ifndef I_STATIC_OBJECT_H
 #define I_STATIC_OBJECT_H
 
-#include "../Entity.h"
-#include "RawObjectData.h"
-//#include "BoundingBox"
+
+#include "MaterialHandler.h"
+#include "..\Entity.h"
+#include "..\..\Util\vertex.h"
+//#include "BoundingVolumes"
 
 
 /** 
@@ -14,9 +16,26 @@
 */
 class Object		:public Entity
 {
+	public:
+		struct OBJECT_DESC
+		{
+			/** The ID3D11Device to use for initialization */
+			ID3D11Device					*device;
+			/** The ID3D11DeviceContext to use for initialization */
+			ID3D11DeviceContext				*deviceContext;
+			/** The vertex list to use in the buffer (VertexPNT) */
+			SmartPtrStd<std::vector<VERTEX::VertexPNT>>							vertecies;
+			/** Vertex count */
+			UINT							vCount;
+			/** The material identifier */
+			int								material_id;
+			/** (Optional) */
+			IShader*						shader;
+		};
+
 	protected:
 		//BoundingBox boundingBox;
-		//Mesh
+		ObjectMaterial* material;
 
 	public:
 		Object();
@@ -28,7 +47,7 @@ class Object		:public Entity
 		virtual void Render();
 
 		/** Builds a Object than is ready for rendering */
-		bool Initialize(ImportedObjectData modelRawData);
+		virtual bool Initialize(OBJECT_DESC& data);
 };
 
 

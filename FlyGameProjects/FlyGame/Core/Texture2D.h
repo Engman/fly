@@ -18,11 +18,16 @@ class Texture2D
 		Texture2D& operator=(const Texture2D& obj);
 		virtual~Texture2D();
 
-		ID3D11ShaderResourceView* const* getSRV();
-		bool loadTexture(ID3D11Device *device, WCHAR* filename);
-		bool loadTexture(ID3D11Device *device, ID3D11DeviceContext* dc, std::vector<WCHAR*>& filename);
+		/** Returns a vector with the collection of shader resource views
+		*	Returns NULL if no textures*/
+		std::vector<ID3D11ShaderResourceView*>* getTextures();
 
-		int getID() const;
+		/** Returns the first texture in collection
+		*	Returns NULL if no texture*/
+		ID3D11ShaderResourceView* getTexture();
+		
+		/** Loads a texture from file as shader resource view */
+		bool loadTexture(ID3D11Device *device, std::wstring file);
 };
 
 #endif

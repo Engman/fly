@@ -1,6 +1,8 @@
 #include "Application.h"
 #include "..\Util\vertex.h"
 #include "..\Util\Importer\ResourceImporter.h"
+#include "Mesh\MaterialHandler.h"
+#include "Mesh\Object.h"
 
 
 
@@ -22,11 +24,12 @@ Application::~Application()
 
 }
 
-bool Application::Initialize(HINSTANCE hInst)
+bool Application::Initialize(HINSTANCE hInst, int width, int height)
 {
-	Point2D size(800, 600);
+	ID3D11Device* dev = D3DShell::self()->getDevice();
+	Point2D size(width, height);
 	if(!InitWindow(hInst, size))	return false;
-	if(!InitD3D(size))				return false;
+	if(!InitD3D(size, WindowShell::self()->getHWND()))		return false;
 	if(!InitInput())				return false;
 	if(!InitGBuffers())				return false;
 	if(!InitColorShader())			return false;
@@ -39,18 +42,8 @@ bool Application::Initialize(HINSTANCE hInst)
 	this->mainCamera.SetPosition(0.0f, 0.0f, 0.0f);
 	this->mainCamera.SetRotation(0.0f, 0.0f, 0.0f);
 
-	D3DXMATRIX world; 
-	D3DXMatrixIdentity(&world);
+	initTestData();
 
-	g_plane = new Plane();
-	g_plane->Initialize(world, 2, 2, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
-	
-	g_FinalPlane = new Plane();
-	g_FinalPlane->Initialize(world, 1, 1, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &g_colorShader);
-
-	g_cube = new Cube();
-	D3DXMatrixTranslation(&world, 2,2,0);
-	g_cube->Initialize(world, 2, 2, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
 
 	return true;
 }
@@ -73,6 +66,13 @@ void Application::Run()
 		 }
 
 	}
+}
+bool Application::Frame()
+{
+	Update();
+	Render();
+
+	return true;
 }
 
 void Application::Shutdown()
@@ -128,68 +128,112 @@ void Application::MouseMoveEvent(Input::MouseMoveData d)
 }
 void Application::Update()
 {
-	g_cube->Update();
+	//g_cube->Update();
 }
 bool Application::Render()
 {
-	D3DXMATRIX world;
-	D3DXMatrixIdentity(&world);
-	
-	IShader::SHADER_PARAMETER_DATA gBufferDrawData;
-	gBufferDrawData = getWVPBuffer();
+	this->mainCamera.Render();
+	DeferedRendering();
 
-	
-	//draw g-buffers
-	//render plane
+	return true;
+}
+void Application::DeferedRendering()
+{
 	D3DShell::self()->BeginGBufferRenderTargets();
-	//g_plane->SetShader(&this->gBufferShader);
-	g_plane->Render(D3DShell::self()->getDeviceContext());
-	this->gBufferShader.draw(gBufferDrawData);
 
-	//reset the world matrix
-	cBufferMatrix* cb = (cBufferMatrix*)gBufferDrawData.cMatrixBuffer->Map();
-	cb->world = world; // add the world matrix of the object
-	D3DXMatrixLookAtLH(&cb->view, &D3DXVECTOR3(0.0f, 0.0f, -5.0f), &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
-	D3DXMatrixPerspectiveFovLH(&cb->projection,(float)D3DX_PI * 0.45f, 800/600, 0.1f, 100.0f);
-	cb->worldInvTranspose = world;
-	D3DXMatrixTranspose(&cb->world, &cb->world);
-	D3DXMatrixTranspose(&cb->view,&cb->view);
-	D3DXMatrixTranspose(&cb->projection,&cb->projection);
-	gBufferDrawData.cMatrixBuffer->Unmap();
+	IShader::PER_FRAME_DATA gBufferDrawData;
+	gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
+	gBufferDrawData.view = this->mainCamera.GetViewMatrix();
+	gBufferDrawData.projection = this->mainCamera.GetProjectionMatrix();
+
+
+
+//#################################//
+//########## G-buffers ############//
+//#################################//
+
+
+	//g_plane->Render(D3DShell::self()->getDeviceContext());
+	//g_cube->Render(D3DShell::self()->getDeviceContext());
+
+	for (int i = 0; i <(int)this->objects.size(); i++)
+	{
+		this->objects[i]->Render();
+	}
+	this->gBufferShader.draw(gBufferDrawData);
 
 	
-	//render cube
-	g_cube->Render(D3DShell::self()->getDeviceContext());
-	this->gBufferShader.draw(gBufferDrawData);
 
-	//reset the world matrix
-	cb = (cBufferMatrix*)gBufferDrawData.cMatrixBuffer->Map();
-	cb->world = world; // add the world matrix of the object
-	D3DXMatrixLookAtLH(&cb->view, &D3DXVECTOR3(0.0f, 0.0f, -5.0f), &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
-	D3DXMatrixPerspectiveFovLH(&cb->projection,(float)D3DX_PI * 0.45f, 800/600, 0.1f,  100.0f);
-	cb->worldInvTranspose = world;
-	D3DXMatrixTranspose(&cb->world, &cb->world);
-	D3DXMatrixTranspose(&cb->view,&cb->view);
-	D3DXMatrixTranspose(&cb->projection,&cb->projection);
-	gBufferDrawData.cMatrixBuffer->Unmap();
 
+//##################################################################//
+//------------- Final pass, add light and color together ----------//
+//##################################################################//
 	//second render stage
 	//sampling from g-buffers
-	 D3DShell::self()->setRenderTarget();
-	 D3DShell::self()->beginScene();
-	 FLAGS::STATE_SAMPLING samp[1] =  { FLAGS::SAMPLER_Linear };
-	 D3DShell::self()->setSamplerState(samp, FLAGS::PS, 0,1);
-	 //this->g_plane->SetShader(&g_colorShader);
-	 this->g_FinalPlane->Render(D3DShell::self()->getDeviceContext());
-	 this->g_colorShader.draw(gBufferDrawData);
+	D3DShell::self()->setRenderTarget();
+	D3DShell::self()->beginScene();
+	//dir light
+	this->g_FullscreenQuad->Render(D3DShell::self()->getDeviceContext());
+	this->g_colorShader.draw(gBufferDrawData);
+	
+	D3DShell::self()->releaseSRV();
+	D3DShell::self()->endScene();
+}
 
-	 D3DShell::self()->endScene();
 
+
+bool Application::LoadResources()
+{
+	WIN32_FIND_DATA FindFileData;
+	HANDLE hFind = FindFirstFile(L"..\\Resources\\Models\\*.obj", &FindFileData);
+	
+	if(hFind == INVALID_HANDLE_VALUE)
+	{
+		DisplayText("No files in [Model] directory.");
+		return false;
+	}
+	else
+	{
+		vector<std::wstring> models;
+		std::wstring tempFirst = L"..\\Resources\\Models\\"; 
+		tempFirst.append(FindFileData.cFileName);
+		models.push_back(tempFirst);
+
+		while ( FindNextFile(hFind, &FindFileData) )
+		{
+			std::wstring file = L"..\\Resources\\Models\\"; 
+			file.append(FindFileData.cFileName);
+			models.push_back(file);
+		}
+
+		for (int i = 0; i < (int)models.size(); i++)
+		{
+			//Load mesh objects
+			SmartPtrStd<ImportedObjectData> raw;
+			if(!ResourceImporter::ImportObject(models[i].c_str(), D3DShell::self()->getDevice(), raw))
+				return false;
+
+			//Create the object for rendering
+			Object *model = new Object();
+			Object::OBJECT_DESC desc;
+			desc.device = D3DShell::self()->getDevice();
+			desc.deviceContext = D3DShell::self()->getDeviceContext();
+			desc.material_id = MaterialHandler::GetMaterial(raw->objects[0].material)->GetID();
+			desc.shader = &this->gBufferShader;
+			desc.vertecies = raw->objects[0].vertex;
+			desc.vCount = (int)raw->objects[0].vertex->size();
+			if(!model->Initialize(desc))
+				return false;
+
+			this->objects.push_back(model);
+		}
+	}
 	return true;
 }
 
 
-bool Application::InitD3D(Point2D size)
+
+bool Application::InitD3D(Point2D size, HWND hWnd)
 {
 	D3DShell::D3D_INIT_DESC desc;
 
@@ -252,12 +296,12 @@ bool Application::InitGBuffers()
 
 	gBufferDesc.dc = D3DShell::self()->getDeviceContext();
 	gBufferDesc.device = D3DShell::self()->getDevice();
-	gBufferDesc.VSFilename = L"../Resources/Shaders/deferredShaderVS.vs";
-	gBufferDesc.PSFilename = L"../Resources/Shaders/deferredShaderPS.ps";
+	gBufferDesc.VSFilename = L"../Resources/Shaders/deferredShaderTextVS.vs";
+	gBufferDesc.PSFilename = L"../Resources/Shaders/deferredShaderTextPS.ps";
 	//gBufferDesc.VSFilename = L"../Resources/Shaders/colorVS.vs";
 	//gBufferDesc.PSFilename = L"../Resources/Shaders/colorPS.ps";
 	gBufferDesc.shaderVersion = D3DShell::self()->getSuportedShaderVersion();
-	gBufferDesc.polygonLayout = VERTEX::VertexPNC3_InputElementDesc;
+	gBufferDesc.polygonLayout = VERTEX::VertexPNT_InputElementDesc;
 	gBufferDesc.nrOfElements = 3;
 
 	if(!this->gBufferShader.init(gBufferDesc))	
@@ -265,21 +309,38 @@ bool Application::InitGBuffers()
 
 	return true;
 }
+bool Application::InitLightShader()
+{
+	BaseShader::BASE_SHADER_DESC lightShaderDesc;
+
+	lightShaderDesc.dc = D3DShell::self()->getDeviceContext();
+	lightShaderDesc.device = D3DShell::self()->getDevice();
+	lightShaderDesc.VSFilename = L"../Resources/Shaders/LightVS.vs";
+	lightShaderDesc.PSFilename = L"../Resources/Shaders/LightPS.ps";
+	lightShaderDesc.shaderVersion = D3DShell::self()->getSuportedShaderVersion();
+	lightShaderDesc.polygonLayout = VERTEX::VertexPNC_InputElementDesc;
+	lightShaderDesc.nrOfElements = 3;
+
+	if(!this->g_lightShader.init(lightShaderDesc))	
+		return false;
+
+	return true;
+}
 bool Application::InitColorShader()
 {
-	BaseShader::BASE_SHADER_DESC gBufferDesc;
+	BaseShader::BASE_SHADER_DESC colorShaderDesc;
 
-	gBufferDesc.dc = D3DShell::self()->getDeviceContext();
-	gBufferDesc.device = D3DShell::self()->getDevice();
-	//gBufferDesc.VSFilename = L"../Resources/Shaders/deferredShaderVS.vs";
-	//gBufferDesc.PSFilename = L"../Resources/Shaders/deferredShaderPS.ps";
-	gBufferDesc.VSFilename = L"../Resources/Shaders/colorVS.vs";
-	gBufferDesc.PSFilename = L"../Resources/Shaders/colorPS.ps";
-	gBufferDesc.shaderVersion = D3DShell::self()->getSuportedShaderVersion();
-	gBufferDesc.polygonLayout = VERTEX::VertexPNC3_InputElementDesc;
-	gBufferDesc.nrOfElements = 3;
+	colorShaderDesc.dc = D3DShell::self()->getDeviceContext();
+	colorShaderDesc.device = D3DShell::self()->getDevice();
+	//colorShaderDesc.VSFilename = L"../Resources/Shaders/colorVS.vs";
+	//colorShaderDesc.PSFilename = L"../Resources/Shaders/colorPS.ps";
+	colorShaderDesc.VSFilename = L"../Resources/Shaders/TextLightVS.vs";
+	colorShaderDesc.PSFilename = L"../Resources/Shaders/TextLightPS.ps";
+	colorShaderDesc.shaderVersion = D3DShell::self()->getSuportedShaderVersion();
+	colorShaderDesc.polygonLayout = VERTEX::VertexPNC_InputElementDesc;
+	colorShaderDesc.nrOfElements = 3;
 
-	if(!this->g_colorShader.init(gBufferDesc))	
+	if(!this->g_colorShader.init(colorShaderDesc))	
 		return false;
 
 	return true;
@@ -301,64 +362,32 @@ bool Application::InitMatrixBuffer()
 	
 	return true;
 }
-
-IShader::SHADER_PARAMETER_DATA Application::getWVPBuffer()
+void Application::initTestData()
 {
-	IShader::SHADER_PARAMETER_DATA gBufferDrawData;
-	cBufferMatrix* dataPtr = (cBufferMatrix*)(this->pMatrixBuffer->Map());
-	D3DXMATRIX world;
-	D3DXMatrixIdentity(&world); //game world
-	dataPtr->world = world;
+	//test values -----------------
+	D3DXMATRIX world; 
+	D3DXMatrixIdentity(&world);
 
+	g_plane = new Plane();
+	g_plane->Initialize(world, 2.0f, 2.0f, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
 
-	D3DXVECTOR3 m_vUp		 (0,1,0);
-	D3DXVECTOR3 m_vLookAtPt  (0,0,1);
+	g_FullscreenQuad = new FullScreenQuad();
+	g_FullscreenQuad->Initialize( D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &g_colorShader);
 
-	D3DXVECTOR3 m_position (0,-0,-5);
+	g_cube = new Cube();
+	D3DXMatrixTranslation(&world, 2.0f, 2.0f, 0.0f);
+	g_cube->Initialize(world, 2.0f, 2.0f, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
 
+	g_lightHolder = new LightHolder();
+	g_lightHolder->Initialize();
+	DirectionalLightProxy dirLight;
+	dirLight.ambient = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
+	dirLight.diffuse= D3DXVECTOR4(1.0f ,1.0f, 1.0f , 1.0f);
+	dirLight.specular= D3DXVECTOR4(0.2f ,0.2f ,0.2f , 0.0f);
+	D3DXVECTOR4 dir(0.0f, -1.0f, -1.0f, 0.0f);
+	D3DXVec4Normalize(&dir, &dir); 
+	dirLight.direction= dir;
+	g_lightHolder->addLight(dirLight);
 
-	D3DXMatrixLookAtLH(&dataPtr->view, &m_position, &m_vLookAtPt, &m_vUp);
-	//D3DXMatrixLookAtLH(&dataPtr->view, &D3DXVECTOR3(0.0f, 0.0f, -5.0f), &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
-	D3DXMatrixPerspectiveFovLH(&dataPtr->projection,(float)D3DX_PI * 0.45f, 800/600, 0.1f, 100.0f);
-	
-
-	D3DXMatrixTranspose(&dataPtr->world, &dataPtr->world);
-	D3DXMatrixTranspose(&dataPtr->view,&dataPtr->view);
-	D3DXMatrixTranspose(&dataPtr->projection,&dataPtr->projection);
-	
-	dataPtr->worldInvTranspose = world;
-	D3DXMATRIX test;
-	
-	test = dataPtr->world;
-	test = dataPtr->view;
-	test = dataPtr->projection;
-	test = dataPtr->worldInvTranspose;
-
-	D3DXVECTOR4 pos(1,1,0,1); 
-	D3DXVec4Transform(&pos, &pos, &dataPtr->world);
-	D3DXVec4Transform(&pos, &pos, &dataPtr->view);
-	D3DXVec4Transform(&pos, &pos, &dataPtr->projection);
-	
-
-	pos;
-
-
-	this->pMatrixBuffer->Unmap();
-	gBufferDrawData.cMatrixBuffer = this->pMatrixBuffer;
-	gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
-
-	
-	
-	return gBufferDrawData;
+	//-----------------------------------
 }
-
-bool Application::LoadResources()
-{
-	//Load mesh objects
-	SmartPtrStd<ImportedObjectData> raw;
-	if(!ResourceImporter::Import(L"../Resources/Models/simplePlane.obj", raw))
-		return false;
-	return true;
-}
-
-

@@ -25,7 +25,7 @@ class ShaderHandler
 		static void destroy();
 
 		//int addShader(BaseShader::BASE_SHADER_DESC&);
-		void drawShaders(IShader::SHADER_PARAMETER_DATA&);
+		void drawShaders(IShader::PER_FRAME_DATA&);
 		std::vector<IShader*>* getShaders();
 		int getShaderCount() const;
 
