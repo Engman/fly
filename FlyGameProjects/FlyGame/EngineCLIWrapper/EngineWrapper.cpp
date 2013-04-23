@@ -13,7 +13,7 @@ EngineWrapper::~EngineWrapper()
 
 HRESULT EngineWrapper::Init(HWND hWnd, int width, int height)
 {
-	if(!this->flyGameEngine->Initialize(hWnd, width, height))
+	if(!this->flyGameEngine->Initialize((HINSTANCE)hWnd, width, height))
 		return E_FAIL;
 
 	return S_OK;
