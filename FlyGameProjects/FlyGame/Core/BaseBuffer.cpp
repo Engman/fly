@@ -156,7 +156,7 @@ void* BaseBuffer::Map()
 	{
 		case BUFFER_FLAG::USAGE_DEFAULT:
 		case BUFFER_FLAG::USAGE_IMMUTABLE:					 
-			mapType = -1;
+			return NULL;
 		break;
 
 		case BUFFER_FLAG::USAGE_DYNAMIC_CPU_WRITE:			 

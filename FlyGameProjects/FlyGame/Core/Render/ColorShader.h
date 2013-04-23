@@ -11,7 +11,7 @@ class ColorShader : public IShader
 public:
 	ColorShader();
 
-	void draw(SHADER_PARAMETER_DATA& drawData);
+	void draw(PER_FRAME_DATA& drawData);
 	void setSRVBuffer();
 
 private:

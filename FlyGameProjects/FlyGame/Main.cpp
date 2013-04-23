@@ -31,7 +31,7 @@ int WINAPI WinMain( HINSTANCE hInst, HINSTANCE prevInst, PSTR cmdLine, int cmdSh
 #else
 	Application app;
 
-	if(!app.Initialize(hInst))
+	if(!app.Initialize(hInst, 800, 600))
 		return cmdShow;
 
 	app.Run();

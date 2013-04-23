@@ -128,7 +128,7 @@ void Cube::Render( ID3D11DeviceContext* g_DeviceContext)
 	IShader::DRAW_DATA draw_data;
 	draw_data.buffers.push_back(m_VertexBuffer);
 	draw_data.buffers.push_back(m_IndexBuffer);
-	draw_data.textures = &m_texture;
+	//draw_data.textures = &m_texture;
 	draw_data.worldMatrix = &m_world;
 	m_shader->addDrawData(draw_data);
 }

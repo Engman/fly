@@ -4,6 +4,7 @@
 #include <vector>
 #include <ctime>
 
+#include "D3DxLink.h"
 #include "stdafx.h"
 
 #include "RasterizerState.h"

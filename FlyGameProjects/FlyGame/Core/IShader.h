@@ -4,20 +4,21 @@
 
 #include "BaseBuffer.h"
 #include "BaseShader.h"
-#include "Texture2D.h"
 #include "..\Util\GID.h"
 #include "..\Util\Proxy.h"
 #include "..\Util\SmartPtrs.h"
-#include "TextureArray.h"
+#include "Mesh\ObjectMaterial.h"
 
 /** Inherit to create shaders */
 class IShader
 {
 	public:
-		struct SHADER_PARAMETER_DATA
+		struct PER_FRAME_DATA
 		{
 			ID3D11DeviceContext* dc;
-			BaseBuffer* cMatrixBuffer;
+			//BaseBuffer* cMatrixBuffer;
+			Matrix	view;
+			Matrix	projection;
 			BaseBuffer* lights;
 		};
 		/** Used to set data for a draw call */
@@ -25,10 +26,10 @@ class IShader
 		{
 			D3DXMATRIX* worldMatrix;
 			std::vector<BaseBuffer*> buffers;
-			//TextureArray* textures;
-			std::vector<Texture2D>* textures; 
+			ObjectMaterial* material;
+			//std::vector<Texture2D>* textures; 
 			DRAW_DATA()
-				:worldMatrix(0)
+				:worldMatrix(0), material(0)
 			{}
 		};
 
@@ -36,6 +37,7 @@ class IShader
 		GID id;
 
 	protected:
+		BaseBuffer* matrixBuffer;
 		SmartPtrStd<BaseShader> shader;
 		std::vector<DRAW_DATA> drawData;
 
@@ -46,7 +48,7 @@ class IShader
 			this->drawData = std::vector<DRAW_DATA>(); 
 		}
 
-		virtual void draw(SHADER_PARAMETER_DATA&) = 0;
+		virtual void draw(PER_FRAME_DATA&) = 0;
 		/** Use this each frame to clear old content */
 		void clearData()
 		{
@@ -59,6 +61,27 @@ class IShader
 			this->shader = new BaseShader();
 			if( FAILED (this->shader->Initialize(desc) ) )
 				return false;
+
+
+			static SmartPtrStd<BaseBuffer> mb = new BaseBuffer();
+			static bool initiated = false;
+
+			if(!initiated)
+			{
+				BaseBuffer::BUFFER_INIT_DESC matrixBufferDesc;
+				matrixBufferDesc.dc = desc.dc;
+				matrixBufferDesc.device = desc.device;
+				matrixBufferDesc.elementSize = sizeof(cBufferMatrix);
+				matrixBufferDesc.nrOfElements = 1;
+				matrixBufferDesc.type = BUFFER_FLAG::TYPE_CONSTANT_VS_BUFFER;
+				matrixBufferDesc.usage = BUFFER_FLAG::USAGE_DYNAMIC_CPU_WRITE_DISCARD;
+				matrixBufferDesc.data = NULL;
+				if( FAILED( mb->Initialize(matrixBufferDesc) ) )
+					return false;
+				initiated = true;
+			}
+
+			this->matrixBuffer = mb;
 			return true;
 		}
 		void addDrawData(DRAW_DATA data)

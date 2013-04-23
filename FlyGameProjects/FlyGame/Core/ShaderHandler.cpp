@@ -38,7 +38,7 @@ void ShaderHandler::destroy()
 	ShaderHandler::_Data::instance = NULL;
 }
 
-void ShaderHandler::drawShaders(IShader::SHADER_PARAMETER_DATA& data)
+void ShaderHandler::drawShaders(IShader::PER_FRAME_DATA& data)
 {
 	for (int i = 0; i < (int)this->_shaders.size(); i++)
 		this->_shaders[i]->draw(data);

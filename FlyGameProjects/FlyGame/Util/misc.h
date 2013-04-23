@@ -6,15 +6,6 @@
 #include <vector>
 #include <string>
 
-#define DLLExport	__declspec(dllexport)
-#define DLLImport	__declspec(dllimport)
-
-
-#define FIND_MEMORY_LEAKS _CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF)
-#define DELETE_COM(x) if( x ) { (x)->Release(); (x) = NULL; }
-#define DELETE_PTR(x) if( x ) { delete(x); (x) = NULL; }
-#define DELETE_ARRAY(x) if( x ) { delete[](x); (x) = NULL; }
-
 
 typedef D3DXVECTOR2 vec2;
 typedef D3DXVECTOR3 vec3;
