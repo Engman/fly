@@ -14,11 +14,11 @@ class ObjectImporter
 		/**
 		*	Imports a object file
 		*/
-		bool Import(wchar_t* file, __out SmartPtrStd<ImportedObjectData>& objectData);
+		bool Import(std::wstring file, ID3D11Device* device, __out SmartPtrStd<ImportedObjectData>& objectData);
 		/**
 		*	Imports a material file
 		*/
-		bool Import(wchar_t* file, __out std::vector<int>& identifiers);
+		bool Import(std::wstring file, ID3D11Device* device, __out std::vector<int>& identifiers);
 };
 
 

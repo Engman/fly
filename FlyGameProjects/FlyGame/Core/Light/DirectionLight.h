@@ -2,9 +2,9 @@
 #define DIRECTIONLIGHT_H
 
 #include "..\..\Util\Proxy.h"
-#include "..\Entity.h"
+//#include "..\Entity.h"
 
-class DirectionLight : public Entity
+class DirectionLight //: public Entity
 {
 private:
 	DirectionalLightProxy dirLight; 

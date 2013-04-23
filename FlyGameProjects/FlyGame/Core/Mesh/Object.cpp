@@ -23,7 +23,9 @@ void Object::Render()
 		IShader::DRAW_DATA data;
 
 		for(int i = 0; i<(int)this->buffers.size(); i++)
-			data.buffers.push_back(this->buffers[0]);
+		{
+			data.buffers.push_back(this->buffers[i]);
+		}
 		data.worldMatrix = &this->world;
 		data.material = this->material;
 		this->shader->addDrawData(data);
@@ -37,7 +39,8 @@ bool Object::Initialize(OBJECT_DESC& data)
 		DisplayText("ID3D11Device is invalid!");
 		return false;
 	}
-	if(!data.vertecies)
+
+	if(!data.vertecies->size())
 	{
 		DisplayText("Nothing to initialize!");
 		return false;
@@ -56,7 +59,7 @@ bool Object::Initialize(OBJECT_DESC& data)
 	BaseBuffer::BUFFER_INIT_DESC desc;
 	desc.device			= data.device;
 	desc.dc				= data.deviceContext;
-	desc.data			= data.vertecies;
+	desc.data			= &(*data.vertecies)[0];
 	desc.elementSize	= sizeof(VERTEX::VertexPNT);
 	desc.nrOfElements	= (int)data.vCount;
 	desc.type			= BUFFER_FLAG::TYPE_VERTEX_BUFFER;

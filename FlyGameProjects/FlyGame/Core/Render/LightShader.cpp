@@ -27,6 +27,7 @@ void LightShader::draw(PER_FRAME_DATA& wMatrixData)
 	int count = (int)this->drawData.size();
 	for( int i = 0; i< count;i++)
 	{
+
 		cBufferMatrix* cb = (cBufferMatrix*)this->matrixBuffer->Map();
 		if(cb)
 		{
@@ -53,6 +54,7 @@ void LightShader::draw(PER_FRAME_DATA& wMatrixData)
 
 		this->shader->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		this->shader->GetDeviceContext()->DrawIndexed(indexC, 0, 0);
+
 	}
 	this->clearData();
 }

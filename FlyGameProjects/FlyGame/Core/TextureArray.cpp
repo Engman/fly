@@ -6,11 +6,11 @@ TextureArray::TextureArray()
 }
 TextureArray::~TextureArray()
 {
-	for(int i=0; i<nrOfTextures; i++)
+	/*for(int i=0; i<nrOfTextures; i++)
 	{
 		DELETE_COM(m_textArray[i]);
 	}
-	DELETE_ARRAY(m_textArray);
+	DELETE_ARRAY(m_textArray);*/
 }
 
 bool TextureArray::Initilize(std::vector<WCHAR*>& textNames, ID3D11Device* device, ID3D11DeviceContext* deviceContext)

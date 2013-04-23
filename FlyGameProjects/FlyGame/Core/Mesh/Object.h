@@ -24,7 +24,9 @@ class Object		:public Entity
 			/** The ID3D11DeviceContext to use for initialization */
 			ID3D11DeviceContext				*deviceContext;
 			/** The vertex list to use in the buffer (VertexPNT) */
-			void*							vertecies;
+
+			SmartPtrStd<std::vector<VERTEX::VertexPNT>>	vertecies;
+
 			/** Vertex count */
 			UINT							vCount;
 			/** The material identifier */

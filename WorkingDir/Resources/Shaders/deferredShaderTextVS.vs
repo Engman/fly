@@ -35,7 +35,7 @@ PS_IN FVertexShader( VS_IN input)
   output.position = mul(  output.position, mView );
   output.position = mul(  output.position, mProj );
   
-  output.normal = mul(input.normal.xyz, (float3x3)mWorld ); //borde gånga med invTrans
+  output.normal = mul(input.normal.xyz, (float3x3)mWorldInvTrans ); //borde gånga med invTrans
 
   output.textCoord = input.textCoord;
 

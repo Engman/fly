@@ -29,7 +29,7 @@ class IShader
 			ObjectMaterial* material;
 			//std::vector<Texture2D>* textures; 
 			DRAW_DATA()
-				:worldMatrix(0)
+				:worldMatrix(0), material(0)
 			{}
 		};
 
@@ -67,6 +67,7 @@ class IShader
 			static bool initiated = false;
 
 			if(!initiated)
+
 			{
 				BaseBuffer::BUFFER_INIT_DESC matrixBufferDesc;
 				matrixBufferDesc.dc = desc.dc;
@@ -77,7 +78,7 @@ class IShader
 				matrixBufferDesc.usage = BUFFER_FLAG::USAGE_DYNAMIC_CPU_WRITE_DISCARD;
 				matrixBufferDesc.data = NULL;
 				if( FAILED( mb->Initialize(matrixBufferDesc) ) )
-					return false;
+				return false;
 				initiated = true;
 			}
 

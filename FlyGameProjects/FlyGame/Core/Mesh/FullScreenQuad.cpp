@@ -67,7 +67,9 @@ void FullScreenQuad::Render( ID3D11DeviceContext* g_DeviceContext)
 	draw_data.buffers.push_back(m_VertexBuffer);
 	draw_data.buffers.push_back(m_IndexBuffer);
 	//draw_data.textures = NULL;
+
 	draw_data.material = NULL;
+
 	D3DXMATRIX world;
 	D3DXMatrixIdentity(&world);
 	draw_data.worldMatrix = NULL;

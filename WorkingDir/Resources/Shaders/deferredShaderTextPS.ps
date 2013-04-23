@@ -43,7 +43,12 @@ PS_OUT FPixelShader( PS_IN input )
   
   output.NormalRGB_DepthA = float4( normal, input.position.w);
   
+
   output.AmbR_diffG_specB_powA = float4( normal, 0); //Material.speculalr.xyz, Material.speculalrPower);
+
+  //output.ColorRGBA = float4(1, 0, 0, 1);
+  //output.NormalRGB_DepthA = float4(0, 1, 0, 1);
+
   
   return output;
 }
