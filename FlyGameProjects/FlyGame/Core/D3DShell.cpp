@@ -624,7 +624,7 @@ bool D3DShell::PrDat::initLigthRTV()
 		MessageBox(0, L"Failed to create shader resource!", L"Error", 0);
 		return false;
 	}
-	
+	return true;
 }
 
 D3DShell* D3DShell::self()

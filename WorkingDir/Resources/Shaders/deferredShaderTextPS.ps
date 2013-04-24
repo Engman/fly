@@ -3,6 +3,7 @@ SamplerState SampleTypeClamp : register(s0);
 
 #include "LightHelp.fx"
 
+
 DirLight dirLight;
 
 cbuffer MaterialData
@@ -10,7 +11,7 @@ cbuffer MaterialData
 	float4 ambient;
 	float4 diffuse;
 	float4 specular;
-	int speculalrPower;
+	int specularPower;
 };
 
 struct PS_IN
@@ -34,17 +35,21 @@ PS_OUT FPixelShader( PS_IN input )
 
   output.ColorRGBA  = objTexture[0].Sample(SampleTypeClamp, input.textCoord);
   
-  float4 bumpNormal;
-  bumpNormal = objTexture[1].Sample(SampleTypeClamp, input.textCoord)* 2.0f -1;
-  
   float3 normal = input.normal * 0.5 + 0.5;
   
+  
+  float4 bumpNormal = float4(0,0,0,0); 
+  
+  bumpNormal = objTexture[1].Sample(SampleTypeClamp, input.textCoord)* 2.0f -1;
+  //if(bumpNormal != float4(0,0,0,0))
+  
   normal += bumpNormal.xyz;
+  normalize(normal);
   
   output.NormalRGB_DepthA = float4( normal, input.position.w);
-  
+//output.NormalRGB_DepthA = float4(input.normal,0);
 
-  output.AmbR_diffG_specB_powA = float4( normal, 0); //Material.speculalr.xyz, Material.speculalrPower);
+  output.AmbR_diffG_specB_powA = float4( specular.xyz, specularPower);
 
   //output.ColorRGBA = float4(1, 0, 0, 1);
   //output.NormalRGB_DepthA = float4(0, 1, 0, 1);

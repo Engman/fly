@@ -56,32 +56,18 @@ void GBufferShader::draw(PER_FRAME_DATA& frameData)
 			else if(this->drawData[i].buffers[k]->getType() == BUFFER_FLAG::TYPE_VERTEX_BUFFER)
 				vertexC = this->drawData[i].buffers[k]->getNrOfElements();
 		}
-
-
-		//if(this->drawData[i].material ) //if there is any textures
-		//{
-		//	ID3D11ShaderResourceView* srv[3];
-		//	this->drawData[i].material->GetAmbientTexture();
-		//	//int nr = this->drawData[i].textures->size();
-		//	//for(int k= 0; k<(int)this->drawData[i].textures->size(); k++)
-		//	//{
-		//	//srv[i] = this->drawData[i].textures->at(i).getSRV();
-		//	//}
-		//	srv[0] = this->drawData[i].material->GetAmbientTexture();
-		//	srv[1] = this->drawData[i].material->GetDiffuseTexture();
-		//	D3DShell::self()->getDeviceContext()->PSSetShaderResources(0,2, srv);
-
-		//	this->drawData[i].material->GetBuffer();
-		//}
-		//set material cBuffer
-		
 	
 		if(this->drawData[i].material)
 		{
-			ID3D11ShaderResourceView* temp[1] = { drawData[i].material->GetDiffuseTexture() };
-			frameData.dc->PSSetShaderResources(0, 1, temp);
-		}
+			ID3D11ShaderResourceView* temp[2] = { 
+				drawData[i].material->GetDiffuseTexture() , 
+				drawData[i].material->GetNormalTexture()
+			};
 
+			frameData.dc->PSSetShaderResources(0, 2, temp);
+		}
+		BaseBuffer* mat= drawData[i].material->GetBuffer();
+		mat->setBuffer();
 		this->shader->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		
 		if(indexC)

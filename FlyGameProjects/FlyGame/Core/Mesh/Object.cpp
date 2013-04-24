@@ -26,6 +26,26 @@ void Object::Render()
 		{
 			data.buffers.push_back(this->buffers[i]);
 		}
+		//get local world
+		//rotate
+		//scale
+		//translate
+		D3DXMATRIX rotX, translation;
+		D3DXMatrixIdentity(&this->world);
+		D3DXMatrixIdentity(&translation);
+		D3DXMatrixRotationZ(&rotX, this->rotation.x);
+		D3DXVECTOR3 pos; 
+		pos = getPosition();
+		translation._41 = pos.x;
+		translation._42 = pos.y;
+		translation._43 = pos.z;
+		
+		this->world *= rotX;
+	
+		//this->world *= this->transformation;
+		this->world *= translation;
+		
+		
 		data.worldMatrix = &this->world;
 		data.material = this->material;
 		this->shader->addDrawData(data);

@@ -117,11 +117,21 @@ void Application::KeyPressEvent(Input::KeyCodes::Key k)
 
 	if(k == Key::K_Escape)
 		PostQuitMessage(0);
-	//bool removed = Input::self()->unsubscribeKeyDown<Application>		(&Application::KeyPressEvent);
-	//removed = Input::self()->unsubscribeKeyUp<Application>		(&Application::KeyPressEvent);
-	//removed = Input::self()->unsubscribeMouseBtnDown<Application>	(&Application::KeyPressEvent);
-	//removed = Input::self()->unsubscribeMouseBtnUp<Application>	(&Application::KeyPressEvent);
-	//removed = Input::self()->unsubscribeMouseMove<Application>	(&Application::MouseMoveEvent);
+	
+	if(k == Key::K_A)
+	{
+		D3DXVECTOR3 pos;
+		pos= mainCamera.GetPosition();
+		pos.x -= 5;
+		mainCamera.SetPositionX(pos.x);
+	}
+	if(k == Key::K_D)
+	{
+		D3DXVECTOR3 pos;
+		pos= mainCamera.GetPosition();
+		pos.x += 5;
+		mainCamera.SetPositionX(pos.x);
+	}
 }
 void Application::MouseMoveEvent(Input::MouseMoveData d)
 {
@@ -131,6 +141,10 @@ void Application::MouseMoveEvent(Input::MouseMoveData d)
 void Application::Update()
 {
 	//g_cube->Update();
+	D3DXVECTOR3 rot; 
+	rot = this->objects[0]->getRotation();
+	rot.x += 0.003f;
+	this->objects[0]->setRotation(rot);
 }
 bool Application::Render()
 {
@@ -212,7 +226,7 @@ bool Application::LoadResources()
 		{
 			//Load mesh objects
 			SmartPtrStd<ImportedObjectData> raw;
-			if(!ResourceImporter::ImportObject(models[i].c_str(), D3DShell::self()->getDevice(), raw))
+			if(!ResourceImporter::ImportObject(models[i].c_str(), D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), raw))
 				return false;
 
 			//Create the object for rendering
@@ -300,8 +314,6 @@ bool Application::InitGBuffers()
 	gBufferDesc.device = D3DShell::self()->getDevice();
 	gBufferDesc.VSFilename = L"../Resources/Shaders/deferredShaderTextVS.vs";
 	gBufferDesc.PSFilename = L"../Resources/Shaders/deferredShaderTextPS.ps";
-	//gBufferDesc.VSFilename = L"../Resources/Shaders/colorVS.vs";
-	//gBufferDesc.PSFilename = L"../Resources/Shaders/colorPS.ps";
 	gBufferDesc.shaderVersion = D3DShell::self()->getSuportedShaderVersion();
 	gBufferDesc.polygonLayout = VERTEX::VertexPNT_InputElementDesc;
 	gBufferDesc.nrOfElements = 3;
@@ -419,6 +431,7 @@ void Application::initTestData()
 
 	//-----------------------------------
 
+	this->objects[0]->setPosition(D3DXVECTOR3(-70,-30,170));
 }
 
 
