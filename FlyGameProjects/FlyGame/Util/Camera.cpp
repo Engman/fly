@@ -287,3 +287,11 @@ void Camera::ConstructViewFrustum(ViewFrustum& frustum)
 	frustum.sphere.radius = D3DXVec3Length(&vDiff);
 	frustum.sphere.center = D3DXVECTOR3(this->positionX, this->positionY, this->positionZ) + (D3DXVECTOR3(this->GetLookAt().x - this->positionX, this->GetLookAt().y - this->positionY, this->GetLookAt().z - this->positionZ)*(length*0.5f));  
 }
+
+
+void Camera::DennisTemporaryMoveFunction(D3DXVECTOR3 relative)
+{
+	this->positionX += relative.x;
+	this->positionY += relative.y;
+	this->positionZ += relative.z;
+}

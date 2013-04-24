@@ -9,39 +9,41 @@ namespace System
 		{
 			FlyEditCLIWrapper::FlyEditCLIWrapper()
 			{
-				//this->flyEngine = new EngineWrapper();
+				this->flyEngine = new EngineWrapper();
 			}
 
 			FlyEditCLIWrapper::~FlyEditCLIWrapper()
 			{
-				//delete this->flyEngine;
-				//this->flyEngine = NULL;
+				delete this->flyEngine;
+				this->flyEngine = NULL;
 			}
 
 			HRESULT FlyEditCLIWrapper::Init(IntPtr _hWnd, int width, int height)
 			{
-				//HWND hwnd = (HWND)(void*)_hWnd;
-				//return this->flyEngine->Init(hwnd, width, height);
+				HWND hwnd = (HWND)(void*)_hWnd;
+				if( FAILED (this->flyEngine->Init(hwnd, width, height) ) )
+					return E_FAIL;
+
 
 				return S_OK;
 			}
 
 			HRESULT FlyEditCLIWrapper::Shutdown()
 			{
-				//return this->flyEngine->Shutdown();
+				return this->flyEngine->Shutdown();
 				return S_OK;
 			}
 
 			HRESULT FlyEditCLIWrapper::ProcessFrame()
 			{
-				//return this->flyEngine->ProcessFrame();
+				return this->flyEngine->ProcessFrame();
 				return S_OK;
 			}
 
 			HRESULT FlyEditCLIWrapper::OnResize(int width, int height)
 			{
 				
-				//return this->flyEngine->OnResize(width, height);
+				return this->flyEngine->OnResize(width, height);
 				return S_OK;
 			}
 
@@ -63,6 +65,11 @@ namespace System
 				}
 
 				return returnText;
+			}
+
+			void FlyEditCLIWrapper::Pick(int x, int y)
+			{
+				this->flyEngine->Pick(x, y);
 			}
 
 		}

@@ -1,28 +1,34 @@
-#ifndef ENGINE_WRAPPER_H
-#define ENGINE_WRAPPER_H
+#ifndef __ENGINE_WRAPPER_H__
+#define __ENGINE_WRAPPER_H__
+
 
 
 #include "..\Core\stdafx.h"
 
-//Engine class
-class Application;
+#ifdef DLL_USAGE
 
-class DLL_USAGE EngineWrapper
-{
-	private:
-		Application* flyGameEngine;
+	//Engine class
+	class Application;
 
-	public:
-		EngineWrapper();
-		~EngineWrapper();
+	class DLL_EXPORT EngineWrapper
+	{
+		private:
+			Application* flyGameEngine;
 
-		HRESULT Init(HWND hWnd, int width, int height);
-		HRESULT Shutdown();
+		public:
+			EngineWrapper();
+			~EngineWrapper();
 
-		HRESULT ProcessFrame();
-		HRESULT OnResize(int width, int height);
-};
+			HRESULT Init(HWND hWnd, int width, int height);
+			HRESULT Shutdown();
 
+			HRESULT ProcessFrame();
+			HRESULT OnResize(int width, int height);
+
+			void Pick(int x, int y);
+	};
+
+
+	#endif
 
 #endif
-

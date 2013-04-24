@@ -53,6 +53,8 @@ class Camera
 		D3DXVECTOR3 GetParallelRight() const;
 
 		 void ConstructViewFrustum(ViewFrustum& frustum);
+
+		void DennisTemporaryMoveFunction(D3DXVECTOR3 relative);
 };
 
 #endif

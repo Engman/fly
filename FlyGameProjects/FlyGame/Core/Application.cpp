@@ -47,6 +47,27 @@ bool Application::Initialize(HINSTANCE hInst, int width, int height)
 
 	return true;
 }
+bool Application::Initialize(HWND hwnd, int width, int height)
+{
+	Point2D size(width, height);
+	if(!InitD3D(size, hwnd))		return false;
+	if(!InitInput())				return false;
+	if(!InitGBuffers())				return false;
+	if(!InitColorShader())			return false;
+	if(!InitMatrixBuffer())			return false;
+	if(!LoadResources())			return false;
+
+
+	this->mainCamera.SetProjectionMatrix((float)D3DX_PI/2.0f, D3DShell::self()->getAspectRatio(), 1, 1000);
+	this->mainCamera.SetOrthogonalMatrix(D3DShell::self()->getWidth(), D3DShell::self()->getHeight(), 1, 1000);
+	this->mainCamera.SetPosition(-20.0f, 80.0f, -200.0f);
+	this->mainCamera.SetRotation(0.0f, 0.0f, 0.0f);
+
+	initTestData();
+
+	return true;
+}
+
 
 void Application::Run()
 {
@@ -110,16 +131,20 @@ LRESULT CALLBACK Application::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 
 void Application::KeyPressEvent(Input::KeyCodes::Key k)
 {
-	static int count = 0;
-	count ++;
-
 	if(k == Key::K_Escape)
 		PostQuitMessage(0);
-	//bool removed = Input::self()->unsubscribeKeyDown<Application>		(&Application::KeyPressEvent);
-	//removed = Input::self()->unsubscribeKeyUp<Application>		(&Application::KeyPressEvent);
-	//removed = Input::self()->unsubscribeMouseBtnDown<Application>	(&Application::KeyPressEvent);
-	//removed = Input::self()->unsubscribeMouseBtnUp<Application>	(&Application::KeyPressEvent);
-	//removed = Input::self()->unsubscribeMouseMove<Application>	(&Application::MouseMoveEvent);
+	else if(k == Key::K_S)
+		this->mainCamera.DennisTemporaryMoveFunction(vec3(0.0f, 0.0f, -1.0f));
+	else if(k == Key::K_W)
+		this->mainCamera.DennisTemporaryMoveFunction(vec3(0.0f, 0.0f, 1.0f));
+	else if(k == Key::K_A)
+		this->mainCamera.DennisTemporaryMoveFunction(vec3(-1.0f, 0.0f, 0.0f));
+	else if(k == Key::K_D)
+		this->mainCamera.DennisTemporaryMoveFunction(vec3(1.0f, 0.0f, 0.0f));
+	else if(k == Key::K_Ctrl)
+		this->mainCamera.DennisTemporaryMoveFunction(vec3(0.0f, -1.0f, 0.0f));
+	else if(k == Key::K_Space)
+		this->mainCamera.DennisTemporaryMoveFunction(vec3(0.0f, 1.0f, 0.0f));
 }
 void Application::MouseMoveEvent(Input::MouseMoveData d)
 {
@@ -210,7 +235,7 @@ bool Application::LoadResources()
 		{
 			//Load mesh objects
 			SmartPtrStd<ImportedObjectData> raw;
-			if(!ResourceImporter::ImportObject(models[i].c_str(), D3DShell::self()->getDevice(), raw))
+			if(!ResourceImporter::ImportObject(models[i].c_str(), D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), raw))
 				return false;
 
 			//Create the object for rendering
@@ -239,7 +264,7 @@ bool Application::InitD3D(Point2D size, HWND hWnd)
 
 	desc.height = size.y;
 	desc.width = size.x;
-	desc.hwnd = WindowShell::self()->getHWND();
+	desc.hwnd = hWnd;
 	desc.MSAA = false;
 	desc.MSAASampleCount = 4;
 	desc.vSync = false;
@@ -271,7 +296,7 @@ bool Application::InitInput()
 	Input::GLARE_INPUT_INIT_DESC d;
 
 	d.target = WindowShell::self()->getHWND();
-	d.deviceFlag = Input::Flags::DAFAULT;
+	d.deviceFlag = Input::Flags::NOLEGACY;
 	d.deviceType = Input::Flags::keyboard;
 
 	if(!Input::self()->registerInputDevice(d))
@@ -279,6 +304,7 @@ bool Application::InitInput()
 
 
 	d.deviceType = Input::Flags::mouse;
+	d.deviceFlag = Input::Flags::DAFAULT;
 	if(!Input::self()->registerInputDevice(d))
 		return false;
 
