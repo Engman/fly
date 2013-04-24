@@ -4,7 +4,10 @@
 #include <D3DX11\D3D11.h>
 #include <D3DX11\D3DX10math.h>
 #include <stdio.h>
+#include "../Core/BaseBuffer.h"
 #include <vector>
+#include "vertex.h"
+#include "../Core/D3DShell.h"
 
 #include "BoundingVolumes.h"
 
@@ -21,8 +24,7 @@ class OctTree
 		};
 		struct RenderBufferType
 		{
-			ID3D11Buffer* vertexBuffer;
-			ID3D11Buffer* indexBuffer;
+			SmartPtrStd<BaseBuffer> vertexBuffer;
 
 			int verticesToRender;
 		};
@@ -33,19 +35,18 @@ class OctTree
 
 			Node* children;
 
-			ID3D11Buffer* pVertexBuffer;
-			ID3D11Buffer* pIndexBuffer;
+			SmartPtrStd<BaseBuffer> pVertexBuffer;
 
 			unsigned long indexCount;
 		};
 
 		Node* head;
 
-		VertexType* pVertexList;
+		SmartPtrStd<std::vector<VERTEX::VertexPNT>> pVertexList;
 		unsigned long vertexCount;
 		unsigned long indexCount;
 
-		void NewChild(Node* parent, D3DXVECTOR3 minPoint, D3DXVECTOR3 maxPoint, int iterations, ID3D11Device* device);
+		void NewChild(Node* parent, D3DXVECTOR3 minPoint, D3DXVECTOR3 maxPoint, int iterations);
 		void CalculateBoxSize();
 
 		bool IsPointContained(int index, D3DXVECTOR3 minPoint, D3DXVECTOR3 maxPoint);
@@ -59,7 +60,7 @@ class OctTree
 		virtual ~OctTree();
 
 		/** The vertex list sent to Initialize will be handled by the QuadTree class, i.e. the data pointed to will be deleted in this method*/
-		void Initialize(VertexType* vertexList, int vertexCount, int iterations, ID3D11Device* device);
+		void Initialize(SmartPtrStd<std::vector<VERTEX::VertexPNT>> vertexList, int vertexCount, int iterations);
 		void Release();
 
 		/** The returned value contains a list of buffer structures which are prepared to be rendered*/

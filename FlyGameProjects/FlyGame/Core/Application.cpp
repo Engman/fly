@@ -153,12 +153,12 @@ void Application::DeferedRendering()
 //#################################//
 
 
-	g_plane->Render(D3DShell::self()->getDeviceContext());
-	//g_cube->Render(D3DShell::self()->getDeviceContext());
+	//g_plane->Render(D3DShell::self()->getDeviceContext());
+	g_cube->Render(D3DShell::self()->getDeviceContext());
 
 	for (int i = 0; i <(int)this->objects.size(); i++)
 	{
-		this->objects[i]->Render();
+		//this->objects[i]->Render();
 	}
 	this->gBufferShader.draw(gBufferDrawData);
 
@@ -388,6 +388,14 @@ void Application::initTestData()
 	D3DXVec4Normalize(&dir, &dir); 
 	dirLight.direction= dir;
 	g_lightHolder->addLight(dirLight);
+
+
+
+	g_terrain = new Terrain();
+	Object::OBJECT_DESC terrainDesc;
+	terrainDesc.vCount = 0;
+	terrainDesc.vertecies = new vector<VERTEX::VertexPNT>;
+	g_terrain->Initialize(terrainDesc);
 
 	//-----------------------------------
 }

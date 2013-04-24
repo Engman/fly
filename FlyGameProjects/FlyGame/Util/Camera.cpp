@@ -157,11 +157,11 @@ D3DXMATRIX	Camera::GetOrthogonalMatrix() const
 	return this->orthogonalMatrix;
 }
 
-D3DXVECTOR3	Camera::GetForward() const
+D3DXVECTOR3	Camera::GetRight() const
 {
 	return D3DXVECTOR3(this->viewMatrix._11, this->viewMatrix._21, this->viewMatrix._31);
 }
-D3DXVECTOR3 Camera::GetRight() const
+D3DXVECTOR3 Camera::GetForward() const
 {
 	return D3DXVECTOR3(this->viewMatrix._13, this->viewMatrix._23, this->viewMatrix._33);
 }
@@ -174,7 +174,7 @@ D3DXVECTOR3	Camera::GetParallelForward() const
 	up.y = 1.0f;
 	up.z = 0.0f;
 
-	D3DXVec3Cross(&returnedValue, &up, &GetRight());
+	D3DXVec3Cross(&returnedValue, &GetRight(), &up);
 
 	return returnedValue;
 }
@@ -187,7 +187,7 @@ D3DXVECTOR3 Camera::GetParallelRight() const
 	up.y = 1.0f;
 	up.z = 0.0f;
 
-	D3DXVec3Cross(&returnedValue, &GetForward(), &up);
+	D3DXVec3Cross(&returnedValue, &up, &GetForward());
 
 	return returnedValue;
 }
