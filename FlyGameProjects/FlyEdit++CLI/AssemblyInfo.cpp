@@ -9,11 +9,11 @@ using namespace System::Security::Permissions;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly:AssemblyTitleAttribute("StarfieldCLIWrapper")];
+[assembly:AssemblyTitleAttribute("CLIWrapper")];
 [assembly:AssemblyDescriptionAttribute("")];
 [assembly:AssemblyConfigurationAttribute("")];
 [assembly:AssemblyCompanyAttribute("Microsoft")];
-[assembly:AssemblyProductAttribute("StarfieldCLIWrapper")];
+[assembly:AssemblyProductAttribute("CLIWrapper")];
 [assembly:AssemblyCopyrightAttribute("Copyright (c) Microsoft 2010")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];

@@ -14,11 +14,10 @@
 
 
 
-#if defined _DLL_IMPORT
-#define DLL_USAGE __declspec(dllimport)
-#else
-#define DLL_USAGE __declspec(dllexport)
-#endif
+//#define DLL_USAGE
+#define DLL_IMPORT __declspec(dllimport)
+#define DLL_EXPORT __declspec(dllexport)
+
 
 
 #endif

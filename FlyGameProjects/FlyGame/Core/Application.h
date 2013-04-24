@@ -1,6 +1,7 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
+
 #include "WindowShell.h"
 #include "D3DShell.h"
 #include "Render\GBufferShader.h"
@@ -67,6 +68,7 @@ class Application
 		virtual~Application();
 
 		bool Initialize(HINSTANCE hInst, int width, int height);
+		bool Initialize(HWND hInst, int width, int height);
 		void Run();
 		void Shutdown();
 		bool Render();

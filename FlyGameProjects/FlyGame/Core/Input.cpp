@@ -48,8 +48,8 @@ bool Input::registerInputDevice				(const Input::GLARE_INPUT_INIT_DESC& desc)
 		{
 			if(!keyReg)
 			{
-				RAWINPUTDEVICE k = { 0x01, desc.deviceType, desc.deviceFlag, desc.target };
-
+				RAWINPUTDEVICE k = { 0x01, desc.deviceType, RIDEV_NOLEGACY, desc.target };
+				//int i = RIDEV_NOLEGACY;
 				if(!RegisterRawInputDevices(&k, 1, sizeof(k)))
 				{
 					retVal = false;
