@@ -8,10 +8,10 @@
 
 #pragma region FROWARD DELERATION
 
-bool ParseAnimationFile			(std::wifstream& in, ID3D11Device* device, ImportedObjectData* d);
-bool ParseStandardFile			(std::wifstream& in, ID3D11Device* device, ImportedObjectData* d);
+bool ParseAnimationFile			(std::wifstream& in, ID3D11Device* device, ID3D11DeviceContext* dc, ImportedObjectData* d);
+bool ParseStandardFile			(std::wifstream& in, ID3D11Device* device, ID3D11DeviceContext* dc, ImportedObjectData* d);
 
-int  ParseMaterial				(std::wifstream& in, ID3D11Device* device);
+int  ParseMaterial				(std::wifstream& in, ID3D11Device* device, ID3D11DeviceContext* dc);
 
 bool ParseV						(std::wifstream& in, ObjectData& o);
 bool ParseVT					(std::wifstream& in, ObjectData& o);
@@ -56,7 +56,7 @@ namespace ObjImpFormat
 
 
 
-bool ObjectImporter::Import(std::wstring file, ID3D11Device* device, SmartPtrStd<ImportedObjectData>& rawData)
+bool ObjectImporter::Import(std::wstring file, ID3D11Device* device, ID3D11DeviceContext* _dc, SmartPtrStd<ImportedObjectData>& rawData)
 {
 	if(!rawData.IsValid())
 		rawData = new ImportedObjectData();
@@ -97,11 +97,11 @@ bool ObjectImporter::Import(std::wstring file, ID3D11Device* device, SmartPtrStd
 					if(count)
 					{
 						rawData->animations.resize(count);
-						if(!ParseAnimationFile(in, device, rawData))
+						if(!ParseAnimationFile(in, device, _dc, rawData))
 							return false;
 					}
 					else		
-						if(!ParseStandardFile(in, device, rawData))
+						if(!ParseStandardFile(in, device, _dc, rawData))
 							return false;
 				}
 				else { ParseLine(in, true); }
@@ -111,7 +111,7 @@ bool ObjectImporter::Import(std::wstring file, ID3D11Device* device, SmartPtrStd
 
 	return true;
 }
-bool ObjectImporter::Import(std::wstring file, ID3D11Device* device, __out std::vector<int>& identifiers)
+bool ObjectImporter::Import(std::wstring file, ID3D11Device* device, ID3D11DeviceContext* _dc, __out std::vector<int>& identifiers)
 {
 	if(identifiers.size() != 0)
 		identifiers.resize(0);
@@ -132,7 +132,7 @@ bool ObjectImporter::Import(std::wstring file, ID3D11Device* device, __out std::
 
 		if(buff == ObjImpFormat::material)
 		{
-			mid = ParseMaterial(in, device);
+			mid = ParseMaterial(in, device, _dc);
 			if(mid != -1)
 			{
 				identifiers.push_back(mid);
@@ -143,7 +143,7 @@ bool ObjectImporter::Import(std::wstring file, ID3D11Device* device, __out std::
 	return true;
 }
 
-bool ParseAnimationFile			(std::wifstream& in, ID3D11Device* device, ImportedObjectData* d)
+bool ParseAnimationFile			(std::wifstream& in, ID3D11Device* device, ID3D11DeviceContext* _dc, ImportedObjectData* d)
 {
 	std::wstring flag;
 	bool result = true;
@@ -209,7 +209,7 @@ bool ParseAnimationFile			(std::wifstream& in, ID3D11Device* device, ImportedObj
 			d->objects[currObject].vertex = new std::vector<VERTEX::VertexPNT>(vCount);
 			d->objects[currObject].material = currMaterial;
 		}
-		else if(flag == ObjImpFormat::material)		{ currMaterial = ParseMaterial(in, device);	}
+		else if(flag == ObjImpFormat::material)		{ currMaterial = ParseMaterial(in, device, _dc);	}
 		else if(flag == ObjImpFormat::v)			{ result = ParseV(in,d->objects[currFrame]); 	}
 		else if(flag == ObjImpFormat::vt)			{ result = ParseVT(in,d->objects[currFrame]);	}
 		else if(flag == ObjImpFormat::vn)			{ result = ParseVN(in,d->objects[currFrame]);	}
@@ -221,7 +221,7 @@ bool ParseAnimationFile			(std::wifstream& in, ID3D11Device* device, ImportedObj
 
 	return result;
 }
-bool ParseStandardFile			(std::wifstream& in, ID3D11Device* device, ImportedObjectData* d)
+bool ParseStandardFile			(std::wifstream& in, ID3D11Device* device, ID3D11DeviceContext* _dc, ImportedObjectData* d)
 {
 	std::wstring flag;
 	bool result = true;
@@ -249,7 +249,7 @@ bool ParseStandardFile			(std::wifstream& in, ID3D11Device* device, ImportedObje
 				d->objects[0].vertex = new std::vector<VERTEX::VertexPNT>(count);
 				d->objects[0].material = 0;
 			}
-			else if(flag == ObjImpFormat::material)		{ d->objects[0].material = ParseMaterial(in, device); }
+			else if(flag == ObjImpFormat::material)		{ d->objects[0].material = ParseMaterial(in, device, _dc); }
 			else if(flag == ObjImpFormat::v)			{ result = ParseV(in,d->objects[0]);  }
 			else if(flag == ObjImpFormat::vt)			{ result = ParseVT(in,d->objects[0]); }
 			else if(flag == ObjImpFormat::vn)			{ result = ParseVN(in,d->objects[0]); }
@@ -263,11 +263,12 @@ bool ParseStandardFile			(std::wifstream& in, ID3D11Device* device, ImportedObje
 	return result;
 }
 
-int ParseMaterial				(std::wifstream& in, ID3D11Device* device)			
+int ParseMaterial				(std::wifstream& in, ID3D11Device* _device, ID3D11DeviceContext* _dc)			
 {
 	
 	ObjectMaterial::OBJECT_MATERIAL_DESC md;
-	md.device = device;
+	md.device = _device;
+	md.dc = _dc;
 	md.name = ParseLine(in);
 	std::wstring buffer = L"";
 	bool done = false;
@@ -296,7 +297,7 @@ int ParseMaterial				(std::wifstream& in, ID3D11Device* device)
 			}
 		}
 	
-	} while (!done);
+	} while (!done || !in.eof());
 
 	return -1;
 }	
@@ -309,6 +310,7 @@ bool ParseV						(std::wifstream& in, ObjectData& o)
 
 	while (i < total)
 	{
+		(*o.vertex)[i].position.w = 1.0f;
 		if(!ParseVector3(in, (*o.vertex)[i++].position))
 			return false;
 	}
@@ -336,8 +338,6 @@ bool ParseVN					(std::wifstream& in, ObjectData& o)
 	while (i < total)
 	{
 		(*o.vertex)[i].normal.w = 0.0f;
-		if(i == total-1)
-			int asd = 123;
 		if(!ParseVector3(in, (*o.vertex)[i++].normal))
 			return false;
 	}
@@ -472,49 +472,3 @@ std::wstring ParseLine			(std::wifstream& in, bool trash)
 
 	return text;
 }
-
-
-/*
-void ParseFaces					(std::wifstream& in, RawVertecieData& rawVert, ImportedObjectData* rawData)	
-{
-	int count = 0;
-	in >> count;
-
-	if(count > 0)
-	{
-		rawData->objects.push_back(LoadedObject());
-		int objIndex = (int)rawData->objects.size();
-		rawData->objects[objIndex].vertex.resize(rawVert.position.size());
-
-		std::wstring buff;
-		
-		//For all faces
-		for(int q = 0; q<count; q++)
-		{
-			//For each vertecie
-			for (int k = 0; k < 3; k++)
-			{
-				int iv = -1, ivt = -1, ivn = -1;
-
-				if(rawVert.position.size())
-					if(ParseInteger(in, iv))
-						rawData->objects[objIndex].vertex[iv].position = rawVert.position[iv];
-
-				if(rawVert.textCoord.size())
-				{
-					if(ParseInteger(in, ivt))
-						rawData->objects[objIndex].vertex[ivt].texcoord = rawVert.textCoord[ivt];
-
-					if(rawVert.normal.size())
-						if(ParseInteger(in, ivn))
-						rawData->objects[objIndex].vertex[ivn].normal = rawVert.normal[ivn];
-				}	
-				else
-					if(rawVert.normal.size())
-						if(ParseInteger(in, ivn))
-							rawData->objects[objIndex].vertex[ivn].normal = rawVert.normal[ivn];
-			}
-		}
-	}
-}
-*/

@@ -16,9 +16,9 @@ namespace FlyEditUI
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			//Application.Run(new Form1());
+			//Application.Run(new FlyEdit());
 
-			Form1 form = new Form1();
+			FlyEdit form = new FlyEdit();
 			form.Show();
 			form.Run();
 		}

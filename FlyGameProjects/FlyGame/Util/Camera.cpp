@@ -290,3 +290,11 @@ ViewFrustum Camera::GetViewFrustum()
 
 	return frustum;
 }
+
+
+void Camera::DennisTemporaryMoveFunction(D3DXVECTOR3 relative)
+{
+	this->positionX += relative.x;
+	this->positionY += relative.y;
+	this->positionZ += relative.z;
+}
