@@ -9,7 +9,7 @@ Material mat;
 struct PS_IN
 {
   float4 position : SV_POSITION;
-  float3 normal : NORMAL;
+  float4 normal : NORMAL;
   //float4 tangent :TANGENT;
   float2 textCoord : TEXCOORD;
 };
@@ -29,14 +29,12 @@ PS_OUT FPixelShader( PS_IN input )
   float4 bumpNormal;
   bumpNormal = objTexture[1].Sample(SampleTypeClamp, input.textCoord)* 2.0f -1;
   
-  float3 normal = input.normal * 0.5 + 0.5;
+  float3 normal = input.normal.xyz * 0.5 + 0.5;
   
   normal += bumpNormal.xyz;
   
   output.NormalRGB_DepthA = float4( normal, input.position.w);
   
-  output.ColorRGBA = float4(1, 0, 0, 1);
-  output.NormalRGB_DepthA = float4(0, 1, 0, 1);
-  
+
   return output;
 }

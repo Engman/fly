@@ -112,8 +112,6 @@ bool Texture2D::loadTexture(ID3D11Device *device, std::wstring file)
 			this->_data->resources.push_back(user);
 			this->_data->texture.push_back(user->texture);
 		}
-		
-
 	}
 	return true;
 }

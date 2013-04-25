@@ -14,7 +14,7 @@
 
 
 
-//#define DLL_USAGE
+#define DLL_USAGE
 #define DLL_IMPORT __declspec(dllimport)
 #define DLL_EXPORT __declspec(dllexport)
 

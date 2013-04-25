@@ -13,19 +13,36 @@ namespace FlyEditUI
 	public partial class FlyEdit : Form
 	{
 		FlyEditCLIWrapper FlyCLI = null;
+		Output outWin = null;
+		bool engineRuning = false;
 
 		public FlyEdit()
 		{
 			InitializeComponent();
 			this.FlyCLI = new FlyEditCLIWrapper();
+			this.outWin = new Output();
 		}
 
 		public void Run()
 		{
-			this.FlyCLI.Init(RenderWin.Handle, RenderWin.Width, RenderWin.Height);
+			this.outWin.Show();
+			this.outWin.SetDesktopLocation(this.Location.X + this.Size.Width, this.Location.Y);
+
+			if (!this.FlyCLI.Init(RenderWin.Handle, RenderWin.Width, RenderWin.Height))
+			{
+				MessageBox.Show(this, "Failed to initialize core");
+				this.Close() ;
+			}
+			else
+			{
+				this.outWin.addText("Core initialized!");
+				engineRuning = true;
+			}
 			while (this.Created)
 			{
-				this.FlyCLI.ProcessFrame();
+				if (this.engineRuning)
+					this.FlyCLI.ProcessFrame();
+				
 				Application.DoEvents();
 			}
 		}

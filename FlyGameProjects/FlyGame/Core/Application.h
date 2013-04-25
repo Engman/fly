@@ -10,6 +10,7 @@
 #include "Input.h"
 #include "Entity.h"
 #include "..\Util\Camera.h"
+#include "..\Util\FlyCamera.h"
 #include "..\Util\Proxy.h"
 
 //test values
@@ -51,14 +52,15 @@ class Application
 		SmartPtrStd<BaseBuffer> pMatrixBuffer;
 
 		//test values 
-		SmartPtrStd<Plane>		g_plane;
-		SmartPtrStd<Cube>		g_cube;
+		//SmartPtrStd<Plane>		g_plane;
+		//SmartPtrStd<Cube>		g_cube;
 		SmartPtrStd<FullScreenQuad>	g_FullscreenQuad;
 		SmartPtrStd<LightHolder>g_lightHolder;
 		//------ 
 		std::vector<SmartPtrStd<Entity>> objects;
 
 		Camera mainCamera;
+		FlyCamera flyCamera;
 
 	public:
 		Application();
