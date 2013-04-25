@@ -18,7 +18,7 @@ struct VS_IN
 struct PS_IN
 {
   float4 position : SV_POSITION;
-  float3 normal : NORMAL;
+  float4 normal : NORMAL;
   //float4 tangent :TANGENT;
   float2 textCoord : TEXCOORD;
 };
@@ -33,7 +33,7 @@ PS_IN FVertexShader( VS_IN input)
   output.position = mul(  output.position, mView );
   output.position = mul(  output.position, mProj );
   
-  output.normal = mul(input.normal.xyz, (float3x3)mWorldInvTrans ); //borde gånga med invTrans
+  output.normal = mul(input.normal, mWorldInvTrans ); //borde gånga med invTrans
 
   output.textCoord = input.textCoord;
 

@@ -17,16 +17,14 @@ int findExistingMaterial(std::wstring name)
 
 int MaterialHandler::AddMaterial(ObjectMaterial::OBJECT_MATERIAL_DESC& desc)
 {
-	SmartPtrStd<ObjectMaterial> m = new ObjectMaterial();
-
-	if(!m->CreateMaterial(desc))
-		return -1;
-
-	int k = findExistingMaterial(m->GetName());
+	int k = findExistingMaterial(desc.name);
 
 	if(k != -1)
 		return MaterialHandlerMaterialList[k]->GetID();
 
+	SmartPtrStd<ObjectMaterial> m = new ObjectMaterial();
+	if(!m->CreateMaterial(desc))
+		return -1;
 
 	bool done = false;
 	int insertIndex = 0;
@@ -64,7 +62,7 @@ ObjectMaterial* MaterialHandler::GetMaterial(int GID)
 	if(first == last)
 		return (GID == MaterialHandlerMaterialList[mid]->GetID()) ? MaterialHandlerMaterialList[mid] : NULL;
 	
-	while (first < last)
+	while (first <= last)
 	{
 		if(MaterialHandlerMaterialList[mid]->GetID() > GID)
 		{

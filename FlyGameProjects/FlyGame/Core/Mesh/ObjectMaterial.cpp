@@ -68,31 +68,31 @@ int ObjectMaterial::GetID() const
 
 ID3D11ShaderResourceView*	ObjectMaterial::GetAmbientTexture	()
 {
-	if(this->_ambientTex->getTextures()->size())
+	if(this->_ambientTex->getTextures())
 		return (*this->_ambientTex->getTextures())[0];
 	return NULL;
 }
 ID3D11ShaderResourceView*	ObjectMaterial::GetDiffuseTexture	()
 {
-	if(this->_diffuseTex->getTextures()->size())
+	if(this->_diffuseTex->getTextures())
 		return (*this->_diffuseTex->getTextures())[0];
 	return NULL;
 }
 ID3D11ShaderResourceView*	ObjectMaterial::GetSpecularTexture	()
 {
-	if(this->_specularTex->getTextures()->size())
+	if(this->_specularTex->getTextures())
 		return (*this->_specularTex->getTextures())[0];
 	return NULL;
 }
 ID3D11ShaderResourceView*	ObjectMaterial::GetGlowTexture		()
 {
-	if(this->_glowTex->getTextures()->size())
+	if(this->_glowTex->getTextures())
 		return (*this->_glowTex->getTextures())[0];
 	return NULL;
 }
 ID3D11ShaderResourceView*	ObjectMaterial::GetNormalTexture	()
 {
-	if(this->_normalTex->getTextures()->size())
+	if(this->_normalTex->getTextures())
 		return (*this->_normalTex->getTextures())[0];
 	return NULL;
 }

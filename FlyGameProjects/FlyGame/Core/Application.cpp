@@ -45,6 +45,11 @@ bool Application::Initialize(HINSTANCE hInst, int width, int height)
 	initTestData();
 
 
+	this->mainCamera.GetViewFrustum();
+
+	this->flyCamera.setLookAt(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f), vec3(0.0f, 1.0f, 0.0f));
+	this->flyCamera.setPerspective((float)D3DX_PI*0.2f, D3DShell::self()->getAspectRatio(), 1.0f, 1000.0f);
+
 	return true;
 }
 bool Application::Initialize(HWND hwnd, int width, int height)
@@ -58,7 +63,7 @@ bool Application::Initialize(HWND hwnd, int width, int height)
 	if(!LoadResources())			return false;
 
 
-	this->mainCamera.SetProjectionMatrix((float)D3DX_PI/2.0f, D3DShell::self()->getAspectRatio(), 1, 1000);
+	this->mainCamera.SetProjectionMatrix((float)D3DX_PI*0.2f, D3DShell::self()->getAspectRatio(), 1, 1000);
 	this->mainCamera.SetOrthogonalMatrix(D3DShell::self()->getWidth(), D3DShell::self()->getHeight(), 1, 1000);
 	this->mainCamera.SetPosition(-20.0f, 80.0f, -200.0f);
 	this->mainCamera.SetRotation(0.0f, 0.0f, 0.0f);
@@ -134,26 +139,29 @@ void Application::KeyPressEvent(Input::KeyCodes::Key k)
 	if(k == Key::K_Escape)
 		PostQuitMessage(0);
 	else if(k == Key::K_S)
-		this->mainCamera.DennisTemporaryMoveFunction(vec3(0.0f, 0.0f, -1.0f));
+		this->flyCamera.Move(-1.0f);
 	else if(k == Key::K_W)
-		this->mainCamera.DennisTemporaryMoveFunction(vec3(0.0f, 0.0f, 1.0f));
+		this->flyCamera.Move(1.0f);
 	else if(k == Key::K_A)
-		this->mainCamera.DennisTemporaryMoveFunction(vec3(-1.0f, 0.0f, 0.0f));
+		this->flyCamera.Strafe(-1.0f);
 	else if(k == Key::K_D)
-		this->mainCamera.DennisTemporaryMoveFunction(vec3(1.0f, 0.0f, 0.0f));
+		this->flyCamera.Strafe(1.0f);
 	else if(k == Key::K_Ctrl)
-		this->mainCamera.DennisTemporaryMoveFunction(vec3(0.0f, -1.0f, 0.0f));
+		this->flyCamera.Ascend(-1.0f);
 	else if(k == Key::K_Space)
-		this->mainCamera.DennisTemporaryMoveFunction(vec3(0.0f, 1.0f, 0.0f));
+		this->flyCamera.Ascend(1.0f);
 }
 void Application::MouseMoveEvent(Input::MouseMoveData d)
 {
-	static int idCounter = 0;
-	idCounter ++;
+	this->flyCamera.Yaw((float)D3DXToRadian(d.relativeX)); //* this->gtime->DeltaTime() * 150);
+	this->flyCamera.Pitch((float)D3DXToRadian(d.relativeY)); //* this->gtime->DeltaTime() * 150);
 }
+
+
 void Application::Update()
 {
 	//g_cube->Update();
+	this->flyCamera.updateView();
 }
 bool Application::Render()
 {
@@ -164,15 +172,13 @@ bool Application::Render()
 }
 void Application::DeferedRendering()
 {
-	ViewFrustum frustum;
-
 	D3DShell::self()->BeginGBufferRenderTargets();
 
 	IShader::PER_FRAME_DATA gBufferDrawData;
 	gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
-	gBufferDrawData.view = this->mainCamera.GetViewMatrix();
-	gBufferDrawData.projection = this->mainCamera.GetProjectionMatrix();
-	this->mainCamera.ConstructViewFrustum(frustum);
+	gBufferDrawData.view = this->flyCamera.getView();
+	gBufferDrawData.projection = this->flyCamera.getProj();
+
 
 
 //#################################//
@@ -187,10 +193,11 @@ void Application::DeferedRendering()
 	{
 		this->objects[i]->Render();
 	}
-
 	this->gBufferShader.draw(gBufferDrawData);
 
 	
+
+
 //##################################################################//
 //------------- Final pass, add light and color together ----------//
 //##################################################################//
@@ -211,10 +218,8 @@ void Application::DeferedRendering()
 bool Application::LoadResources()
 {
 	WIN32_FIND_DATA FindFileData;
-	HANDLE hFind = FindFirstFile(L"..\\Resources\\Models\\*.obj", &FindFileData);
+	HANDLE hFind = FindFirstFile(L"..\\Resources\\Models\\*.fgm", &FindFileData);
 	
-	vector<std::wstring> models;
-
 	if(hFind == INVALID_HANDLE_VALUE)
 	{
 		DisplayText("No files in [Model] directory.");
@@ -222,7 +227,7 @@ bool Application::LoadResources()
 	}
 	else
 	{
-		
+		vector<std::wstring> models;
 		std::wstring tempFirst = L"..\\Resources\\Models\\"; 
 		tempFirst.append(FindFileData.cFileName);
 		models.push_back(tempFirst);
@@ -246,7 +251,7 @@ bool Application::LoadResources()
 			Object::OBJECT_DESC desc;
 			desc.device = D3DShell::self()->getDevice();
 			desc.deviceContext = D3DShell::self()->getDeviceContext();
-			desc.material_id = MaterialHandler::GetMaterial(raw->objects[0].material)->GetID();
+			desc.material_id = raw->objects[0].material;
 			desc.shader = &this->gBufferShader;
 			desc.vertecies = raw->objects[0].vertex;
 			desc.vCount = (int)raw->objects[0].vertex->size();
@@ -256,7 +261,6 @@ bool Application::LoadResources()
 			this->objects.push_back(model);
 		}
 	}
-
 	return true;
 }
 
@@ -367,8 +371,8 @@ bool Application::InitColorShader()
 	colorShaderDesc.VSFilename = L"../Resources/Shaders/TextLightVS.vs";
 	colorShaderDesc.PSFilename = L"../Resources/Shaders/TextLightPS.ps";
 	colorShaderDesc.shaderVersion = D3DShell::self()->getSuportedShaderVersion();
-	colorShaderDesc.polygonLayout = VERTEX::VertexPNC_InputElementDesc;
-	colorShaderDesc.nrOfElements = 3;
+	colorShaderDesc.polygonLayout = VERTEX::VertexPT_InputElementDesc;
+	colorShaderDesc.nrOfElements = 2;
 
 	if(!this->g_colorShader.init(colorShaderDesc))	
 		return false;
@@ -398,15 +402,15 @@ void Application::initTestData()
 	D3DXMATRIX world; 
 	D3DXMatrixIdentity(&world);
 
-	g_plane = new Plane();
-	g_plane->Initialize(world, 2.0f, 2.0f, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
+	//g_plane = new Plane();
+	//g_plane->Initialize(world, 2.0f, 2.0f, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
 
 	g_FullscreenQuad = new FullScreenQuad();
-	g_FullscreenQuad->Initialize( D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &g_colorShader);
+	g_FullscreenQuad->Initialize( D3DShell::self()->getDevice(), &g_colorShader);
 
-	g_cube = new Cube();
-	D3DXMatrixTranslation(&world, 2.0f, 2.0f, 0.0f);
-	g_cube->Initialize(world, 2.0f, 2.0f, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
+	//g_cube = new Cube();
+	//D3DXMatrixTranslation(&world, 2.0f, 2.0f, 0.0f);
+	//g_cube->Initialize(world, 2.0f, 2.0f, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
 
 	g_lightHolder = new LightHolder();
 	g_lightHolder->Initialize();
@@ -419,9 +423,6 @@ void Application::initTestData()
 	dirLight.direction= dir;
 	g_lightHolder->addLight(dirLight);
 
-
-
-	
-
 	//-----------------------------------
+
 }

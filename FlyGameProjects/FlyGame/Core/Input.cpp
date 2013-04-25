@@ -1,6 +1,7 @@
 #include "Input.h"
 #include <WindowsX.h>
 #include <algorithm>
+#include <ctime>
 
 
 
@@ -10,6 +11,9 @@ int existsInVectorList(std::vector<T>& obj, T elem);
 
 struct Input::_PrSt
 {
+	public:
+		HANDLE procThreadHandle;
+
 	public:
 		HWND targetKeyApp;
 		HWND targetMouseApp;
@@ -29,6 +33,8 @@ Input::Input								()
 	this->_PrPtr					= new Input::_PrSt();
 	this->_PrPtr->targetKeyApp		= 0;
 	this->_PrPtr->targetMouseApp	= 0;
+	this->_PrPtr->procThreadHandle	= CreateThread(NULL, 4*255, ProcThread, NULL, CREATE_SUSPENDED, NULL);
+	ResumeThread(this->_PrPtr->procThreadHandle);
 }
 Input::~Input								()
 {
@@ -216,6 +222,7 @@ Input* Input::self							()
 }
 void Input::destroy							()
 {
+	TerminateThread(gInstanceInput->_PrPtr->procThreadHandle, 0);
 	delete gInstanceInput;
 	gInstanceInput = NULL;
 }
@@ -230,26 +237,26 @@ void Input::_PrSt::proccessRawKeyboardData	(RAWKEYBOARD& k)
 	}
 
 	Input::KeyCodes::Key v = (Input::KeyCodes::Key)k.VKey;
-	//int i = existsInVectorList<Input::KeyCodes::Key>(this->keyList, v);
+	int i = existsInVectorList<Input::KeyCodes::Key>(this->keyList, v);
 
 	//The key is released.
 	if(k.Flags == RI_KEY_BREAK)
 	{
-		//if( i != -1 )
-		//{
+		if( i != -1 )
+		{
 			//Release key from list
-			//this->keyList.erase(this->keyList.begin() + i);
+			this->keyList.erase(this->keyList.begin() + i);
 			Input::self()->_keyUpProc.procEvent(v);
-		//}
+		}
 	}
 	//The key is pressed.
 	else if (k.Flags == RI_KEY_MAKE)
 	{
-		//if(i == -1)
-		//{
-			//this->keyList.push_back(v);
-			Input::self()->_keyDownProc.procEvent(v);
-		//}
+		if(i == -1)
+		{
+			this->keyList.push_back(v);
+			//Input::self()->_keyDownProc.procEvent(v);
+		}
 	}
 		
 	//RI_KEY_E0 = This is the left version of the key.
@@ -359,4 +366,27 @@ int existsInVectorList(std::vector<T>& obj, T elem)
 
 
 
+
+//##########################################################//
+//				THREADING FUNCTION FOR PROC					//
+//##########################################################//
+
+DWORD WINAPI Input::ProcThread(LPVOID lpParameter)
+{
+	while (true)
+	{
+		Sleep(10);
+		int size = Input::self()->_PrPtr->keyList.size();
+		if(size)
+		{
+			for (int i = 0; i < size; i++)
+			{
+				Input::self()->_keyDownProc.procEvent(Input::self()->_PrPtr->keyList[i]);
+			}
+		}
+	}
+	return NULL;
+}
+
+//##########################################################//
 

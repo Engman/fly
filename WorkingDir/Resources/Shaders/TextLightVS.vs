@@ -11,15 +11,14 @@ cbuffer CB_CAMERA
 struct VSIn
 {
 	float4 position		: POSITION;
-	float4 normal     : NORMAL;
-	float4 color      : COLOR;
+	float2 textCoord  	: TEXCOORD; 
 };
 
 struct PSIn
 {
-	float4 Pos		: SV_Position;
-	float2 TextCoord  : TEXCOORD; 
-	//float3 Color	: COLOR;
+	float4 Pos			: SV_Position;
+	float2 TextCoord  	: TEXCOORD; 
+
 };
 
 
@@ -32,14 +31,11 @@ PSIn FVertexShader(VSIn input)
 
   output.Pos		= input.position; 
   
-
-  float invWidth  = 1/ 800;
-  float invHeight = 1/ 600;
   
   //Projected co-ords.
-  output.TextCoord     = output.Pos;
-  output.TextCoord.xy  = float2(output.TextCoord.x * 0.5, -output.TextCoord.y * 0.5);
-  output.TextCoord.xy += (0.5); //* output.TextCoord.w); 
+  output.TextCoord     = input.textCoord;
+  //output.TextCoord.xy  = float2(output.TextCoord.x * 0.5, -output.TextCoord.y * 0.5);
+  //output.TextCoord.xy += (0.5); //* output.TextCoord.w); 
    
   //output.TextCoord.x  -= invWidth ;
   //output.TextCoord.y  -= invHeight ;
