@@ -7,7 +7,7 @@ namespace DeferredRenderLayout
 	{
 		//MRTS_Position,
 		MRTS_Diffuse,
-		//MRTS_Normal,
+		MRTS_Normal,
 		MRTS_TextCoord,
 		/* Add more */
 
