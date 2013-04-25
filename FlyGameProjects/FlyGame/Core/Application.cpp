@@ -44,9 +44,6 @@ bool Application::Initialize(HINSTANCE hInst, int width, int height)
 
 	initTestData();
 
-
-	this->mainCamera.GetViewFrustum();
-
 	this->flyCamera.setLookAt(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f), vec3(0.0f, 1.0f, 0.0f));
 	this->flyCamera.setPerspective((float)D3DX_PI*0.2f, D3DShell::self()->getAspectRatio(), 1.0f, 1000.0f);
 
