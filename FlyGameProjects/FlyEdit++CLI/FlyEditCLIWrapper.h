@@ -36,6 +36,8 @@ namespace System
 					HRESULT OnResize(int width, int height);
 
 					String^ ProcessText(String^ text);
+
+					void Pick(int x, int y);
 			};
 		}
 	}
