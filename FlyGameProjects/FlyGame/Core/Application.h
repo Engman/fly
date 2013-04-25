@@ -11,6 +11,7 @@
 #include "Entity.h"
 #include "..\Util\Camera.h"
 #include "..\Util\Proxy.h"
+#include "Mesh\Terrain.h"
 
 //test values
 #include "Mesh\Cube.h"
@@ -55,6 +56,7 @@ class Application
 		SmartPtrStd<Cube>		g_cube;
 		SmartPtrStd<FullScreenQuad>	g_FullscreenQuad;
 		SmartPtrStd<LightHolder>g_lightHolder;
+		SmartPtrStd<Terrain> g_terrain;
 		//------ 
 		std::vector<SmartPtrStd<Entity>> objects;
 
