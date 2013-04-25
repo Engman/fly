@@ -75,15 +75,21 @@ void OctTree::NewChild(Node* parent, D3DXVECTOR3 minPoint, D3DXVECTOR3 maxPoint,
 		{
 			if(IsPointContained(i, minPoint, maxPoint) || IsPointContained(i+1, minPoint, maxPoint) || IsPointContained(i+2, minPoint, maxPoint))
 			{
+				vertices->push_back(VERTEX::VertexPNT());
+
 				vertices->at(nodeVertexIndex).position = this->pVertexList->at(i).position;
 				vertices->at(nodeVertexIndex).texcoord = this->pVertexList->at(i).texcoord;
 				vertices->at(nodeVertexIndex).normal = this->pVertexList->at(i).normal;
 				nodeVertexIndex++;
 
+				vertices->push_back(VERTEX::VertexPNT());
+
 				vertices->at(nodeVertexIndex).position = this->pVertexList->at(i+1).position;
 				vertices->at(nodeVertexIndex).texcoord = this->pVertexList->at(i+1).texcoord;
 				vertices->at(nodeVertexIndex).normal = this->pVertexList->at(i+1).normal;
 				nodeVertexIndex++;
+
+				vertices->push_back(VERTEX::VertexPNT());
 
 				vertices->at(nodeVertexIndex).position = this->pVertexList->at(i+2).position;
 				vertices->at(nodeVertexIndex).texcoord = this->pVertexList->at(i+2).texcoord;
@@ -105,14 +111,12 @@ void OctTree::NewChild(Node* parent, D3DXVECTOR3 minPoint, D3DXVECTOR3 maxPoint,
 
 		parent->pVertexBuffer = new BaseBuffer();
 
-		if(FAILED(parent->pVertexBuffer->Initialize(bufferDesc)))
+		parent->pVertexBuffer->Initialize(bufferDesc);
 			//return false;
 
 
 
 		// Release the vertex and index arrays now that the data is stored in the buffers in the node.
-		delete [] vertices;
-		vertices = 0;
 
 		parent->children = NULL;
 	}
@@ -173,14 +177,14 @@ bool OctTree::IsPointContained(int index, D3DXVECTOR3 minPoint, D3DXVECTOR3 maxP
 	return true;
 }
 
-vector<OctTree::RenderBufferType> OctTree::Render(ID3D11DeviceContext* dc, ViewFrustum frustum)
+vector<OctTree::RenderBufferType> OctTree::Render(ViewFrustum frustum)
 {
 	vector<RenderBufferType> bufferList;
 	int verticesToRender = 0;
 
 	if(FrustumVSBox(frustum, this->head->box))
 	{
-		bufferList = RenderNode(dc, this->head, frustum);
+		bufferList = RenderNode(D3DShell::self()->getDeviceContext(), this->head, frustum);
 	}
 
 
@@ -254,10 +258,5 @@ void OctTree::ReleaseChild(Node* parent)
 
 		delete[]parent->children;
 		parent->children = 0;
-	}
-	else if(parent->indexCount > 0)
-	{
-		//parent->pVertexBuffer.Destroy();
-		//parent->pVertexBuffer = 0;
 	}
 }

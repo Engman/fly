@@ -37,7 +37,7 @@ bool Application::Initialize(HINSTANCE hInst, int width, int height)
 	if(!LoadResources())			return false;
 
 
-	this->mainCamera.SetProjectionMatrix((float)D3DX_PI/2.0f, D3DShell::self()->getAspectRatio(), 1, 1000);
+	this->mainCamera.SetProjectionMatrix((float)D3DX_PI*0.2f, D3DShell::self()->getAspectRatio(), 1, 1000);
 	this->mainCamera.SetOrthogonalMatrix(D3DShell::self()->getWidth(), D3DShell::self()->getHeight(), 1, 1000);
 	this->mainCamera.SetPosition(0.0f, 0.0f, 0.0f);
 	this->mainCamera.SetRotation(0.0f, 0.0f, 0.0f);
@@ -164,13 +164,15 @@ bool Application::Render()
 }
 void Application::DeferedRendering()
 {
+	ViewFrustum frustum;
+
 	D3DShell::self()->BeginGBufferRenderTargets();
 
 	IShader::PER_FRAME_DATA gBufferDrawData;
 	gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
 	gBufferDrawData.view = this->mainCamera.GetViewMatrix();
 	gBufferDrawData.projection = this->mainCamera.GetProjectionMatrix();
-
+	this->mainCamera.ConstructViewFrustum(frustum);
 
 
 //#################################//
@@ -179,17 +181,16 @@ void Application::DeferedRendering()
 
 
 	//g_plane->Render(D3DShell::self()->getDeviceContext());
-	g_cube->Render(D3DShell::self()->getDeviceContext());
+	//g_cube->Render(D3DShell::self()->getDeviceContext());
 
 	for (int i = 0; i <(int)this->objects.size(); i++)
 	{
-		//this->objects[i]->Render();
+		this->objects[i]->Render();
 	}
+
 	this->gBufferShader.draw(gBufferDrawData);
 
 	
-
-
 //##################################################################//
 //------------- Final pass, add light and color together ----------//
 //##################################################################//
@@ -212,6 +213,8 @@ bool Application::LoadResources()
 	WIN32_FIND_DATA FindFileData;
 	HANDLE hFind = FindFirstFile(L"..\\Resources\\Models\\*.obj", &FindFileData);
 	
+	vector<std::wstring> models;
+
 	if(hFind == INVALID_HANDLE_VALUE)
 	{
 		DisplayText("No files in [Model] directory.");
@@ -219,7 +222,7 @@ bool Application::LoadResources()
 	}
 	else
 	{
-		vector<std::wstring> models;
+		
 		std::wstring tempFirst = L"..\\Resources\\Models\\"; 
 		tempFirst.append(FindFileData.cFileName);
 		models.push_back(tempFirst);
@@ -253,6 +256,7 @@ bool Application::LoadResources()
 			this->objects.push_back(model);
 		}
 	}
+
 	return true;
 }
 
@@ -417,11 +421,7 @@ void Application::initTestData()
 
 
 
-	g_terrain = new Terrain();
-	Object::OBJECT_DESC terrainDesc;
-	terrainDesc.vCount = 0;
-	terrainDesc.vertecies = new vector<VERTEX::VertexPNT>;
-	g_terrain->Initialize(terrainDesc);
+	
 
 	//-----------------------------------
 }

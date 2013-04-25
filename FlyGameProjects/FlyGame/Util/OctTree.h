@@ -64,7 +64,7 @@ class OctTree
 		void Release();
 
 		/** The returned value contains a list of buffer structures which are prepared to be rendered*/
-		vector<RenderBufferType> Render(ID3D11DeviceContext* dc, ViewFrustum frustum);
+		vector<RenderBufferType> Render(ViewFrustum frustum);
 };
 
 #endif
