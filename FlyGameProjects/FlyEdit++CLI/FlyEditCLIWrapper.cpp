@@ -9,7 +9,7 @@ namespace System
 		{
 			FlyEditCLIWrapper::FlyEditCLIWrapper()
 			{
-				this->flyEngine = new EngineWrapper();
+				this->flyEngine = new EngineEditorWrapper();
 			}
 
 			FlyEditCLIWrapper::~FlyEditCLIWrapper()
@@ -18,34 +18,48 @@ namespace System
 				this->flyEngine = NULL;
 			}
 
-			HRESULT FlyEditCLIWrapper::Init(IntPtr _hWnd, int width, int height)
+			bool FlyEditCLIWrapper::Init(IntPtr _hWnd, int width, int height)
 			{
 				HWND hwnd = (HWND)(void*)_hWnd;
 				if( FAILED (this->flyEngine->Init(hwnd, width, height) ) )
-					return E_FAIL;
+					return false;
 
 
-				return S_OK;
+				return true;
 			}
 
 			HRESULT FlyEditCLIWrapper::Shutdown()
 			{
 				return this->flyEngine->Shutdown();
-				return S_OK;
+				return 1;
 			}
 
 			HRESULT FlyEditCLIWrapper::ProcessFrame()
 			{
-				return this->flyEngine->ProcessFrame();
-				return S_OK;
+				this->flyEngine->Update();
+				this->flyEngine->Render();
+				return 1;
+			}
+
+			int FlyEditCLIWrapper::LoadResources(String^ path)
+			{
+				wchar_t *msg = (wchar_t*)Marshal::StringToHGlobalUni(path).ToPointer();
+				return this->flyEngine->LoadResource(msg);
 			}
 
 			HRESULT FlyEditCLIWrapper::OnResize(int width, int height)
 			{
 				
 				return this->flyEngine->OnResize(width, height);
-				return S_OK;
+				return 1;
 			}
+			HRESULT FlyEditCLIWrapper::OnMouseDown(int x, int y)
+			{
+				return this->flyEngine->OnMouseDown(x, y);
+			}
+
+
+
 
 			String^ FlyEditCLIWrapper::ProcessText(String^ msg)
 			{
@@ -67,10 +81,6 @@ namespace System
 				return returnText;
 			}
 
-			void FlyEditCLIWrapper::Pick(int x, int y)
-			{
-				this->flyEngine->Pick(x, y);
-			}
 
 		}
 	}

@@ -1,10 +1,10 @@
 #include "Core\Application.h"
+#include "FlyEngine.h"
 
 
+//#ifdef DLL_USAGE
 
-#ifdef DLL_USAGE
-
-#else
+//#else
 	int WINAPI WinMain( HINSTANCE hInst, HINSTANCE prevInst, PSTR cmdLine, int cmdShow)
 	{
 
@@ -25,4 +25,4 @@
 
 	}
 
-#endif
+//#endif

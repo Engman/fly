@@ -244,7 +244,9 @@ class Input
 				K_LeftShift			= 0xA0,
 				K_RightShift		= 0xA1,
 				K_LeftCtrl			= 0xA2,
-				K_RightCtrl			= 0xA3
+				K_RightCtrl			= 0xA3,
+
+				COUNT
 			};
 		};
 
@@ -269,7 +271,7 @@ class Input
 	private:
 		Input																();	
 		~Input																();
-
+		static DWORD WINAPI ProcThread										(LPVOID lpParameter);
 
 	public:
 		Input																(const Input&);
