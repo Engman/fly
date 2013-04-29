@@ -20,6 +20,8 @@ class Terrain : public Object
 		void Render();
 		void RenderOctTree(ViewFrustum frustum);
 
+		vector<VERTEX::VertexPNT> GetCollidedBoxes(BoundingBox box);
+
 		void Release();
 };
 

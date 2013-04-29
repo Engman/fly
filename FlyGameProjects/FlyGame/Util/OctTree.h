@@ -36,6 +36,7 @@ class OctTree
 			Node* children;
 
 			SmartPtrStd<BaseBuffer> pVertexBuffer;
+			SmartPtrStd<std::vector<VERTEX::VertexPNT>> nodeVertexList;
 
 			unsigned long indexCount;
 		};
@@ -53,6 +54,8 @@ class OctTree
 
 		vector<RenderBufferType> RenderNode(ID3D11DeviceContext* dc, Node* parent, ViewFrustum frustum);
 
+		vector<VERTEX::VertexPNT> OctTree::GetCollidedBoxNode(Node* parent, BoundingBox box);
+
 		void ReleaseChild(Node* parent);
 
 	public:
@@ -65,6 +68,8 @@ class OctTree
 
 		/** The returned value contains a list of buffer structures which are prepared to be rendered*/
 		vector<RenderBufferType> Render(ViewFrustum frustum);
+
+		vector<VERTEX::VertexPNT> GetCollidedBoxes(BoundingBox box);
 };
 
 #endif

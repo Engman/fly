@@ -21,9 +21,6 @@ void OctTree::Initialize(SmartPtrStd<std::vector<VERTEX::VertexPNT>> vertexList,
 	CalculateBoxSize();
 
 	NewChild(this->head, this->head->box.minPoint,this->head->box.maxPoint, iterations - 1);
-
-	//delete[]this->pVertexList;
-	//this->pVertexList = NULL;
 }
 
 void OctTree::NewChild(Node* parent, D3DXVECTOR3 minPoint, D3DXVECTOR3 maxPoint, int iterations)
@@ -81,6 +78,7 @@ void OctTree::NewChild(Node* parent, D3DXVECTOR3 minPoint, D3DXVECTOR3 maxPoint,
 				vertices->at(nodeVertexIndex).texcoord = this->pVertexList->at(i).texcoord;
 				vertices->at(nodeVertexIndex).normal = this->pVertexList->at(i).normal;
 				nodeVertexIndex++;
+				
 
 				vertices->push_back(VERTEX::VertexPNT());
 
@@ -97,6 +95,8 @@ void OctTree::NewChild(Node* parent, D3DXVECTOR3 minPoint, D3DXVECTOR3 maxPoint,
 				nodeVertexIndex++;
 			}
 		}
+
+		parent->nodeVertexList = vertices;
 
   		SmartPtrStd<BaseBuffer> vertexBuffer = new BaseBuffer();
 
@@ -259,4 +259,54 @@ void OctTree::ReleaseChild(Node* parent)
 		delete[]parent->children;
 		parent->children = 0;
 	}
+}
+
+
+vector<VERTEX::VertexPNT> OctTree::GetCollidedBoxes(BoundingBox box)
+{
+	vector<VERTEX::VertexPNT> bufferList;
+	int verticesToRender = 0;
+
+	if(BoxVSBox(box, this->head->box))
+	{
+		bufferList =  GetCollidedBoxNode(this->head, box);
+	}
+
+	return bufferList;
+}
+
+vector<VERTEX::VertexPNT> OctTree::GetCollidedBoxNode(Node* parent, BoundingBox box)
+{
+	vector<VERTEX::VertexPNT> vertexList;
+
+	if(BoxVSBox(box, parent->box))
+	{
+		if(parent->children == NULL)
+		{
+			vertexList = *parent->nodeVertexList;
+		}
+		else
+		{
+			vector<VERTEX::VertexPNT> tempList;
+
+			tempList = GetCollidedBoxNode(&parent->children[0], box);
+			vertexList.insert(vertexList.end(), tempList.begin(), tempList.end());
+			tempList = GetCollidedBoxNode(&parent->children[1], box);
+			vertexList.insert(vertexList.end(), tempList.begin(), tempList.end());
+			tempList = GetCollidedBoxNode(&parent->children[2], box);
+			vertexList.insert(vertexList.end(), tempList.begin(), tempList.end());
+			tempList = GetCollidedBoxNode(&parent->children[3], box);
+			vertexList.insert(vertexList.end(), tempList.begin(), tempList.end());
+			tempList = GetCollidedBoxNode(&parent->children[4], box);
+			vertexList.insert(vertexList.end(), tempList.begin(), tempList.end());
+			tempList = GetCollidedBoxNode(&parent->children[5], box);
+			vertexList.insert(vertexList.end(), tempList.begin(), tempList.end());
+			tempList = GetCollidedBoxNode(&parent->children[6], box);
+			vertexList.insert(vertexList.end(), tempList.begin(), tempList.end());
+			tempList = GetCollidedBoxNode(&parent->children[7], box);
+			vertexList.insert(vertexList.end(), tempList.begin(), tempList.end());
+		}
+	}
+
+	return vertexList;
 }

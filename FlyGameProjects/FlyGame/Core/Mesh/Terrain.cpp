@@ -60,3 +60,9 @@ void Terrain::Release()
 {
 	this->octTree.Release();
 }
+
+
+vector<VERTEX::VertexPNT> Terrain::GetCollidedBoxes(BoundingBox box)
+{
+	return this->octTree.GetCollidedBoxes(box);
+}
