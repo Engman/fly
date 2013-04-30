@@ -107,6 +107,8 @@ bool ObjectImporter::Import(std::wstring file, ID3D11Device* device, ID3D11Devic
 				else { ParseLine(in, true); }
 			}
 		}
+
+		in.close();
 	}
 
 	return true;
@@ -138,6 +140,7 @@ bool ObjectImporter::Import(std::wstring file, ID3D11Device* device, ID3D11Devic
 				identifiers.push_back(mid);
 			}
 		}
+		in.close();
 	}
 
 	return true;

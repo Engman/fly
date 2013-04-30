@@ -8,18 +8,25 @@ FullScreenQuad::~FullScreenQuad()
 {
 
 }
-void FullScreenQuad::Initialize( ID3D11Device* g_Device, ID3D11DeviceContext* g_DeviceContext, IShader* shader )
+bool FullScreenQuad::Initialize( ID3D11Device* g_Device, IShader* shader )
 {
 	
 	VERTEX::VertexPT mesh[] =
 	{
-		{D3DXVECTOR4(-1, 1,0, 1),	D3DXVECTOR2(0 ,0)},
+
+		/*{D3DXVECTOR4(-1, 1,0, 1),	D3DXVECTOR2(0 ,0)},
 		{D3DXVECTOR4(1,1,0,1)	,	D3DXVECTOR2(1 ,0)},
 		{D3DXVECTOR4(-1,-1,0,1)	,	D3DXVECTOR2(0 ,1)},
 
 		{D3DXVECTOR4(-1, -1,0, 1),	D3DXVECTOR2(0, 1)},
 		{D3DXVECTOR4(1,1,0, 1)	,	D3DXVECTOR2(1, 0)},
-		{D3DXVECTOR4(1,-1, 0,1)	,	D3DXVECTOR2(1, 1)}
+		{D3DXVECTOR4(1,-1, 0,1)	,	D3DXVECTOR2(1, 1)}*/
+
+		{D3DXVECTOR4(-1,  1, 0, 1)	,	D3DXVECTOR2(0 ,0)},
+		{D3DXVECTOR4( 1,  1, 0, 1)	,	D3DXVECTOR2(1, 0)},
+		{D3DXVECTOR4( 1, -1, 0, 1)	,	D3DXVECTOR2(1, 1)},
+		{D3DXVECTOR4(-1, -1, 0, 1)	,	D3DXVECTOR2(0, 1)}
+
 
 	};
 
@@ -29,7 +36,7 @@ void FullScreenQuad::Initialize( ID3D11Device* g_Device, ID3D11DeviceContext* g_
 	bufferDesc.device = D3DShell::self()->getDevice();
 	bufferDesc.elementSize = sizeof(VERTEX::VertexPT);
 	bufferDesc.data = mesh;
-	bufferDesc.nrOfElements = 6;
+	bufferDesc.nrOfElements = 4;
 	bufferDesc.type = BUFFER_FLAG::TYPE_VERTEX_BUFFER;
 	bufferDesc.usage = BUFFER_FLAG::USAGE_DEFAULT;
 
@@ -37,9 +44,13 @@ void FullScreenQuad::Initialize( ID3D11Device* g_Device, ID3D11DeviceContext* g_
 	if(FAILED(m_VertexBuffer->Initialize(bufferDesc)))
 	{
 		MessageBox(0, L"Could not initialize planeVertexBuffer! Plane.cpp - Initialize", L"Error", MB_OK);
+		return false;
 	}
 
-	int index []= {0,1,2,3,4,5};
+	int index []=	{
+						0,1,2,
+						0,2,3
+					};
 	bufferDesc.dc = D3DShell::self()->getDeviceContext();
 	bufferDesc.device = D3DShell::self()->getDevice();
 	bufferDesc.elementSize = sizeof(int);
@@ -52,13 +63,11 @@ void FullScreenQuad::Initialize( ID3D11Device* g_Device, ID3D11DeviceContext* g_
 	if(FAILED(m_IndexBuffer->Initialize(bufferDesc)))
 	{
 		MessageBox(0, L"Could not initialize planeIndexBuffer! Plane.cpp - Initialize", L"Error", MB_OK);
+		return false;
 	}
 
 	m_shader = shader;
-}
-void FullScreenQuad::Update()
-{
-
+	return true;
 }
 
 void FullScreenQuad::Render( ID3D11DeviceContext* g_DeviceContext)
@@ -66,12 +75,9 @@ void FullScreenQuad::Render( ID3D11DeviceContext* g_DeviceContext)
 	IShader::DRAW_DATA draw_data;
 	draw_data.buffers.push_back(m_VertexBuffer);
 	draw_data.buffers.push_back(m_IndexBuffer);
-	//draw_data.textures = NULL;
 
 	draw_data.material = NULL;
 
-	D3DXMATRIX world;
-	D3DXMatrixIdentity(&world);
 	draw_data.worldMatrix = NULL;
 	m_shader->addDrawData(draw_data);
 }

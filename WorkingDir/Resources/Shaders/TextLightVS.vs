@@ -1,3 +1,4 @@
+
 //-----------------------------------------------------------------------------------------
 // Input and Output Structures
 //-----------------------------------------------------------------------------------------
@@ -13,15 +14,14 @@ struct VSIn
 {
 	float4 position		: POSITION;
 	float2 TextCoord  : TEXCOORD;
-	//float4 normal     : NORMAL;
-	//float4 color      : COLOR;
+
 };
 
 struct PSIn
 {
 	float4 Pos		: SV_Position;
 	float2 TextCoord  : TEXCOORD; 
-	//float3 Color	: COLOR;
+
 };
 
 
@@ -34,9 +34,6 @@ PSIn FVertexShader(VSIn input)
 
   output.Pos		= input.position; 
   
-
-  float invWidth  = 1/ 800;
-  float invHeight = 1/ 600;
   
   //Projected co-ords.
   output.TextCoord     = input.TextCoord;
@@ -48,5 +45,4 @@ PSIn FVertexShader(VSIn input)
   //output.TextCoord.y  -= invHeight ;
 	
 	return output;
-
 }

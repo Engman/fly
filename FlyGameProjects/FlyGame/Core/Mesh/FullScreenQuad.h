@@ -25,9 +25,7 @@ private:
 public:
 	FullScreenQuad();
 	~FullScreenQuad();
-	void			Initialize(ID3D11Device* g_Device, ID3D11DeviceContext* g_DeviceContext, IShader* shader);
-	
-	void            Update(); 
+	bool			Initialize(ID3D11Device* g_Device, IShader* shader);
 	
 	void			Render( ID3D11DeviceContext* g_DeviceContext);
 

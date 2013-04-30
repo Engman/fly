@@ -38,15 +38,15 @@ bool Application::Initialize(HINSTANCE hInst, int width, int height)
 	if(!LoadResources())			return false;
 
 
-	this->mainCamera.SetProjectionMatrix((float)D3DX_PI/2.0f, D3DShell::self()->getAspectRatio(), 1, 1000);
+	this->mainCamera.SetProjectionMatrix((float)D3DX_PI*0.2f, D3DShell::self()->getAspectRatio(), 1, 1000);
 	this->mainCamera.SetOrthogonalMatrix(D3DShell::self()->getWidth(), D3DShell::self()->getHeight(), 1, 1000);
 	this->mainCamera.SetPosition(0.0f, 0.0f, 0.0f);
 	this->mainCamera.SetRotation(0.0f, 0.0f, 0.0f);
 
 	initTestData();
 
-
-	this->mainCamera.GetViewFrustum();
+	this->flyCamera.setLookAt(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f), vec3(0.0f, 1.0f, 0.0f));
+	this->flyCamera.setPerspective((float)D3DX_PI*0.2f, D3DShell::self()->getAspectRatio(), 1.0f, 1000.0f);
 
 	return true;
 }
@@ -62,7 +62,7 @@ bool Application::Initialize(HWND hwnd, int width, int height)
 	if(!LoadResources())			return false;
 
 
-	this->mainCamera.SetProjectionMatrix((float)D3DX_PI/2.0f, D3DShell::self()->getAspectRatio(), 1, 1000);
+	this->mainCamera.SetProjectionMatrix((float)D3DX_PI*0.2f, D3DShell::self()->getAspectRatio(), 1, 1000);
 	this->mainCamera.SetOrthogonalMatrix(D3DShell::self()->getWidth(), D3DShell::self()->getHeight(), 1, 1000);
 	this->mainCamera.SetPosition(-20.0f, 80.0f, -200.0f);
 	this->mainCamera.SetRotation(0.0f, 0.0f, 0.0f);
@@ -139,38 +139,37 @@ void Application::KeyPressEvent(Input::KeyCodes::Key k)
 		PostQuitMessage(0);
 	
 	else if(k == Key::K_S)
-		this->mainCamera.DennisTemporaryMoveFunction(vec3(0.0f, 0.0f, -1.0f));
+		this->flyCamera.Move(-1.0f);
 	else if(k == Key::K_W)
-		this->mainCamera.DennisTemporaryMoveFunction(vec3(0.0f, 0.0f, 1.0f));
+		this->flyCamera.Move(1.0f);
 	else if(k == Key::K_A)
-		this->mainCamera.DennisTemporaryMoveFunction(vec3(-1.0f, 0.0f, 0.0f));
+		this->flyCamera.Strafe(-1.0f);
 	else if(k == Key::K_D)
-		this->mainCamera.DennisTemporaryMoveFunction(vec3(1.0f, 0.0f, 0.0f));
+		this->flyCamera.Strafe(1.0f);
 	else if(k == Key::K_Ctrl)
-		this->mainCamera.DennisTemporaryMoveFunction(vec3(0.0f, -1.0f, 0.0f));
+		this->flyCamera.Ascend(-1.0f);
 	else if(k == Key::K_Space)
-		this->mainCamera.DennisTemporaryMoveFunction(vec3(0.0f, 1.0f, 0.0f));
 
+	this->flyCamera.Ascend(1.0f);
 }
 void Application::MouseMoveEvent(Input::MouseMoveData d)
 {
-	static int idCounter = 0;
-	idCounter ++;
-	vec3 rot;
-
-	rot = this->mainCamera.GetRotation();
-	rot.x += d.relativeX * 0.03;
-	rot.y += d.relativeY* 0.03;
-	rot.z = 0;
-	this->mainCamera.SetRotation(rot.x, rot.y, rot.z);
+	this->flyCamera.Yaw((float)D3DXToRadian(d.relativeX*0.3)); //* this->gtime->DeltaTime() * 150);
+	this->flyCamera.Pitch((float)D3DXToRadian(d.relativeY*0.3)); //* this->gtime->DeltaTime() * 150);
 }
+
+
 void Application::Update()
 {
 	//g_cube->Update();
+
 	D3DXVECTOR3 rot; 
 	rot = this->objects[0]->getRotation();
 	rot.x += 0.003f;
 	this->objects[0]->setRotation(rot);
+
+	this->flyCamera.updateView();
+
 }
 bool Application::Render()
 {
@@ -185,8 +184,8 @@ void Application::DeferedRendering()
 
 	IShader::PER_FRAME_DATA gBufferDrawData;
 	gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
-	gBufferDrawData.view = this->mainCamera.GetViewMatrix();
-	gBufferDrawData.projection = this->mainCamera.GetProjectionMatrix();
+	gBufferDrawData.view = this->flyCamera.getView();
+	gBufferDrawData.projection = this->flyCamera.getProj();
 
 
 
@@ -206,7 +205,7 @@ void Application::DeferedRendering()
 
 	//set light render target and give it the albedo, normal and specular textures
 	D3DShell::self()->BeginLightRenderTarget();
-	float blend[4] = {0.95f,0.95f,0.95f,1.0f};
+	float blend[4] = {0.75f,0.75f,0.75f,1.0f};
 	//D3DShell::self()->setBlendModeState(FLAGS::BLEND_MODE_Custom,blend, NULL);
 
 
@@ -318,7 +317,7 @@ bool Application::LoadResources()
 			Object::OBJECT_DESC desc;
 			desc.device = D3DShell::self()->getDevice();
 			desc.deviceContext = D3DShell::self()->getDeviceContext();
-			desc.material_id = MaterialHandler::GetMaterial(raw->objects[0].material)->GetID();
+			desc.material_id = raw->objects[0].material;
 			desc.shader = &this->gBufferShader;
 			desc.vertecies = raw->objects[0].vertex;
 			desc.vCount = (int)raw->objects[0].vertex->size();
@@ -499,15 +498,16 @@ void Application::initTestData()
 	D3DXMATRIX world; 
 	D3DXMatrixIdentity(&world);
 
-	g_plane = new Plane();
-	g_plane->Initialize(world, 2.0f, 2.0f, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
+	//g_plane = new Plane();
+	//g_plane->Initialize(world, 2.0f, 2.0f, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
 
 	g_FullscreenQuad = new FullScreenQuad();
-	g_FullscreenQuad->Initialize( D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &g_colorShader);
+	g_FullscreenQuad->Initialize( D3DShell::self()->getDevice(), &g_colorShader);
+
 
 	//draw a plane over the screen with the lightShader
 	g_dirLight = new FullScreenQuad();
-	g_dirLight->Initialize( D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &g_dirLightShader);
+	g_dirLight->Initialize( D3DShell::self()->getDevice(), &g_dirLightShader);
 
 
 	g_cube = new Cube();
@@ -518,6 +518,7 @@ void Application::initTestData()
 	g_cube2 = new Cube();
 	D3DXMatrixTranslation(&world, 50.0f, 2.0f, 100.0f);
 	g_cube2->Initialize(world, 50.0f, 50.0f, 0.0f,  D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &g_pointLightShader);
+
 
 	g_lightHolder = new LightHolder();
 	g_lightHolder->Initialize();

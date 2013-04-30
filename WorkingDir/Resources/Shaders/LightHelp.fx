@@ -1,4 +1,5 @@
 
+
 //##########
 // Structs #
 //##############################################################
@@ -212,3 +213,4 @@ void ComputeDirLight(DirLight l, float3 surfaceNormal, float3 eye, out LightOutD
 		//finalLight.Specular = specFactor * l.Specular * m.Specular;
 	}
 }
+

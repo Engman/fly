@@ -64,11 +64,12 @@ class IShader
 			if( FAILED (this->shader->Initialize(desc) ) )
 				return false;
 
-
+			
 			static SmartPtrStd<BaseBuffer> mb = new BaseBuffer();
 			static bool initiated = false;
 
 			if(!initiated)
+
 
 			{
 				BaseBuffer::BUFFER_INIT_DESC matrixBufferDesc;
@@ -81,6 +82,7 @@ class IShader
 				matrixBufferDesc.data = NULL;
 				if( FAILED( mb->Initialize(matrixBufferDesc) ) )
 				return false;
+
 				initiated = true;
 			}
 

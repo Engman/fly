@@ -55,13 +55,6 @@ struct cBufferLights
 	std::vector<SpotLightProxy>			spotLights;
 };
 
-struct ViewFrustum
-{
-	D3DXPLANE planes[6];
-
-	D3DXVECTOR3 spherePoint;
-	float radius;
-};
 
 struct CameraView
 {
@@ -70,5 +63,6 @@ struct CameraView
 	D3DXVECTOR3 cameraPos;
 	float padd;
 };
+
 #endif
 

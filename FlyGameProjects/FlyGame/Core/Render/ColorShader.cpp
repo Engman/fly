@@ -1,8 +1,8 @@
 #include "ColorShader.h"
 
 ColorShader::ColorShader()
+	:IShader()
 {
-
 
 }
 

@@ -7,7 +7,8 @@
 
 //forwarddeklarationen måste ligga innan alla "using" !!! annars tolkas
 //det av visual studio som att GameEngineWrapper-klassen ligger i ett namespace
-#include "..\FlyGame\EngineCLIWrapper\EngineWrapper.h"
+//#include "..\FlyGame\EngineCLIWrapper\EngineWrapper.h"
+#include "..\FlyGame\EngineCLIWrapper\EngineEditorWrapper.h"
 
 
 using namespace System;
@@ -24,20 +25,23 @@ namespace System
 			public ref class FlyEditCLIWrapper
 			{
 				protected:
-					EngineWrapper* flyEngine;
+					EngineEditorWrapper* flyEngine;
 
 				public:
 					FlyEditCLIWrapper();
 					~FlyEditCLIWrapper();
 
-					HRESULT Init(IntPtr hWnd, int width, int height);
+					bool Init(IntPtr hWnd, int width, int height);
 					HRESULT Shutdown();
+					
 					HRESULT ProcessFrame();
+
+					int LoadResources(String^ path);
+
 					HRESULT OnResize(int width, int height);
+					HRESULT OnMouseDown(int x, int y);
 
 					String^ ProcessText(String^ text);
-
-					void Pick(int x, int y);
 			};
 		}
 	}

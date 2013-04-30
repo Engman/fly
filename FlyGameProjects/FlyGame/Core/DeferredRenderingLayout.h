@@ -11,6 +11,7 @@ namespace DeferredRenderLayout
 		MRTS_Material,
 		MRTS_Position,
 		//MRTS_TextCoord,
+
 		/* Add more */
 
 		MRT_COUNT
