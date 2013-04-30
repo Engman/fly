@@ -13,9 +13,9 @@ void FullScreenQuad::Initialize( ID3D11Device* g_Device, ID3D11DeviceContext* g_
 	
 	VERTEX::VertexPT mesh[] =
 	{
-		{D3DXVECTOR4(-1, -1,0, 1),	D3DXVECTOR2(0 ,0)},
-		{D3DXVECTOR4(-1,1,0,1)	,	D3DXVECTOR2(1 ,0)},
-		{D3DXVECTOR4(1,1,0,1)	,	D3DXVECTOR2(0 ,1)},
+		{D3DXVECTOR4(-1, 1,0, 1),	D3DXVECTOR2(0 ,0)},
+		{D3DXVECTOR4(1,1,0,1)	,	D3DXVECTOR2(1 ,0)},
+		{D3DXVECTOR4(-1,-1,0,1)	,	D3DXVECTOR2(0 ,1)},
 
 		{D3DXVECTOR4(-1, -1,0, 1),	D3DXVECTOR2(0, 1)},
 		{D3DXVECTOR4(1,1,0, 1)	,	D3DXVECTOR2(1, 0)},

@@ -6,9 +6,9 @@ Cube::Cube()
 Cube::~Cube()
 {
 }
-void Cube::Initialize(D3DXMATRIX world,  float height, float width, ID3D11Device* g_Device, ID3D11DeviceContext* g_DeviceContext, IShader* shader )
+void Cube::Initialize(D3DXMATRIX world,  float height, float width, float depht,  ID3D11Device* g_Device, ID3D11DeviceContext* g_DeviceContext, IShader* shader )
 {	
-	VERTEX::VertexPNT mesh[] =
+	/*VERTEX::VertexPNT mesh[] =
 	{
 		{D3DXVECTOR4(-1, 1,-1	,1)	,D3DXVECTOR4(0,0,-1, 0), D3DXVECTOR2(0 ,0)},
 		{D3DXVECTOR4(1,1,-1		,1)	,D3DXVECTOR4(0,0,-1, 0), D3DXVECTOR2(1 ,0)},
@@ -58,15 +58,65 @@ void Cube::Initialize(D3DXMATRIX world,  float height, float width, ID3D11Device
 		{D3DXVECTOR4(-1,-1, 1	,1)	,D3DXVECTOR4(0,-1,0,0), D3DXVECTOR2(0,1)},
 		{D3DXVECTOR4(1,-1,-1	,1)	,D3DXVECTOR4(0,-1,0,0), D3DXVECTOR2(1, 0)},
 		{D3DXVECTOR4(1,-1, 1	,1)	,D3DXVECTOR4(0,-1,0,0), D3DXVECTOR2(1, 1)}
-	};
+	};*/
+	VERTEX::VertexPT mesh[] =
+	{
+		{D3DXVECTOR4(-width, height,-depht	,1)	, D3DXVECTOR2(0 ,0)},
+		{D3DXVECTOR4(width,height,-depht	,1)	, D3DXVECTOR2(1 ,0)},
+		{D3DXVECTOR4(-width,-height,-depht	,1)	, D3DXVECTOR2(0 ,1)},
 
+		{D3DXVECTOR4(-width,-height,-depht	,1)	, D3DXVECTOR2(0, 1)},
+		{D3DXVECTOR4(width,height,-depht	,1)	, D3DXVECTOR2(1, 0)},
+		{D3DXVECTOR4(width,-height, -depht	,1)	, D3DXVECTOR2(1, 1)},
+
+
+		/*{D3DXVECTOR4(width,height,-depht	,1)	, D3DXVECTOR2(0, 0)},
+		{D3DXVECTOR4(width,height,depht		,1)	, D3DXVECTOR2(1,0)},
+		{D3DXVECTOR4(width,-height,-depht	,1)	, D3DXVECTOR2(0, 1)},
+
+		{D3DXVECTOR4(width,-height,-depht	,1)	, D3DXVECTOR2(0, 1)},
+		{D3DXVECTOR4(width,height,depht		,1)	, D3DXVECTOR2(1, 0)},
+		{D3DXVECTOR4(width,-height,depht	,1)	, D3DXVECTOR2(1, 1)},
+
+		{D3DXVECTOR4(width,height,depht		,1)	, D3DXVECTOR2(0,0 )},
+		{D3DXVECTOR4(-width,height,depht	,1)	, D3DXVECTOR2( 1 , 0)},
+		{D3DXVECTOR4(width,-height,depht	,1)	, D3DXVECTOR2(0 , 1)},
+
+		{D3DXVECTOR4(width,-height,depht	,1)	, D3DXVECTOR2(0 , 1)},
+		{D3DXVECTOR4(-width,height,depht	,1)	, D3DXVECTOR2( 1 , 0)},
+		{D3DXVECTOR4(-width,-height,depht	,1)	, D3DXVECTOR2( 1 , 1)},
+
+		{D3DXVECTOR4(-width,height,depht	,1),	 D3DXVECTOR2(0 , 0)},
+		{D3DXVECTOR4(-width,height,-depht	,1),	 D3DXVECTOR2(1, 0)},
+		{D3DXVECTOR4(-width,-height,depht	,1),	 D3DXVECTOR2(0,1)},
+
+		{D3DXVECTOR4(-width,-height,depht	,1),	 D3DXVECTOR2(0, 1)},
+		{D3DXVECTOR4(-width,height,-depht	,1),	 D3DXVECTOR2( 1, 0)},
+		{D3DXVECTOR4(-width,-height,-depht	,1),	 D3DXVECTOR2(1,1)},
+
+		{D3DXVECTOR4(-width,height,depht	,1),	D3DXVECTOR2( 0 , 0)},
+		{D3DXVECTOR4(width,height,depht		,1),	D3DXVECTOR2(1, 0)},
+		{D3DXVECTOR4(-width,height,-depht	,1),	D3DXVECTOR2( 0,1)},
+
+		{D3DXVECTOR4(-width,height,-depht	,1),	D3DXVECTOR2( 0,1)},
+		{D3DXVECTOR4(width,height,depht		,1),	D3DXVECTOR2(1, 0)},
+		{D3DXVECTOR4(width,height,-depht	,1),	D3DXVECTOR2(1, 1)},
+
+		{D3DXVECTOR4(-width,-height,-depht	,1)	, D3DXVECTOR2(0, 0)},
+		{D3DXVECTOR4(width,-height,-depht	,1)	, D3DXVECTOR2(1, 0)},
+		{D3DXVECTOR4(-width,-height,depht	,1)	, D3DXVECTOR2(0,1)},
+
+		{D3DXVECTOR4(-width,-height,depht	,1)	, D3DXVECTOR2(0,1)},
+		{D3DXVECTOR4(width,-height,-depht	,1)	, D3DXVECTOR2(1, 0)},
+		{D3DXVECTOR4(width,-height,depht	,1)	, D3DXVECTOR2(1, 1)}*/
+	};
 
 	BaseBuffer::BUFFER_INIT_DESC bufferDesc;
 	bufferDesc.dc = D3DShell::self()->getDeviceContext();
 	bufferDesc.device = D3DShell::self()->getDevice();
-	bufferDesc.elementSize = sizeof(VERTEX::VertexPNT);
+	bufferDesc.elementSize = sizeof(VERTEX::VertexPT);
 	bufferDesc.data = mesh;
-	bufferDesc.nrOfElements = 36;
+	bufferDesc.nrOfElements = 6;
 	bufferDesc.type = BUFFER_FLAG::TYPE_VERTEX_BUFFER;
 	bufferDesc.usage = BUFFER_FLAG::USAGE_DEFAULT;
 
@@ -76,12 +126,12 @@ void Cube::Initialize(D3DXMATRIX world,  float height, float width, ID3D11Device
 		MessageBox(0, L"Could not initialize planeVertexBuffer! Plane.cpp - Initialize", L"Error", MB_OK);
 	}
 
-	int index []= {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23, 24,25,26,27,28,29,30,31,32,33,34,35};
+	int index []= {0,1,2,3,4,5};//,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23, 24,25,26,27,28,29,30,31,32,33,34,35};
 	bufferDesc.dc = D3DShell::self()->getDeviceContext();
 	bufferDesc.device = D3DShell::self()->getDevice();
 	bufferDesc.elementSize = sizeof(int);
 	bufferDesc.data = index;
-	bufferDesc.nrOfElements = 36; 
+	bufferDesc.nrOfElements = 6; 
 	bufferDesc.type = BUFFER_FLAG::TYPE_INDEX_BUFFER;
 	bufferDesc.usage = BUFFER_FLAG::USAGE_DEFAULT;
 
@@ -142,6 +192,8 @@ void Cube::Render( ID3D11DeviceContext* g_DeviceContext)
 	draw_data.buffers.push_back(m_VertexBuffer);
 	draw_data.buffers.push_back(m_IndexBuffer);
 	draw_data.material = &m_material;
+
+	this->m_world = this->m_tranlate;
 	draw_data.worldMatrix = &m_world;
 	m_shader->addDrawData(draw_data);
 }

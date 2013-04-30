@@ -111,6 +111,15 @@ struct D3DShell::PrDat
 		this->depthStencilView		= NULL;
 		this->depthStencilBuffer	= NULL;
 
+		//-------------
+		if(this->lightRTV[0])
+			lightRTV[0]->Release();
+		this->lightRTV[0] = NULL;
+
+		if(this->lightSRV[0])
+			lightSRV[0]->Release();
+		this->lightSRV[0] = NULL;
+		//--------------
 	}
 
 	bool InitMRTS();
@@ -457,8 +466,25 @@ bool D3DShell::init(D3D_INIT_DESC& desc)
 
 #pragma endregion
 
+	//custom blendstate
+	D3D11_BLEND_DESC customBlendDesc;
+	ZeroMemory(&customBlendDesc, sizeof(D3D11_BLEND_DESC));
+	customBlendDesc.AlphaToCoverageEnable = false;
+	customBlendDesc.IndependentBlendEnable = false;
+	for (unsigned int i = 0; i < 8; ++i)
+	{
+		customBlendDesc.RenderTarget[i].BlendEnable			= true;
+		customBlendDesc.RenderTarget[i].BlendOp				= D3D11_BLEND_OP_ADD;
+		customBlendDesc.RenderTarget[i].BlendOpAlpha			= D3D11_BLEND_OP_ADD;
+		customBlendDesc.RenderTarget[i].DestBlend				= D3D11_BLEND_INV_SRC_COLOR;
+		customBlendDesc.RenderTarget[i].DestBlendAlpha			= D3D11_BLEND_DEST_ALPHA;
+		customBlendDesc.RenderTarget[i].RenderTargetWriteMask	= D3D11_COLOR_WRITE_ENABLE_ALL;
+		customBlendDesc.RenderTarget[i].SrcBlend				= D3D11_BLEND_SRC_COLOR;
+		customBlendDesc.RenderTarget[i].SrcBlendAlpha			= D3D11_BLEND_SRC_ALPHA;
+	}
 
-	if(!this->_prDatPtr->blendModeState.init(this->_prDatPtr->d3dDevice))
+
+	if(!this->_prDatPtr->blendModeState.init(this->_prDatPtr->d3dDevice, &customBlendDesc ))
 		return false;
 	if(!this->_prDatPtr->rasterizerState.init(this->_prDatPtr->d3dDevice))	  
 		return false;
@@ -468,6 +494,8 @@ bool D3DShell::init(D3D_INIT_DESC& desc)
 		return false;
 
 	if(!this->_prDatPtr->InitMRTS())
+		return false;
+	if(!this->_prDatPtr->initLigthRTV())
 		return false;
 
 	return true;
@@ -580,9 +608,10 @@ bool D3DShell::PrDat::initLigthRTV()
 	dstex.ArraySize = 1;
 	dstex.SampleDesc.Count = this->MSAASampleCount;
 	dstex.SampleDesc.Quality = this->MSAAQuality;
-	dstex.Format = DXGI_FORMAT_D32_FLOAT;
 	dstex.Usage = D3D11_USAGE_DEFAULT;
-	dstex.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	dstex.Format = DXGI_FORMAT_R16G16B16A16_UNORM;
+	dstex.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+
 	dstex.CPUAccessFlags = 0;
 
 
@@ -600,7 +629,7 @@ bool D3DShell::PrDat::initLigthRTV()
 	DescRT.Texture2DArray.FirstArraySlice = 0;
 	DescRT.Texture2DArray.ArraySize = 1;
 	DescRT.Texture2DArray.MipSlice = 0;
-
+	
 
 	if( FAILED( this->d3dDevice->CreateRenderTargetView(lightTex, &DescRT, &this->lightRTV[0]) ) )
 	{
@@ -806,8 +835,6 @@ void D3DShell::endScene()
 	}
 }
 
-
-
 void D3DShell::setViewport(D3D11_VIEWPORT* v, UINT nrOfViewports)
 {
 	this->_prDatPtr->d3dDeviceContext->RSSetViewports(nrOfViewports, v);
@@ -831,8 +858,9 @@ void D3DShell::setRasterizerState(FLAGS::STATE_RASTERIZER state)
 }
 void D3DShell::setBlendModeState(FLAGS::STATE_BLEND_MODE state, float blend[4], UINT SampleMask)		 
 {
-	//this->_prDatPtr->d3dDeviceContext->OMSetBlendState(this->_prDatPtr->blendModeState.getState(state), blend, SampleMask );
-	this->_prDatPtr->d3dDeviceContext->OMSetBlendState(NULL, blend, SampleMask );
+	
+	this->_prDatPtr->d3dDeviceContext->OMSetBlendState(this->_prDatPtr->blendModeState.getState(state), blend, SampleMask );
+	//this->_prDatPtr->d3dDeviceContext->OMSetBlendState(NULL, blend, SampleMask );
 }
 void D3DShell::setSamplerState(FLAGS::STATE_SAMPLING *state, FLAGS::SHADERS stage, UINT startSlot, UINT count )			 
 {
@@ -929,11 +957,19 @@ void D3DShell::BeginLightRenderTarget()
 	
 	this->getDeviceContext()->ClearDepthStencilView(this->_prDatPtr->deffDepthStencil[0], D3D11_CLEAR_DEPTH, 1.0, 0);
 
-	this->getDeviceContext()->OMSetRenderTargets(0, this->_prDatPtr->lightRTV, this->_prDatPtr->deffDepthStencil[0]);
+	this->getDeviceContext()->OMSetRenderTargets(1, this->_prDatPtr->lightRTV, this->_prDatPtr->deffDepthStencil[0]);
+
+
+
 
 }
 
 ID3D11ShaderResourceView** D3DShell::getLightSRV()
 {
-	return this->_prDatPtr->lightSRV;
+	
+	ID3D11ShaderResourceView* srv [2];
+	srv[0] =this->_prDatPtr->deffSRV[0];
+	srv[1] = this->_prDatPtr->lightSRV[0];
+	return srv;
+	//return this->_prDatPtr->lightSRV;
 }

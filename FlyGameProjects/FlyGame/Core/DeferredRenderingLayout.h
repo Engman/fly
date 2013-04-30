@@ -5,10 +5,11 @@ namespace DeferredRenderLayout
 {
 	enum MRTS
 	{
-		//MRTS_Position,
+		
 		MRTS_Diffuse,
 		MRTS_Normal,
 		MRTS_Material,
+		MRTS_Position,
 		//MRTS_TextCoord,
 		/* Add more */
 

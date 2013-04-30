@@ -59,13 +59,16 @@ void GBufferShader::draw(PER_FRAME_DATA& frameData)
 	
 		if(this->drawData[i].material)
 		{
-			ID3D11ShaderResourceView* temp[2] = { 
+
+			ID3D11ShaderResourceView* temp[3] = { 
 				drawData[i].material->GetDiffuseTexture() , 
-				drawData[i].material->GetNormalTexture()
+				drawData[i].material->GetNormalTexture() , 
+				drawData[i].material->GetSpecularTexture()
 			};
 
-			frameData.dc->PSSetShaderResources(0, 2, temp);
+			frameData.dc->PSSetShaderResources(0, 3, temp);
 		}
+
 		BaseBuffer* mat= drawData[i].material->GetBuffer();
 		mat->setBuffer();
 		this->shader->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

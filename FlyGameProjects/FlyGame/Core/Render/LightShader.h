@@ -8,12 +8,16 @@
 class LightShader : public IShader
 {
 public:
+
+
+
 	LightShader();
 
 	void draw(PER_FRAME_DATA& drawData);
 	void setSRVBuffer();
 
 private:
+	
 
 };
 #endif

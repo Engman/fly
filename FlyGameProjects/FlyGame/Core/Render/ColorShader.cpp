@@ -6,7 +6,7 @@ ColorShader::ColorShader()
 
 }
 
-void ColorShader::draw(PER_FRAME_DATA& wMatrixData)
+void ColorShader::draw(PER_FRAME_DATA& frameData)
 {
 	int indexC = 0;
 
@@ -15,15 +15,7 @@ void ColorShader::draw(PER_FRAME_DATA& wMatrixData)
 	this->shader->Render();
 	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_NoCullNoMs);
 	
-	//------------------Light
-	/*float blend[4] = {1,1,1,1};
-
-	D3DShell::self()->setBlendModeState(FLAGS::BLEND_MODE_AlphaBlend);
-
-
-
-	D3DShell::self()->setBlendModeState(FLAGS::BLEND_MODE_DisabledBlend);
-	*///-------------------
+	
 	
 	int count = (int)this->drawData.size();
 	for( int i = 0; i< count;i++)
@@ -34,11 +26,15 @@ void ColorShader::draw(PER_FRAME_DATA& wMatrixData)
 			cBufferMatrix* cb = (cBufferMatrix*)this->matrixBuffer->Map();
 			if(cb)
 			{
-				cb->world = *this->drawData[i].worldMatrix; // add the world matrix of the object
-				D3DXMatrixLookAtLH(&cb->view, &D3DXVECTOR3(0.0f, 0.0f, -5.0f), &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
-				D3DXMatrixOrthoLH(&cb->projection, 800, 600, 0.1f, 100.0f);
-				cb->worldInvTranspose = cb->world;
-			
+				cb->world = *this->drawData[i].worldMatrix;
+				cb->view = frameData.view;
+				cb->projection = frameData.projection;
+
+				Matrix temp;
+				float det = D3DXMatrixDeterminant(this->drawData[i].worldMatrix);
+				if(det)
+					cb->worldInvTranspose = *D3DXMatrixInverse(&temp, &det, this->drawData[i].worldMatrix);
+
 				D3DXMatrixTranspose(&cb->world, &cb->world);
 				D3DXMatrixTranspose(&cb->view,&cb->view);
 				D3DXMatrixTranspose(&cb->projection,&cb->projection);
@@ -64,9 +60,12 @@ void ColorShader::draw(PER_FRAME_DATA& wMatrixData)
 }
 void ColorShader::setSRVBuffer()
 {
-	int nr = D3DShell::self()->getNrOfSRV();
+	int nr = 2;//D3DShell::self()->getNrOfSRV();
 	ID3D11ShaderResourceView** srv; 
-	srv = D3DShell::self()->getDefferedSRV();
-	D3DShell::self()->getDeviceContext()->PSSetShaderResources(0,nr, srv);
+	srv = D3DShell::self()->getLightSRV();
+	ID3D11ShaderResourceView* color[2]; 
+	color[0] = srv[0];
+	color[1] = srv[1];
+	D3DShell::self()->getDeviceContext()->PSSetShaderResources(0,nr, color);
 }
 

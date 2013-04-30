@@ -63,5 +63,12 @@ struct ViewFrustum
 	float radius;
 };
 
+struct CameraView
+{
+	D3DXMATRIX mInvViewProj;
+	D3DXMATRIX mInvView;
+	D3DXVECTOR3 cameraPos;
+	float padd;
+};
 #endif
 

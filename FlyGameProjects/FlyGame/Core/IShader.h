@@ -20,6 +20,8 @@ class IShader
 			Matrix	view;
 			Matrix	projection;
 			BaseBuffer* lights;
+			//buffer for view, projection and camPos in light PS
+			BaseBuffer* camForLight;
 		};
 		/** Used to set data for a draw call */
 		struct DRAW_DATA

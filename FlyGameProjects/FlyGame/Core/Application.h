@@ -48,15 +48,18 @@ class Application
 	private:
 		GBufferShader			gBufferShader;
 		ColorShader				g_colorShader; 
-		LightShader				g_lightShader;
+		LightShader				g_dirLightShader;
+		LightShader				g_pointLightShader;
 
 		SmartPtrStd<BaseBuffer> pMatrixBuffer;
 
 		//test values 
 		SmartPtrStd<Plane>		g_plane;
 		SmartPtrStd<Cube>		g_cube;
+		SmartPtrStd<Cube>		g_cube2;
 		SmartPtrStd<FullScreenQuad>	g_FullscreenQuad;
 		SmartPtrStd<LightHolder>g_lightHolder;
+		SmartPtrStd<FullScreenQuad> g_dirLight;
 		//------ 
 		std::vector<SmartPtrStd<Entity>> objects;
 

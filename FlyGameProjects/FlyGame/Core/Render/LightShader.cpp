@@ -6,44 +6,48 @@ LightShader::LightShader()
 
 }
 
-void LightShader::draw(PER_FRAME_DATA& wMatrixData)
+void LightShader::draw(PER_FRAME_DATA& frameData)
 {
 	int indexC = 0;
 
 	this->setSRVBuffer();
 
 	this->shader->Render(); // set vertex and pixel shader
-	//------------------Light-----------
-	float blend[4] = {1,1,1,1};
-
-	D3DShell::self()->setBlendModeState(FLAGS::BLEND_MODE_AlphaBlend,blend, NULL);
-
-
-
-	D3DShell::self()->setBlendModeState(FLAGS::BLEND_MODE_DisabledBlend, blend, NULL);
-	//-------------------
 	
-	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_NoCullNoMs);
 	int count = (int)this->drawData.size();
 	for( int i = 0; i< count;i++)
 	{
-
-		cBufferMatrix* cb = (cBufferMatrix*)this->matrixBuffer->Map();
-		if(cb)
+		if(this->drawData[i].worldMatrix) //if the object have a world matrix
 		{
-			cb->world = *this->drawData[i].worldMatrix; // add the world matrix of the object
-			D3DXMatrixLookAtLH(&cb->view, &D3DXVECTOR3(0.0f, 0.0f, -5.0f), &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
-			D3DXMatrixOrthoLH(&cb->projection, 800.0f, 600.0f, 0.1f, 100.0f);
-			cb->worldInvTranspose = cb->world;
+			//set WVP till VS
+			cBufferMatrix* cb = (cBufferMatrix*)this->matrixBuffer->Map();
+			if(cb)
+			{
+				cb->world = *this->drawData[i].worldMatrix;
+				cb->view = frameData.view;
+				cb->projection = frameData.projection;
 
-			D3DXMatrixTranspose(&cb->world, &cb->world);
-			D3DXMatrixTranspose(&cb->view,&cb->view);
-			D3DXMatrixTranspose(&cb->projection,&cb->projection);
+				Matrix temp;
+				float det = D3DXMatrixDeterminant(this->drawData[i].worldMatrix);
+				if(det)
+					cb->worldInvTranspose = *D3DXMatrixInverse(&temp, &det, this->drawData[i].worldMatrix);
 
-			this->matrixBuffer->Unmap();
+				D3DXMatrixTranspose(&cb->world, &cb->world);
+				D3DXMatrixTranspose(&cb->view,&cb->view);
+				D3DXMatrixTranspose(&cb->projection,&cb->projection);
+
+				this->matrixBuffer->Unmap();
+			}
 		}
-
 		this->matrixBuffer->setBuffer();
+		
+		//set camdata, same for all lights
+		frameData.camForLight->setBuffer(0,0);
+		
+		//set directional light
+		frameData.lights->setBuffer(1, sizeof(CameraView));
+		
+		//set objects vercise data
 		for(int k = 0; k <(int)this->drawData[i].buffers.size(); k++)
 		{
 			this->drawData[i].buffers[k]->setBuffer();
