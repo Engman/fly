@@ -13,11 +13,9 @@
 *.a
 
 # Other (Robin rör i grytan)
-*.vcxproj
 *.filters
 *.user
 *.sdf
-*.sln
 *.exe
 *.suo
 *.opensdf
@@ -25,7 +23,6 @@
 
 #C-sharp
 *.config
-*.csproj
 *.manifest
 
 Dependencies/
