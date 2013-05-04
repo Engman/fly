@@ -15,6 +15,8 @@ using namespace System;
 using namespace System::Windows;
 using namespace System::Windows::Interop;
 using namespace System::Runtime::InteropServices;
+using namespace System::Collections::Generic;
+
 
 namespace System 
 { 
@@ -28,20 +30,22 @@ namespace System
 					EngineEditorWrapper* flyEngine;
 
 				public:
-					FlyEditCLIWrapper();
-					~FlyEditCLIWrapper();
+					FlyEditCLIWrapper			();
+					~FlyEditCLIWrapper			();
 
-					bool Init(IntPtr hWnd, int width, int height);
-					HRESULT Shutdown();
+					bool Init					(IntPtr hWnd, int width, int height);
+					HRESULT Shutdown			();
 					
-					HRESULT ProcessFrame();
+					HRESULT ProcessFrame		();
 
-					int LoadResources(String^ path);
+					void LoadResources			(array<String^>^ resourcePath, Dictionary<String^, int>^ loadedObjects);
 
-					HRESULT OnResize(int width, int height);
-					HRESULT OnMouseDown(int x, int y);
-
-					String^ ProcessText(String^ text);
+					void OnResize				(int width, int height);
+					
+					void OnKeyDown				(int key);
+					void OnKeyUp				(int key);
+					void OnMouseClick			(bool left, int x, int y);
+					void OnMouseMove			(int x, int y);
 			};
 		}
 	}

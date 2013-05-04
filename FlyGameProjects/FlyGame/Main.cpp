@@ -1,28 +1,15 @@
-#include "Core\Application.h"
-#include "FlyEngine.h"
+#include <Windows.h>
+
+#include "FlyGame.h"
 
 
-//#ifdef DLL_USAGE
+int WINAPI WinMain( HINSTANCE hInst, HINSTANCE prevInst, PSTR cmdLine, int cmdShow)
+{
+	FlyGame fg;
 
-//#else
-	int WINAPI WinMain( HINSTANCE hInst, HINSTANCE prevInst, PSTR cmdLine, int cmdShow)
-	{
+	fg.Initiate();
+	fg.Run();
+	
+	return cmdShow;
 
-	#if defined(DEBUG) || defined(_DEBUG)
-		FIND_MEMORY_LEAKS;
-	#endif
-
-		Application app;
-
-		if(!app.Initialize(hInst, 800, 600))
-			return cmdShow;
-
-		app.Run();
-
-		app.Shutdown();
-
-		return cmdShow;
-
-	}
-
-//#endif
+}

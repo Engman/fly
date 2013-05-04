@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ScintillaNET>
+  
+  <Language Name="default">
+    <Styles>
+      <Style Name="Default" FontName="Consolas"/>
+    </Styles>
+  </Language>
+
+  <Language Name="lua">
+    <Indentation TabWidth="4" UseTabs="true"/>
+    <Lexer StreamCommentPrefix="{ " StreamCommentSuffix=" }">
+      <Keywords List="0">
+        and
+        break
+        do
+        else
+        elseif
+        end
+        false
+        for
+        function
+        if
+        in
+        local
+        nil
+        not
+        or
+        repeat
+        return
+        then
+        true
+        until
+        while
+      </Keywords>
+
+    </Lexer>
+    <Styles>
+      <Style Name="CHARACTER" ForeColor="Black" BackColor="Red"/>
+    </Styles>
+  </Language>
+
+
+</ScintillaNET>
