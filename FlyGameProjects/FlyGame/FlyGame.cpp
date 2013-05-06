@@ -64,7 +64,7 @@ bool FlyGame::Initiate(FlyGameSystemState state)
 	}
 
 	this->_pData->fly = FlyEngineCreate();
-
+	this->_pData->state->Initiate(this);
 	return this->_pData->fly->Core_Initialize(cd);
 }
 void FlyGame::Run()							  
@@ -75,8 +75,13 @@ void FlyGame::Run()
 		return;
 	}
 
-	//if(this->_pData->state.
+	if(!this->_pData->state)
+		return;
 
+	while (this->_pData->state)
+	{
+
+	}
 }
 void FlyGame::Update()						  
 {

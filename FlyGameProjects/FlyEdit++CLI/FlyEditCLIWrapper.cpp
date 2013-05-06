@@ -1,5 +1,6 @@
 #include "FlyEditCLIWrapper.h"
 #include <sstream>
+#include <map>
 
 namespace System { namespace Windows { namespace Interop {
 
@@ -7,19 +8,31 @@ namespace System { namespace Windows { namespace Interop {
 
 			FlyEditCLIWrapper::FlyEditCLIWrapper()
 			{
-				this->flyEngine = new EngineEditorWrapper();
+				this->flyEngine = FlyEngineCreate();
+				this->entities = new std::vector<Entity*>();
 			}
 			
 			FlyEditCLIWrapper::~FlyEditCLIWrapper()
 			{
 				delete this->flyEngine;
 				this->flyEngine = NULL;
+
+				for (int i = 0; i < (int)this->entities->size(); i++)
+				{
+					delete (*this->entities)[i];
+				}
+				delete this->entities;
 			}
 
 			bool FlyEditCLIWrapper::Init(IntPtr _hWnd, int width, int height)
 			{
 				HWND hwnd = (HWND)(void*)_hWnd;
-				if( FAILED (this->flyEngine->Init(hwnd, width, height) ) )
+				FLY_ENGINE_INIT_DESC desc;
+				desc.parent = hwnd;
+				desc.winWidth = width;
+				desc.winHeight = height;
+				desc.windowName = L"Fly Editor";
+				if( FAILED (this->flyEngine->Core_Initialize(desc) ) )
 					return false;
 
 
@@ -28,13 +41,15 @@ namespace System { namespace Windows { namespace Interop {
 
 			HRESULT FlyEditCLIWrapper::Shutdown()
 			{
-				//return this->flyEngine->Shutdown();
+				this->flyEngine->Core_Shutdown();
 				return S_OK;
 			}
 
 			HRESULT FlyEditCLIWrapper::ProcessFrame()
 			{
-				this->flyEngine->Frame();
+				this->flyEngine->Gfx_BeginDeferredScene();
+
+				this->flyEngine->Gfx_EndDeferredScene();
 				return 1;
 			}
 
@@ -43,46 +58,20 @@ namespace System { namespace Windows { namespace Interop {
 				if(resourcePath->Length == 0)
 					return;
 				
-				std::vector<std::wstring> path((int)resourcePath->Length);
+				std::vector<const wchar_t*> path((int)resourcePath->Length);
 				for(int i = 0; i<resourcePath->Length; i++)
 				{
 					path[i] = (wchar_t*)Marshal::StringToHGlobalUni(resourcePath[i]).ToPointer();
 				}
 				
-				std::map<std::wstring, int> loaded;
-				this->flyEngine->LoadResource(path, loaded);
-				
-
-				std::map<std::wstring, int>::const_iterator i = loaded.begin();
-				for (i; i != loaded.end(); i++)
-				{
-					String^ key = gcnew String(i->first.c_str());
-					loadedObjects->Add(key, i->second);
-				}
+				std::vector<SmartPtrStd<FlyMesh>> loaded;
+				this->flyEngine->Geometry_Load(path, loaded);
+	
 			}
 
 			void FlyEditCLIWrapper::OnResize	(int width, int height)
 			{
 				
-				this->flyEngine->ResizeWindow(width, height);
-				//return 1;
-			}
-			
-
-			void FlyEditCLIWrapper::OnKeyDown			(int key)
-			{
-				this->flyEngine->OnKeyDown(key);
-			}
-			void FlyEditCLIWrapper::OnKeyUp				(int key)
-			{
-				this->flyEngine->OnKeyDown(key);
-			}
-			void FlyEditCLIWrapper::OnMouseClick		(bool left, int x, int y)
-			{
-				this->flyEngine->OnMouseClick(left, x, y);
-			}
-			void FlyEditCLIWrapper::OnMouseMove			(int x, int y)
-			{
-				this->flyEngine->OnMouseMove(x, y);
+				this->flyEngine->Gfx_Resize(width, height);
 			}
 }}}

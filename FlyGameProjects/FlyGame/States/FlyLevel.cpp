@@ -11,11 +11,11 @@ FlyState_Level::~FlyState_Level()
 
 }
 
-void FlyState_Level::Update()
+void FlyState_Level::Initiate(FlyGame* instance)
 {
 
 }
-void FlyState_Level::Render()
+void FlyState_Level::Frame()
 {
 
 }

@@ -10,11 +10,11 @@ FlyState_Menu::~FlyState_Menu()
 
 }
 
-void FlyState_Menu::Update() 
+void FlyState_Menu::Initiate(FlyGame* instance)
 {
 
 }
-void FlyState_Menu::Render() 
+void FlyState_Menu::Frame() 
 {
 
 }

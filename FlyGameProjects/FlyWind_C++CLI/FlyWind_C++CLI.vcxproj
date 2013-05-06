@@ -163,7 +163,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FlyGame\FlyGameProject.vcxproj">
+    <ProjectReference Include="..\FlyGameEngine\FlyGameEngine.vcxproj">
       <Project>{efdf4530-ecd5-4f9d-b472-b511005713e0}</Project>
     </ProjectReference>
   </ItemGroup>

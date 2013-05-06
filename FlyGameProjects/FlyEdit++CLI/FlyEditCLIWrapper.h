@@ -1,15 +1,15 @@
 #ifndef FLY_EDIT_CLI_WAPPER_H
 #define FLY_EDIT_CLI_WAPPER_H
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <Windows.h>
+
 
 //forwarddeklarationen måste ligga innan alla "using" !!! annars tolkas
 //det av visual studio som att GameEngineWrapper-klassen ligger i ett namespace
 //#include "..\FlyGame\EngineCLIWrapper\EngineWrapper.h"
-#include "..\FlyGame\EngineCLIWrapper\EngineEditorWrapper.h"
+#include "..\FlyGameEngine\FlyEngine\FlyEngine.h"
 
+#include <stdlib.h>
+#include <stdio.h>
 
 using namespace System;
 using namespace System::Windows;
@@ -27,7 +27,8 @@ namespace System
 			public ref class FlyEditCLIWrapper
 			{
 				protected:
-					EngineEditorWrapper* flyEngine;
+					FlyEngine* flyEngine;
+					std::vector<Entity*> *entities;
 
 				public:
 					FlyEditCLIWrapper			();
@@ -41,11 +42,6 @@ namespace System
 					void LoadResources			(array<String^>^ resourcePath, Dictionary<String^, int>^ loadedObjects);
 
 					void OnResize				(int width, int height);
-					
-					void OnKeyDown				(int key);
-					void OnKeyUp				(int key);
-					void OnMouseClick			(bool left, int x, int y);
-					void OnMouseMove			(int x, int y);
 			};
 		}
 	}

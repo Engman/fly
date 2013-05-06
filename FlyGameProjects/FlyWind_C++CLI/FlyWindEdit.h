@@ -2,13 +2,12 @@
 #define FLY_EDIT_CLI_WAPPER_H
 
 
-
-#include "..\FlyGame\Core\Mesh\FlyMesh.h"
-
 //forwarddeklarationen måste ligga innan alla "using" !!! annars tolkas
 //det av visual studio som att GameEngineWrapper-klassen ligger i ett namespace
 //#include "..\FlyGame\EngineCLIWrapper\EngineWrapper.h"
-#include "..\FlyGame\FlyEngine\FlyEngine.h"
+#include "..\FlyGameEngine\FlyEngine\FlyEngine.h"
+
+#include "..\FlyGameEngine\Core\Mesh\FlyMesh.h"
 
 #include <stdlib.h>
 #include <stdio.h>

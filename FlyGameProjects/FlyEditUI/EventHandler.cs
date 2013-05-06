@@ -18,7 +18,7 @@ namespace FlyEditUI { public partial class FlyEdit {
 
 	private void RenderWindow_MouseClick(object sender, MouseEventArgs e)
 	{
-		this.FlyCLI.OnMouseClick(true, e.X, e.Y);
+		//this.FlyCLI.OnMouseClick(true, e.X, e.Y);
 	}
 
 	private void loadGeomrtyToolStripMenuItem_Click(object sender, EventArgs e)
@@ -41,6 +41,15 @@ namespace FlyEditUI { public partial class FlyEdit {
 			this.FlyCLI.LoadResources(f.FileNames, objects);
 			
 			this.outWin.addText(objects.Count.ToString() + " models loaded!");
+		}
+	}
+
+	protected void MoveSubForm(object sender, EventArgs e)
+	{
+		if (this.outWin != null)
+		{
+			this.outWin.Left = this.Left + this.Width - 1;
+			this.outWin.Top = this.Top;
 		}
 	}
 

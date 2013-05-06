@@ -27,13 +27,14 @@ FlyEngine* FLYCALL FlyEngineCreate()
 	return pFlyEngine;
 }
 
+
+
 void FlyEngine_Core::_Interface()
 {
 	if(!pFlyEngine.IsValid())
 		pFlyEngine = new FlyEngine_Core();
 
 }
-
 
 
 

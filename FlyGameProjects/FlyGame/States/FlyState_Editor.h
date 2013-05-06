@@ -12,8 +12,8 @@ class FlyState_Editor		:public IFlySystemState
 		FlyState_Editor();
 		virtual~FlyState_Editor();
 
-		void Update() override;
-		void Render() override;
+		void Initiate(FlyGame*) override;
+		void Frame() override;
 };
 
 

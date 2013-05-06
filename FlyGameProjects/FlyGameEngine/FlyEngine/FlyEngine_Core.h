@@ -11,7 +11,6 @@ class BaseShader;
 class BaseBuffer;
 
 
-
 class FlyEngine_Core	:public FlyEngine
 {
 	private:

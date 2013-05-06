@@ -74,7 +74,7 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\WorkingDir\Bin\</OutDir>
     <TargetName>$(ProjectName)Dx86</TargetName>
-    <IntDir>$(SolutionDir)..\WorkingDir\Assembly\CLI\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)..\WorkingDir\AssemblyFiles\$(ProjectName)\x86\$(Configuration)\</IntDir>
     <IncludePath>$(IncludePath);$(SolutionDir)..\Dependencies\Include</IncludePath>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
@@ -82,14 +82,14 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\WorkingDir\Bin\</OutDir>
     <TargetName>$(ProjectName)Dx64</TargetName>
-    <IntDir>$(SolutionDir)..\WorkingDir\Assembly\CLI\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)..\WorkingDir\AssemblyFiles\$(ProjectName)\x64\$(Configuration)\</IntDir>
     <IncludePath>$(IncludePath);$(SolutionDir)..\Dependencies\Include</IncludePath>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\WorkingDir\Bin\</OutDir>
-    <IntDir>$(SolutionDir)..\WorkingDir\Assembly\CLI\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)..\WorkingDir\AssemblyFiles\$(ProjectName)\x86\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)x86</TargetName>
     <IncludePath>$(IncludePath);$(SolutionDir)..\Dependencies\Include</IncludePath>
     <TargetExt>.dll</TargetExt>
@@ -97,7 +97,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\WorkingDir\Bin\</OutDir>
-    <IntDir>$(SolutionDir)..\WorkingDir\Assembly\CLI\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)..\WorkingDir\AssemblyFiles\$(ProjectName)\x64\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)x64</TargetName>
     <IncludePath>$(IncludePath);$(SolutionDir)..\Dependencies\Include</IncludePath>
     <TargetExt>.dll</TargetExt>
@@ -108,7 +108,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;FLYEDITCLI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;FLYEDITCLI_EXPORTS;%(PreprocessorDefinitions);FLYDLL</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -122,7 +122,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;FLYEDITCLI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;FLYEDITCLI_EXPORTS;%(PreprocessorDefinitions);FLYDLL</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -138,7 +138,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;FLYEDITCLI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;FLYEDITCLI_EXPORTS;%(PreprocessorDefinitions);FLYDLL</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -156,7 +156,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;FLYEDITCLI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;FLYEDITCLI_EXPORTS;%(PreprocessorDefinitions);FLYDLL</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -182,7 +182,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FlyGame\FlyGameProject.vcxproj">
+    <ProjectReference Include="..\FlyGameEngine\FlyGameEngine.vcxproj">
       <Project>{efdf4530-ecd5-4f9d-b472-b511005713e0}</Project>
     </ProjectReference>
   </ItemGroup>

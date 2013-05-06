@@ -12,8 +12,8 @@ class FlyState_Menu		:public IFlySystemState
 		FlyState_Menu();
 		virtual~FlyState_Menu();
 
-		void Update() override;
-		void Render() override;
+		void Initiate(FlyGame*) override;
+		void Frame() override;
 };
 
 

@@ -10,11 +10,11 @@ FlyState_Editor::~FlyState_Editor()
 
 }
 
-void FlyState_Editor::Update()
+void FlyState_Editor::Initiate(FlyGame* instance)
 {
 
 }
-void FlyState_Editor::Render()
+void FlyState_Editor::Frame()
 {
 
 }

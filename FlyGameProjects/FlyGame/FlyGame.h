@@ -28,6 +28,7 @@ class DLLEXPORT FlyGame
 	public:
 		
 	private:
+		friend class IFlySystemState;
 		struct _DATA_;
 		_DATA_ *_pData;
 
@@ -54,3 +55,40 @@ class DLLEXPORT FlyGame
 
 #endif
 
+/*
+* LEVEL
+*	- Name?
+*	- Number?
+* CUTSCENE
+*	- time
+*	- resource
+* GAME OBJECTS
+*	- resource (fgm)
+*	- world
+*	- transform
+*	- rotate
+*	- shader
+* LIGHTS
+*	* dir
+*		- Ambient
+*		- Diffuse
+*		- Specluar
+*		- Direction
+*		- Attenuate?
+*	* spot
+*		- Ambient
+*		- Diffuse
+*		- Specular
+*		- Range
+*		- Position
+*		- Direction
+*		- Radius
+*		- Attenuate?
+*	* point
+*		- Ambient
+*		- Diffuse
+*		- Specular
+*		- Position
+*		- Range
+*		- Attenuate?
+*/

@@ -29,6 +29,7 @@ namespace FlyEditUI
 
 			this.flyCLI = new FlyEditCLIWrapper();
 			this.outWin = new Output();
+			this.Move += new EventHandler(MoveSubForm);
 		}
 
 		public void Run()

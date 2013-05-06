@@ -12,8 +12,8 @@ class FlyState_Level		:public IFlySystemState
 		FlyState_Level();
 		virtual~FlyState_Level();
 
-		void Update() override;
-		void Render() override;
+		void Initiate(FlyGame*) override;
+		void Frame() override;
 };
 
 

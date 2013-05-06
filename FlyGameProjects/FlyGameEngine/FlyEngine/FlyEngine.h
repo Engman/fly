@@ -18,9 +18,9 @@ using namespace std;
 
 
 #ifdef FLYDLL
-#define FLYEXPORT __declspec(dllexport)
+#define FLY_EXPORT __declspec(dllexport)
 #else
-#define FLYEXPORT
+#define FLY_EXPORT
 #endif
 #define FLYCALL  __stdcall
 
@@ -126,7 +126,7 @@ class FlyEngine
 
 extern "C" 
 {
-	FLYEXPORT FlyEngine* FLYCALL FlyEngineCreate();
+	FLY_EXPORT FlyEngine* FLYCALL FlyEngineCreate();
 }
 
 

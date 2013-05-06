@@ -51,14 +51,14 @@ namespace System { namespace Windows { namespace Interop {
 
 	HRESULT FlyWindEdit::ProcessFrame()
 	{
-		this->flyEngine->Core_BeginDeferredScene();
+		this->flyEngine->Gfx_BeginDeferredScene();
 
 		for (int i = 0; i < (int)this->models->size(); i++)
 		{
 			(*this->models)[i]->Render();
 		}
 
-		this->flyEngine->Core_EndDeferredScene();
+		this->flyEngine->Gfx_EndDeferredScene();
 		return 1;
 	}
 
