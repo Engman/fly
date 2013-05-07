@@ -5,42 +5,16 @@
 #include <string>
 #include "..\..\Core\Mesh\MaterialHandler.h"
 #include "..\..\Core\Mesh\FlyMesh.h"
+#include "..\..\Core\D3DShell.h"
 
-
-struct ObjectData
-{
-	int material;
-	SmartPtrStd<std::vector<VERTEX::VertexPNT>> vertex;
-};
-struct FrameData
-{
-	int objectIndex;
-	int frameNumber;
-	float frameTime;
-};
-struct AnimationData
-{
-	int id;
-	std::vector<FrameData> frames;
-};
-/** Wraps imported data */
-struct ImportedObjectData
-{
-	/** The name of the object collection */
-	std::wstring					name;
-	/** Contains n loaded objects */
-	std::vector<ObjectData>			objects;
-	/** Contains animation information */
-	std::vector<AnimationData>		animations;
-};
 
 
 #pragma region FROWARD DELERATION
 
-bool ParseAnimationFile			(std::wifstream& in, ID3D11Device* device, ID3D11DeviceContext* dc, ImportedObjectData* d);
-bool ParseStandardFile			(std::wifstream& in, ID3D11Device* device, ID3D11DeviceContext* dc, ImportedObjectData* d);
+bool ParseAnimationFile			(std::wifstream& in, ImportedObjectData* d);
+bool ParseStandardFile			(std::wifstream& in, ImportedObjectData* d);
 
-int  ParseMaterial				(std::wifstream& in, ID3D11Device* device, ID3D11DeviceContext* dc);
+int  ParseMaterial				(std::wifstream& in);
 
 bool ParseV						(std::wifstream& in, ObjectData& o);
 bool ParseVT					(std::wifstream& in, ObjectData& o);
@@ -82,10 +56,8 @@ namespace ObjImpFormat
 
 
 
-bool ObjectImporter::Import(std::wstring file, ID3D11Device* device, ID3D11DeviceContext* _dc, std::vector<SmartPtrStd<FlyMesh>>& object)
+bool ObjectImporter::Import(std::wstring file, ImportedObjectData* rawData)
 {
-	SmartPtrStd<ImportedObjectData> rawData = new ImportedObjectData();
-
 	size_t first = file.find_last_of('\\') + 1;
 	size_t last = file.find_last_of('.');
 	rawData->name = file.substr(first, last-first);
@@ -118,11 +90,11 @@ bool ObjectImporter::Import(std::wstring file, ID3D11Device* device, ID3D11Devic
 					if(count)
 					{
 						rawData->animations.resize(count);
-						if(!ParseAnimationFile(in, device, _dc, rawData))
+						if(!ParseAnimationFile(in, rawData))
 							return false;
 					}
 					else		
-						if(!ParseStandardFile(in, device, _dc, rawData))
+						if(!ParseStandardFile(in, rawData))
 							return false;
 				}
 				else { ParseLine(in, true); }
@@ -130,28 +102,11 @@ bool ObjectImporter::Import(std::wstring file, ID3D11Device* device, ID3D11Devic
 		}
 
 		in.close();
-
-		for (int i = 0; i < (int)rawData->objects.size(); i++)
-		{
-			FlyMesh::OBJECT_DESC d;
-			d.device = device;
-			d.deviceContext = _dc;
-			d.material_id = rawData->objects[i].material;
-			d.name = rawData->name;
-			d.shader = 0;
-			d.vCount = (int)rawData->objects[i].vertex->size();
-			d.vertecies = rawData->objects[i].vertex;
-
-			FlyMesh *obj = new FlyMesh();
-			if(!obj->Initialize(d))
-				return false;
-			object.push_back(obj);
-		}
 	}
 
 	return true;
 }
-bool ObjectImporter::Import(std::wstring file, ID3D11Device* device, ID3D11DeviceContext* _dc, __out std::vector<int>& identifiers)
+bool ObjectImporter::Import		(std::wstring file, __out std::vector<int>* identifiers)
 {
 	if(file == L"")
 		return false;
@@ -170,10 +125,10 @@ bool ObjectImporter::Import(std::wstring file, ID3D11Device* device, ID3D11Devic
 
 		if(buff == ObjImpFormat::material)
 		{
-			mid = ParseMaterial(in, device, _dc);
+			mid = ParseMaterial(in);
 			if(mid != -1)
 			{
-				identifiers.push_back(mid);
+				identifiers->push_back(mid);
 			}
 		}
 		in.close();
@@ -182,7 +137,7 @@ bool ObjectImporter::Import(std::wstring file, ID3D11Device* device, ID3D11Devic
 	return true;
 }
 
-bool ParseAnimationFile			(std::wifstream& in, ID3D11Device* device, ID3D11DeviceContext* _dc, ImportedObjectData* d)
+bool ParseAnimationFile			(std::wifstream& in, ImportedObjectData* d)
 {
 	std::wstring flag;
 	bool result = true;
@@ -250,7 +205,7 @@ bool ParseAnimationFile			(std::wifstream& in, ID3D11Device* device, ID3D11Devic
 			d->objects[currObject].vertex = new std::vector<VERTEX::VertexPNT>(vCount);
 			d->objects[currObject].material = currMaterial;
 		}
-		else if(flag == ObjImpFormat::material)		{ currMaterial = ParseMaterial(in, device, _dc);	}
+		else if(flag == ObjImpFormat::material)		{ currMaterial = ParseMaterial(in);	}
 		else if(flag == ObjImpFormat::v)			{ result = ParseV(in,d->objects[currFrame]); 	}
 		else if(flag == ObjImpFormat::vt)			{ result = ParseVT(in,d->objects[currFrame]);	}
 		else if(flag == ObjImpFormat::vn)			
@@ -263,7 +218,7 @@ bool ParseAnimationFile			(std::wifstream& in, ID3D11Device* device, ID3D11Devic
 
 	return result;
 }
-bool ParseStandardFile			(std::wifstream& in, ID3D11Device* device, ID3D11DeviceContext* _dc, ImportedObjectData* d)
+bool ParseStandardFile			(std::wifstream& in, ImportedObjectData* d)
 {
 	std::wstring flag;
 	bool result = true;
@@ -291,7 +246,7 @@ bool ParseStandardFile			(std::wifstream& in, ID3D11Device* device, ID3D11Device
 				d->objects[0].vertex = new std::vector<VERTEX::VertexPNT>(count);
 				d->objects[0].material = 0;
 			}
-			else if(flag == ObjImpFormat::material)		{ d->objects[0].material = ParseMaterial(in, device, _dc); }
+			else if(flag == ObjImpFormat::material)		{ d->objects[0].material = ParseMaterial(in); }
 			else if(flag == ObjImpFormat::v)			{ result = ParseV(in,d->objects[0]);  }
 			else if(flag == ObjImpFormat::vt)			{ result = ParseVT(in,d->objects[0]); }
 			else if(flag == ObjImpFormat::vn)			{ result = ParseVN(in,d->objects[0]); }
@@ -305,12 +260,12 @@ bool ParseStandardFile			(std::wifstream& in, ID3D11Device* device, ID3D11Device
 	return result;
 }
 
-int ParseMaterial				(std::wifstream& in, ID3D11Device* _device, ID3D11DeviceContext* _dc)			
+int ParseMaterial				(std::wifstream& in)			
 {
 	
 	ObjectMaterial::OBJECT_MATERIAL_DESC md;
-	md.device = _device;
-	md.dc = _dc;
+	md.device = D3DShell::self()->getDevice();
+	md.dc = D3DShell::self()->getDeviceContext();
 	md.name = ParseLine(in);
 	std::wstring buffer = L"";
 	bool done = false;

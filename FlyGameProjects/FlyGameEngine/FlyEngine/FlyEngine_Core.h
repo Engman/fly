@@ -30,8 +30,8 @@ class FlyEngine_Core	:public FlyEngine
 
 		SmartPtrStd<FullScreenQuad>				fsq;
 
-		SmartPtrStd<FlyCamera>					defaultCam;
-		FlyCamera*								activeCamera;
+		SmartPtrStd<Camera>						defaultCam;
+		Camera*									activeCamera;
 
 		bool									splash;
 
@@ -56,16 +56,18 @@ class FlyEngine_Core	:public FlyEngine
 		void		FLYCALL		Gfx_BeginDeferredScene		();
 		void		FLYCALL		Gfx_EndDeferredScene		();
 		void		FLYCALL		Gfx_Resize					(int width, int height);
-		void		FLYCALL		Gfx_SetCamera				(FlyCamera* cam);
-		FlyCamera*	FLYCALL		Gfx_GetCamera				();
-		IShader*	FLYCALL		Gfx_GetShader				(int id);
+		void		FLYCALL		Gfx_SetCamera				(Camera* cam);
+		Camera*		FLYCALL		Gfx_GetCamera				();
+		IShader*	FLYCALL		Gfx_GetShader				(FlyEngineShaders shader);
 		void 		FLYCALL		Gfx_GetShader				(vector<IShader*>& shaders);
 		
-		
+	
 
-		bool		FLYCALL		Geometry_Create				(FlyEngineGeometry type, SmartPtrStd<FlyMesh> object);
-		bool		FLYCALL		Geometry_Load				(const wchar_t* loadData, vector<SmartPtrStd<FlyMesh>>& objects);
-		bool		FLYCALL		Geometry_Load				(vector<const wchar_t*> loadData, vector<SmartPtrStd<FlyMesh>>& objects);
+		bool		FLYCALL		Geometry_Create				(FlyEngineGeometry type, Entity* object);
+		bool		FLYCALL		Geometry_Load				(const wchar_t* loadData, vector<Entity*>* objects);
+		bool		FLYCALL		Geometry_Load				(vector<const wchar_t*> loadData, vector<Entity*>* objects);
+		bool		FLYCALL		Geometry_Load				(const wchar_t* path, vector<Entity*>* object, FlyEngineGeometry special);
+
 
 
 		bool		FLYCALL		Input_Initialize			();

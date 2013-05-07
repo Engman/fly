@@ -13,8 +13,6 @@ Terrain::~Terrain()
 
 bool Terrain::Initialize(OBJECT_DESC& data)
 {
-	
-	//this->vertices = new vector<VERTEX::VertexPNT>;
 	this->vertices = data.vertecies;
 
 	this->material = MaterialHandler::GetMaterial(data.material_id);
@@ -33,12 +31,7 @@ void Terrain::Update()
 
 }
 
-void Terrain::Render()
-{
-	
-}
-
-void Terrain::RenderOctTree(ViewFrustum frustum)
+void Terrain::Render(ViewFrustum& frustum)
 {
 	vector<OctTree::RenderBufferType> nodeBuffers = this->octTree.Render(frustum);
 

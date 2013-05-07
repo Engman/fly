@@ -1,8 +1,6 @@
 #ifndef I_STATIC_OBJECT_H
 #define I_STATIC_OBJECT_H
 
-
-#include "MaterialHandler.h"
 #include "..\Entity.h"
 #include "..\..\Util\vertex.h"
 //#include "BoundingVolumes"
@@ -35,23 +33,26 @@ class FlyMesh		:public Entity
 			IShader*						shader;
 			/** Name (Optional) */
 			std::wstring					name;
+			/** The bounding spehere to the object (optional) */
+			SmartPtrStd<BoundingSphere>		boundingSphere;
+			OBJECT_DESC()
+				:device(0), deviceContext(0), vertecies(0), vCount(0), material_id(-1), shader(0), name(L""), boundingSphere(0)
+			{}
 		};
-
-	protected:
-		//BoundingBox boundingBox;
-		ObjectMaterial* material;
 
 	public:
 		FlyMesh();
 		virtual~FlyMesh();
 
 		/** Override to update logic diffrent than default */
-		virtual void Update();
+		virtual void Update() override;
 		/** Override to render with diffrent than default */
-		virtual void Render();
+		virtual void Render(ViewFrustum& frustum) override;
 
 		/** Builds a FlyMesh than is ready for rendering */
 		virtual bool Initialize(OBJECT_DESC& data);
+
+		virtual void Release() override {  }
 };
 
 

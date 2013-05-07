@@ -15,6 +15,7 @@ namespace FlyEditUI { public partial class FlyEdit {
 	public static bool renderWinLocked = true;
 	ToolTip pictureBoxLockTooltip = new ToolTip();
 	Point lastMousePos = new Point(0,0);
+	Dictionary<string, int> res = new Dictionary<string, int>();
 
 	private void RenderWindow_MouseClick(object sender, MouseEventArgs e)
 	{
@@ -38,11 +39,15 @@ namespace FlyEditUI { public partial class FlyEdit {
 		{
 			
 			Dictionary<string, int> objects = new Dictionary<string,int>();
-			this.FlyCLI.LoadResources(f.FileNames, objects);
+
+			if(!this.FlyCLI.LoadResources(f.FileNames, objects))
+				MessageBox.Show("Failed to load reources!");
 			
 			this.outWin.addText(objects.Count.ToString() + " models loaded!");
+			this.AppendNewData(objects);
 		}
 	}
+
 
 	protected void MoveSubForm(object sender, EventArgs e)
 	{
@@ -52,23 +57,21 @@ namespace FlyEditUI { public partial class FlyEdit {
 			this.outWin.Top = this.Top;
 		}
 	}
-
+	
 	void WindowResizeBegin(object sender, EventArgs e)
 	{
 		if (this.WindowState == FormWindowState.Maximized)
 		{
-			this.outWin.WindowState = FormWindowState.Normal;
-			this.outWin.Show();
-			this.FlyCLI.OnResize(this.RenderWin.Width, this.RenderWin.Height);
+			//this.outWin.WindowState = FormWindowState.Normal;
+			//this.FlyCLI.OnResize(this.RenderWin.Width, this.RenderWin.Height);
 		}
 		else if (this.WindowState == FormWindowState.Normal)
 		{
-			this.outWin.WindowState = FormWindowState.Normal;
-			this.outWin.Show();
-			this.FlyCLI.OnResize(this.RenderWin.Width, this.RenderWin.Height);
+			//this.outWin.WindowState = FormWindowState.Normal;
+			//this.FlyCLI.OnResize(this.RenderWin.Width, this.RenderWin.Height);
 		}
 	}
-
+	
 	void WindowResizeEnd(object sender, EventArgs e)
 	{
 		this.FlyCLI.OnResize(this.RenderWin.Width, this.RenderWin.Height);
@@ -86,7 +89,7 @@ namespace FlyEditUI { public partial class FlyEdit {
 	{
 		if (this.engineRuning)
 			this.FlyCLI.Shutdown();
-		e.Cancel = false;
+		//e.Cancel = false;
 	}
 
 	private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -132,5 +135,48 @@ namespace FlyEditUI { public partial class FlyEdit {
 		
 		RenderLockPictureLockClicked(null, null);
 	}
+
+
+
+	private void CameraDropBox_SelectedIndexChanged(object sender, EventArgs e)
+	{
+		if (((ComboBox)sender).SelectedItem.ToString() == "Top Camera")
+			this.flyCLI.ChangeView(System.Windows.Interop.Cameras.Top);
+
+		else if (((ComboBox)sender).SelectedItem.ToString() == "First Person")
+			this.flyCLI.ChangeView(System.Windows.Interop.Cameras.FirstPerson);
+	}
+
+	public void AppendNewData(Dictionary<String, int> data)
+	{
+
+		Dictionary<string, int>.Enumerator it = data.GetEnumerator();
+
+		while (it.MoveNext())
+		{
+			this.res.Add(it.Current.Key, it.Current.Value);
+
+			this.LoadedResources_name.Items.Add(it.Current.Key);
+			this.listBox_id.Items.Add(it.Current.Value);
+		}
+	}
+
+	public int GetCurrentResource()
+	{
+		int val = -1;
+
+		if (this.LoadedResources_name.SelectedIndex != -1)
+		{
+			val = this.res[((string)this.LoadedResources_name.SelectedItem)];
+		}
+
+		return val;
+	}
+
+	private void splitter1_SplitterMoved(object sender, SplitterEventArgs e)
+	{
+		this.flyCLI.OnResize(this.RenderWin.Width, this.RenderWin.Height);
+	}
+
 
 }}

@@ -1,7 +1,7 @@
 #include "CollisionLib.h"
 
 // Function bodies
-bool FrustumVSBox(ViewFrustum frustum, BoundingBox box)
+bool FrustumVSBox(ViewFrustum& frustum, BoundingBox& box)
 {
 	if(!BoxVSSphere(box, frustum.sphere))
 	{
@@ -56,8 +56,25 @@ bool FrustumVSBox(ViewFrustum frustum, BoundingBox box)
 
 	return true;
 }
+bool FrustumVSSphere(ViewFrustum& frustum, BoundingSphere& sphere)
+{
+	if(SphereVSSphere(frustum.sphere, sphere))
+	{
+		for(int i=0; i<6; i++) 
+		{
+			if(D3DXPlaneDotCoord(&frustum.planes[i], &sphere.center) < -sphere.radius)
+			{
+				return false;
+			}
+		}
 
-bool RayVSSphere(D3DXVECTOR3& rayDirection, D3DXVECTOR3 rayOrigin, D3DXVECTOR3& center, float& radius)
+		return true;
+	}
+
+	return false;
+}
+
+bool RayVSSphere(D3DXVECTOR3& rayDirection, D3DXVECTOR3& rayOrigin, D3DXVECTOR3& center, float& radius)
 {
 	D3DXVECTOR3 l = center - rayOrigin;
 	float l2 = D3DXVec3Dot(&l, &l);
@@ -77,7 +94,7 @@ bool RayVSSphere(D3DXVECTOR3& rayDirection, D3DXVECTOR3 rayOrigin, D3DXVECTOR3& 
 	return false;
 }
 
-bool BoxVSBox(BoundingBox box1, BoundingBox box2)
+bool BoxVSBox(BoundingBox& box1, BoundingBox& box2)
 {
 	if(box1.maxPoint.x < box2.minPoint.x || box2.maxPoint.x < box1.minPoint.x) return false;
 
@@ -87,7 +104,7 @@ bool BoxVSBox(BoundingBox box1, BoundingBox box2)
 
 	return true;
 }
-bool BoxVSSphere(BoundingBox box, BoundingSphere sphere)
+bool BoxVSSphere(BoundingBox& box, BoundingSphere& sphere)
 {
 	D3DXVECTOR3 closestPoint;
 
@@ -113,11 +130,11 @@ bool BoxVSSphere(BoundingBox box, BoundingSphere sphere)
  
 	return dist <= (sphere.radius + D3DXVec3Length(&sphereAxis));
 }
-bool BoxVSPoint(BoundingBox box, D3DXVECTOR3 point)
+bool BoxVSPoint(BoundingBox& box, D3DXVECTOR3& point)
 {
 	return true;
 }
-bool BoxVSTriangle(BoundingBox box, D3DXVECTOR3 triangle[3])
+bool BoxVSTriangle(BoundingBox& box, D3DXVECTOR3 triangle[3])
 {
 	D3DXVECTOR3 boxCenter;
 	D3DXVECTOR3 boxHalfSize;
@@ -286,6 +303,16 @@ bool BoxVSTriangle(BoundingBox box, D3DXVECTOR3 triangle[3])
 
 	if(D3DXVec3Dot(&normal, &vmin) > 0.0f) return false;
 	if(D3DXVec3Dot(&normal, &vmax) >= 0.0f) return true;
+
+	return false;
+}
+
+bool SphereVSSphere(BoundingSphere& sphere, BoundingSphere& sphere2)
+{
+	if(D3DXVec3Length(&(sphere.center - sphere2.center)) <= sphere.radius+sphere2.radius)
+	{
+		return true;
+	}
 
 	return false;
 }

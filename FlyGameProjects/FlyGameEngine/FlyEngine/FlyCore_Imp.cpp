@@ -5,7 +5,7 @@
 #include "..\Core\Render\GBufferShader.h"
 #include "..\Core\Render\ColorShader.h"
 #include "..\Core\Render\LightShader.h"
-#include "..\Util\FlyCamera.h"
+#include "..\Util\Camera.h"
 
 
 
@@ -49,7 +49,7 @@ FlyEngine_Core::FlyEngine_Core()
 	this->lightShader			= new LightShader();
 	this->matrixBuffer			= new BaseBuffer();
 	this->fsq					= new FullScreenQuad();
-	this->defaultCam			= new FlyCamera();
+	this->defaultCam			= new Camera();
 	this->activeCamera			= NULL;
 	this->deferredRenderFunc	= 0;
 	this->deferredUpdateFunc	= 0;
@@ -117,9 +117,9 @@ bool FLYCALL FlyEngine_Core::Core_Initialize(FLY_ENGINE_INIT_DESC& desc)
 
 	if(!this->_InitWin(desc))			return false;
 	if(!this->_InitGfx(desc))			return false;
-	if(!this->_InitGBuffers())		return false;
+	if(!this->_InitGBuffers())			return false;
 	if(!this->_InitColorShader())		return false;
-	if(!this->_InitMatrixBuffer())	return false;
+	if(!this->_InitMatrixBuffer())		return false;
 
 	if(!this->fsq->Initialize(D3DShell::self()->getDevice(), this->colorShader))
 		return false;

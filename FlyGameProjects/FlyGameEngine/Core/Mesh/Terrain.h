@@ -17,8 +17,7 @@ class Terrain : public FlyMesh
 		bool Initialize(OBJECT_DESC& data);
 
 		void Update();
-		void Render();
-		void RenderOctTree(ViewFrustum frustum);
+		void Render(ViewFrustum& frustum);
 
 		void Release();
 };

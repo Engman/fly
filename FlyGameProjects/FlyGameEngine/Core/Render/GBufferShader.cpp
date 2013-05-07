@@ -8,7 +8,7 @@ GBufferShader::GBufferShader()
 }
 
 void GBufferShader::draw(PER_FRAME_DATA& frameData)
-{	
+{
 	int indexC = 0;
 	int vertexC = 0;
 	

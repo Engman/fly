@@ -1,15 +1,19 @@
 #ifndef FLY_EDIT_CLI_WAPPER_H
 #define FLY_EDIT_CLI_WAPPER_H
 
-
+//#pragma comment(lib, "FlyLevelEditx64D.lib")
 
 //forwarddeklarationen måste ligga innan alla "using" !!! annars tolkas
 //det av visual studio som att GameEngineWrapper-klassen ligger i ett namespace
 //#include "..\FlyGame\EngineCLIWrapper\EngineWrapper.h"
-#include "..\FlyGameEngine\FlyEngine\FlyEngine.h"
+#include "..\FlyLevelEdit\FlyLevelEditor.h"
+#include <Windows.h>
+
 
 #include <stdlib.h>
 #include <stdio.h>
+
+
 
 using namespace System;
 using namespace System::Windows;
@@ -24,24 +28,27 @@ namespace System
 	{ 
 		namespace Interop
 		{
+			public enum class Cameras
+			{
+				FirstPerson,
+				Top,
+			};
+
 			public ref class FlyEditCLIWrapper
 			{
 				protected:
-					FlyEngine* flyEngine;
-					std::vector<Entity*> *entities;
+					FlyLevelEditor* flyEngine;
 
 				public:
 					FlyEditCLIWrapper			();
 					~FlyEditCLIWrapper			();
 
 					bool Init					(IntPtr hWnd, int width, int height);
-					HRESULT Shutdown			();
-					
-					HRESULT ProcessFrame		();
-
-					void LoadResources			(array<String^>^ resourcePath, Dictionary<String^, int>^ loadedObjects);
-
+					bool Shutdown				();
+					bool ProcessFrame			();
+					bool LoadResources			(array<String^>^ resourcePath, Dictionary<String^, int>^ loadedObjects);
 					void OnResize				(int width, int height);
+					void ChangeView				(Cameras cam);
 			};
 		}
 	}

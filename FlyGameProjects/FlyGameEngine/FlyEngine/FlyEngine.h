@@ -7,12 +7,12 @@
 #include <string>
 #include <vector>
 
-#include "..\Util\SmartPtrs.h"
-#include "..\Util\FlyCamera.h"
-#include "..\Core\Mesh\FlyMesh.h"
 
 class FlyMesh;
 class IShader;
+class Camera;
+class Entity;
+class Terrain;
 
 using namespace std;
 
@@ -59,68 +59,73 @@ struct FLY_ENGINE_INIT_DESC
 
 enum FlyEngineGeometry
 {
-	Sphere,
-	Cube,
-	Plane,
-	Line,
+	FlyGeometry_Sphere,
+	FlyGeometry_Cube,
+	FlyGeometry_Plane,
+	FlyGeometry_Line,
+	FlyGeometry_Terrain,
+
+	GEOMETRY_COUNT
 };
 
+enum FlyEngineShaders
+{
+	FlyShader_Default,
+	FlyShader_Color,
+	FlyShader_Light,
+
+	SHADER_COUNT
+};
 
 
 class FlyEngine
 {
 	public:
 		/** Starts the core and begins update and render */
-		virtual bool		FLYCALL		Core_Run() = 0;
+		virtual bool		FLYCALL		Core_Run				()									= 0;
 		/** Initializes the core with existing hwnd */
-		virtual bool		FLYCALL		Core_Initialize(FLY_ENGINE_INIT_DESC& initDesc) = 0;
+		virtual bool		FLYCALL		Core_Initialize			(FLY_ENGINE_INIT_DESC& initDesc)	= 0;
 		/** Shuts down engine */
-		virtual void		FLYCALL		Core_Shutdown() = 0;
-
-		
-
+		virtual void		FLYCALL		Core_Shutdown			()									= 0;
 		/** Updates a sceen */
-		virtual void		FLYCALL		Gfx_Update() = 0;
+		virtual void		FLYCALL		Gfx_Update				()									= 0;
 		/** Begin forward scene */
-		virtual void		FLYCALL		Gfx_BeginForwardScene() = 0;
+		virtual void		FLYCALL		Gfx_BeginForwardScene	()									= 0;
 		/** End forward scene */
-		virtual void		FLYCALL		Gfx_EndForwardScene() = 0;
+		virtual void		FLYCALL		Gfx_EndForwardScene		()									= 0;
 		/** Begin deferred scene */
-		virtual void		FLYCALL		Gfx_BeginDeferredScene() = 0;
+		virtual void		FLYCALL		Gfx_BeginDeferredScene	()									= 0;
 		/** End deferred scene */
-		virtual void		FLYCALL		Gfx_EndDeferredScene() = 0;
+		virtual void		FLYCALL		Gfx_EndDeferredScene	()									= 0;
 		/** Resizes the render targets */
-		virtual void		FLYCALL		Gfx_Resize(int width, int height) = 0;
-		/** Sets active camera */
-		virtual void		FLYCALL		Gfx_SetCamera(FlyCamera* cam) = 0;
-		
-		virtual IShader*	FLYCALL		Gfx_GetShader(int id) = 0;
-		virtual void 		FLYCALL		Gfx_GetShader(std::vector<IShader*>& shaders) = 0;
-		virtual FlyCamera*	FLYCALL		Gfx_GetCamera() = 0;
-	
-
-
+		virtual void		FLYCALL		Gfx_Resize				(int width, int height)				= 0;
+		/** Sets active camera, if parameter is NULL the default cam is set */
+		virtual void		FLYCALL		Gfx_SetCamera			(Camera* cam)						= 0;
+		virtual IShader*	FLYCALL		Gfx_GetShader			(FlyEngineShaders shader)			= 0;
+		virtual void 		FLYCALL		Gfx_GetShader			(std::vector<IShader*>& shaders)	= 0;
+		virtual Camera*		FLYCALL		Gfx_GetCamera			()									= 0;
 		/** Creates a new 3D object 
 		*	New Reference */
-		virtual bool		FLYCALL Geometry_Create(FlyEngineGeometry type, SmartPtrStd<FlyMesh> object) = 0;
+		virtual bool		FLYCALL		Geometry_Create			(FlyEngineGeometry type, Entity* object)							= 0;
 		/** Loads a single resource
 		*	New Reference */
-		virtual bool		FLYCALL Geometry_Load(const wchar_t* loadData, vector<SmartPtrStd<FlyMesh>>& objects) = 0;
+		virtual bool		FLYCALL		Geometry_Load			(const wchar_t* path, vector<Entity*>* objects)						= 0;
 		/** Loads a list of resources 
-		*	Returns the nr of imported resources
+		*	Returns true on success
 		*	New Reference */
-		virtual bool		FLYCALL Geometry_Load(vector<const wchar_t*> loadData, vector<SmartPtrStd<FlyMesh>>& objects) = 0;
-
-
-
+		virtual bool		FLYCALL		Geometry_Load			(vector<const wchar_t*> paths, vector<Entity*>* objects)			= 0;
+		/** Loads the base terrain 
+		*	Returns true on success
+		*	New Reference */
+		virtual bool		FLYCALL		Geometry_Load			(const wchar_t* path, vector<Entity*>*, FlyEngineGeometry special)	= 0;
 		/** Initializes raw input */
-		virtual bool		FLYCALL Input_Initialize() = 0;
+		virtual bool		FLYCALL		Input_Initialize		() = 0;
 		/** Removes device input from application */
-		virtual bool		FLYCALL Input_Shutdown() = 0;
+		virtual bool		FLYCALL		Input_Shutdown			() = 0;
 		/** Activates raw input */
-		virtual void		FLYCALL Input_Activate() = 0;
+		virtual void		FLYCALL		Input_Activate			() = 0;
 		/** Deavctivates raw input */
-		virtual void		FLYCALL Input_Deactivate() = 0;
+		virtual void		FLYCALL		Input_Deactivate		() = 0;
 };
 
 

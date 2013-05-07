@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{E36D10E9-371A-4B95-AB74-D22F8CC61F79}</ProjectGuid>
+    <ProjectGuid>{2DF3D11C-6A3F-462F-8D1A-7615B5A58AB8}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>FlyEditCLI</RootNamespace>
+    <RootNamespace>FlyLevelEdit</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -29,14 +29,12 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v100</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <CLRSupport>true</CLRSupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v100</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <CLRSupport>true</CLRSupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -44,7 +42,6 @@
     <PlatformToolset>v100</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <CLRSupport>true</CLRSupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -52,7 +49,6 @@
     <PlatformToolset>v100</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <CLRSupport>true</CLRSupport>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -73,36 +69,34 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\WorkingDir\Bin\</OutDir>
-    <TargetName>$(ProjectName)Dx86</TargetName>
-    <IntDir>$(SolutionDir)..\WorkingDir\AssemblyFiles\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(IncludePath)</IncludePath>
-    <TargetExt>.dll</TargetExt>
-    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <IntDir>$(SolutionDir)..\WorkingDir\AssemblyFiles\$(ProjectName)\x86\Debug\</IntDir>
+    <TargetName>$(ProjectName)x86D</TargetName>
+    <IncludePath>$(IncludePath);$(SolutionDir)..\Dependencies\Include</IncludePath>
+    <LibraryPath>$(LibraryPath);$(SolutionDir)..\WorkingDir\Bin\;$(SolutionDir)..\Dependencies\Lib\D3DX11\x86\;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <TargetName>$(ProjectName)Dx64</TargetName>
-    <IntDir>$(SolutionDir)..\WorkingDir\AssemblyFiles\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(IncludePath)</IncludePath>
-    <TargetExt>.dll</TargetExt>
-    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <TargetName>$(ProjectName)x86D</TargetName>
+    <IncludePath>$(IncludePath);$(SolutionDir)..\Dependencies\Include</IncludePath>
+    <LibraryPath>$(LibraryPath);$(SolutionDir)..\WorkingDir\Bin\;$(SolutionDir)..\Dependencies\Lib\D3DX11\x64\;</LibraryPath>
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)..\WorkingDir\Bin\</OutDir>
+    <IntDir>$(SolutionDir)..\WorkingDir\AssemblyFiles\$(ProjectName)\x64\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\WorkingDir\Bin\</OutDir>
-    <IntDir>$(SolutionDir)..\WorkingDir\AssemblyFiles\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)..\WorkingDir\AssemblyFiles\$(ProjectName)\x86\Release\</IntDir>
     <TargetName>$(ProjectName)x86</TargetName>
     <IncludePath>$(IncludePath);$(SolutionDir)..\Dependencies\Include</IncludePath>
-    <TargetExt>.dll</TargetExt>
-    <LibraryPath>$(LibraryPath);$(SolutionDir)..\WorkingDir\Bin</LibraryPath>
+    <LibraryPath>$(LibraryPath);$(SolutionDir)..\WorkingDir\Bin\;$(SolutionDir)..\Dependencies\Lib\D3DX11\x86\;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IntDir>$(SolutionDir)..\WorkingDir\AssemblyFiles\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)x64</TargetName>
+    <TargetName>$(ProjectName)x86</TargetName>
     <IncludePath>$(IncludePath);$(SolutionDir)..\Dependencies\Include</IncludePath>
-    <TargetExt>.dll</TargetExt>
-    <LibraryPath>$(LibraryPath);$(SolutionDir)..\WorkingDir\Bin</LibraryPath>
+    <LibraryPath>$(LibraryPath);$(SolutionDir)..\WorkingDir\Bin\;$(SolutionDir)..\Dependencies\Lib\D3DX11\x64\;</LibraryPath>
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)..\WorkingDir\Bin\</OutDir>
+    <IntDir>$(SolutionDir)..\WorkingDir\AssemblyFiles\$(ProjectName)\x64\Debug\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -110,7 +104,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;FLYEDITCLI_EXPORTS;%(PreprocessorDefinitions);FLYDLL</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FLYEDITDLL;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -124,7 +118,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;FLYEDITCLI_EXPORTS;%(PreprocessorDefinitions);FLYDLL</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FLYEDITDLL;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -140,7 +134,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;FLYEDITCLI_EXPORTS;%(PreprocessorDefinitions);FLYDLL</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FLYEDITDLL;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -158,7 +152,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;FLYEDITCLI_EXPORTS;%(PreprocessorDefinitions);FLYDLL</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FLYEDITDLL;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -169,24 +163,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="FlyEditCLIWrapper.h" />
+    <ClInclude Include="FlyLevelEditor.h" />
+    <ClInclude Include="FlyLevelEditor_impl.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AssemblyInfo.cpp" />
-    <ClCompile Include="FlyEditCLIWrapper.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\FlyLevelEdit\FlyLevelEdit.vcxproj">
-      <Project>{2df3d11c-6a3f-462f-8d1a-7615b5a58ab8}</Project>
-    </ProjectReference>
+    <ClCompile Include="FleLevelEditor_impl.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

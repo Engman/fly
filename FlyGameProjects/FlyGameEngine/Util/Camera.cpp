@@ -46,11 +46,82 @@ void Camera::SetPosition(float x, float y, float z)
 	this->positionY = y;
 	this->positionZ = z;
 }
+void Camera::SetPosition(D3DXVECTOR3 position)
+{
+	this->positionX = position.x;
+	this->positionY = position.y;
+	this->positionZ = position.z;
+}
+void Camera::SetPositionX(float x)
+{
+	this->positionX = x;
+}
+void Camera::SetPositionY(float y)
+{
+	this->positionY = y;
+}
+void Camera::SetPositionZ(float z)
+{
+	this->positionZ = z;
+}
+void Camera::RelativeForward(float speed)
+{
+	D3DXVECTOR3 norm;
+	D3DXVec3Normalize(&norm, &(this->GetForward()));
+
+	this->positionX += norm.x*speed;
+	this->positionY += norm.y*speed;
+	this->positionZ += norm.z*speed;
+}
+void Camera::RelativeRight(float speed)
+{
+	D3DXVECTOR3 norm;
+	D3DXVec3Normalize(&norm, &(this->GetRight()));
+
+	this->positionX += norm.x*speed;
+	this->positionY += norm.y*speed;
+	this->positionZ += norm.z*speed;
+}
+void Camera::RelativeUp(float speed)
+{
+	D3DXVECTOR3 norm;
+	D3DXVec3Normalize(&norm, &(this->GetUp()));
+
+	this->positionX += norm.x*speed;
+	this->positionY += norm.y*speed;
+	this->positionZ += norm.z*speed;
+}
+
+
 void Camera::SetRotation(float x, float y, float z)
 {
 	this->rotationX = x;
 	this->rotationY = y;
 	this->rotationZ = z;
+}
+void Camera::SetRotationX(float x)
+{
+	this->rotationX = x;
+}
+void Camera::SetRotationY(float y)
+{
+	this->rotationY = y;
+}
+void Camera::SetRotationZ(float z)
+{
+	this->rotationZ = z;
+}
+void Camera::RelativePitch(float degrees)
+{
+	this->rotationX += degrees;
+}
+void Camera::RelativeYaw(float degrees)
+{
+	this->rotationY += degrees;
+}
+void Camera::RelativeRoll(float degrees)
+{
+	this->rotationZ += degrees;
 }
 
 void Camera::SetProjectionMatrix(float fieldOfView, float aspectRatio, float nearPlane, float farPlane)
@@ -165,6 +236,10 @@ D3DXVECTOR3 Camera::GetForward() const
 {
 	return D3DXVECTOR3(this->viewMatrix._13, this->viewMatrix._23, this->viewMatrix._33);
 }
+D3DXVECTOR3 Camera::GetUp() const
+{
+	return D3DXVECTOR3(this->viewMatrix._12, this->viewMatrix._22, this->viewMatrix._32);
+}
 D3DXVECTOR3	Camera::GetParallelForward() const
 {
 	D3DXVECTOR3 up, returnedValue;
@@ -192,31 +267,6 @@ D3DXVECTOR3 Camera::GetParallelRight() const
 	return returnedValue;
 }
 
-void Camera::SetPositionX(float x)
-{
-	this->positionX = x;
-}
-void Camera::SetPositionY(float y)
-{
-	this->positionY = y;
-}
-void Camera::SetPositionZ(float z)
-{
-	this->positionZ = z;
-}
-
-void Camera::SetRotationX(float x)
-{
-	this->rotationX = x;
-}
-void Camera::SetRotationY(float y)
-{
-	this->rotationY = y;
-}
-void Camera::SetRotationZ(float z)
-{
-	this->rotationZ = z;
-}
 
 void Camera::ConstructViewFrustum(ViewFrustum& frustum)
 {
@@ -286,12 +336,4 @@ void Camera::ConstructViewFrustum(ViewFrustum& frustum)
 
 	frustum.sphere.radius = D3DXVec3Length(&vDiff);
 	frustum.sphere.center = D3DXVECTOR3(this->positionX, this->positionY, this->positionZ) + (D3DXVECTOR3(this->GetLookAt().x - this->positionX, this->GetLookAt().y - this->positionY, this->GetLookAt().z - this->positionZ)*(length*0.5f));  
-}
-
-
-void Camera::DennisTemporaryMoveFunction(D3DXVECTOR3 relative)
-{
-	this->positionX += relative.x;
-	this->positionY += relative.y;
-	this->positionZ += relative.z;
 }

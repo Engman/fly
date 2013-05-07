@@ -4,7 +4,7 @@
 #include "..\Core\Render\GBufferShader.h"
 #include "..\Core\Render\ColorShader.h"
 #include "..\Core\Render\LightShader.h"
-#include "..\Util\FlyCamera.h"
+#include "..\Util\Camera.h"
 
 
 
@@ -12,7 +12,7 @@
 void FLYCALL FlyEngine_Core::Gfx_Update()
 {
 	if(this->activeCamera)
-		this->activeCamera->updateView();
+		this->activeCamera->Render();
 }
 
 void FLYCALL FlyEngine_Core::Gfx_BeginForwardScene()
@@ -25,8 +25,8 @@ void FLYCALL FlyEngine_Core::Gfx_EndForwardScene()
 {
 	IShader::PER_FRAME_DATA gBufferDrawData;
 	gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
-	gBufferDrawData.view = this->activeCamera->getView();
-	gBufferDrawData.projection = this->activeCamera->getProj();
+	gBufferDrawData.view = this->activeCamera->GetViewMatrix();
+	gBufferDrawData.projection = this->activeCamera->GetProjectionMatrix();
 	this->colorShader->draw(gBufferDrawData);
 	D3DShell::self()->releaseSRV();
 	D3DShell::self()->endScene();
@@ -41,8 +41,8 @@ void FLYCALL FlyEngine_Core::Gfx_EndDeferredScene()
 {
 	IShader::PER_FRAME_DATA gBufferDrawData;
 	gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
-	gBufferDrawData.view = this->activeCamera->getView();
-	gBufferDrawData.projection = this->activeCamera->getProj();
+	gBufferDrawData.view = this->activeCamera->GetViewMatrix();
+	gBufferDrawData.projection = this->activeCamera->GetProjectionMatrix();
 	this->gbufferShader->draw(gBufferDrawData);
 
 
@@ -52,6 +52,7 @@ void FLYCALL FlyEngine_Core::Gfx_EndDeferredScene()
 	this->fsq->Render(D3DShell::self()->getDeviceContext());
 	this->colorShader->draw(gBufferDrawData);
 	
+
 	D3DShell::self()->releaseSRV();
 	D3DShell::self()->endScene();
 }
@@ -61,22 +62,30 @@ void FLYCALL FlyEngine_Core::Gfx_Resize(int width, int height)
 	D3DShell::self()->resizeViewport((UINT)width, (UINT)height);
 }
 
-void FLYCALL FlyEngine_Core::Gfx_SetCamera(FlyCamera* cam)
+void FLYCALL FlyEngine_Core::Gfx_SetCamera(Camera* cam)
 {
-	this->activeCamera = cam;
+	if(!cam)
+		this->activeCamera = this->defaultCam;
+	else
+		this->activeCamera = cam;
 }
 
-IShader* FLYCALL FlyEngine_Core::Gfx_GetShader(int id)
+IShader* FLYCALL FlyEngine_Core::Gfx_GetShader(FlyEngineShaders shader)
 {
-	if(this->colorShader->getId() == id)
-		return this->colorShader;
+	switch (shader)
+	{
+		case FlyShader_Default:
+			return this->gbufferShader;
+		break;
 
-	else if(this->gbufferShader->getId() == id)
-		return this->gbufferShader;
+		case FlyShader_Color:
+			return this->colorShader;
+		break;
 
-	else if(this->lightShader->getId() == id)
-		return this->lightShader;
-
+		case FlyShader_Light:
+			return this->lightShader;
+		break;
+	}
 	return NULL;
 }
 
@@ -87,7 +96,7 @@ void FLYCALL FlyEngine_Core::Gfx_GetShader(vector<IShader*>& shaders)
 	shaders.push_back(this->lightShader);
 }
 
-FlyCamera* FLYCALL FlyEngine_Core::Gfx_GetCamera()
+Camera* FLYCALL FlyEngine_Core::Gfx_GetCamera()
 {
 	return this->activeCamera;
 }
@@ -190,8 +199,8 @@ bool FlyEngine_Core::_InitMatrixBuffer()
 }
 void FlyEngine_Core::_InitCam()
 {
-	this->defaultCam->setLookAt(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f), vec3(0.0f, 1.0f, 0.0f));
-	this->defaultCam->setPerspective((float)D3DX_PI*0.2f, D3DShell::self()->getAspectRatio(), 1.0f, 1000.0f);
+	this->defaultCam->SetPosition(vec3(0.0f, 0.0f, 0.0f));
+	this->defaultCam->SetProjectionMatrix((float)D3DX_PI*0.2f, D3DShell::self()->getAspectRatio(), 1.0f, 1000.0f);
 	this->activeCamera = this->defaultCam;
 }
 //####################################################################//

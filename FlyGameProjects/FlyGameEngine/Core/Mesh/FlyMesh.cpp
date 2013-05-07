@@ -1,5 +1,5 @@
 #include "FlyMesh.h"
-//#include "..\..\Util\misc.h"
+#include "..\..\Util\CollisionLib.h"
 
 FlyMesh::FlyMesh()
 	:Entity(Type::OBJECT)
@@ -16,12 +16,25 @@ void FlyMesh::Update()
 {
 
 }
-void FlyMesh::Render()
+void FlyMesh::Render(ViewFrustum& frustum)
 {
-	if(this->shader)
+	if(this->boundingSphere.IsValid())
+	{
+		if(this->shader && FrustumVSSphere(frustum, *this->boundingSphere))
+		{
+			IShader::DRAW_DATA data;
+		
+			for(int i = 0; i<(int)this->buffers.size(); i++)
+				data.buffers.push_back(this->buffers[i]);
+
+			data.worldMatrix = &this->world;
+			data.material = this->material;
+			this->shader->addDrawData(data);
+		}
+	}
+	else
 	{
 		IShader::DRAW_DATA data;
-
 		for(int i = 0; i<(int)this->buffers.size(); i++)
 			data.buffers.push_back(this->buffers[i]);
 
@@ -68,8 +81,10 @@ bool FlyMesh::Initialize(OBJECT_DESC& data)
 		return false;
 	}
 	this->buffers.push_back(b);
-	this->shader	= data.shader;
-	this->name		= data.name;
+	this->shader			= data.shader;
+	this->name				= data.name;
+	this->boundingSphere	= data.boundingSphere;
+
 
 	return true;
 }
