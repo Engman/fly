@@ -1,0 +1,18 @@
+#ifndef FLY_SYSTEM_STATE_H
+#define FLY_SYSTEM_STATE_H
+
+class FlyGame;
+
+class IFlySystemState
+{
+	protected:
+		FlyGame* entryInstance;
+
+	public:
+		virtual void Initiate(FlyGame*) = 0;
+		virtual void Frame() = 0;
+};
+
+
+#endif
+

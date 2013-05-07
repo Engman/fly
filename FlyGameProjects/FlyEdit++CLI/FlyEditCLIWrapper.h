@@ -1,20 +1,26 @@
 #ifndef FLY_EDIT_CLI_WAPPER_H
 #define FLY_EDIT_CLI_WAPPER_H
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <Windows.h>
+//#pragma comment(lib, "FlyLevelEditx64D.lib")
 
 //forwarddeklarationen måste ligga innan alla "using" !!! annars tolkas
 //det av visual studio som att GameEngineWrapper-klassen ligger i ett namespace
 //#include "..\FlyGame\EngineCLIWrapper\EngineWrapper.h"
-#include "..\FlyGame\EngineCLIWrapper\EngineEditorWrapper.h"
+#include "..\FlyLevelEdit\FlyLevelEditor.h"
+#include <Windows.h>
+
+
+#include <stdlib.h>
+#include <stdio.h>
+
 
 
 using namespace System;
 using namespace System::Windows;
 using namespace System::Windows::Interop;
 using namespace System::Runtime::InteropServices;
+using namespace System::Collections::Generic;
+
 
 namespace System 
 { 
@@ -22,26 +28,27 @@ namespace System
 	{ 
 		namespace Interop
 		{
+			public enum class Cameras
+			{
+				FirstPerson,
+				Top,
+			};
+
 			public ref class FlyEditCLIWrapper
 			{
 				protected:
-					EngineEditorWrapper* flyEngine;
+					FlyLevelEditor* flyEngine;
 
 				public:
-					FlyEditCLIWrapper();
-					~FlyEditCLIWrapper();
+					FlyEditCLIWrapper			();
+					~FlyEditCLIWrapper			();
 
-					bool Init(IntPtr hWnd, int width, int height);
-					HRESULT Shutdown();
-					
-					HRESULT ProcessFrame();
-
-					int LoadResources(String^ path);
-
-					HRESULT OnResize(int width, int height);
-					HRESULT OnMouseDown(int x, int y);
-
-					String^ ProcessText(String^ text);
+					bool Init					(IntPtr hWnd, int width, int height);
+					bool Shutdown				();
+					bool ProcessFrame			();
+					bool LoadResources			(array<String^>^ resourcePath, Dictionary<String^, int>^ loadedObjects);
+					void OnResize				(int width, int height);
+					void ChangeView				(Cameras cam);
 			};
 		}
 	}

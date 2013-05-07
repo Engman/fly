@@ -1,17 +1,16 @@
 #include "FlyEditCLIWrapper.h"
-#include <sstream>
+#include <map>
 
-namespace System 
-{ 
-	namespace Windows 
-	{ 
-		namespace Interop
-		{
+
+
+namespace System { namespace Windows { namespace Interop {
+
+
 			FlyEditCLIWrapper::FlyEditCLIWrapper()
 			{
-				this->flyEngine = new EngineEditorWrapper();
+				this->flyEngine = GetEditorInstance();
 			}
-
+			
 			FlyEditCLIWrapper::~FlyEditCLIWrapper()
 			{
 				delete this->flyEngine;
@@ -21,67 +20,70 @@ namespace System
 			bool FlyEditCLIWrapper::Init(IntPtr _hWnd, int width, int height)
 			{
 				HWND hwnd = (HWND)(void*)_hWnd;
-				if( FAILED (this->flyEngine->Init(hwnd, width, height) ) )
-					return false;
 
+				if( FAILED (this->flyEngine->Initiate(hwnd, width, height) ) )
+					return false;
 
 				return true;
 			}
 
-			HRESULT FlyEditCLIWrapper::Shutdown()
+			bool FlyEditCLIWrapper::Shutdown()
 			{
-				return this->flyEngine->Shutdown();
-				return 1;
+				this->flyEngine->Terminate();
+				return true;
 			}
 
-			HRESULT FlyEditCLIWrapper::ProcessFrame()
+			bool FlyEditCLIWrapper::ProcessFrame()
 			{
-				this->flyEngine->Update();
-				this->flyEngine->Render();
-				return 1;
-			}
+				if(this->flyEngine)
+					this->flyEngine->Frame();
+				else
+					return false;
 
-			int FlyEditCLIWrapper::LoadResources(String^ path)
-			{
-				wchar_t *msg = (wchar_t*)Marshal::StringToHGlobalUni(path).ToPointer();
-				return this->flyEngine->LoadResource(msg);
+				return true;
 			}
-
-			HRESULT FlyEditCLIWrapper::OnResize(int width, int height)
+			
+			bool FlyEditCLIWrapper::LoadResources(array<String^>^ resourcePath, Dictionary<String^, int>^ loadedObjects)
 			{
+				if(resourcePath->Length == 0)
+					return false;
 				
-				return this->flyEngine->OnResize(width, height);
-				return 1;
-			}
-			HRESULT FlyEditCLIWrapper::OnMouseDown(int x, int y)
-			{
-				return this->flyEngine->OnMouseDown(x, y);
-			}
-
-
-
-
-			String^ FlyEditCLIWrapper::ProcessText(String^ msg)
-			{
-				wchar_t* lpText = 0;
-				String^ returnText;
-
-				//Konvert String^ -> char*
-				try
+				std::vector<const wchar_t*> path((int)resourcePath->Length);
+				for(int i = 0; i<resourcePath->Length; i++)
 				{
-					lpText = (wchar_t*)Marshal::StringToHGlobalUni(msg).ToPointer();
-
-					//returnText = gcnew String(m_GameEngine->ProcessText(lpText));
+					path[i] = (wchar_t*)Marshal::StringToHGlobalUni(resourcePath[i]).ToPointer();
 				}
-				finally
+				std::map<std::wstring, int> loaded;
+				if( !this->flyEngine->LoadData(path, &loaded) )
+					return false;
+				
+				std::map<std::wstring, int>::iterator it = loaded.begin();
+				for (it; it != loaded.end(); it++)
 				{
-					Marshal::FreeHGlobal((IntPtr) const_cast<wchar_t*>(lpText)); // Free memory
+					loadedObjects->Add(gcnew String(it->first.c_str()), it->second);
 				}
 
-				return returnText;
+				return true;
 			}
 
+			void FlyEditCLIWrapper::OnResize	(int width, int height)
+			{
+				this->flyEngine->Resize(width, height);
+			}
 
-		}
-	}
-}
+			void FlyEditCLIWrapper::ChangeView	(Cameras view)
+			{
+				switch (view)
+				{
+					case System::Windows::Interop::Cameras::FirstPerson:
+						this->flyEngine->SetCamera(FlyLevelEditor::CAM_DEFAULT);
+					break;
+
+					case System::Windows::Interop::Cameras::Top:
+						this->flyEngine->SetCamera(FlyLevelEditor::CAM_TOP);
+					break;
+				}
+			}
+
+			
+}}}
