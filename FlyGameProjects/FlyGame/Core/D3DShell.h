@@ -15,6 +15,7 @@
 #include "..\Util\GID.h"
 #include "..\Util\SmartPtrs.h"
 #include "DeferredRenderingLayout.h"
+#include "DrawableTexture.h"
 
 /**
 *	DirectX 11 singleton shell
@@ -100,16 +101,24 @@ class D3DShell
 
 
 		/** Clears and sets the G-buffers and depth stencil views as the render target */
-		void						BeginGBufferRenderTargets();
-		ID3D11ShaderResourceView**	getDefferedSRV();   /**returns the shader recourse view array*/
+		void						BeginGBufferRenderTargets(bool withDepth);
+		void						setDefferedSRV();   /**sets the shader recourse view array*/
 		int getNrOfSRV();	
 		void releaseSRV();
 
+		//-------------light pass----------------//
 		void BeginLightRenderTarget();
-		ID3D11ShaderResourceView** getLightSRV();
+		void setLightSRV();
 
+		//-------------shadow maps--------------//
+		void BeginShadowRenderTarget();
+		void setShadowSRV();
 
-
+		//-------------blur pass-----------------//
+		void BeginBlurRenderTarget();
+		void setBlurSRV();
+		void BeginBlur2RenderTarget();
+		void setBlur2SRV();
 
 
 };

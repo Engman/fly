@@ -1,14 +1,14 @@
 ac 0 
 vc 2400
-m lambert12
+m test
 a 0.000000 0.000000 0.000000 1.000000
 d 1.000000 1.000000 1.000000 1.000000
-s 0.000000 0.000000 0.000000 1.000000
-sp 2
+s 1.000000 0.000000 0.000000 1.000000
+sp 6
 ta
-td ..\Resources\Textures\Baron_Nashor.png
+td ..\Resources\Textures\testarea.png
 ts ..\Resources\Textures\Baron_NashorSpec.png
-tg 
+tg ..\Resources\Textures\halfGlow.png
 tn ..\Resources\Textures\Baron_NashorBump.png
 endmtl 
 an 0 1 

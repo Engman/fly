@@ -23,5 +23,6 @@ bool BoxVSTriangle(BoundingBox box, D3DXVECTOR3 triangle[3]);
 
 bool TriangleVSTriangle(D3DXVECTOR3 triangle1[3], D3DXVECTOR3 triangle2[3]);
 
+bool SphereVSSphere(BoundingSphere sphere1, BoundingSphere sphere2);
 #endif
 

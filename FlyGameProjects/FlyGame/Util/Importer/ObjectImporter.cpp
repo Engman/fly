@@ -159,7 +159,8 @@ bool ParseAnimationFile			(std::wifstream& in, ID3D11Device* device, ID3D11Devic
 	while(!in.eof())
 	{
 		in >> flag;
-
+		if(in.eof() )
+			break;
 		if(flag == ObjImpFormat::vertexCount)	
 		{
 			if(!ParseInteger(in, vCount))

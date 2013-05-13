@@ -407,3 +407,9 @@ bool TriangleVSTriangle(D3DXVECTOR3 triangle1[3], D3DXVECTOR3 triangle2[3])
 
 	return false;
 }
+bool SphereVSSphere(BoundingSphere sphere1, BoundingSphere sphere2)
+{
+
+
+	return false;
+}

@@ -33,7 +33,8 @@ public:
 	void setCamViewBuffer(D3DXMATRIX view, D3DXMATRIX projection, D3DXVECTOR3 camPos);
 	BaseBuffer* getCamViewBuffer();
 	int getNrOfDirLight();
-
+	D3DXMATRIX getDirLightView(int nr);
+	D3DXMATRIX getDirLightProjection(int nr);
 
 };
 #endif

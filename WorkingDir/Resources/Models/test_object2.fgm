@@ -1,14 +1,14 @@
 ac 0 
 vc 2400
-m lambert12
+m test2
 a 0.000000 0.000000 0.000000 1.000000
 d 1.000000 1.000000 1.000000 1.000000
-s 0.000000 0.000000 0.000000 1.000000
-sp 2
+s 0.100000 0.800000 0.200000 1.000000
+sp 10
 ta
 td ..\Resources\Textures\grass.png
 ts ..\Resources\Textures\Baron_NashorSpec.png
-tg 
+tg ..\Resources\Textures\fullGlow.png
 tn ..\Resources\Textures\Baron_NashorBump.png
 endmtl 
 an 0 1 

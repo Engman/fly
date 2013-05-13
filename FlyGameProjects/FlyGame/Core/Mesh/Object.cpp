@@ -30,19 +30,27 @@ void Object::Render()
 		//rotate
 		//scale
 		//translate
-		D3DXMATRIX rotX, translation;
+		D3DXMATRIX rotX, translation, scaleM;
+		D3DXVECTOR3 scale = this->scale; 
+
 		D3DXMatrixIdentity(&this->world);
 		D3DXMatrixIdentity(&translation);
+		D3DXMatrixIdentity(&scaleM);
+
 		D3DXMatrixRotationZ(&rotX, this->rotation.x);
+
+		D3DXMatrixScaling(&scaleM, scale.x, scale.y, scale.z);
 		D3DXVECTOR3 pos; 
 		pos = getPosition();
 		translation._41 = pos.x;
 		translation._42 = pos.y;
 		translation._43 = pos.z;
+
 		
 		this->world *= rotX;
+
 	
-		//this->world *= this->transformation;
+		this->world *= scaleM;
 		this->world *= translation;
 		
 		

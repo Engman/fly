@@ -10,6 +10,7 @@ namespace DeferredRenderLayout
 		MRTS_Normal,
 		MRTS_Material,
 		MRTS_Position,
+		MRTS_Glow,
 		//MRTS_TextCoord,
 
 		/* Add more */

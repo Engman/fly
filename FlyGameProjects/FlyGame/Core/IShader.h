@@ -58,7 +58,7 @@ class IShader
 			this->drawData.shrink_to_fit();
 		}
 
-		bool init(BaseShader::BASE_SHADER_DESC& desc)
+		virtual bool init(BaseShader::BASE_SHADER_DESC& desc)
 		{
 			this->shader = new BaseShader();
 			if( FAILED (this->shader->Initialize(desc) ) )

@@ -30,7 +30,6 @@ bool FullScreenQuad::Initialize( ID3D11Device* g_Device, IShader* shader )
 
 	};
 
-
 	BaseBuffer::BUFFER_INIT_DESC bufferDesc;
 	bufferDesc.dc = D3DShell::self()->getDeviceContext();
 	bufferDesc.device = D3DShell::self()->getDevice();

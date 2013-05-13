@@ -28,6 +28,7 @@ class Entity abstract
 		Matrix		world;
 		Matrix		transformation;
 		vec3		rotation;
+		vec3		scale;
 
 		IShader		*shader;
 		std::vector<SmartPtrStd<BaseBuffer>> buffers;
@@ -41,6 +42,7 @@ class Entity abstract
 			this->world				= origObj.world;
 			this->transformation	= origObj.transformation;
 			this->rotation			= origObj.rotation;
+			this->scale				= origObj.scale;
 			this->buffers			= origObj.buffers;
 		}
 		virtual~Entity			()
@@ -50,6 +52,7 @@ class Entity abstract
 			this->world				= origObj.world;
 			this->transformation	= origObj.transformation;
 			this->rotation			= origObj.rotation;
+			this->scale				= origObj.scale;
 			this->buffers			= origObj.buffers;
 
 			return *this;
@@ -87,6 +90,10 @@ class Entity abstract
 		{
 			return this->rotation;
 		}
+		vec3 getScale			() const
+		{
+			return this->scale;
+		}
 		vec3 getFront			()	const  
 		{
 			return vec3(this->transformation.m[2]);
@@ -114,6 +121,10 @@ class Entity abstract
 		{
 			this->rotation = _rotation;
 		}
+		void setScale			(vec3 _scale)
+		{
+			this->scale = _scale;
+		}	
 		void setFront			(vec3 _front)
 		{
 			this->transformation._31 = _front.x;
@@ -149,3 +160,4 @@ class Entity abstract
 
 
 #endif
+

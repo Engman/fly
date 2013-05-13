@@ -1,18 +1,13 @@
-#include "GBufferShader.h"
+#include "GBufferAnimationShader.h"
 
-GBufferShader::GBufferShader()
+GBufferAnimationShader::GBufferAnimationShader()
 {
-	
-
-	
+	time =0 ;
 }
 
 
-void GBufferShader::draw(PER_FRAME_DATA& frameData)
-
+void GBufferAnimationShader::draw(PER_FRAME_DATA& frameData)
 {	
-	//D3DShell::self()->BeginGBufferRenderTargets();
-
 	int indexC = 0;
 	int vertexC = 0;
 	
@@ -21,9 +16,6 @@ void GBufferShader::draw(PER_FRAME_DATA& frameData)
 	D3DShell::self()->setSamplerState(samp, FLAGS::PS, 0, 1);
 
 	this->shader->Render();
-
-	
-	//D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_NoCullNoMs);
 
 	int count = (int)this->drawData.size();
 	for( int i = 0; i< count;i++)
@@ -40,7 +32,6 @@ void GBufferShader::draw(PER_FRAME_DATA& frameData)
 			if(det)
 			{
 				D3DXMatrixInverse(&temp, &det, this->drawData[i].worldMatrix);
-				//D3DXMatrixTranspose(&temp, &temp);
 				cb->worldInvTranspose = temp;
 			}
 			
@@ -50,8 +41,32 @@ void GBufferShader::draw(PER_FRAME_DATA& frameData)
 
 			this->matrixBuffer->Unmap();
 		}
-		this->matrixBuffer->setBuffer();
+		this->matrixBuffer->setBuffer(0);
 
+		time+=0.1f;
+		if (time>1)
+		{
+			time=0;
+		}
+		aminationWeight weightCB;
+		weightCB.weight = time;
+
+		BaseBuffer::BUFFER_INIT_DESC bufferDesc;
+		bufferDesc.dc = D3DShell::self()->getDeviceContext();
+		bufferDesc.device = D3DShell::self()->getDevice();
+		bufferDesc.elementSize = sizeof(aminationWeight);
+		bufferDesc.data = &weightCB;
+		bufferDesc.nrOfElements = 1;
+		bufferDesc.type = BUFFER_FLAG::TYPE_CONSTANT_VS_BUFFER;
+		bufferDesc.usage = BUFFER_FLAG::USAGE_DYNAMIC_CPU_WRITE_DISCARD;
+
+		BaseBuffer m_weightBuffer;
+		if(FAILED(m_weightBuffer.Initialize(bufferDesc)))
+		{
+			MessageBox(0, L"Could not initialize weightbuffer! Plane.cpp - Initialize", L"Error", MB_OK);
+		}
+
+		m_weightBuffer.setBuffer(1);
 
 		for(int k = 0; k <(int)this->drawData[i].buffers.size(); k++)	// set vertex and index buffers
 		{

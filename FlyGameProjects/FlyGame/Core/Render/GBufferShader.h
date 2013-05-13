@@ -7,13 +7,11 @@
 class GBufferShader : public IShader
 {
 	public:
-		GBufferShader();
 
+		GBufferShader();
 		void draw(PER_FRAME_DATA& frameData);
 
-
 	private:
-		
 		
 };
 

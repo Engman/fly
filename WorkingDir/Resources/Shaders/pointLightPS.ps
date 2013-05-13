@@ -1,13 +1,13 @@
 #include "LightHelp.fx"
 
-cbuffer Camera
+cbuffer Camera : register(b0)
 {
   float4x4 mInvViewProj;
   float4x4 mInvView;
   float3 cameraPos;
   float padd;
 };
-cbuffer light
+cbuffer light : register(b1)
 {
 	PointLight pointLight;
 };

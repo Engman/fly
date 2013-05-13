@@ -32,6 +32,7 @@ namespace FLAGS
 		SAMPLER_Anisotropic4,
 		SAMPLER_Anisotropic8,
 		SAMPLER_Anisotropic16,
+		SAMPLER_LinearClamp,
 		SAMPLER_Custom,
 		SAMPLER_None,
 	};

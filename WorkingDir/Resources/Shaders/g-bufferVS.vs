@@ -5,6 +5,7 @@ cbuffer CB_CAMERA
   float4x4 mView;
   float4x4 mProj;
   float4x4 mWorldInvTrans;
+  
 };
 
 struct VS_IN
@@ -24,18 +25,17 @@ struct PS_IN
 
 PS_IN FVertexShader( VS_IN input)
 {
-  PS_IN output;
+	PS_IN output;
   
-  output.position.w = 1.0f;
-  output.positionWorld = mul( input.position, mWorld );
+	output.position.w = 1.0f;
+	output.positionWorld = mul( input.position, mWorld );
   
-  output.position = mul(  output.positionWorld, mView );
-  output.position = mul(  output.position, mProj );
+	output.position = mul(  output.positionWorld, mView );
+	output.position = mul(  output.position, mProj );
   
-  output.normal = mul(input.normal, mWorldInvTrans ); 
+	output.normal = mul(input.normal, mWorldInvTrans );
+	output.textCoord = input.textCoord;
 
-  output.textCoord = input.textCoord;
-
-  return output;
+	return output;
 }
 

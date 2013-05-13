@@ -13,14 +13,8 @@ cbuffer CB_CAMERA
 struct VSIn
 {
 	float4 position		: POSITION;
-	float2 TextCoord  : TEXCOORD;
-
-};
-
-struct PSIn
-{
-	float4 Pos		: SV_Position;
-	float2 TextCoord  : TEXCOORD; 
+	float4 normal 		: NORMAL;
+	float2 TextCoord  	: TEXCOORD;
 
 };
 
@@ -28,21 +22,16 @@ struct PSIn
 //-----------------------------------------------------------------------------------------
 // VertexShader: VSScene
 //-----------------------------------------------------------------------------------------
-PSIn FVertexShader(VSIn input)
+float4 FVertexShader(VSIn input): SV_Position
 {
-	PSIn output = (PSIn)0;
+	float4 position;
 
-  output.Pos		= input.position; 
+  position.w = 1.0f;
+  position = mul( input.position, mWorld );
   
-  
-  //Projected co-ords.
-  output.TextCoord     = input.TextCoord;
-  
-  //output.TextCoord.xy  = float2(output.TextCoord.x * 0.5, -output.TextCoord.y * 0.5);
-  //output.TextCoord.xy += (0.5); //* output.TextCoord.w); 
-   
-  //output.TextCoord.x  -= invWidth ;
-  //output.TextCoord.y  -= invHeight ;
+  position = mul(  position, mView );
+  position = mul(  position, mProj );
+
 	
-	return output;
+	return position;
 }

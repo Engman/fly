@@ -8,12 +8,15 @@
 #include "..\D3DShell.h"
 #include "..\Entity.h"
 #include "..\Mesh\FullScreenQuad.h"
+#include "..\..\Util\FlyCamera.h"
 
 class DirectionLight : public Entity
 {
 private:
 	DirectionalLightProxy dirLight; 
 	SmartPtrStd<BaseBuffer> light; 
+	FlyCamera camera;
+
 
 public:
 	DirectionLight(int type);
@@ -21,6 +24,8 @@ public:
 
 	void Initialize(DirectionalLightProxy data);
 	BaseBuffer* getLight();
+	D3DXMATRIX getView();
+	D3DXMATRIX getProjection();
 
 };
 #endif

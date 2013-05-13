@@ -5,7 +5,7 @@
 #include "WindowShell.h"
 #include "D3DShell.h"
 #include "Render\GBufferShader.h"
-#include "Render\ColorShader.h"
+#include "Render\FinalShader.h"
 #include "Mesh\Plane.h"
 #include "Input.h"
 #include "Entity.h"
@@ -18,7 +18,9 @@
 #include "Mesh\Cube.h"
 #include "Light\LightHolder.h"
 #include "Render\LightShader.h"
-
+#include "Render\ShadowMapShader.h"
+#include "Render\BlurShader.h"
+#include "Render\GBufferAnimationShader.h"
 #include "Mesh\FullScreenQuad.h"
 
 typedef Input::KeyCodes Key;
@@ -30,8 +32,11 @@ class Application
 		bool InitWindow(HINSTANCE& hinst, Point2D size);
 		bool InitInput();
 		bool InitGBuffers();
-		bool InitColorShader();
+		bool InitFinalShader();
 		bool InitLightShader();
+		bool InitShadowMapShader();
+		bool InitBlurShader();
+		bool InitAnimationShader();
 		bool InitMatrixBuffer();
 		bool LoadResources();
 		void ShowMenu();
@@ -49,10 +54,13 @@ class Application
 
 	private:
 		GBufferShader			gBufferShader;
-		ColorShader				g_colorShader; 
+		FinalShader				g_finalShader; 
 		LightShader				g_dirLightShader;
 		LightShader				g_pointLightShader;
-
+		ShadowMapShader			g_shadowMapShader;
+		BlurShader				g_blurHorizontShader;
+		BlurShader				g_blurVerticalShader;
+		GBufferAnimationShader  g_animationShader;
 		SmartPtrStd<BaseBuffer> pMatrixBuffer;
 
 		//test values 
@@ -60,6 +68,7 @@ class Application
 		SmartPtrStd<Plane>		g_plane;
 		SmartPtrStd<Cube>		g_cube;
 		SmartPtrStd<Cube>		g_cube2;
+		SmartPtrStd<Cube>		g_animatedCube;
 		SmartPtrStd<FullScreenQuad>	g_FullscreenQuad;
 		SmartPtrStd<LightHolder>g_lightHolder;
 		SmartPtrStd<FullScreenQuad> g_dirLight;

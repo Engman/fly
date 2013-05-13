@@ -33,8 +33,11 @@ bool Application::Initialize(HINSTANCE hInst, int width, int height)
 	if(!InitInput())				return false;
 	if(!InitGBuffers())				return false;
 	if(!InitLightShader())			return false;
-	if(!InitColorShader())			return false;
+	if(!InitFinalShader())			return false;
+	if(!InitShadowMapShader())		return false;
+	if(!InitBlurShader())			return false;
 	if(!InitMatrixBuffer())			return false;
+	if(!InitAnimationShader())		return false;
 	if(!LoadResources())			return false;
 
 
@@ -57,7 +60,8 @@ bool Application::Initialize(HWND hwnd, int width, int height)
 	if(!InitInput())				return false;
 	if(!InitGBuffers())				return false;
 	if(!InitLightShader())			return false;
-	if(!InitColorShader())			return false;
+	if(!InitFinalShader())			return false;
+
 	if(!InitMatrixBuffer())			return false;
 	if(!LoadResources())			return false;
 
@@ -71,7 +75,6 @@ bool Application::Initialize(HWND hwnd, int width, int height)
 
 	return true;
 }
-
 
 void Application::Run()
 {
@@ -164,11 +167,16 @@ void Application::Update()
 	//g_cube->Update();
 
 	D3DXVECTOR3 rot; 
-	rot = this->objects[0]->getRotation();
+	rot = this->objects[1]->getRotation();
 	rot.x += 0.003f;
-	this->objects[0]->setRotation(rot);
+	this->objects[1]->setRotation(rot);
 
 	this->flyCamera.updateView();
+
+	D3DXVECTOR3 pos = this->flyCamera.getPosition();
+	this->objects[0]->setPosition(pos);
+
+	g_animatedCube->Update();
 
 }
 bool Application::Render()
@@ -180,88 +188,120 @@ bool Application::Render()
 }
 void Application::DeferedRendering()
 {
-	D3DShell::self()->BeginGBufferRenderTargets();
-
-	IShader::PER_FRAME_DATA gBufferDrawData;
-	gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
-	gBufferDrawData.view = this->flyCamera.getView();
-	gBufferDrawData.projection = this->flyCamera.getProj();
-
-
-
+	
 //#################################//
 //########## G-buffers ############//
 //#################################//
+	IShader::PER_FRAME_DATA PerFrameData;
+	PerFrameData.dc = D3DShell::self()->getDeviceContext();
+	PerFrameData.view = this->flyCamera.getView();
+	PerFrameData.projection = this->flyCamera.getProj();
 
+	//draw the sky box without dephtStencil
+	D3DShell::self()->BeginGBufferRenderTargets(false);
+	
+	this->objects[0]->setShader(&gBufferShader);
+	this->objects[0]->Render();
+	this->gBufferShader.draw(PerFrameData);
 
-	//g_plane->Render(D3DShell::self()->getDeviceContext());
-	//g_cube->Render(D3DShell::self()->getDeviceContext());
+	//render all the other objects to the g-buffers
+	D3DShell::self()->BeginGBufferRenderTargets(true);
 
-	for (int i = 0; i <(int)this->objects.size(); i++)
+	g_animatedCube->Render(D3DShell::self()->getDeviceContext());
+	g_animationShader.draw(PerFrameData);
+
+	for (int i = 1; i <(int)this->objects.size(); i++)
 	{
+		this->objects[i]->setShader(&gBufferShader);
 		this->objects[i]->Render();
 	}
-	this->gBufferShader.draw(gBufferDrawData);
+	this->gBufferShader.draw(PerFrameData);
+
+	//#################################//
+	//############ Light ##############//
+	//#################################//
 
 	//set light render target and give it the albedo, normal and specular textures
 	D3DShell::self()->BeginLightRenderTarget();
 	float blend[4] = {0.75f,0.75f,0.75f,1.0f};
-	//D3DShell::self()->setBlendModeState(FLAGS::BLEND_MODE_Custom,blend, NULL);
-
-
-	D3DShell::self()->getDeviceContext()->OMSetBlendState(0,0,0xffffffff);
 	
-	ID3D11BlendState* Transparency;
-	D3D11_BLEND_DESC blendDesc;
-	ZeroMemory( &blendDesc, sizeof(blendDesc) );
-
-	D3D11_RENDER_TARGET_BLEND_DESC rtbd;
-	ZeroMemory( &rtbd, sizeof(rtbd) );
-
-	rtbd.BlendEnable			 = true;
-	rtbd.SrcBlend				 = D3D11_BLEND_SRC_COLOR;
-	rtbd.DestBlend				 = D3D11_BLEND_BLEND_FACTOR;
-	rtbd.BlendOp				 = D3D11_BLEND_OP_ADD;
-	rtbd.SrcBlendAlpha			 = D3D11_BLEND_ONE;
-	rtbd.DestBlendAlpha			 = D3D11_BLEND_ZERO;
-	rtbd.BlendOpAlpha			 = D3D11_BLEND_OP_ADD;
-	rtbd.RenderTargetWriteMask	 = D3D11_COLOR_WRITE_ENABLE_ALL;
-
-	blendDesc.AlphaToCoverageEnable = false;
-	blendDesc.RenderTarget[0] = rtbd;
-
-	D3DShell::self()->getDevice()->CreateBlendState(&blendDesc, &Transparency);
-
-	D3DShell::self()->getDeviceContext()->OMSetBlendState(Transparency, blend, 0xffffffff);
+	D3DShell::self()->setBlendModeState(FLAGS::BLEND_MODE_Custom, blend,  0xffffffff);
 	D3DShell::self()->setDepthStencilState(FLAGS::DEPTH_STENCIL_DisabledDepth,1); 
 
-	//BaseBuffer * dirLights = g_lightHolder->getDirLights();
-	g_lightHolder->setCamViewBuffer(this->mainCamera.GetViewMatrix(),this->mainCamera.GetProjectionMatrix(), this->mainCamera.GetPosition() );
-	
-	gBufferDrawData.camForLight = g_lightHolder->getCamViewBuffer();
-	//for(int i=0; i<g_lightHolder->getNrOfDirLight();i++)
-	//{
-	//	gBufferDrawData.lights = g_lightHolder->getDirLight(i);
-	//	//plane vertices, change so that lights hold geometry
-	//	this->g_dirLight->Render(D3DShell::self()->getDeviceContext());
-	//	this->g_dirLightShader.draw(gBufferDrawData);
-	//}
+	D3DXMATRIX invView, invViewProj, viewProj;
 
+	viewProj =  this->flyCamera.getView() *  this->flyCamera.getProj();
+	float det = D3DXMatrixDeterminant(&this->flyCamera.getView());
+	D3DXMatrixInverse(&invView, &det, &this->flyCamera.getView());
+	det= D3DXMatrixDeterminant(&viewProj);
+	D3DXMatrixInverse(&invViewProj, &det, &viewProj);
+	g_lightHolder->setCamViewBuffer(invView, invViewProj, this->flyCamera.getPosition() );
+	
+	PerFrameData.camForLight = g_lightHolder->getCamViewBuffer();
+	for(int i=0; i<g_lightHolder->getNrOfDirLight();i++)
+	{
+		PerFrameData.lights = g_lightHolder->getDirLight(i);
+		//plane vertices, change so that lights hold geometry
+		this->g_dirLight->Render(D3DShell::self()->getDeviceContext());
+		//change
+		this->g_dirLightShader.draw(PerFrameData);
+	}
+	
 	//gBufferDrawData.projection = this->mainCamera.GetOrthogonalMatrix();
-	
-	
-	gBufferDrawData.lights = g_lightHolder->getPointLight(1);
-	this->g_cube->Render(D3DShell::self()->getDeviceContext());
-	this->g_pointLightShader.draw(gBufferDrawData);
+	//g_lightHolder->setCamViewBuffer(this->mainCamera.GetViewMatrix(), this->mainCamera.GetProjectionMatrix(), this->mainCamera.GetPosition() );
 
-	gBufferDrawData.lights = g_lightHolder->getPointLight(0);
-	this->g_cube2->Render(D3DShell::self()->getDeviceContext());
-	this->g_pointLightShader.draw(gBufferDrawData);
+	//gBufferDrawData.camForLight = g_lightHolder->getCamViewBuffer();
+
+	//
+	//gBufferDrawData.lights = g_lightHolder->getPointLight(1);
+	//this->g_cube->Render(D3DShell::self()->getDeviceContext());
+	//this->g_pointLightShader.draw(gBufferDrawData);
+
+	//gBufferDrawData.lights = g_lightHolder->getPointLight(0);
+	//this->g_cube2->Render(D3DShell::self()->getDeviceContext());
+	//this->g_pointLightShader.draw(gBufferDrawData);
 
 	//D3DShell::self()->setBlendModeState(FLAGS::BLEND_MODE_DisabledBlend, blend, NULL);
 
+	//reset the blend state to normal
 	D3DShell::self()->getDeviceContext()->OMSetBlendState(0,0,0xffffffff);
 	D3DShell::self()->setDepthStencilState(FLAGS::DEPTH_STENCIL_EnabledDepth,1); 
+
+	
+
+
+	//------------------draw shadow maps----------------------//
+	D3DShell::self()->BeginShadowRenderTarget();
+	//get the view, proj from the light 
+	//for nr of shadow maps
+	PerFrameData.view = g_lightHolder->getDirLightView(0);
+	PerFrameData.projection = g_lightHolder->getDirLightProjection(0);
+	for (int i = 1; i <(int)this->objects.size(); i++)
+	{
+		this->objects[i]->setShader(&g_shadowMapShader);
+		this->objects[i]->Render();
+	}
+	this->g_shadowMapShader.draw(PerFrameData);
+
+	//---------------------blur texture-------------//
+	//horizontal blur
+	D3DShell::self()->BeginBlurRenderTarget();
+	D3DShell::self()->setBlurSRV();
+	PerFrameData.view = this->flyCamera.getView();
+	PerFrameData.projection = this->flyCamera.getProj();
+	
+	this->g_FullscreenQuad->SetShader(&g_blurHorizontShader);
+	this->g_FullscreenQuad->Render(D3DShell::self()->getDeviceContext());
+	
+	this->g_blurHorizontShader.draw(PerFrameData);
+
+	//vertical blur
+	D3DShell::self()->BeginBlur2RenderTarget();
+	D3DShell::self()->setBlur2SRV();
+	this->g_FullscreenQuad->SetShader(&g_blurVerticalShader);
+	this->g_FullscreenQuad->Render(D3DShell::self()->getDeviceContext());
+
+	this->g_blurVerticalShader.draw(PerFrameData);
 
 
 //##################################################################//
@@ -271,11 +311,37 @@ void Application::DeferedRendering()
 	//sampling from g-buffers
 	D3DShell::self()->setRenderTarget();
 	D3DShell::self()->beginScene();
-	//dir light
+	PerFrameData.view = this->flyCamera.getView();
+	PerFrameData.projection = this->flyCamera.getProj();
+	
+	//D3DXMATRIX invViewProj; 
+	invViewProj =  this->flyCamera.getView() *  this->flyCamera.getProj();
+	det = D3DXMatrixDeterminant(&invViewProj);
+	D3DXMatrixInverse(&invViewProj, &det, &invViewProj);
+	D3DXMATRIX lightViewProj;
+	lightViewProj = g_lightHolder->getDirLightView(0)* g_lightHolder->getDirLightProjection(0);
+	g_lightHolder->setCamViewBuffer( lightViewProj, invViewProj,this->flyCamera.getPosition());
+	PerFrameData.camForLight  = g_lightHolder->getCamViewBuffer();
+
+	this->g_FullscreenQuad->SetShader(&g_finalShader);
 	this->g_FullscreenQuad->Render(D3DShell::self()->getDeviceContext());
-	this->g_colorShader.draw(gBufferDrawData);
+	this->g_finalShader.draw(PerFrameData);
 	
 	D3DShell::self()->releaseSRV();
+
+	D3DXVECTOR3 position = this->flyCamera.getPosition();
+	D3DXVECTOR3 front =  this->flyCamera.getfront();
+	char title[255];
+	sprintf_s(title, sizeof(title), "Flygame| Camera Pos: x %f, y %f, z %f | Front x %f, y %f, z %f",
+		 (float)position.x, (float)position.y, (float)position.z, front.x, front.y, front.z	);
+
+
+	WCHAR    wTitle[255];
+	MultiByteToWideChar( 0,0, title, sizeof(title), wTitle, sizeof(wTitle));
+	LPCWSTR cstr4 = wTitle;
+	
+
+	SetWindowText(WindowShell::self()->getHWND(), cstr4);
 	D3DShell::self()->endScene();
 }
 
@@ -318,9 +384,14 @@ bool Application::LoadResources()
 			desc.device = D3DShell::self()->getDevice();
 			desc.deviceContext = D3DShell::self()->getDeviceContext();
 			desc.material_id = raw->objects[0].material;
-			desc.shader = &this->gBufferShader;
+			desc.shader = &this->gBufferShader;  // if animated it should be the animation shader
 			desc.vertecies = raw->objects[0].vertex;
 			desc.vCount = (int)raw->objects[0].vertex->size();
+			for(int i= 0; i<(int)raw->objects.size(); i++)
+			{
+				//desc.vertecies->push_back(raw->objects[i].vertex);
+			}
+			
 			if(!model->Initialize(desc))
 				return false;
 
@@ -329,8 +400,6 @@ bool Application::LoadResources()
 	}
 	return true;
 }
-
-
 
 bool Application::InitD3D(Point2D size, HWND hWnd)
 {
@@ -430,25 +499,80 @@ bool Application::InitLightShader()
 
 	return true;
 }
-bool Application::InitColorShader()
+bool Application::InitFinalShader()
 {
-	BaseShader::BASE_SHADER_DESC colorShaderDesc;
+	BaseShader::BASE_SHADER_DESC finalShaderDesc;
 
-	colorShaderDesc.dc = D3DShell::self()->getDeviceContext();
-	colorShaderDesc.device = D3DShell::self()->getDevice();
-	//colorShaderDesc.VSFilename = L"../Resources/Shaders/colorVS.vs";
-	//colorShaderDesc.PSFilename = L"../Resources/Shaders/colorPS.ps";
-	colorShaderDesc.VSFilename = L"../Resources/Shaders/TextLightVS.vs";
-	colorShaderDesc.PSFilename = L"../Resources/Shaders/TextLightPS.ps";
-	colorShaderDesc.shaderVersion = D3DShell::self()->getSuportedShaderVersion();
-	colorShaderDesc.polygonLayout = VERTEX::VertexPT_InputElementDesc;
-	colorShaderDesc.nrOfElements = 2;
+	finalShaderDesc.dc = D3DShell::self()->getDeviceContext();
+	finalShaderDesc.device = D3DShell::self()->getDevice();
+	finalShaderDesc.VSFilename = L"../Resources/Shaders/FullScreenQuadVS.vs";
+	finalShaderDesc.PSFilename = L"../Resources/Shaders/FinalPS.ps";
+	finalShaderDesc.shaderVersion = D3DShell::self()->getSuportedShaderVersion();
+	finalShaderDesc.polygonLayout = VERTEX::VertexPT_InputElementDesc;
+	finalShaderDesc.nrOfElements = 2;
 
-	if(!this->g_colorShader.init(colorShaderDesc))	
+	if(!this->g_finalShader.init(finalShaderDesc))	
 		return false;
 
 	return true;
 }
+bool Application::InitShadowMapShader()
+{
+	BaseShader::BASE_SHADER_DESC shadowShaderDesc;
+
+	shadowShaderDesc.dc = D3DShell::self()->getDeviceContext();
+	shadowShaderDesc.device = D3DShell::self()->getDevice();
+	shadowShaderDesc.VSFilename = L"../Resources/Shaders/ShadowMapVS.vs";
+	shadowShaderDesc.shaderVersion = D3DShell::self()->getSuportedShaderVersion();
+	shadowShaderDesc.polygonLayout = VERTEX::VertexPNT_InputElementDesc;
+	shadowShaderDesc.nrOfElements = 3;
+
+	if(!this->g_shadowMapShader.init(shadowShaderDesc))	
+		return false;
+
+	return true;
+}
+bool Application::InitBlurShader()
+{
+	BaseShader::BASE_SHADER_DESC blurShaderDesc;
+
+	blurShaderDesc.dc = D3DShell::self()->getDeviceContext();
+	blurShaderDesc.device = D3DShell::self()->getDevice();
+	blurShaderDesc.VSFilename = L"../Resources/Shaders/FullScreenQuadVS.vs";
+	blurShaderDesc.PSFilename = L"../Resources/Shaders/BlurHorizontPS.ps";
+	blurShaderDesc.shaderVersion = D3DShell::self()->getSuportedShaderVersion();
+	blurShaderDesc.polygonLayout = VERTEX::VertexPT_InputElementDesc;
+	blurShaderDesc.nrOfElements = 2;
+
+	if(!this->g_blurHorizontShader.init(blurShaderDesc))	
+		return false;
+
+
+	blurShaderDesc.PSFilename = L"../Resources/Shaders/BlurVerticalPS.ps";
+	
+	if(!this->g_blurVerticalShader.init(blurShaderDesc))	
+		return false;
+
+	return true;
+}
+bool Application::InitAnimationShader()
+{
+	BaseShader::BASE_SHADER_DESC animationShaderDesc;
+
+	animationShaderDesc.dc = D3DShell::self()->getDeviceContext();
+	animationShaderDesc.device = D3DShell::self()->getDevice();
+	animationShaderDesc.VSFilename = L"../Resources/Shaders/g-bufferAnimationVS.vs";
+	animationShaderDesc.PSFilename = L"../Resources/Shaders/g-BufferPS.ps";
+	animationShaderDesc.shaderVersion = D3DShell::self()->getSuportedShaderVersion();
+	animationShaderDesc.polygonLayout = VERTEX::Animation_2Frame_InputElementDesc;
+	animationShaderDesc.nrOfElements = 6;
+
+	if(!this->g_animationShader.init(animationShaderDesc))	
+		return false;
+
+	return true;
+}
+
 bool Application::InitMatrixBuffer()
 {
 	this->pMatrixBuffer = new BaseBuffer();
@@ -498,11 +622,12 @@ void Application::initTestData()
 	D3DXMATRIX world; 
 	D3DXMatrixIdentity(&world);
 
-	//g_plane = new Plane();
-	//g_plane->Initialize(world, 2.0f, 2.0f, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
+
+	g_plane = new Plane();
+	g_plane->Initialize(world, 2.0f, 2.0f, D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &gBufferShader);
 
 	g_FullscreenQuad = new FullScreenQuad();
-	g_FullscreenQuad->Initialize( D3DShell::self()->getDevice(), &g_colorShader);
+	g_FullscreenQuad->Initialize( D3DShell::self()->getDevice(), &g_finalShader);
 
 
 	//draw a plane over the screen with the lightShader
@@ -510,7 +635,7 @@ void Application::initTestData()
 	g_dirLight->Initialize( D3DShell::self()->getDevice(), &g_dirLightShader);
 
 
-	g_cube = new Cube();
+	/*g_cube = new Cube();
 	D3DXMatrixTranslation(&world, -20.0f, 2.0f, 50.0f);
 	g_cube->Initialize(world, 50.0f, 50.0f, 0.0f,  D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &g_pointLightShader);
 
@@ -518,13 +643,19 @@ void Application::initTestData()
 	g_cube2 = new Cube();
 	D3DXMatrixTranslation(&world, 50.0f, 2.0f, 100.0f);
 	g_cube2->Initialize(world, 50.0f, 50.0f, 0.0f,  D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &g_pointLightShader);
+	*/
+
+
+	g_animatedCube = new Cube();
+	D3DXMatrixTranslation(&world, 50.0f, 2.0f, 100.0f);
+	g_animatedCube->Initialize(world, 50.0f, 50.0f, 50.0f,  D3DShell::self()->getDevice(), D3DShell::self()->getDeviceContext(), &g_animationShader);
 
 
 	g_lightHolder = new LightHolder();
 	g_lightHolder->Initialize();
 	DirectionalLightProxy dirLight;
 	dirLight.ambient	= D3DXVECTOR4(0.2f,0.2f,0.2f,1);
-	dirLight.diffuse	= D3DXVECTOR4(0.5f,0.5f,0.5f,1);
+	dirLight.diffuse	= D3DXVECTOR4(1.0f,0.0f,0.0f,1);
 	dirLight.specular	= D3DXVECTOR4(0,0,1,1);
 	D3DXVECTOR4 dir(1,-3,-1,0);
 	D3DXVec4Normalize(&dir, &dir); 
@@ -533,7 +664,7 @@ void Application::initTestData()
 
 	DirectionalLightProxy dirLight2;
 	dirLight2.ambient	= D3DXVECTOR4(0.2f,0.2f,0.2f,1);
-	dirLight2.diffuse	= D3DXVECTOR4(1.0f,0.2f,0.2f,1);
+	dirLight2.diffuse	= D3DXVECTOR4(0.0f,0.0f,1.0f,1);
 	dirLight2.specular	= D3DXVECTOR4(0,0,1,1);
 	dir = D3DXVECTOR4(1,3,1,0);
 	D3DXVec4Normalize(&dir, &dir); 
@@ -557,9 +688,18 @@ void Application::initTestData()
 	pointLight.attenuate = D3DXVECTOR4(2,2,2,2);
 	g_lightHolder->addLight(pointLight);
 
-
-	this->objects[0]->setPosition(D3DXVECTOR3(-50,0,50));
-	this->objects[1]->setPosition(D3DXVECTOR3( 20,0,50));
+	this->objects[0]->setScale(D3DXVECTOR3(1,1,1));
+	this->objects[1]->setPosition(D3DXVECTOR3(-50,0,50));
+	this->objects[1]->setScale(D3DXVECTOR3(1,1,1));
+	this->objects[2]->setPosition(D3DXVECTOR3( 20,0,50));
+	this->objects[2]->setScale(D3DXVECTOR3(1,1,1));
+	this->objects[3]->setScale(D3DXVECTOR3(1,1,3));
+	this->objects[4]->setPosition(D3DXVECTOR3(100, 50, 0));
+	this->objects[4]->setScale(D3DXVECTOR3(3,3,3));
+	this->objects[5]->setScale(D3DXVECTOR3(100,100,100));
+	this->objects[5]->setPosition(D3DXVECTOR3(0, -20, 0));
+	this->objects[6]->setScale(D3DXVECTOR3(3,3,3));
+	this->objects[6]->setPosition(D3DXVECTOR3(100, 20, 0));
 }
 
 

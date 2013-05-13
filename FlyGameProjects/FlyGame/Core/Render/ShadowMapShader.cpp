@@ -1,17 +1,17 @@
-#include "ColorShader.h"
+#include "ShadowMapShader.h"
 
-ColorShader::ColorShader()
+ShadowMapShader::ShadowMapShader()
 	:IShader()
 {
 
 }
 
-void ColorShader::draw(PER_FRAME_DATA& frameData)
+void ShadowMapShader::draw(PER_FRAME_DATA& frameData)
 {
 	int indexC = 0;
+	int vertexC = 0;
 
-	this->setSRVBuffer();
-
+	D3DShell::self()->setShadowSRV();
 	this->shader->Render();
 	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_NoCullNoMs);
 	
@@ -45,27 +45,25 @@ void ColorShader::draw(PER_FRAME_DATA& frameData)
 		this->matrixBuffer->setBuffer();
 
 
-		for(int k = 0; k <(int)this->drawData[i].buffers.size(); k++)
+		for(int k = 0; k <(int)this->drawData[i].buffers.size(); k++)	// set vertex and index buffers
 		{
 			this->drawData[i].buffers[k]->setBuffer();
-		
+
 			if(this->drawData[i].buffers[k]->getType() == BUFFER_FLAG::TYPE_INDEX_BUFFER)
 				indexC = this->drawData[i].buffers[k]->getNrOfElements();
+			else if(this->drawData[i].buffers[k]->getType() == BUFFER_FLAG::TYPE_VERTEX_BUFFER)
+				vertexC = this->drawData[i].buffers[k]->getNrOfElements();
 		}
 		
 		this->shader->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		this->shader->GetDeviceContext()->DrawIndexed(indexC, 0, 0);
+		if(indexC)
+			this->shader->GetDeviceContext()->DrawIndexed(indexC, 0, 0);
+		else if(vertexC)
+			this->shader->GetDeviceContext()->Draw(vertexC, 0);
+
+		indexC = 0;
+		vertexC = 0;
 	}
 	this->clearData();
-}
-void ColorShader::setSRVBuffer()
-{
-	int nr = 2;//D3DShell::self()->getNrOfSRV();
-	ID3D11ShaderResourceView** srv; 
-	srv = D3DShell::self()->getLightSRV();
-	ID3D11ShaderResourceView* color[2]; 
-	color[0] = srv[0];
-	color[1] = srv[1];
-	D3DShell::self()->getDeviceContext()->PSSetShaderResources(0,nr, color);
 }
 

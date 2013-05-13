@@ -9,8 +9,6 @@ LightHolder::~LightHolder()
 
 bool LightHolder::Initialize()
 {
-
-
 	this->camView = new BaseBuffer();
 
 	BaseBuffer::BUFFER_INIT_DESC lightBufferDesc;
@@ -53,15 +51,23 @@ BaseBuffer* LightHolder::getPointLight(int nr)
 	else 
 		return NULL;
 }	
+D3DXMATRIX LightHolder::getDirLightView(int nr)
+{
+	return this->dirLights[nr].getView();
+}
+D3DXMATRIX LightHolder::getDirLightProjection(int nr)
+{
+	return this->dirLights[nr].getProjection();
+}
 void LightHolder::setCamViewBuffer(D3DXMATRIX view, D3DXMATRIX projection, D3DXVECTOR3 camPos)
 {
 	CameraView* cam = (CameraView*)camView->Map();
-	D3DXMATRIX invView, invProj; 
-	D3DXMatrixInverse(&invView, NULL, &view);
-	D3DXMatrixInverse(&invProj, NULL, &projection);
-	cam->mInvView = invView;
-	cam->mInvViewProj = invProj;
+	D3DXMatrixTranspose(&view, &view);
+	D3DXMatrixTranspose(&projection, &projection);
+	cam->mInvViewProj = projection;
+	cam->mInvView = view;
 	cam->cameraPos = camPos; 
+	cam->padd = D3DShell::self()->getWidth();
 	camView->Unmap();
 	
 }
