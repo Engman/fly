@@ -19,15 +19,13 @@ struct D3DShell::PrDat
 	D3D_DRIVER_TYPE					driverType;
 	D3D_FEATURE_LEVEL				featurelevel;
 
-	HWND							wndHandle;
-
-	//Defferd rendering
-	ID3D11RenderTargetView			*deffRTV[DeferredRenderLayout::MRT_COUNT];
-	ID3D11Texture2D					*deffTex[DeferredRenderLayout::MRT_COUNT];
-	ID3D11DepthStencilView			*deffDepthStencil[DeferredRenderLayout::MRT_COUNT];
-	ID3D11Texture2D					*deffTexDepth[DeferredRenderLayout::MRT_COUNT];
-	ID3D11ShaderResourceView		*deffSRV[DeferredRenderLayout::MRT_COUNT];
-
+	DrawableTexture g_buffTextures [DeferredRenderLayout::MRT_COUNT];
+	DrawableTexture g_bufferDepthTexture;
+	
+	DrawableTexture lightTexture;
+	DrawableTexture shadowTexture;
+	DrawableTexture blurTempTexture;
+	DrawableTexture blurTexture;
 
 	//States
 	RasterizerState					rasterizerState;
@@ -65,14 +63,6 @@ struct D3DShell::PrDat
 		D3DXMatrixIdentity(&this->worldMatrix);
 		D3DXMatrixIdentity(&this->projectionMatrix);
 
-		for (int i = 0; i < DeferredRenderLayout::MRT_COUNT; i++)
-		{
-			this->deffDepthStencil[i] = 0;
-			this->deffRTV[i] = 0;
-			this->deffSRV[i] = 0;
-			this->deffTex[i] = 0;
-			this->deffTexDepth[i] = 0;
-		}
 	}
 	~PrDat()
 	{
@@ -89,27 +79,6 @@ struct D3DShell::PrDat
 		if(this->depthStencilBuffer)
 			this->depthStencilBuffer->Release();
 
-		for(int i = 0; i < DeferredRenderLayout::MRT_COUNT; i++)
-		{
-			if(this->deffRTV[i])
-				deffRTV[i]->Release();
-			if(this->deffTex[i])
-				deffTex[i]->Release();
-			if(this->deffDepthStencil[i])
-				deffDepthStencil[i]->Release();
-			if(this->deffTexDepth[i])
-				deffTexDepth[i]->Release();
-			if(this->deffSRV[i])
-				deffSRV[i]->Release();
-
-			this->deffRTV[i]				= NULL;
-			this->deffTex[i]				= NULL;
-			this->deffDepthStencil[i]		= NULL;
-			this->deffTexDepth[i]			= NULL;
-			this->deffSRV[i]				= NULL;
-		}
-
-
 
 		this->d3dDevice				= NULL;
 		this->d3dDeviceContext		= NULL;
@@ -117,10 +86,9 @@ struct D3DShell::PrDat
 		this->renderTargetView		= NULL;
 		this->depthStencilView		= NULL;
 		this->depthStencilBuffer	= NULL;
-
+	
 	}
 
-	bool InitMRTS();
 };
 
 D3DShell* D3DShell::PrDat::d3dShellInstance = NULL;
@@ -463,9 +431,25 @@ bool D3DShell::init(D3D_INIT_DESC& desc)
 	this->_prDatPtr->d3dDeviceContext->RSSetViewports(1, &this->_prDatPtr->screenViewport);
 
 #pragma endregion
+	D3D11_BLEND_DESC blendDesc;
+	ZeroMemory( &blendDesc, sizeof(blendDesc) );
 
+	D3D11_RENDER_TARGET_BLEND_DESC rtbd;
+	ZeroMemory( &rtbd, sizeof(rtbd) );
 
-	if(!this->_prDatPtr->blendModeState.init(this->_prDatPtr->d3dDevice))
+	rtbd.BlendEnable			 = true;
+	rtbd.SrcBlend				 = D3D11_BLEND_SRC_COLOR;
+	rtbd.DestBlend				 = D3D11_BLEND_BLEND_FACTOR;
+	rtbd.BlendOp				 = D3D11_BLEND_OP_ADD;
+	rtbd.SrcBlendAlpha			 = D3D11_BLEND_ONE;
+	rtbd.DestBlendAlpha			 = D3D11_BLEND_ZERO;
+	rtbd.BlendOpAlpha			 = D3D11_BLEND_OP_ADD;
+	rtbd.RenderTargetWriteMask	 = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	blendDesc.AlphaToCoverageEnable = false;
+	blendDesc.RenderTarget[0] = rtbd;
+
+	if(!this->_prDatPtr->blendModeState.init(this->_prDatPtr->d3dDevice, &blendDesc))
 		return false;
 	if(!this->_prDatPtr->rasterizerState.init(this->_prDatPtr->d3dDevice))	  
 		return false;
@@ -474,106 +458,20 @@ bool D3DShell::init(D3D_INIT_DESC& desc)
 	if(!this->_prDatPtr->samplerState.init(this->_prDatPtr->d3dDevice))  
 		return false;
 
-	if(!this->_prDatPtr->InitMRTS())
-		return false;
+	// init render targets
+	for(int i=0 ; i<DeferredRenderLayout::MRT_COUNT; i++)
+	{
+		this->_prDatPtr->g_buffTextures[i].init(desc.width, desc.height, true, DXGI_FORMAT_R16G16B16A16_UNORM, false);
+	}
+	this->_prDatPtr->g_bufferDepthTexture.init(desc.width, desc.height, false, DXGI_FORMAT_R32_TYPELESS, true);
 
+	this->_prDatPtr->lightTexture.init(desc.width, desc.height, true, DXGI_FORMAT_R16G16B16A16_UNORM, false );
+	this->_prDatPtr->shadowTexture.init(desc.width, desc.height, false, DXGI_FORMAT_R32_TYPELESS, true);
+	this->_prDatPtr->blurTexture.init(desc.width, desc.height, true, DXGI_FORMAT_R16G16B16A16_UNORM, false );
+	this->_prDatPtr->blurTempTexture.init(desc.width, desc.height, true, DXGI_FORMAT_R16G16B16A16_UNORM, false );
+
+	
 	return true;
-}
-bool D3DShell::PrDat::InitMRTS()
-{
-	D3D11_TEXTURE2D_DESC dstex;
-	ZeroMemory( &dstex, sizeof(dstex) );
-	dstex.Width = this->width;
-	dstex.Height = this->heigth;
-	dstex.MipLevels = 1;
-	dstex.ArraySize = 1;
-	dstex.SampleDesc.Count = this->MSAASampleCount;
-	dstex.SampleDesc.Quality = this->MSAAQuality;
-	dstex.Format = DXGI_FORMAT_D32_FLOAT;
-	dstex.Usage = D3D11_USAGE_DEFAULT;
-	dstex.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	dstex.CPUAccessFlags = 0;
-
-	for(int i = 0; i < DeferredRenderLayout::MRT_COUNT; i++)
-	{
-		if( FAILED( this->d3dDevice->CreateTexture2D(&dstex, NULL, &this->deffTexDepth[i]) ) )
-		{
-			MessageBox(0, L"Failed to create depth textures!", L"Error", 0);
-			return false;
-		}
-	}
-
-
-	D3D11_DEPTH_STENCIL_VIEW_DESC dsvd;
-	ZeroMemory(&dsvd, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
-	dsvd.Format = dstex.Format;
-	dsvd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-    dsvd.Texture2DArray.FirstArraySlice = 0;
-    dsvd.Texture2DArray.ArraySize = 1;
-    dsvd.Texture2DArray.MipSlice = 0;
-
-	for(int i = 0; i < DeferredRenderLayout::MRT_COUNT; i++)
-	{
-		if( FAILED( this->d3dDevice->CreateDepthStencilView(this->deffTexDepth[i], &dsvd, &this->deffDepthStencil[i]) ) )
-		{
-			MessageBox(0, L"Failed to create depth stencils!", L"Error", 0);
-			return false;
-		}
-	}
-
-
-	dstex.Format = DXGI_FORMAT_R16G16B16A16_UNORM;
-	dstex.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-
-	for(int i = 0; i < DeferredRenderLayout::MRT_COUNT; i++)
-	{
-		if( FAILED( this->d3dDevice->CreateTexture2D(&dstex, NULL, &this->deffTex[i]) ) )
-		{
-			MessageBox(0, L"Failed to create render target textures!", L"Error", 0);
-			return false;
-		}
-	}
-
-
-	D3D11_RENDER_TARGET_VIEW_DESC DescRT;
-	ZeroMemory(&DescRT, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
-	DescRT.Format = dstex.Format;
-	DescRT.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-	DescRT.Texture2DArray.FirstArraySlice = 0;
-	DescRT.Texture2DArray.ArraySize = 1;
-	DescRT.Texture2DArray.MipSlice = 0;
-
-	for(int i = 0; i < DeferredRenderLayout::MRT_COUNT; i++)
-	{
-		if( FAILED( this->d3dDevice->CreateRenderTargetView( this->deffTex[i], &DescRT, &this->deffRTV[i]) ) )
-		{
-			MessageBox(0, L"Failed to create render targets!", L"Error", 0);
-			return false;
-		}
-	}
-	
-
-
-	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
-	ZeroMemory( &SRVDesc, sizeof( SRVDesc ) );
-	SRVDesc.Format = dstex.Format;
-	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	SRVDesc.Texture2DArray.ArraySize = 1;
-	SRVDesc.Texture2DArray.FirstArraySlice = 0;
-	SRVDesc.Texture2DArray.MipLevels = 1;
-	SRVDesc.Texture2DArray.MostDetailedMip = 0;
-
-	for(int i = 0; i < DeferredRenderLayout::MRT_COUNT; i++)
-	{
-		if( FAILED ( this->d3dDevice->CreateShaderResourceView( this->deffTex[i], &SRVDesc, &this->deffSRV[i] ) ) )
-		{
-			MessageBox(0, L"Failed to create shader resource!", L"Error", 0);
-			return false;
-		}
-	}
-	
-
-    return true;
 }
 
 D3DShell* D3DShell::self()
@@ -760,8 +658,6 @@ void D3DShell::endScene()
 	}
 }
 
-
-
 void D3DShell::setViewport(D3D11_VIEWPORT* v, UINT nrOfViewports)
 {
 	this->_prDatPtr->d3dDeviceContext->RSSetViewports(nrOfViewports, v);
@@ -785,8 +681,9 @@ void D3DShell::setRasterizerState(FLAGS::STATE_RASTERIZER state)
 }
 void D3DShell::setBlendModeState(FLAGS::STATE_BLEND_MODE state, float blend[4], UINT SampleMask)		 
 {
-	//this->_prDatPtr->d3dDeviceContext->OMSetBlendState(this->_prDatPtr->blendModeState.getState(state), blend, SampleMask );
-	this->_prDatPtr->d3dDeviceContext->OMSetBlendState(NULL, blend, SampleMask );
+	
+	this->_prDatPtr->d3dDeviceContext->OMSetBlendState(this->_prDatPtr->blendModeState.getState(state), blend, SampleMask );
+	//this->_prDatPtr->d3dDeviceContext->OMSetBlendState(NULL, blend, SampleMask );
 }
 void D3DShell::setSamplerState(FLAGS::STATE_SAMPLING *state, FLAGS::SHADERS stage, UINT startSlot, UINT count )			 
 {
@@ -844,22 +741,39 @@ char* D3DShell::getSuportedShaderVersion() const
 
 
 
-void D3DShell::BeginGBufferRenderTargets()
+void D3DShell::BeginGBufferRenderTargets(bool withDepth)
 {
 	float clearColor[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-
-	for(int i = 0; i < DeferredRenderLayout::MRT_COUNT; i++)
+	
+	
+	ID3D11RenderTargetView* rtv[DeferredRenderLayout::MRT_COUNT];
+	for(int i =0 ; i< DeferredRenderLayout::MRT_COUNT; i++)
 	{
-		this->getDeviceContext()->ClearRenderTargetView(this->_prDatPtr->deffRTV[i], clearColor);
+		rtv[i] = this->_prDatPtr->g_buffTextures[i].getRenderTargetView();
 	}
-	this->getDeviceContext()->ClearDepthStencilView(this->_prDatPtr->deffDepthStencil[0], D3D11_CLEAR_DEPTH, 1.0, 0);
 
-	this->getDeviceContext()->OMSetRenderTargets(DeferredRenderLayout::MRT_COUNT, this->_prDatPtr->deffRTV, this->_prDatPtr->deffDepthStencil[0]);
+	if(withDepth)
+		this->getDeviceContext()->OMSetRenderTargets(DeferredRenderLayout::MRT_COUNT, rtv, this->_prDatPtr->g_bufferDepthTexture.getDepthStencilView());
+	else
+	{
+		for(int i = 0; i < DeferredRenderLayout::MRT_COUNT; i++)
+		{
+			this->getDeviceContext()->ClearRenderTargetView(rtv[i], clearColor);
+		}
+		this->getDeviceContext()->ClearDepthStencilView(this->_prDatPtr->g_bufferDepthTexture.getDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0, 0);
 
+		this->getDeviceContext()->OMSetRenderTargets(DeferredRenderLayout::MRT_COUNT, rtv, NULL);
+	}
 }
-ID3D11ShaderResourceView**	D3DShell::getDefferedSRV()
+void	D3DShell::setDefferedSRV()
 {
-	return this->_prDatPtr->deffSRV;
+	int nrOfsrv = DeferredRenderLayout::MRT_COUNT;
+	ID3D11ShaderResourceView* srv [DeferredRenderLayout::MRT_COUNT];
+	for(int i=0; i<DeferredRenderLayout::MRT_COUNT;i++)
+	{
+		srv[i]= this->_prDatPtr->g_buffTextures[i].getColorSRV();
+	}
+	D3DShell::self()->getDeviceContext()->PSSetShaderResources(0,nrOfsrv,srv);
 }
 int D3DShell::getNrOfSRV()
 {
@@ -874,20 +788,85 @@ void D3DShell::releaseSRV()
 //--------------------Light shader---------------------//
 void D3DShell::BeginLightRenderTarget()
 {
+	float clearColor[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+	ID3D11RenderTargetView* rtv[1] = {this->_prDatPtr->lightTexture.getRenderTargetView()};
 
-	//float clearColor[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-
-	//for(int i = 0; i < DeferredRenderLayout::MRT_COUNT; i++)
-	//{
-	//	this->getDeviceContext()->ClearRenderTargetView(this->_prDatPtr->deffRTV[i], clearColor);
-	//}
+	this->getDeviceContext()->ClearRenderTargetView(rtv[0], clearColor);
+	
 	//this->getDeviceContext()->ClearDepthStencilView(this->_prDatPtr->deffDepthStencil[0], D3D11_CLEAR_DEPTH, 1.0, 0);
 
-	//this->getDeviceContext()->OMSetRenderTargets(DeferredRenderLayout::MRT_COUNT, this->_prDatPtr->deffRTV, this->_prDatPtr->deffDepthStencil[0]);
-
+	this->getDeviceContext()->OMSetRenderTargets(1, rtv, NULL);
 }
 
-ID3D11ShaderResourceView** D3DShell::getLightSRV()
+void D3DShell::setLightSRV()
 {
-	return NULL;
+	int nrOfsrv = 5;
+	ID3D11ShaderResourceView* srv [5];
+	srv[0] = this->_prDatPtr->g_buffTextures[0].getColorSRV();	
+	srv[1] = this->_prDatPtr->lightTexture.getColorSRV();		
+	srv[2] = this->_prDatPtr->shadowTexture.getDepthSRV();		
+	srv[3] = this->_prDatPtr->g_buffTextures[1].getColorSRV();	
+	srv[4] = this->_prDatPtr->blurTexture.getColorSRV();			
+	D3DShell::self()->getDeviceContext()->PSSetShaderResources(0,nrOfsrv,srv);
+}
+
+//-----------------------Shadow maps---------------------//
+void D3DShell::BeginShadowRenderTarget()
+{
+	float clearColor[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+	//ID3D11RenderTargetView* rtv[1] = {this->_prDatPtr->shadowTexture.getRenderTargetView()};
+
+	this->getDeviceContext()->ClearDepthStencilView(this->_prDatPtr->shadowTexture.getDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0, 0);
+
+	this->getDeviceContext()->OMSetRenderTargets(0, NULL, this->_prDatPtr->shadowTexture.getDepthStencilView());
+}
+void D3DShell::setShadowSRV()
+{
+	ID3D11ShaderResourceView* srv [DeferredRenderLayout::MRT_COUNT];
+	for(int i = 0; i< DeferredRenderLayout::MRT_COUNT; i++)
+	{
+		srv[i] = this->_prDatPtr->g_buffTextures[i].getColorSRV();
+	}
+	D3DShell::self()->getDeviceContext()->PSSetShaderResources(0,DeferredRenderLayout::MRT_COUNT,srv);
+}
+//-----------------------Blur maps---------------------//
+void D3DShell::BeginBlurRenderTarget()
+{
+	float clearColor[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+	ID3D11RenderTargetView* rtv[1] = {this->_prDatPtr->blurTempTexture.getRenderTargetView()};
+	this->getDeviceContext()->ClearRenderTargetView(rtv[0], clearColor);
+	if(this->_prDatPtr->blurTempTexture.getDepthStencilView())
+		this->getDeviceContext()->ClearDepthStencilView(this->_prDatPtr->blurTempTexture.getDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0, 0);
+
+	this->getDeviceContext()->OMSetRenderTargets(1, rtv, this->_prDatPtr->blurTempTexture.getDepthStencilView());
+}
+void D3DShell::setBlurSRV()
+{
+	int nrOfsrv = 2;
+	ID3D11ShaderResourceView* srv [2];
+	srv[0] =	this->_prDatPtr->g_buffTextures[1].getColorSRV(); // normal_depth
+	srv[1] = this->_prDatPtr->g_buffTextures[4].getColorSRV();//deffSRV[4]; //right now specular map
+	
+	D3DShell::self()->getDeviceContext()->PSSetShaderResources(0,nrOfsrv,srv);
+}
+void D3DShell::BeginBlur2RenderTarget()
+{
+	float clearColor[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+
+	ID3D11RenderTargetView* rtv[1] = {this->_prDatPtr->blurTexture.getRenderTargetView()};
+	this->getDeviceContext()->ClearRenderTargetView(rtv[0], clearColor);
+
+	if(this->_prDatPtr->blurTexture.getDepthStencilView())
+		this->getDeviceContext()->ClearDepthStencilView(this->_prDatPtr->blurTexture.getDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0, 0);
+
+	this->getDeviceContext()->OMSetRenderTargets(1, rtv, this->_prDatPtr->blurTexture.getDepthStencilView());
+}
+void D3DShell::setBlur2SRV()
+{
+	int nrOfsrv = 2;
+	ID3D11ShaderResourceView* srv [2];
+	srv[0] =this->_prDatPtr->g_buffTextures[1].getColorSRV();
+	srv[1] = this->_prDatPtr->blurTempTexture.getColorSRV(); 
+	D3DShell::self()->getDeviceContext()->PSSetShaderResources(0,nrOfsrv,srv);
+
 }

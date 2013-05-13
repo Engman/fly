@@ -150,6 +150,7 @@ bool ParseAnimationFile			(std::wifstream& in, ImportedObjectData* d)
 	while(!in.eof())
 	{
 		in >> flag;
+
 		if(in.eof())
 			continue;
 

@@ -124,12 +124,36 @@ namespace
 		return sd;
 	}
 
+	static D3D11_SAMPLER_DESC samplerStateLinearClampDesc()
+	{
+
+		D3D11_SAMPLER_DESC sd;
+		ZeroMemory(&sd, sizeof(sd));
+		sd.Filter			= D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		sd.AddressU			= D3D11_TEXTURE_ADDRESS_CLAMP;
+		sd.AddressV			= D3D11_TEXTURE_ADDRESS_CLAMP;
+		sd.AddressW			= D3D11_TEXTURE_ADDRESS_CLAMP;
+		sd.MipLODBias		= 0.0f;
+		sd.MaxAnisotropy	= 16;
+		sd.ComparisonFunc	= D3D11_COMPARISON_ALWAYS;
+		sd.BorderColor[0]	= 0.0f;
+		sd.BorderColor[1]	= 0.0f;
+		sd.BorderColor[2]	= 0.0f;
+		sd.BorderColor[3]	= 0.0f;
+		sd.MinLOD			= 0.0f;
+		sd.MaxLOD			= D3D11_FLOAT32_MAX;
+			
+		return sd;
+	}
+
+
     static ID3D11SamplerState* samplerStatePoint;
     static ID3D11SamplerState* samplerStateLinear;
     static ID3D11SamplerState* samplerStateAnisotropic2;
     static ID3D11SamplerState* samplerStateAnisotropic4;
     static ID3D11SamplerState* samplerStateAnisotropic8;
     static ID3D11SamplerState* samplerStateAnisotropic16;
+	static ID3D11SamplerState* samplerStateLinearClamp;
 	static int SamplerStateUseCount = 0;
 }
 struct SamplerState::_Data
@@ -160,6 +184,8 @@ struct SamplerState::_Data
 			
 			if (samplerStateAnisotropic16)
 				samplerStateAnisotropic16->Release();
+			if(samplerStateLinearClamp)
+				samplerStateLinearClamp->Release();
 		}
 		SamplerStateUseCount--;
 
@@ -198,6 +224,8 @@ bool SamplerState::init(ID3D11Device* device, D3D11_SAMPLER_DESC* desc)
 		return false;
     if( !samplerStateAnisotropic16 && FAILED( device->CreateSamplerState(&samplerStateAnisotropic16Desc(), &samplerStateAnisotropic16) ) )
 		return false;
+	if( !samplerStateLinearClamp && FAILED( device->CreateSamplerState(&samplerStateLinearClampDesc(), &samplerStateLinearClamp) ) )
+		return false;
 
         return true;
 }
@@ -227,6 +255,10 @@ ID3D11SamplerState* SamplerState::getAnisotropic16()
 {
 	return samplerStateAnisotropic16;
 }
+ID3D11SamplerState* SamplerState::getLinearClamp() 
+{
+	return samplerStateLinearClamp;
+}
 ID3D11SamplerState* SamplerState::getCustom() 
 {
 	return this->_data->custom;
@@ -252,6 +284,9 @@ ID3D11SamplerState* SamplerState::getState(FLAGS::STATE_SAMPLING s)
 		break;
 	case FLAGS::SAMPLER_Anisotropic16:
 		return samplerStateAnisotropic16;
+		break;
+	case FLAGS::SAMPLER_LinearClamp:
+		return samplerStateLinearClamp;
 		break;
 	case FLAGS::SAMPLER_Custom:
 		return this->_data->custom;

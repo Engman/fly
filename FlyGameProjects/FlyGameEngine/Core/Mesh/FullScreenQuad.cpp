@@ -13,20 +13,29 @@ bool FullScreenQuad::Initialize( ID3D11Device* g_Device, IShader* shader )
 	
 	VERTEX::VertexPT mesh[] =
 	{
+
+		/*{D3DXVECTOR4(-1, 1,0, 1),	D3DXVECTOR2(0 ,0)},
+		{D3DXVECTOR4(1,1,0,1)	,	D3DXVECTOR2(1 ,0)},
+		{D3DXVECTOR4(-1,-1,0,1)	,	D3DXVECTOR2(0 ,1)},
+
+		{D3DXVECTOR4(-1, -1,0, 1),	D3DXVECTOR2(0, 1)},
+		{D3DXVECTOR4(1,1,0, 1)	,	D3DXVECTOR2(1, 0)},
+		{D3DXVECTOR4(1,-1, 0,1)	,	D3DXVECTOR2(1, 1)}*/
+
 		{D3DXVECTOR4(-1,  1, 0, 1)	,	D3DXVECTOR2(0 ,0)},
 		{D3DXVECTOR4( 1,  1, 0, 1)	,	D3DXVECTOR2(1, 0)},
 		{D3DXVECTOR4( 1, -1, 0, 1)	,	D3DXVECTOR2(1, 1)},
 		{D3DXVECTOR4(-1, -1, 0, 1)	,	D3DXVECTOR2(0, 1)}
 
-	};
 
+	};
 
 	BaseBuffer::BUFFER_INIT_DESC bufferDesc;
 	bufferDesc.dc = D3DShell::self()->getDeviceContext();
 	bufferDesc.device = D3DShell::self()->getDevice();
 	bufferDesc.elementSize = sizeof(VERTEX::VertexPT);
 	bufferDesc.data = mesh;
-	bufferDesc.nrOfElements = 6;
+	bufferDesc.nrOfElements = 4;
 	bufferDesc.type = BUFFER_FLAG::TYPE_VERTEX_BUFFER;
 	bufferDesc.usage = BUFFER_FLAG::USAGE_DEFAULT;
 
@@ -65,7 +74,9 @@ void FullScreenQuad::Render( ID3D11DeviceContext* g_DeviceContext)
 	IShader::DRAW_DATA draw_data;
 	draw_data.buffers.push_back(m_VertexBuffer);
 	draw_data.buffers.push_back(m_IndexBuffer);
+
 	draw_data.material = NULL;
+
 	draw_data.worldMatrix = NULL;
 	m_shader->addDrawData(draw_data);
 }

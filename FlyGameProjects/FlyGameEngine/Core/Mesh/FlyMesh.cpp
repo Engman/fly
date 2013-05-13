@@ -38,8 +38,37 @@ void FlyMesh::Render(ViewFrustum& frustum)
 	{
 		IShader::DRAW_DATA data;
 		for(int i = 0; i<(int)this->buffers.size(); i++)
+		{
 			data.buffers.push_back(this->buffers[i]);
+		}
+		//get local world
+		//rotate
+		//scale
+		//translate
+		D3DXMATRIX rotX, translation, scaleM;
+		D3DXVECTOR3 scale = this->scale; 
 
+		D3DXMatrixIdentity(&this->world);
+		D3DXMatrixIdentity(&translation);
+		D3DXMatrixIdentity(&scaleM);
+
+		D3DXMatrixRotationZ(&rotX, this->rotation.x);
+
+		D3DXMatrixScaling(&scaleM, scale.x, scale.y, scale.z);
+		D3DXVECTOR3 pos; 
+		pos = getPosition();
+		translation._41 = pos.x;
+		translation._42 = pos.y;
+		translation._43 = pos.z;
+
+		
+		this->world *= rotX;
+
+	
+		this->world *= scaleM;
+		this->world *= translation;
+		
+		
 		data.worldMatrix = &this->world;
 		data.material = this->material;
 		this->shader->addDrawData(data);
@@ -53,6 +82,7 @@ bool FlyMesh::Initialize(OBJECT_DESC& data)
 		DisplayText("ID3D11Device is invalid!");
 		return false;
 	}
+
 	if(!data.vertecies->size())
 	{
 		DisplayText("Nothing to initialize!");

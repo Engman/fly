@@ -20,6 +20,8 @@ class IShader
 			Matrix	view;
 			Matrix	projection;
 			BaseBuffer* lights;
+			//buffer for view, projection and camPos in light PS
+			BaseBuffer* camForLight;
 		};
 		/** Used to set data for a draw call */
 		struct DRAW_DATA
@@ -56,7 +58,7 @@ class IShader
 			this->drawData.shrink_to_fit();
 		}
 
-		bool init(BaseShader::BASE_SHADER_DESC& desc)
+		virtual bool init(BaseShader::BASE_SHADER_DESC& desc)
 		{
 			this->shader = new BaseShader();
 			if( FAILED (this->shader->Initialize(desc) ) )
@@ -67,6 +69,8 @@ class IShader
 			static bool initiated = false;
 
 			if(!initiated)
+
+
 			{
 				BaseBuffer::BUFFER_INIT_DESC matrixBufferDesc;
 				matrixBufferDesc.dc = desc.dc;
@@ -77,8 +81,8 @@ class IShader
 				matrixBufferDesc.usage = BUFFER_FLAG::USAGE_DYNAMIC_CPU_WRITE_DISCARD;
 				matrixBufferDesc.data = NULL;
 				if( FAILED( mb->Initialize(matrixBufferDesc) ) )
-					return false;
-				
+				return false;
+
 				initiated = true;
 			}
 

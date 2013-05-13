@@ -12,6 +12,7 @@
 #include "..\..\Util\vertex.h"
 #include "..\Texture2D.h"
 #include <vector>
+#include "ObjectMaterial.h"
 
 class Plane
 {
@@ -21,7 +22,7 @@ private:
 	D3DXMATRIX				m_world;
 	IShader*				m_shader;
 	std::vector<Texture2D>	m_texture;
-
+	ObjectMaterial			m_material;
 	
 public:
 	Plane();

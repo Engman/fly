@@ -10,7 +10,7 @@ cbuffer CB_CAMERA
 struct VS_IN
 {
   float4 position : POSITION;
-  float4 normal : NORMAL;
+  float3 normal : NORMAL;
   //float4 tangent :TANGENT;
   float4 color : COLOR;
 };
@@ -36,7 +36,7 @@ PS_IN FVertexShader( VS_IN input)
   //output.position.w = 1;
   
   output.normal = mul(input.normal, (float3x3)mWorld );
-  //output.normal = mul( output.normal ,mView );
+  output.normal = mul( output.normal ,(float3x3)mView );
   //output.normal = mul( output.normal ,mProj );
   //output.tangent = mul( input.tangent, mWorld );
   output.color =  input.color;//float4(0,0,1,1);//
