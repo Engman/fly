@@ -56,6 +56,7 @@ FlyEngine_Core::FlyEngine_Core()
 	this->forwardRenderFunc		= 0;
 	this->forwardUpdateFunc		= 0;
 	this->splash				= 0;
+	this->orthographicCamera	= 0;
 }
 
 
@@ -150,17 +151,36 @@ void FLYCALL FlyEngine_Core::Core_Shutdown()
 
 LRESULT CALLBACK FlyEngineCoreWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	static int cc = 0;
 	switch (message)
 	{
 		case WM_DESTROY:
 			PostQuitMessage(0);
-		return FALSE;
+		break;
 		
 		case WM_INPUT:
 			Input::self()->proccessRawDeviceData(lParam);
 		break;
-	}
 
+		case WM_LBUTTONDOWN:
+		case WM_MBUTTONDOWN:
+		case WM_RBUTTONDOWN:
+			PostMessage(WindowShell::self()->getParent(), message, wParam, lParam);
+		break;
+
+		case WM_LBUTTONUP:
+		case WM_MBUTTONUP:
+		case WM_RBUTTONUP:
+			PostMessage(WindowShell::self()->getParent(), message, wParam, lParam);
+		break;
+
+		case WM_MOUSEMOVE:
+			PostMessage(WindowShell::self()->getParent(), message, wParam, lParam);
+		break;
+		case 0x020A: // WM_MOUSEWHEEL, GET_WHEEL_DELTA_WPARAM(wparam);
+		break;
+	}
+	
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 

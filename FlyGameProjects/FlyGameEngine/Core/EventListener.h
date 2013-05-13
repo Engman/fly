@@ -12,7 +12,7 @@ template<typename Target, typename RetVal, typename Param>
 class EventListener	:public IEventListener<RetVal, Param>
 {
 	private:
-		typedef RetVal (Target::*func)(Param);
+		typedef RetVal (Target::*func)(Param&);
 		long	id;
 		Target *subscriber;
 		func	method;

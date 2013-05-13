@@ -14,7 +14,7 @@ FlyMesh::~FlyMesh()
 
 void FlyMesh::Update()
 {
-
+	this->boundingSphere->center = this->getPosition();
 }
 void FlyMesh::Render(ViewFrustum& frustum)
 {
@@ -26,8 +26,10 @@ void FlyMesh::Render(ViewFrustum& frustum)
 		
 			for(int i = 0; i<(int)this->buffers.size(); i++)
 				data.buffers.push_back(this->buffers[i]);
+			data.worldMatrix = &this->transformation;
 
-			data.worldMatrix = &this->world;
+
+			//data.worldMatrix = &this->world;
 			data.material = this->material;
 			this->shader->addDrawData(data);
 		}

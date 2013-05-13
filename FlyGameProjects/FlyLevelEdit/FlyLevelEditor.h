@@ -21,18 +21,15 @@ struct FLY_ENGINE_INIT_DESC;
 class FlyLevelEditor
 {
 	public:
-		enum CAMERA
-		{
-			CAM_TOP = 0,
-			CAM_DEFAULT = 100,
-		};
-
 		virtual void FLYCALL Terminate()									= 0;
 		virtual bool FLYCALL Initiate(HWND parent, int width, int height)	= 0;
 		virtual void FLYCALL Frame()										= 0;
 		virtual void FLYCALL Resize(int width, int height)					= 0;
-		virtual void FLYCALL SetCamera(CAMERA cam)							= 0;
-		virtual bool FLYCALL LoadData(std::vector<const wchar_t*>& files, std::map<std::wstring, int>* loaded)	= 0;
+		virtual bool FLYCALL SetCamera(int id)								= 0;
+		virtual bool FLYCALL Entity_Select(int id)							= 0;
+		virtual bool FLYCALL Entity_LoadData(std::vector<const wchar_t*>& files, std::map<std::wstring, int>* loaded)	= 0;
+		virtual void FLYCALL GetCameras (std::map<std::wstring, int>* outCameras) = 0;
+		virtual void FLYCALL GetSelected (std::wstring& name, int& id) = 0;
 };
 
 extern "C"

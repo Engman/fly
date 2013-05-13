@@ -34,6 +34,7 @@ class FlyEngine_Core	:public FlyEngine
 		Camera*									activeCamera;
 
 		bool									splash;
+		bool									orthographicCamera;
 
 	private:
 		bool		_InitGBuffers							();
@@ -56,8 +57,9 @@ class FlyEngine_Core	:public FlyEngine
 		void		FLYCALL		Gfx_BeginDeferredScene		();
 		void		FLYCALL		Gfx_EndDeferredScene		();
 		void		FLYCALL		Gfx_Resize					(int width, int height);
-		void		FLYCALL		Gfx_SetCamera				(Camera* cam);
+		void		FLYCALL		Gfx_SetCamera				(Camera* cam, bool isOrthographic = false);
 		Camera*		FLYCALL		Gfx_GetCamera				();
+		Camera*		FLYCALL		Gfx_GetDefaultCamera		();
 		IShader*	FLYCALL		Gfx_GetShader				(FlyEngineShaders shader);
 		void 		FLYCALL		Gfx_GetShader				(vector<IShader*>& shaders);
 		
@@ -67,6 +69,7 @@ class FlyEngine_Core	:public FlyEngine
 		bool		FLYCALL		Geometry_Load				(const wchar_t* loadData, vector<Entity*>* objects);
 		bool		FLYCALL		Geometry_Load				(vector<const wchar_t*> loadData, vector<Entity*>* objects);
 		bool		FLYCALL		Geometry_Load				(const wchar_t* path, vector<Entity*>* object, FlyEngineGeometry special);
+		Entity*		FLYCALL		Geometry_Pick				(const vector<Entity*>& objectToTest, int posX, int posY);
 
 
 

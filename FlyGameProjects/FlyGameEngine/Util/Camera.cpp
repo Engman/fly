@@ -40,6 +40,11 @@ Camera::~Camera()
 
 }
 
+int Camera::GetID() const
+{
+	return this->id;
+}
+
 void Camera::SetPosition(float x, float y, float z)
 {
 	this->positionX = x;
@@ -72,6 +77,8 @@ void Camera::RelativeForward(float speed)
 	this->positionX += norm.x*speed;
 	this->positionY += norm.y*speed;
 	this->positionZ += norm.z*speed;
+
+	//D3DXMatrixOrthoLH(&this->orthogonalMatrix, width, height, nearPlane, farPlane);
 }
 void Camera::RelativeRight(float speed)
 {

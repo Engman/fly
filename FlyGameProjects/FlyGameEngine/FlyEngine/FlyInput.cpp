@@ -11,6 +11,8 @@ bool FlyEngine_Core::Input_Initialize()
 	Input::GLARE_INPUT_INIT_DESC desc;
 	desc.deviceFlag = Input::Flags::NOLEGACY;
 	desc.deviceType = Input::Flags::keyboard;
+	//if(WindowShell::self()->getParent())	desc.target = WindowShell::self()->getParent();
+	//else desc.target = WindowShell::self()->getHWND();
 	desc.target = WindowShell::self()->getHWND();
 	if(!Input::self()->Register(desc))
 		return false;

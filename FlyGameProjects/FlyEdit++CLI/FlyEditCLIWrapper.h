@@ -8,13 +8,14 @@
 //#include "..\FlyGame\EngineCLIWrapper\EngineWrapper.h"
 #include "..\FlyLevelEdit\FlyLevelEditor.h"
 #include <Windows.h>
+#include <msclr\marshal.h>
 
 
 #include <stdlib.h>
 #include <stdio.h>
 
 
-
+using namespace msclr::interop;
 using namespace System;
 using namespace System::Windows;
 using namespace System::Windows::Interop;
@@ -28,12 +29,6 @@ namespace System
 	{ 
 		namespace Interop
 		{
-			public enum class Cameras
-			{
-				FirstPerson,
-				Top,
-			};
-
 			public ref class FlyEditCLIWrapper
 			{
 				protected:
@@ -48,7 +43,10 @@ namespace System
 					bool ProcessFrame			();
 					bool LoadResources			(array<String^>^ resourcePath, Dictionary<String^, int>^ loadedObjects);
 					void OnResize				(int width, int height);
-					void ChangeView				(Cameras cam);
+					bool ChangeView				(int id);
+					bool SelectObject			(int id);
+					void GetSelected			(String^ name, int^ id);
+					void GetCameras				(Dictionary<String^, int>^ outCameras);
 			};
 		}
 	}

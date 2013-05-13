@@ -42,7 +42,10 @@ void FLYCALL FlyEngine_Core::Gfx_EndDeferredScene()
 	IShader::PER_FRAME_DATA gBufferDrawData;
 	gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
 	gBufferDrawData.view = this->activeCamera->GetViewMatrix();
-	gBufferDrawData.projection = this->activeCamera->GetProjectionMatrix();
+	if(this->orthographicCamera)
+		gBufferDrawData.projection = this->activeCamera->GetOrthogonalMatrix();
+	else
+		gBufferDrawData.projection = this->activeCamera->GetProjectionMatrix();
 	this->gbufferShader->draw(gBufferDrawData);
 
 
@@ -62,12 +65,14 @@ void FLYCALL FlyEngine_Core::Gfx_Resize(int width, int height)
 	D3DShell::self()->resizeViewport((UINT)width, (UINT)height);
 }
 
-void FLYCALL FlyEngine_Core::Gfx_SetCamera(Camera* cam)
+void FLYCALL FlyEngine_Core::Gfx_SetCamera(Camera* cam, bool isOrthographic)
 {
 	if(!cam)
 		this->activeCamera = this->defaultCam;
 	else
 		this->activeCamera = cam;
+
+	this->orthographicCamera = isOrthographic;
 }
 
 IShader* FLYCALL FlyEngine_Core::Gfx_GetShader(FlyEngineShaders shader)
@@ -101,6 +106,10 @@ Camera* FLYCALL FlyEngine_Core::Gfx_GetCamera()
 	return this->activeCamera;
 }
 
+Camera*	FLYCALL	FlyEngine_Core::Gfx_GetDefaultCamera()
+{
+	return this->defaultCam;
+}
 
 
 

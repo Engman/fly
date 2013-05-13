@@ -118,16 +118,6 @@ class Input
 			/** Targeted window */
 			HWND target;
 		};
-		/** Contains mouse move data */
-		struct MouseMoveData
-		{
-			int	relativeX;
-			int	relativeY;
-			int	clientX;
-			int	clientY;
-			int	screenX;
-			int	screenY;
-		};
 		//! Contains keycodes
 		/** 
 		*	M_ stands for Mouse
@@ -249,17 +239,47 @@ class Input
 				COUNT
 			};
 		};
-
+		/** Contains mouse move data */
+		struct MouseMoveData
+		{
+			int	relativeX;
+			int	relativeY;
+			int	clientX;
+			int	clientY;
+			int	screenX;
+			int	screenY;
+		};
+		/** Contains mouse keypress data */
+		struct MouseBtnData
+		{
+			int MousePos_relativeX;
+			int MousePos_relativeY;
+			int MousePos_clientX;
+			int MousePos_clientY;
+			int MousePos_screenX;
+			int MousePos_screenY;
+			KeyCodes::Key key;
+			bool released;
+		};
+		/** Contains information about a keypress */
+		struct KeyPressData
+		{
+			bool shift;
+			bool alt;
+			bool ctrl;
+			KeyCodes::Key key;
+			bool released;
+		};
 
 	private:
 		/** Private data defined elsewhere */
 		struct _PrSt;
 		_PrSt *_PrPtr;
 
-		Event<void, KeyCodes::Key>		_keyDownProc;
-		Event<void, KeyCodes::Key>		_keyUpProc;
-		Event<void, KeyCodes::Key>		_mouseBtnDown;
-		Event<void, KeyCodes::Key>		_mouseBtnUp;
+		Event<void, KeyPressData&>		_keyDownProc;
+		Event<void, KeyPressData&>		_keyUpProc;
+		Event<void, MouseBtnData&>		_mouseBtnDown;
+		Event<void, MouseBtnData&>		_mouseBtnUp;
 		Event<void, int>				_mouseScroll;
 		Event<void, MouseMoveData>		_mouseMove;
 		
@@ -304,32 +324,32 @@ class Input
 	/** Event methods */
 	public:
 		/** Adds a callback function to proc keydown */
-		template<typename T>	void subscribeKeyDown						(T* target, void(T::*function)(KeyCodes::Key))
+		template<typename T>	void subscribeKeyDown						(T* target, void(T::*function)(KeyPressData&))
 		{
 			this->_keyDownProc.subscribe(target, function);
 		}
 		/** Adds a callback function to proc keyup */
-		template<typename T>	void subscribeKeyUp							(T* target, void(T::*function)(KeyCodes::Key))
+		template<typename T>	void subscribeKeyUp							(T* target, void(T::*function)(KeyPressData&))
 		{
 			this->_keyUpProc.subscribe(target, function);
 		}
 		/** Adds a callback function to proc Mouse btn down  */
-		template<typename T>	void subscribeMouseBtnDown					(T* target, void(T::*function)(KeyCodes::Key))
+		template<typename T>	void subscribeMouseBtnDown					(T* target, void(T::*function)(MouseBtnData&))
 		{
 			this->_mouseBtnDown.subscribe(target, function);
 		}
 		/** Adds a callback function to proc Mouse btn up  */
-		template<typename T>	void subscribeMouseBtnUp					(T* target, void(T::*function)(KeyCodes::Key))
+		template<typename T>	void subscribeMouseBtnUp					(T* target, void(T::*function)(MouseBtnData&))
 		{
 			this->_mouseBtnUp.subscribe(target, function);
 		}
 		/** Adds a callback function to proc Mouse move  */
-		template<typename T>	void subscribeMouseMove						(T* target, void(T::*function)(MouseMoveData))
+		template<typename T>	void subscribeMouseMove						(T* target, void(T::*function)(MouseMoveData&))
 		{
 			this->_mouseMove.subscribe(target, function);
 		}
 		/** Adds a callback function to proc Mouse scroll  */
-		template<typename T>	void subscribeMouseScroll					(T* target, void(T::*function)(int))
+		template<typename T>	void subscribeMouseScroll					(T* target, void(T::*function)(int&))
 		{
 			this->_mouseScroll.subscribe(target, function);
 		}
@@ -352,27 +372,27 @@ class Input
 
 		/** Removes a listener from the input event, returns true if success */
 		/** Adds a callback function to proc keydown */
-		template<typename T>	bool unsubscribeKeyDown						(void(T::*function)(KeyCodes::Key))
+		template<typename T>	bool unsubscribeKeyDown						(void(T::*function)(KeyPressData&))
 		{
 			return this->_keyDownProc.unsubscribe(function);
 		}
 		/** Adds a callback function to proc keyup */
-		template<typename T>	bool unsubscribeKeyUp						(void(T::*function)(KeyCodes::Key))
+		template<typename T>	bool unsubscribeKeyUp						(void(T::*function)(KeyPressData&))
 		{
 			return this->_keyUpProc.unsubscribe(function);
 		}
 		/** Adds a callback function to proc Mouse btn down  */
-		template<typename T>	bool unsubscribeMouseBtnDown				(void(T::*function)(KeyCodes::Key))
+		template<typename T>	bool unsubscribeMouseBtnDown				(void(T::*function)(MouseBtnData&))
 		{
 			return this->_mouseBtnDown.unsubscribe(function);
 		}
 		/** Adds a callback function to proc Mouse btn up  */
-		template<typename T>	bool unsubscribeMouseBtnUp					(void(T::*function)(KeyCodes::Key))
+		template<typename T>	bool unsubscribeMouseBtnUp					(void(T::*function)(MouseBtnData&))
 		{
 			return this->_mouseBtnUp.unsubscribe(function);
 		}
 		/** Adds a callback function to proc Mouse move  */
-		template<typename T>	bool unsubscribeMouseMove					(void(T::*function)(MouseMoveData))
+		template<typename T>	bool unsubscribeMouseMove					(void(T::*function)(MouseMoveData&))
 		{
 			return this->_mouseMove.unsubscribe(function);
 		}

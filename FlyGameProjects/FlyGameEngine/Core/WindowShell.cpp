@@ -34,12 +34,15 @@ struct _PrSt;
 		HINSTANCE							hIns;
 		HWND								hWnd;
 		HWND								parent;
+		bool								windowed;
 		std::vector<ChildWin>				childWindows;
 
 		_PrSt()
 		{
 			hIns = NULL;
 			hWnd = NULL;
+			parent = NULL;
+			windowed = false;
 		}
 	};
 
@@ -81,7 +84,7 @@ bool WindowShell::createWin(INIT_DESC_WINDOW &desc)
 	}
 	if(!desc.windowClassName.size())
 		MessageBox(0, L"Window class name not found!" ,L"Error", 0);
-
+	
 	pData->parent	= desc.parent;
 	pData->hIns = desc.hInstance;
 	WINDOW_CLASS_NAME = desc.windowClassName.c_str();
@@ -97,9 +100,9 @@ bool WindowShell::createWin(INIT_DESC_WINDOW &desc)
 	wc.cbWndExtra    = 0;
 	wc.hInstance     = pData->hIns;
 	wc.hIcon         = LoadIcon(0, IDI_APPLICATION);
-	wc.hCursor       = LoadCursor(0, IDC_ARROW);
-	wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-	wc.lpszMenuName  = 0;
+	wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
+	wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+	wc.lpszMenuName  = NULL;
 	wc.lpszClassName = desc.windowClassName.c_str();
 
 	if( !RegisterClassEx(&wc) )
@@ -128,13 +131,13 @@ bool WindowShell::createWin(INIT_DESC_WINDOW &desc)
 	rectW.bottom=rectW.top+height;
 	
 	
-	if(desc.parent)
+	if(pData->parent)
 	{
 		rectW.left		= 0;
 		rectW.top		= 0;
 		rectW.right		= desc.windowSize.x;
 		rectW.bottom	= desc.windowSize.y;
-		style			= WS_CHILD|WS_VISIBLE; 
+		style			= WS_CHILD | WS_VISIBLE; 
 		windowed		= true;
 	}
 
@@ -148,10 +151,10 @@ bool WindowShell::createWin(INIT_DESC_WINDOW &desc)
 									rectW.top, 
 									rectW.right - rectW.left, 
 									rectW.bottom - rectW.top, 
-									desc.parent, 
-									0, 
+									pData->parent, 
+									NULL, 
 									pData->hIns, 
-									0
+									NULL
 								  ); 
 	else
 		pData->hWnd = CreateWindowEx(	
@@ -177,7 +180,7 @@ bool WindowShell::createWin(INIT_DESC_WINDOW &desc)
 
 		#pragma endregion
 
-	
+
 	//Show and update window
 	ShowWindow(pData->hWnd, SW_SHOW);
 	//UpdateWindow(pData->hWnd);
@@ -319,6 +322,15 @@ WindowShell* WindowShell::self()
 }
 void WindowShell::destroy()
 {
+	for (int i = 0; i < (int)pData->childWindows.size(); i++)
+	{
+		if(pData->childWindows[i].hWnd)
+			DestroyWindow(pData->childWindows[i].hWnd);
+	}
+
+	if(pData->hWnd)
+		DestroyWindow(pData->hWnd);
+
 	if(pData->hIns) UnregisterClass(WINDOW_CLASS_NAME, pData->hIns);
 
 	delete instance;

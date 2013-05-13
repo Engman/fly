@@ -32,7 +32,7 @@
 			this.RenderLockPictureBox = new System.Windows.Forms.PictureBox();
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.runToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.NewtoolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.shutdownEngineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,11 +52,13 @@
 			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.ToolContainer = new System.Windows.Forms.Panel();
+			this.label3 = new System.Windows.Forms.Label();
+			this.label2 = new System.Windows.Forms.Label();
+			this.label_selectedName = new System.Windows.Forms.Label();
+			this.label_FGM = new System.Windows.Forms.Label();
 			this.CameraDropBox = new System.Windows.Forms.ComboBox();
-			this.listBox_id = new System.Windows.Forms.ListBox();
 			this.LoadedResources_name = new System.Windows.Forms.ListBox();
 			this.splitter1 = new System.Windows.Forms.Splitter();
-			this.RenderWin.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.RenderLockPictureBox)).BeginInit();
 			this.menuStrip1.SuspendLayout();
 			this.ToolContainer.SuspendLayout();
@@ -66,13 +68,11 @@
 			// 
 			this.RenderWin.BackColor = System.Drawing.SystemColors.ControlLight;
 			this.RenderWin.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.RenderWin.Controls.Add(this.RenderLockPictureBox);
 			this.RenderWin.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.RenderWin.Location = new System.Drawing.Point(0, 24);
 			this.RenderWin.Name = "RenderWin";
-			this.RenderWin.Size = new System.Drawing.Size(766, 504);
+			this.RenderWin.Size = new System.Drawing.Size(591, 419);
 			this.RenderWin.TabIndex = 0;
-			this.RenderWin.MouseClick += new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseClick);
 			// 
 			// RenderLockPictureBox
 			// 
@@ -80,7 +80,7 @@
 			this.RenderLockPictureBox.BackColor = System.Drawing.Color.Transparent;
 			this.RenderLockPictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
 			this.RenderLockPictureBox.Image = global::FlyEditUI.Properties.Resources.locked;
-			this.RenderLockPictureBox.Location = new System.Drawing.Point(737, 3);
+			this.RenderLockPictureBox.Location = new System.Drawing.Point(123, 0);
 			this.RenderLockPictureBox.Name = "RenderLockPictureBox";
 			this.RenderLockPictureBox.Size = new System.Drawing.Size(22, 31);
 			this.RenderLockPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -102,14 +102,14 @@
             this.aboutToolStripMenuItem});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
-			this.menuStrip1.Size = new System.Drawing.Size(927, 24);
+			this.menuStrip1.Size = new System.Drawing.Size(752, 24);
 			this.menuStrip1.TabIndex = 1;
 			this.menuStrip1.Text = "menuStrip1";
 			// 
 			// fileToolStripMenuItem
 			// 
 			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.runToolStripMenuItem,
+            this.NewtoolStripMenuItem,
             this.saveToolStripMenuItem,
             this.loadToolStripMenuItem,
             this.shutdownEngineToolStripMenuItem,
@@ -118,34 +118,38 @@
 			this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
 			this.fileToolStripMenuItem.Text = "File";
 			// 
-			// runToolStripMenuItem
+			// NewtoolStripMenuItem
 			// 
-			this.runToolStripMenuItem.Name = "runToolStripMenuItem";
-			this.runToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
-			this.runToolStripMenuItem.Text = "Run";
+			this.NewtoolStripMenuItem.Name = "NewtoolStripMenuItem";
+			this.NewtoolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+			this.NewtoolStripMenuItem.Text = "New";
+			this.NewtoolStripMenuItem.Click += new System.EventHandler(this.NewtoolStripMenuItem_Click);
 			// 
 			// saveToolStripMenuItem
 			// 
 			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-			this.saveToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
-			this.saveToolStripMenuItem.Text = "Save";
+			this.saveToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+			this.saveToolStripMenuItem.Text = "Save level";
+			this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
 			// 
 			// loadToolStripMenuItem
 			// 
 			this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-			this.loadToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
-			this.loadToolStripMenuItem.Text = "Load";
+			this.loadToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+			this.loadToolStripMenuItem.Text = "Load level";
+			this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
 			// 
 			// shutdownEngineToolStripMenuItem
 			// 
 			this.shutdownEngineToolStripMenuItem.Name = "shutdownEngineToolStripMenuItem";
-			this.shutdownEngineToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
-			this.shutdownEngineToolStripMenuItem.Text = "Shutdown Engine";
+			this.shutdownEngineToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+			this.shutdownEngineToolStripMenuItem.Text = "Suspend rendering";
+			this.shutdownEngineToolStripMenuItem.Click += new System.EventHandler(this.shutdownEngineToolStripMenuItem_Click);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
 			this.exitToolStripMenuItem.Text = "Exit";
 			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
 			// 
@@ -251,59 +255,89 @@
 			// ToolContainer
 			// 
 			this.ToolContainer.BackColor = System.Drawing.Color.Gray;
+			this.ToolContainer.Controls.Add(this.label3);
+			this.ToolContainer.Controls.Add(this.label2);
+			this.ToolContainer.Controls.Add(this.label_selectedName);
+			this.ToolContainer.Controls.Add(this.label_FGM);
+			this.ToolContainer.Controls.Add(this.RenderLockPictureBox);
 			this.ToolContainer.Controls.Add(this.CameraDropBox);
-			this.ToolContainer.Controls.Add(this.listBox_id);
 			this.ToolContainer.Controls.Add(this.LoadedResources_name);
 			this.ToolContainer.Dock = System.Windows.Forms.DockStyle.Right;
-			this.ToolContainer.Location = new System.Drawing.Point(770, 24);
+			this.ToolContainer.Location = new System.Drawing.Point(595, 24);
+			this.ToolContainer.MinimumSize = new System.Drawing.Size(157, 0);
 			this.ToolContainer.Name = "ToolContainer";
-			this.ToolContainer.Size = new System.Drawing.Size(157, 504);
+			this.ToolContainer.Size = new System.Drawing.Size(157, 419);
 			this.ToolContainer.TabIndex = 2;
+			// 
+			// label3
+			// 
+			this.label3.AutoSize = true;
+			this.label3.Location = new System.Drawing.Point(6, 180);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(35, 13);
+			this.label3.TabIndex = 7;
+			this.label3.Text = "label3";
+			// 
+			// label2
+			// 
+			this.label2.AutoSize = true;
+			this.label2.Location = new System.Drawing.Point(7, 160);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(35, 13);
+			this.label2.TabIndex = 6;
+			this.label2.Text = "label2";
+			// 
+			// label_selectedName
+			// 
+			this.label_selectedName.AutoSize = true;
+			this.label_selectedName.Location = new System.Drawing.Point(7, 143);
+			this.label_selectedName.Name = "label_selectedName";
+			this.label_selectedName.Size = new System.Drawing.Size(38, 13);
+			this.label_selectedName.TabIndex = 5;
+			this.label_selectedName.Text = "Name:";
+			// 
+			// label_FGM
+			// 
+			this.label_FGM.AutoSize = true;
+			this.label_FGM.Location = new System.Drawing.Point(2, 31);
+			this.label_FGM.Name = "label_FGM";
+			this.label_FGM.Size = new System.Drawing.Size(79, 13);
+			this.label_FGM.TabIndex = 4;
+			this.label_FGM.Text = "Loaded models";
 			// 
 			// CameraDropBox
 			// 
+			this.CameraDropBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.CameraDropBox.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.CameraDropBox.FormattingEnabled = true;
-			this.CameraDropBox.Items.AddRange(new object[] {
-            "Top Camera",
-            "First Person"});
 			this.CameraDropBox.Location = new System.Drawing.Point(3, 5);
 			this.CameraDropBox.Name = "CameraDropBox";
 			this.CameraDropBox.Size = new System.Drawing.Size(110, 21);
 			this.CameraDropBox.TabIndex = 3;
 			this.CameraDropBox.SelectedIndexChanged += new System.EventHandler(this.CameraDropBox_SelectedIndexChanged);
 			// 
-			// listBox_id
-			// 
-			this.listBox_id.BackColor = System.Drawing.Color.Gray;
-			this.listBox_id.ForeColor = System.Drawing.Color.White;
-			this.listBox_id.FormattingEnabled = true;
-			this.listBox_id.IntegralHeight = false;
-			this.listBox_id.Location = new System.Drawing.Point(119, 32);
-			this.listBox_id.Name = "listBox_id";
-			this.listBox_id.SelectionMode = System.Windows.Forms.SelectionMode.None;
-			this.listBox_id.Size = new System.Drawing.Size(35, 74);
-			this.listBox_id.Sorted = true;
-			this.listBox_id.TabIndex = 2;
-			// 
 			// LoadedResources_name
 			// 
+			this.LoadedResources_name.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.LoadedResources_name.BackColor = System.Drawing.Color.Gray;
 			this.LoadedResources_name.ForeColor = System.Drawing.Color.White;
 			this.LoadedResources_name.FormattingEnabled = true;
 			this.LoadedResources_name.IntegralHeight = false;
-			this.LoadedResources_name.Location = new System.Drawing.Point(3, 32);
+			this.LoadedResources_name.Location = new System.Drawing.Point(3, 47);
 			this.LoadedResources_name.Name = "LoadedResources_name";
-			this.LoadedResources_name.Size = new System.Drawing.Size(110, 74);
+			this.LoadedResources_name.Size = new System.Drawing.Size(151, 89);
 			this.LoadedResources_name.Sorted = true;
 			this.LoadedResources_name.TabIndex = 1;
+			this.LoadedResources_name.SelectedIndexChanged += new System.EventHandler(this.CurrentObjChanged);
 			// 
 			// splitter1
 			// 
 			this.splitter1.BackColor = System.Drawing.Color.PaleGreen;
 			this.splitter1.Dock = System.Windows.Forms.DockStyle.Right;
-			this.splitter1.Location = new System.Drawing.Point(766, 24);
+			this.splitter1.Location = new System.Drawing.Point(591, 24);
 			this.splitter1.Name = "splitter1";
-			this.splitter1.Size = new System.Drawing.Size(4, 504);
+			this.splitter1.Size = new System.Drawing.Size(4, 419);
 			this.splitter1.TabIndex = 3;
 			this.splitter1.TabStop = false;
 			this.splitter1.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitter1_SplitterMoved);
@@ -312,7 +346,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(927, 528);
+			this.ClientSize = new System.Drawing.Size(752, 443);
 			this.Controls.Add(this.RenderWin);
 			this.Controls.Add(this.splitter1);
 			this.Controls.Add(this.ToolContainer);
@@ -325,12 +359,11 @@
 			this.Load += new System.EventHandler(this.FormLoadedEvent);
 			this.ResizeBegin += new System.EventHandler(this.WindowResizeBegin);
 			this.ResizeEnd += new System.EventHandler(this.WindowResizeEnd);
-			this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseClick);
-			this.RenderWin.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.RenderLockPictureBox)).EndInit();
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
 			this.ToolContainer.ResumeLayout(false);
+			this.ToolContainer.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -355,7 +388,6 @@
 		private System.Windows.Forms.ToolStripMenuItem loadEventToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem1;
 		private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
-		private System.Windows.Forms.ToolStripMenuItem runToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem soundToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem outputWindowToolStripMenuItem;
@@ -364,8 +396,12 @@
 		private System.Windows.Forms.Panel ToolContainer;
 		private System.Windows.Forms.Splitter splitter1;
 		private System.Windows.Forms.ListBox LoadedResources_name;
-		private System.Windows.Forms.ListBox listBox_id;
 		private System.Windows.Forms.ComboBox CameraDropBox;
+		private System.Windows.Forms.ToolStripMenuItem NewtoolStripMenuItem;
+		private System.Windows.Forms.Label label_FGM;
+		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Label label_selectedName;
 	}
 }
 

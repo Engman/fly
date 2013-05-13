@@ -103,11 +103,11 @@ class Entity abstract
 		}
 		vec3			getRight				()	const  
 		{
-			vec3(this->transformation.m[0]);
+			return vec3(this->transformation.m[0]);
 		}
 		vec3			getUp					()	const  
 		{
-			vec3(this->transformation.m[1]);
+			return vec3(this->transformation.m[1]);
 		}
 		Matrix			getWorld				()	const
 		{
@@ -124,6 +124,10 @@ class Entity abstract
 		std::wstring	getName					() const
 		{
 			return this->name;
+		}
+		BoundingSphere* getBoundingSphere		()
+		{
+			return this->boundingSphere;
 		}
 		std::vector<SmartPtrStd<BaseBuffer>>* getBuffers()
 		{

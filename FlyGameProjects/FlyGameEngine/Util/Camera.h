@@ -5,6 +5,7 @@
 #include <D3DX11\d3dx10math.h>
 #include "Proxy.h"
 #include "BoundingVolumes.h"
+#include "GID.h"
 
 class Camera
 {
@@ -17,12 +18,14 @@ class Camera
 		D3DXMATRIX projectionMatrix;
 		D3DXMATRIX orthogonalMatrix;
 		D3DXVECTOR3 lookAt;
-
+		GID id;
 
 	public:
 		Camera();
 		Camera(const Camera& other);
 		~Camera();
+
+		int GetID() const;
 
 		void SetPosition(float x, float y, float z);
 		void SetPosition(D3DXVECTOR3 position);

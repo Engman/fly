@@ -5,9 +5,20 @@
 
 static bool procThreadBussy = false;
 static bool procThreadWaitForUpdate = false;
+static bool LBTNDOWN	= false;
+static bool MBTNDOWN	= false;
+static bool RBTNDOWN	= false;
 
-template<typename T>
-int existsInVectorList(std::vector<T>& obj, T elem);
+static bool CONTROLDOWN = false;
+static bool ALTDOWN		= false;
+static bool SHIFTDOWN	= false;
+
+static Input::MouseMoveData		MOUSE_INPUT_moveData = Input::MouseMoveData();
+static Input::MouseBtnData		MOUSE_INPUT_btnData = Input::MouseBtnData() ;
+static Input::KeyPressData		KEY_INPUT_keyData = Input::KeyPressData() ;
+
+template<typename T, typename S>
+int existsInVectorList(std::vector<T>& obj, S elem);
 
 
 struct Input::_PrSt
@@ -19,7 +30,7 @@ struct Input::_PrSt
 	public:
 		HWND targetKeyApp;
 		HWND targetMouseApp;
-		std::vector<Input::KeyCodes::Key> keyList;
+		std::vector<Input::KeyPressData> keyList;
 
 	public:
 		void proccessRawMouseData		(RAWMOUSE&);
@@ -113,7 +124,7 @@ bool Input::Register						(const Input::GLARE_INPUT_INIT_DESC& desc)
 	HWND target = desc.target;
 		if(desc.deviceType == Flags::REMOVE)
 			target = 0;
-
+	
 	
 	switch (desc.deviceType)
 	{
@@ -125,6 +136,7 @@ bool Input::Register						(const Input::GLARE_INPUT_INIT_DESC& desc)
 				retVal = false;
 				MessageBox(0, L"Failed to register [Keyboard] device", L"Error", MB_OK);
 			}
+			this->_PrPtr->targetKeyApp = desc.target;
 		}
 		break;
 		
@@ -137,6 +149,7 @@ bool Input::Register						(const Input::GLARE_INPUT_INIT_DESC& desc)
 				retVal = false;
 				MessageBox(0, L"Failed to register [Mouse] device", L"Error", MB_OK);
 			}
+			this->_PrPtr->targetMouseApp = desc.target;
 		}
 		break;
 
@@ -212,8 +225,7 @@ void Input::_PrSt::proccessRawKeyboardData	(RAWKEYBOARD& k)
 	}
 
 	Input::KeyCodes::Key v = (Input::KeyCodes::Key)k.VKey;
-	int i = existsInVectorList<Input::KeyCodes::Key>(this->keyList, v);
-
+	int i = existsInVectorList<Input::KeyPressData, Input::KeyCodes::Key>(this->keyList, v);
 
 	//The key is released.
 	if(k.Flags == RI_KEY_BREAK)
@@ -225,7 +237,23 @@ void Input::_PrSt::proccessRawKeyboardData	(RAWKEYBOARD& k)
 				this->keyList.erase(this->keyList.begin() + i);
 			procThreadWaitForUpdate = false;
 
-			Input::self()->_keyUpProc.procEvent(v); 
+			if(v == KeyCodes::K_Ctrl)	
+			{
+				CONTROLDOWN = false;
+				KEY_INPUT_keyData.ctrl = false;
+			}
+			else if(v == KeyCodes::K_Shift)	
+			{
+				SHIFTDOWN	= false;
+				KEY_INPUT_keyData.shift = false;
+			}
+			else if(v == KeyCodes::K_Alt)	
+			{
+				ALTDOWN		= false;
+				KEY_INPUT_keyData.alt = false;
+			}
+
+			Input::self()->_keyUpProc.procEvent(KEY_INPUT_keyData); 
 		}
 		
 	}
@@ -234,10 +262,27 @@ void Input::_PrSt::proccessRawKeyboardData	(RAWKEYBOARD& k)
 	{
 		if(i == -1)
 		{
+			KEY_INPUT_keyData.key = v;
 			while(procThreadBussy);
 			procThreadWaitForUpdate = true;
-				this->keyList.push_back(v);
+				this->keyList.push_back(KEY_INPUT_keyData);
 			procThreadWaitForUpdate = false;
+
+			if(v == KeyCodes::K_Ctrl)	
+			{
+				CONTROLDOWN = true;
+				KEY_INPUT_keyData.ctrl = true;
+			}
+			else if(v == KeyCodes::K_Shift)	
+			{
+				SHIFTDOWN	= true;
+				KEY_INPUT_keyData.shift = true;
+			}
+			else if(v == KeyCodes::K_Alt)	
+			{
+				ALTDOWN		= true;
+				KEY_INPUT_keyData.alt = true;
+			}
 		}
 	}
 		
@@ -254,58 +299,79 @@ void Input::_PrSt::proccessRawMouseData		(RAWMOUSE& m)
 		return;
 	}
 
-	Input::MouseMoveData moveData;
 	POINT p;
-
 	//Get Mouse position
+	GetCursorPos(&p);
+	MOUSE_INPUT_moveData.relativeX = m.lLastX;
+	MOUSE_INPUT_moveData.relativeY = m.lLastY;
+	MOUSE_INPUT_moveData.screenX = p.x; 
+	MOUSE_INPUT_moveData.screenY = p.y;
+	ScreenToClient(this->targetMouseApp, &p);
+	MOUSE_INPUT_moveData.clientX = p.x;
+	MOUSE_INPUT_moveData.clientY = p.y;
+
 	if(m.lLastX != 0 || m.lLastY != 0)
 	{
-		GetCursorPos(&p);
-
-		moveData.relativeX = m.lLastX;
-		moveData.relativeY = m.lLastY;
-
-		moveData.screenX = p.x; 
-		moveData.screenY = p.y;
-
-		ScreenToClient(this->targetMouseApp, &p);
-		moveData.clientX = p.x;
-		moveData.clientY = p.y;
-			
-		Input::self()->_mouseMove.procEvent(moveData);
+		Input::self()->_mouseMove.procEvent(MOUSE_INPUT_moveData);
 	}
-	else if( m.usButtonFlags > 0 )
+	if( m.usButtonFlags > 0 )
 	{
-		Input::KeyCodes::Key v = (Input::KeyCodes::Key)m.usButtonFlags;
-		//int i = existsInVectorList<Input::KeyCodes::Key>(this->keyList, v);
+		MOUSE_INPUT_btnData.MousePos_clientX = MOUSE_INPUT_moveData.clientX;
+		MOUSE_INPUT_btnData.MousePos_clientY = MOUSE_INPUT_moveData.clientY;
+		MOUSE_INPUT_btnData.MousePos_relativeX = MOUSE_INPUT_moveData.relativeX;
+		MOUSE_INPUT_btnData.MousePos_relativeY = MOUSE_INPUT_moveData.relativeY;
+		MOUSE_INPUT_btnData.MousePos_screenX = MOUSE_INPUT_moveData.screenX;
+		MOUSE_INPUT_btnData.MousePos_screenY = MOUSE_INPUT_moveData.screenY;
 
-		switch (v)
+		switch (m.usButtonFlags)
 		{
-			case 0x0001:
-			case 0x0004:
-			case 0x0010:
-			case 0x0040:
-			case 0x100:
+			//Mouse button pressed
+			case RI_MOUSE_LEFT_BUTTON_DOWN:
+			case RI_MOUSE_RIGHT_BUTTON_DOWN:
+			case RI_MOUSE_MIDDLE_BUTTON_DOWN:
 			{
-				//if(i == -1)
-				//{
-					//this->keyList.push_back(v);
-					Input::self()->_mouseBtnDown.procEvent(v);
-				//}
+				//MessageBox(0, L"InputDown", L"", 0);
+				if(m.usButtonFlags == RI_MOUSE_LEFT_BUTTON_DOWN)	
+				{
+					MOUSE_INPUT_btnData.key = KeyCodes::M_LeftBtn;
+					LBTNDOWN = true;
+				}
+				else if(m.usButtonFlags == RI_MOUSE_MIDDLE_BUTTON_DOWN)	
+				{	
+					MOUSE_INPUT_btnData.key = KeyCodes::M_MiddleBtn;
+					MBTNDOWN = true;
+				}
+				else if(m.usButtonFlags == RI_MOUSE_RIGHT_BUTTON_DOWN)	
+				{	
+					MOUSE_INPUT_btnData.key = KeyCodes::M_RightBtn;
+					RBTNDOWN = true;
+				}
 			}
 			break;
 
-			case 0x0200:
-			case 0x0080:
-			case 0x0020:
-			case 0x0008:
-			case 0x0002:
+			//Mouse button Released
+			case RI_MOUSE_LEFT_BUTTON_UP:
+			case RI_MOUSE_RIGHT_BUTTON_UP:
+			case RI_MOUSE_MIDDLE_BUTTON_UP:
 			{
-				//if(i != -1)
-				//{
-					//this->keyList.erase(this->keyList.begin() + i);
-					Input::self()->_mouseBtnUp.procEvent(v);
-				//}
+				//MessageBox(0, L"InputUp", L"", 0);
+				if(m.usButtonFlags == RI_MOUSE_LEFT_BUTTON_UP)	
+				{
+					MOUSE_INPUT_btnData.key = KeyCodes::M_LeftBtn;
+					LBTNDOWN = false;
+				}
+				else if(m.usButtonFlags == RI_MOUSE_MIDDLE_BUTTON_UP)	
+				{
+					MOUSE_INPUT_btnData.key = KeyCodes::M_MiddleBtn;
+					MBTNDOWN = false;
+				}
+				else if(m.usButtonFlags == RI_MOUSE_RIGHT_BUTTON_UP)	
+				{
+					MOUSE_INPUT_btnData.key = KeyCodes::M_RightBtn;
+					RBTNDOWN = false;
+				}
+
+				Input::self()->_mouseBtnUp.procEvent(MOUSE_INPUT_btnData);
 			}
 			break;
 			
@@ -314,6 +380,8 @@ void Input::_PrSt::proccessRawMouseData		(RAWMOUSE& m)
 				int delta = ((int)m.usButtonData);
 				if(delta > 120)
 					delta = -1;
+				else
+					delta = 1;
 				Input::self()->_mouseScroll.procEvent(delta);
 			}
 			break;
@@ -329,17 +397,26 @@ void Input::_PrSt::proccessRawHidData		(RAWHID& h)
 }
 
 
-template<typename T>
+template<typename T, typename S>
 /* Returns position of element or -1 if not found */
-int existsInVectorList(std::vector<T>& obj, T elem)
+int existsInVectorList(std::vector<T>& obj, S elem)
 {
 	int pos = -1;
 
-	std::vector<T>::iterator i = std::find(obj.begin(), obj.end(), elem);
-	if(i != obj.end())
+	for (int i = 0; i < (int)obj.size(); i++)
 	{
-		pos = (int)(i - obj.begin());
+		if(obj[i].key == elem)
+		{
+			pos = i;
+			continue;
+		}
 	}
+
+	//std::vector<T>::iterator i = std::find(obj.begin(), obj.end(), elem);
+	//if(i != obj.end())
+	//{
+	//	pos = (int)(i - obj.begin());
+	//}
 
 	return pos;
 }
@@ -355,6 +432,9 @@ int existsInVectorList(std::vector<T>& obj, T elem)
 
 DWORD WINAPI Input::ProcThread(LPVOID lpParameter)
 {
+	KeyCodes::Key lb	  =  KeyCodes::M_LeftBtn;
+	KeyCodes::Key rb	  =  KeyCodes::M_RightBtn;
+	KeyCodes::Key mb	  =  KeyCodes::M_LeftBtn; 
 	while (true)
 	{
 		Sleep(10);
@@ -367,6 +447,14 @@ DWORD WINAPI Input::ProcThread(LPVOID lpParameter)
 				Input::self()->_keyDownProc.procEvent(Input::self()->_PrPtr->keyList[i]);
 			procThreadBussy = false;
 		}
+
+		if(LBTNDOWN)	
+		{
+			//MessageBox(0, L"LBTNDOWN in Input", L"", 0);
+			Input::self()->_mouseBtnDown.procEvent(MOUSE_INPUT_btnData);
+		}
+		if(RBTNDOWN)	Input::self()->_mouseBtnDown.procEvent(MOUSE_INPUT_btnData);
+		if(MBTNDOWN)	Input::self()->_mouseBtnDown.procEvent(MOUSE_INPUT_btnData);
 	}
 	return NULL;
 }

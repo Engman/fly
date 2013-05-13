@@ -84,7 +84,6 @@ bool RayVSSphere(D3DXVECTOR3& rayDirection, D3DXVECTOR3& rayOrigin, D3DXVECTOR3&
 	if(h >= 0.0f)
 	{
 		float m2 = l2 - h*h;
-		
 		if(m2 <= r2)
 		{
 			return true;
@@ -92,6 +91,24 @@ bool RayVSSphere(D3DXVECTOR3& rayDirection, D3DXVECTOR3& rayOrigin, D3DXVECTOR3&
 	}
 
 	return false;
+}
+float RayVSSphereLength(D3DXVECTOR3& rayDirection, D3DXVECTOR3& rayOrigin, D3DXVECTOR3& center, float& radius)
+{
+	D3DXVECTOR3 l = center - rayOrigin;
+	float l2 = D3DXVec3Dot(&l, &l);
+	float h = D3DXVec3Dot(&l, &rayDirection);
+	float r2 = radius*radius;
+
+	if(h >= 0.0f)
+	{
+		float m2 = l2 - h*h;
+		if(m2 <= r2)
+		{
+			return h - sqrtf(m2);
+		}
+	}
+
+	return -1.0f;
 }
 
 bool BoxVSBox(BoundingBox& box1, BoundingBox& box2)

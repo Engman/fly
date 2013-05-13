@@ -12,15 +12,8 @@ using System.Drawing;
 
 namespace FlyEditUI { public partial class FlyEdit {
 
-	public static bool renderWinLocked = true;
-	ToolTip pictureBoxLockTooltip = new ToolTip();
-	Point lastMousePos = new Point(0,0);
-	Dictionary<string, int> res = new Dictionary<string, int>();
 
-	private void RenderWindow_MouseClick(object sender, MouseEventArgs e)
-	{
-		//this.FlyCLI.OnMouseClick(true, e.X, e.Y);
-	}
+	
 
 	private void loadGeomrtyToolStripMenuItem_Click(object sender, EventArgs e)
 	{
@@ -40,7 +33,7 @@ namespace FlyEditUI { public partial class FlyEdit {
 			
 			Dictionary<string, int> objects = new Dictionary<string,int>();
 
-			if(!this.FlyCLI.LoadResources(f.FileNames, objects))
+			if(!this.flyCLI.LoadResources(f.FileNames, objects))
 				MessageBox.Show("Failed to load reources!");
 			
 			this.outWin.addText(objects.Count.ToString() + " models loaded!");
@@ -48,8 +41,7 @@ namespace FlyEditUI { public partial class FlyEdit {
 		}
 	}
 
-
-	protected void MoveSubForm(object sender, EventArgs e)
+	private void MoveSubForm(object sender, EventArgs e)
 	{
 		if (this.outWin != null)
 		{
@@ -58,23 +50,23 @@ namespace FlyEditUI { public partial class FlyEdit {
 		}
 	}
 	
-	void WindowResizeBegin(object sender, EventArgs e)
+	private void WindowResizeBegin(object sender, EventArgs e)
 	{
 		if (this.WindowState == FormWindowState.Maximized)
 		{
 			//this.outWin.WindowState = FormWindowState.Normal;
-			//this.FlyCLI.OnResize(this.RenderWin.Width, this.RenderWin.Height);
+			//this.flyCLI.OnResize(this.RenderWin.Width, this.RenderWin.Height);
 		}
 		else if (this.WindowState == FormWindowState.Normal)
 		{
 			//this.outWin.WindowState = FormWindowState.Normal;
-			//this.FlyCLI.OnResize(this.RenderWin.Width, this.RenderWin.Height);
+			//this.flyCLI.OnResize(this.RenderWin.Width, this.RenderWin.Height);
 		}
 	}
-	
-	void WindowResizeEnd(object sender, EventArgs e)
+
+	private void WindowResizeEnd(object sender, EventArgs e)
 	{
-		this.FlyCLI.OnResize(this.RenderWin.Width, this.RenderWin.Height);
+		this.flyCLI.OnResize(this.RenderWin.Width, this.RenderWin.Height);
 	}
 
 	private void outputWindowToolStripMenuItem_Click(object sender, EventArgs e)
@@ -87,14 +79,14 @@ namespace FlyEditUI { public partial class FlyEdit {
 
 	private void FormClosingEvent(object sender, FormClosingEventArgs e)
 	{
-		if (this.engineRuning)
-			this.FlyCLI.Shutdown();
-		//e.Cancel = false;
+		this.engineRuning = false;
+		this.terminate = true;
 	}
 
 	private void exitToolStripMenuItem_Click(object sender, EventArgs e)
 	{
-		this.Close();
+		this.engineRuning = false;
+		this.terminate = true;
 	}
 
 	private void RenderLockPictureLockClicked(object sender, EventArgs e)
@@ -136,15 +128,11 @@ namespace FlyEditUI { public partial class FlyEdit {
 		RenderLockPictureLockClicked(null, null);
 	}
 
-
-
 	private void CameraDropBox_SelectedIndexChanged(object sender, EventArgs e)
 	{
-		if (((ComboBox)sender).SelectedItem.ToString() == "Top Camera")
-			this.flyCLI.ChangeView(System.Windows.Interop.Cameras.Top);
-
-		else if (((ComboBox)sender).SelectedItem.ToString() == "First Person")
-			this.flyCLI.ChangeView(System.Windows.Interop.Cameras.FirstPerson);
+		this.flyCLI.ChangeView(this.levelGen.Cameras[((ComboBox)sender).SelectedItem.ToString()]);
+		this.ActiveControl = null;
+		
 	}
 
 	public void AppendNewData(Dictionary<String, int> data)
@@ -154,23 +142,11 @@ namespace FlyEditUI { public partial class FlyEdit {
 
 		while (it.MoveNext())
 		{
-			this.res.Add(it.Current.Key, it.Current.Value);
+			this.levelGen.MeshResource.Add(it.Current.Key, it.Current.Value);
 
 			this.LoadedResources_name.Items.Add(it.Current.Key);
-			this.listBox_id.Items.Add(it.Current.Value);
+			//this.listBox_id.Items.Add(it.Current.Value);
 		}
-	}
-
-	public int GetCurrentResource()
-	{
-		int val = -1;
-
-		if (this.LoadedResources_name.SelectedIndex != -1)
-		{
-			val = this.res[((string)this.LoadedResources_name.SelectedItem)];
-		}
-
-		return val;
 	}
 
 	private void splitter1_SplitterMoved(object sender, SplitterEventArgs e)
@@ -178,5 +154,59 @@ namespace FlyEditUI { public partial class FlyEdit {
 		this.flyCLI.OnResize(this.RenderWin.Width, this.RenderWin.Height);
 	}
 
+	private void CurrentObjChanged(object sender, EventArgs e)
+	{
+		int val = -1;
 
+		if (this.LoadedResources_name.SelectedIndex != -1)
+		{
+			val = this.levelGen.MeshResource[((string)this.LoadedResources_name.SelectedItem)];
+		}
+
+		if (val != -1)
+		{
+			if (!this.flyCLI.SelectObject(val))
+				MessageBox.Show("Could not select entity");
+		}
+		this.ActiveControl = null;
+	}
+
+	private void shutdownEngineToolStripMenuItem_Click(object sender, EventArgs e)
+	{
+		if (this.engineRuning)		((ToolStripMenuItem)sender).Text = "Resume rendering";
+		else						((ToolStripMenuItem)sender).Text = "Suspend rendering";
+		this.engineRuning = !this.engineRuning;
+	}
+
+	private void NewtoolStripMenuItem_Click(object sender, EventArgs e)
+	{
+		this.engineRuning = false;
+		//this.flyCLI.Reset();
+		//this.Reset();
+		this.engineRuning = true;
+	}
+
+	private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+	{
+		SaveFileDialog sd = new SaveFileDialog();
+		sd.DefaultExt = "fl";
+		sd.Filter = "Fly level file|*.fl";
+		sd.AddExtension = true;
+		if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+		{
+			
+		}
+	}
+
+	private void loadToolStripMenuItem_Click(object sender, EventArgs e)
+	{
+		OpenFileDialog od = new OpenFileDialog();
+		od.DefaultExt = "fl";
+
+		if (od.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+		{
+
+		}
+		
+	}
 }}

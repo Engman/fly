@@ -32,7 +32,7 @@ class Event
 		}
 
 		template<typename Target>
-		void subscribe( Target* object, RetVal(Target::*func)(Param))
+		void subscribe( Target* object, RetVal(Target::*func)(Param&))
 		{
 			for (int i = 0; i < (int)this->subscribers.size(); i++)
 			{
@@ -42,7 +42,7 @@ class Event
 			this->subscribers.push_back(new EventListener<Target, RetVal, Param>(object, func));
 		}
 		template<typename Target>
-		bool unsubscribe(RetVal(Target::*fn)(Param))
+		bool unsubscribe(RetVal(Target::*fn)(Param&))
 		{
 			typedef void(Target::*func)(Param);
 			for (int i = 0; i < (int)this->subscribers.size(); i++)

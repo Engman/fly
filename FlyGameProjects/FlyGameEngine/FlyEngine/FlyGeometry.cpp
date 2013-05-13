@@ -2,9 +2,13 @@
 
 
 #include "..\Core\D3DShell.h"
+#include "..\Core\Mesh\Terrain.h"
 #include "..\Util\Importer\ObjectImporter.h"
 #include "..\Util\Importer\ResourceImporter.h"
-#include "..\Core\Mesh\Terrain.h"
+#include "..\Util\CollisionLib.h"
+#include "..\Util\Camera.h"
+
+void GetMinMax(BoundingBox& bb, const vec4& vertex);
 
 
 bool FLYCALL FlyEngine_Core::Geometry_Create(FlyEngineGeometry type, Entity* object)
@@ -32,6 +36,18 @@ bool FLYCALL FlyEngine_Core::Geometry_Load(const wchar_t* resourcesToLoad, vecto
 	
 	for (int i = 0; i < (int)raw.objects.size(); i++)
 	{
+		BoundingBox bb;
+		bb.minPoint = vec3((*raw.objects[i].vertex)[0].position.x, (*raw.objects[i].vertex)[0].position.y, (*raw.objects[i].vertex)[0].position.z);
+		bb.maxPoint = bb.minPoint;
+		for (int k = 0; k < (int)raw.objects[i].vertex->size(); k++)
+		{
+			GetMinMax(bb, (*raw.objects[i].vertex)[k].position);
+		}
+		BoundingSphere* bs = new BoundingSphere();
+		bs->radius = D3DXVec3Length(&(bb.maxPoint - bb.minPoint)) * 0.5f;
+		bs->center = (bb.maxPoint + bb.minPoint) * 0.5f;
+
+
 		FlyMesh::OBJECT_DESC d;
 		d.device = D3DShell::self()->getDevice();
 		d.deviceContext = D3DShell::self()->getDeviceContext();
@@ -40,6 +56,7 @@ bool FLYCALL FlyEngine_Core::Geometry_Load(const wchar_t* resourcesToLoad, vecto
 		d.shader = 0;
 		d.vCount = (int)raw.objects[i].vertex->size();
 		d.vertecies = raw.objects[i].vertex;
+		d.boundingSphere = bs;
 
 		FlyMesh *obj = new FlyMesh();
 		if(!obj->Initialize(d))
@@ -59,6 +76,17 @@ bool FLYCALL FlyEngine_Core::Geometry_Load(vector<const wchar_t*> resourcesToLoa
 	{
 		for (int k = 0; k < (int)raw[i].objects.size(); k++)
 		{
+			BoundingBox bb;
+			bb.minPoint = vec3((*raw[i].objects[k].vertex)[0].position.x, (*raw[i].objects[k].vertex)[0].position.y, (*raw[i].objects[k].vertex)[0].position.z);
+			bb.maxPoint = bb.minPoint;
+			for (int j = 0; j < (int)raw[i].objects[k].vertex->size(); j++)
+			{
+				GetMinMax(bb, (*raw[i].objects[k].vertex)[j].position);
+			}
+			BoundingSphere* bs = new BoundingSphere();
+			bs->radius = D3DXVec3Length(&(bb.maxPoint - bb.minPoint)) * 0.5f;
+			bs->center = (bb.maxPoint + bb.minPoint) * 0.5f;
+
 			FlyMesh::OBJECT_DESC d;
 			d.device = D3DShell::self()->getDevice();
 			d.deviceContext = D3DShell::self()->getDeviceContext();
@@ -67,6 +95,7 @@ bool FLYCALL FlyEngine_Core::Geometry_Load(vector<const wchar_t*> resourcesToLoa
 			d.shader = 0;
 			d.vCount = (int)raw[i].objects[k].vertex->size();
 			d.vertecies = raw[i].objects[k].vertex;
+			d.boundingSphere = bs;
 
 			FlyMesh *obj = new FlyMesh();
 			if(!obj->Initialize(d))
@@ -84,8 +113,21 @@ bool FLYCALL FlyEngine_Core::Geometry_Load(const wchar_t* path, vector<Entity*>*
 	if(!ResourceImporter::ImportObject(path, &raw))
 		return false;
 
+	
 	for (int i = 0; i < (int)raw.objects.size(); i++)
 	{
+		BoundingBox bb;
+		bb.minPoint = vec3((*raw.objects[i].vertex)[0].position.x, (*raw.objects[i].vertex)[0].position.y, (*raw.objects[i].vertex)[0].position.z);
+		bb.maxPoint = bb.minPoint;
+		for (int k = 0; k < (int)raw.objects[i].vertex->size(); k++)
+		{
+			GetMinMax(bb, (*raw.objects[i].vertex)[k].position);
+		}
+		BoundingSphere* bs = new BoundingSphere();
+		bs->radius = D3DXVec3Length(&(bb.maxPoint - bb.minPoint)) * 0.5f;
+		bs->center = (bb.maxPoint + bb.minPoint) * 0.5f;
+
+
 		FlyMesh::OBJECT_DESC d;
 		d.device = D3DShell::self()->getDevice();
 		d.deviceContext = D3DShell::self()->getDeviceContext();
@@ -94,6 +136,7 @@ bool FLYCALL FlyEngine_Core::Geometry_Load(const wchar_t* path, vector<Entity*>*
 		d.shader = 0;
 		d.vCount = (int)raw.objects[i].vertex->size();
 		d.vertecies = raw.objects[i].vertex;
+		d.boundingSphere = bs;
 
 		FlyMesh *obj = new FlyMesh();
 		if(!obj->Initialize(d))
@@ -103,7 +146,71 @@ bool FLYCALL FlyEngine_Core::Geometry_Load(const wchar_t* path, vector<Entity*>*
 	return true;
 }
 
+Entity* FLYCALL FlyEngine_Core::Geometry_Pick(const vector<Entity*>& obj, int posX, int posY)
+{
+	D3DXMATRIX inverseWorldMatrix;
+	D3DXMATRIX InvView = this->activeCamera->GetViewMatrix();
+	D3DXVECTOR3 origin = this->activeCamera->GetPosition();
+	D3DXVECTOR3 direction;
+	D3DXVECTOR3 rayOrigin;
+	D3DXVECTOR3 rayDirection;
+	float length = 1000000.0f;
+	Entity* picked = NULL;
+	
+
+	D3DXMatrixInverse(&InvView, 0, &InvView);
+
+	// Move the mouse coordinates into the -1 to +1 range.
+	float pointX = ((2.0f * (float)posX) / D3DShell::self()->getWidth()) - 1.0f;
+	float pointY = (((2.0f * (float)posY) / D3DShell::self()->getHeight()) - 1.0f) * -1.0f;
+		
+	// Adjust the points using the projection matrix to account for the aspect ratio of the viewport.
+	pointX = pointX / this->activeCamera->GetProjectionMatrix()._11;
+	pointY = pointY / this->activeCamera->GetProjectionMatrix()._22;
+
+	// Calculate the direction of the picking ray in view space.
+	direction.x = (pointX * InvView._11) + (pointY * InvView._21) + InvView._31;
+	direction.y = (pointX * InvView._12) + (pointY * InvView._22) + InvView._32;
+	direction.z = (pointX * InvView._13) + (pointY * InvView._23) + InvView._33;
+
+	for (int i = 0; i < (int)obj.size(); i++)
+	{
+		//// Get the inverse of the translated world matrix.
+		D3DXMatrixInverse(&inverseWorldMatrix, NULL, &obj[i]->getWorld());
+		//
+		//// Transform the ray origin and the ray direction from view space to world space.
+		D3DXVec3TransformCoord(&rayOrigin, &origin, &inverseWorldMatrix);
+		D3DXVec3TransformNormal(&rayDirection, &direction, &inverseWorldMatrix);
+
+
+		// Normalize the ray direction.
+		D3DXVec3Normalize(&rayDirection, &rayDirection);
+		
+		float len = RayVSSphereLength(rayDirection, rayOrigin, obj[i]->getBoundingSphere()->center, obj[i]->getBoundingSphere()->radius);
+		// Now perform the ray-sphere intersection test.
+		if(len != -1 && len <= length)
+		{
+			length = len;
+			picked = obj[i];
+		}
+		
+	}
+
+	return picked;
+}
 
 
 
 
+
+
+void GetMinMax(BoundingBox& bb, const vec4& vertex)
+{
+	if(vertex.x < bb.minPoint.x)		bb.minPoint.x = vertex.x;
+	if(vertex.y < bb.minPoint.y)		bb.minPoint.y = vertex.y;
+	if(vertex.z < bb.minPoint.z)		bb.minPoint.z = vertex.z;
+
+	if(vertex.x > bb.maxPoint.x)		bb.maxPoint.x = vertex.x;
+	if(vertex.y > bb.maxPoint.y)		bb.maxPoint.y = vertex.y;
+	if(vertex.z > bb.maxPoint.z)		bb.maxPoint.z = vertex.z;
+ }

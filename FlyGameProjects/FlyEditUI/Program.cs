@@ -20,8 +20,11 @@ namespace FlyEditUI
 
 			FlyEdit form = new FlyEdit();
 			form.Show();
-			form.Run();
-			form.Dispose();
+			if (form.InitiateCore())
+			{
+				form.Run();
+				form.Dispose();
+			}
 		}
 	}
 }
