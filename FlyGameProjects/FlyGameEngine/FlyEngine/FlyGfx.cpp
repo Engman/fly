@@ -60,6 +60,26 @@ void FLYCALL FlyEngine_Core::Gfx_EndDeferredScene()
 	D3DShell::self()->endScene();
 }
 
+void FLYCALL FlyEngine_Core::Gfx_EndDeferredSceneOrtho()
+{
+	IShader::PER_FRAME_DATA gBufferDrawData;
+	gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
+	gBufferDrawData.view = this->activeCamera->GetViewMatrix();
+	gBufferDrawData.projection = this->activeCamera->GetOrthogonalMatrix();
+	this->gbufferShader->draw(gBufferDrawData);
+
+
+	D3DShell::self()->setRenderTarget();
+	D3DShell::self()->beginScene();
+
+	this->fsq->Render(D3DShell::self()->getDeviceContext());
+	this->colorShader->draw(gBufferDrawData);
+	
+
+	D3DShell::self()->releaseSRV();
+	D3DShell::self()->endScene();
+}
+
 void FLYCALL FlyEngine_Core::Gfx_Resize(int width, int height)
 {
 	D3DShell::self()->resizeViewport((UINT)width, (UINT)height);
@@ -127,10 +147,11 @@ bool FlyEngine_Core::_InitGfx(FLY_ENGINE_INIT_DESC& _desc)
 	desc.MSAA				= _desc.multisampling;
 	desc.MSAASampleCount	= 4;
 	desc.vSync				= _desc.vSync;
-	desc.fullScreen			= _desc.fullscreen;
+	desc.fullScreen			= !_desc.fullscreen;
 
 	if(!D3DShell::self()->init(desc))
 		return false;
+
 
 	return true;
 

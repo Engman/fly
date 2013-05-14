@@ -8,6 +8,7 @@
 #include <vector>
 #include "vertex.h"
 #include "../Core/D3DShell.h"
+#include "../Core/IShader.h"
 
 #include "BoundingVolumes.h"
 
@@ -22,12 +23,7 @@ class OctTree
 			D3DXVECTOR3 normal;
 			D3DXVECTOR2 texture;
 		};
-		struct RenderBufferType
-		{
-			SmartPtrStd<BaseBuffer> vertexBuffer;
 
-			int verticesToRender;
-		};
 	private:	
 		struct Node
 		{
@@ -36,6 +32,8 @@ class OctTree
 			Node* children;
 
 			SmartPtrStd<BaseBuffer> pVertexBuffer;
+			SmartPtrStd<std::vector<D3DXVECTOR3>> nodeVertexList;
+			SmartPtrStd<vector<VERTEX::VertexPNT>> bigVertexList;
 
 			unsigned long indexCount;
 		};
@@ -51,9 +49,15 @@ class OctTree
 
 		bool IsPointContained(int index, D3DXVECTOR3 minPoint, D3DXVECTOR3 maxPoint);
 
-		vector<RenderBufferType> RenderNode(ID3D11DeviceContext* dc, Node* parent, ViewFrustum frustum);
+		vector<BaseBuffer*> RenderNode(ID3D11DeviceContext* dc, Node* parent, ViewFrustum frustum, IShader* shader, IShader::DRAW_DATA data);
+
+		vector<vector<D3DXVECTOR3>*> OctTree::GetCollidedBoxNode(Node* parent, BoundingSphere sphere);
 
 		void ReleaseChild(Node* parent);
+
+		void PutVerticesInBox(Node* parent, int index);
+
+		void InitNodeBuffers(Node* parent);
 
 	public:
 		OctTree();
@@ -64,7 +68,9 @@ class OctTree
 		void Release();
 
 		/** The returned value contains a list of buffer structures which are prepared to be rendered*/
-		vector<RenderBufferType> Render(ViewFrustum frustum);
+		vector<BaseBuffer*> Render(ViewFrustum frustum, IShader* shader, IShader::DRAW_DATA data);
+
+		vector<vector<D3DXVECTOR3>*> GetCollidedBoxes(BoundingSphere sphere);
 };
 
 #endif

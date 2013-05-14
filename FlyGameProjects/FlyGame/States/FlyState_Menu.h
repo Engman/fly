@@ -14,6 +14,8 @@ class FlyState_Menu		:public IFlySystemState
 
 		void Initiate(FlyGame*) override;
 		void Frame() override;
+
+		void Release() override;
 };
 
 

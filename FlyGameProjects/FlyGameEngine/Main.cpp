@@ -39,34 +39,30 @@ class Lukas
 				Lukas::obj[i]->Render(f);
 			}
 		}
-		void mkeydown(Input::MouseBtnData& d)
-		{
-			Entity* pick = this->fly->Geometry_Pick(this->obj, d.MousePos_clientX, d.MousePos_clientY);
-			if(pick)
-			{
-				vec3 tt = pick->getPosition();
-				tt.z -= 2;
-				pick->setPosition(tt);
-			}
-		}
-		void Keydown(Input::KeyPressData& key)
-		{
-			Camera *c = Lukas::fly->Gfx_GetCamera();
-
-				 if(key.key == Input::KeyCodes::K_W)		c->RelativeForward	(0.3f);
-			else if(key.key == Input::KeyCodes::K_S)		c->RelativeForward	(-0.3f);
-			else if(key.key == Input::KeyCodes::K_A)		c->RelativeRight	(-0.1f);
-			else if(key.key == Input::KeyCodes::K_D)		c->RelativeRight	(0.1f);
-			else if(key.key == Input::KeyCodes::K_Space)	c->RelativeUp		(0.3f);
-			else if(key.key == Input::KeyCodes::K_Ctrl)		c->RelativeUp		(-0.3f);
-			else if(key.key == Input::KeyCodes::K_Escape)	PostQuitMessage		(0);
-		}
-		void MouseMove(Input::MouseMoveData& d)
-		{
-			Camera *c = Lukas::fly->Gfx_GetCamera();
-			c->RelativeYaw((float)D3DXToRadian(d.relativeX*0.2)); //* this->gtime->DeltaTime() * 150);
-			c->RelativePitch((float)D3DXToRadian(d.relativeY*0.2)); //* this->gtime->DeltaTime() * 150);
-		}
+		//void Keydown(Input::KeyCodes::Key key)
+		//{
+		//	Camera *c = Lukas::fly->Gfx_GetCamera();
+		//	if(key == Input::KeyCodes::K_W)
+		//		c->RelativeForward(0.3f);
+		//	else if(key == Input::KeyCodes::K_S)
+		//		c->RelativeForward(-0.3f);
+		//	else if(key == Input::KeyCodes::K_A)
+		//		c->RelativeRight(-0.1f);
+		//	else if(key == Input::KeyCodes::K_D)
+		//		c->RelativeRight(0.1f);
+		//	else if(key == Input::KeyCodes::K_Space)
+		//		c->RelativeUp(0.3f);
+		//	else if(key == Input::KeyCodes::K_Ctrl)
+		//		c->RelativeUp(-0.3f);
+		//	else if(key == Input::KeyCodes::K_Escape)
+		//		PostQuitMessage(0);
+		//}
+		//void MouseMove(Input::MouseMoveData d)
+		//{
+		//	Camera *c = Lukas::fly->Gfx_GetCamera();
+		//	c->RelativeYaw((float)D3DXToRadian(d.relativeX*0.2)); //* this->gtime->DeltaTime() * 150);
+		//	c->RelativePitch((float)D3DXToRadian(d.relativeY*0.2)); //* this->gtime->DeltaTime() * 150);
+		//}
 };
 
 std::vector<Entity*> Lukas::obj = std::vector<Entity*>();
@@ -92,9 +88,8 @@ int WINAPI WinMain( HINSTANCE hInst, HINSTANCE prevInst, PSTR cmdLine, int cmdSh
 	
 	Lukas::fly->Input_Initialize();
 	Lukas::fly->Input_Activate();
-	Input::self()->subscribeKeyDown<Lukas>(&lukor, &Lukas::Keydown);
-	Input::self()->subscribeMouseMove<Lukas>(&lukor, &Lukas::MouseMove);
-	Input::self()->subscribeMouseBtnDown(&lukor, &Lukas::mkeydown);
+	/*Input::self()->subscribeKeyDown<Lukas>(&lukor, &Lukas::Keydown);
+	Input::self()->subscribeMouseMove<Lukas>(&lukor, &Lukas::MouseMove);*/
 	
 	
 	vector<const wchar_t*> files;

@@ -38,7 +38,7 @@ class DLLEXPORT FlyGame
 		virtual~FlyGame();
 
 
-		bool Initiate(FlyGameSystemState state = Menu);
+		bool Initiate(FlyGameSystemState state = Level);
 
 
 		FlyEngine* GetCoreInstance();
@@ -54,41 +54,3 @@ class DLLEXPORT FlyGame
 };
 
 #endif
-
-/*
-* LEVEL
-*	- Name?
-*	- Number?
-* CUTSCENE
-*	- time
-*	- resource
-* GAME OBJECTS
-*	- resource (fgm)
-*	- world
-*	- transform
-*	- rotate
-*	- shader
-* LIGHTS
-*	* dir
-*		- Ambient
-*		- Diffuse
-*		- Specluar
-*		- Direction
-*		- Attenuate?
-*	* spot
-*		- Ambient
-*		- Diffuse
-*		- Specular
-*		- Range
-*		- Position
-*		- Direction
-*		- Radius
-*		- Attenuate?
-*	* point
-*		- Ambient
-*		- Diffuse
-*		- Specular
-*		- Position
-*		- Range
-*		- Attenuate?
-*/

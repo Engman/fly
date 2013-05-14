@@ -31,6 +31,7 @@ class Entity abstract
 		Matrix			world;
 		Matrix			transformation;
 		vec3			rotation;
+		vec3			translation;
 
 		ObjectMaterial	*material;
 		IShader			*shader;
@@ -46,6 +47,7 @@ class Entity abstract
 			this->world				= origObj.world;
 			this->transformation	= origObj.transformation;
 			this->rotation			= origObj.rotation;
+			this->translation		= origObj.translation;
 			this->buffers			= origObj.buffers;
 			this->name				= origObj.name;
 			this->material			= origObj.material;
@@ -91,7 +93,7 @@ class Entity abstract
 		}
 		vec3			getPosition				()	const
 		{
-			return vec3(this->transformation.m[3]);
+			return this->translation;
 		}
 		vec3			getRotation				()	const  
 		{
@@ -136,13 +138,13 @@ class Entity abstract
 
 		void			setPosition				(vec3 _position)
 		{
-			this->transformation._41 = _position.x;
-			this->transformation._42 = _position.y;
-			this->transformation._43 = _position.z;
+			this->translation = _position;
 		}
 		void			setRotation				(vec3 _rotation)
 		{
 			this->rotation = _rotation;
+
+			
 		}
 		void			setFront				(vec3 _front)
 		{
@@ -165,6 +167,14 @@ class Entity abstract
 		void			setShader				(IShader* _shader)
 		{
 			this->shader = _shader;
+		}
+		void			setBoundingSphere				(BoundingSphere* _sphere)
+		{
+			this->boundingSphere = _sphere;
+		}
+		BoundingSphere*			getBoundingSphere				()
+		{
+			return this->boundingSphere;
 		}
 		
 

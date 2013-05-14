@@ -123,29 +123,26 @@ bool BoxVSBox(BoundingBox& box1, BoundingBox& box2)
 }
 bool BoxVSSphere(BoundingBox& box, BoundingSphere& sphere)
 {
-	D3DXVECTOR3 closestPoint;
+    float s, d = 0.0f; 
 
-	D3DXVECTOR3 boxMiddle = box.maxPoint*0.5f + box.minPoint*0.5f;
-	D3DXVECTOR3 sphereAxis = sphere.center - boxMiddle;
-	float dist = D3DXVec3Length(&sphereAxis);
+    //find the square of the distance
+    //from the sphere to the box
+    for( long i=0 ; i<3 ; i++ )
+    {
+		if( sphere.center[i] < box.minPoint[i] )
+        { 
+			s = sphere.center[i] - box.minPoint[i];
+            d += s*s; 
 
-	D3DXVec3Normalize(&sphereAxis, &sphereAxis);
+        }
+        else if( sphere.center[i] > box.maxPoint[i] )
+        {
+            s = sphere.center[i] - box.maxPoint[i];
+            d += s*s; 
+        }
+    }
+    return d <= sphere.radius*sphere.radius;
 
-	if( sphereAxis.x >= sphereAxis.y && sphereAxis.x >= sphereAxis.z )
-        sphereAxis /= sphereAxis.x;
-    else if( sphereAxis.y >= sphereAxis.x && sphereAxis.y >= sphereAxis.z )
-        sphereAxis /= sphereAxis.y;
-    else
-        sphereAxis /= sphereAxis.z;
-
-	D3DXVECTOR3 extents = (box.maxPoint - box.minPoint);
-    sphereAxis.x *= extents.x / 2.0f;
-    sphereAxis.y *= extents.y / 2.0f;
-    sphereAxis.z *= extents.z / 2.0f;
-
-	double distanceSquared = D3DXVec3LengthSq(&D3DXVECTOR3(closestPoint - sphere.center));
- 
-	return dist <= (sphere.radius + D3DXVec3Length(&sphereAxis));
 }
 bool BoxVSPoint(BoundingBox& box, D3DXVECTOR3& point)
 {
@@ -204,21 +201,21 @@ bool BoxVSTriangle(BoundingBox& box, D3DXVECTOR3 triangle[3])
 	if(p0<p2) {min=p0; max=p2;} 
 	else {min=p2; max=p0;} 
 	rad = fex*boxHalfSize[1] + fey*boxHalfSize[2]; 
-	if((min>rad || max<-rad) && rad != 0.0f) return false;
+	//if((min>rad || max<-rad) && rad != 0.0f) return false;
 	//Y
 	p0 = -e0[2]*v0[0] + e0[0]*v0[2];	
 	p2 = -e0[2]*v2[0] + e0[0]*v2[2]; 
 	if(p0<p2) {min=p0; max=p2;} 
 	else {min=p2; max=p0;} 
 	rad = fez * boxHalfSize[0] + fex * boxHalfSize[2]; 
-	if((min>rad || max<-rad) && rad != 0.0f) return false;
+	//if((min>rad || max<-rad) && rad != 0.0f) return false;
 	//Z
 	p1 = e0[1]*v1[0] - e0[0]*v1[1]; 
 	p2 = e0[1]*v2[0] - e0[0]*v2[1]; 
 	if(p2<p1) {min=p2; max=p1;} 
 	else {min=p1; max=p2;} 
 	rad = fey * boxHalfSize[0] + fex * boxHalfSize[1]; 
-	if((min>rad || max<-rad) && rad != 0.0f) return false;
+	//if((min>rad || max<-rad) && rad != 0.0f) return false;
 
 	fex = fabsf(e1[0]);
 	fey = fabsf(e1[1]);
@@ -229,21 +226,21 @@ bool BoxVSTriangle(BoundingBox& box, D3DXVECTOR3 triangle[3])
 	if(p0<p2) {min=p0; max=p2;} 
 	else {min=p2; max=p0;} 
 	rad = fex*boxHalfSize[1] + fey*boxHalfSize[2]; 
-	if((min>rad || max<-rad) && rad != 0.0f) return false;
+	//if((min>rad || max<-rad) && rad != 0.0f) return false;
 	//Y
 	p0 = -e1[2]*v0[0] + e1[0]*v0[2];	
 	p2 = -e1[2]*v2[0] + e1[0]*v2[2]; 
 	if(p0<p2) {min=p0; max=p2;} 
 	else {min=p2; max=p0;} 
 	rad = fez * boxHalfSize[0] + fex * boxHalfSize[2]; 
-	if((min>rad || max<-rad) && rad != 0.0f) return false;
+	//if((min>rad || max<-rad) && rad != 0.0f) return false;
 	//Z
 	p0 = e1[1]*v0[0] - e1[0]*v0[1]; 
 	p1 = e1[1]*v1[0] - e1[0]*v1[1]; 
 	if(p0<p1) {min=p0; max=p1;} 
 	else {min=p1; max=p0;} 
 	rad = fey * boxHalfSize[0] + fex * boxHalfSize[1]; 
-	if((min>rad || max<-rad) && rad != 0.0f) return false;
+	//if((min>rad || max<-rad) && rad != 0.0f) return false;
 
 	fex = fabsf(e2[0]);
 	fey = fabsf(e2[1]);
@@ -254,21 +251,21 @@ bool BoxVSTriangle(BoundingBox& box, D3DXVECTOR3 triangle[3])
 	if(p0<p1) {min=p0; max=p1;} 
 	else {min=p1; max=p0;} 
 	rad = fez * boxHalfSize[1] + fey * boxHalfSize[2]; 
-	if((min>rad || max<-rad) && rad != 0.0f) return false;
+	//if((min>rad || max<-rad) && rad != 0.0f) return false;
 	//Y
 	p0 = -e2[2]*v0[0] + e2[0]*v0[2]; 
 	p1 = -e2[2]*v1[0] + e2[0]*v1[2];	
 	if(p0<p1) {min=p0; max=p1;}
 	else {min=p1; max=p0;} 
 	rad = fez * boxHalfSize[0] + fex * boxHalfSize[2];
-	if((min>rad || max<-rad) && rad != 0.0f) return false;
+	//if((min>rad || max<-rad) && rad != 0.0f) return false;
 	//Z
 	p1 = e2[1]*v1[0] - e2[0]*v1[1]; 
 	p2 = e2[1]*v2[0] - e2[0]*v2[1]; 
 	if(p2<p1) {min=p2; max=p1;} 
 	else {min=p1; max=p2;} 
 	rad = fey * boxHalfSize[0] + fex * boxHalfSize[1]; 
-	if((min>rad || max<-rad) && rad != 0.0f) return false;
+	//if((min>rad || max<-rad) && rad != 0.0f) return false;
 
 	//Test box against minimal bounding box for triangle
 	/* test in X-direction */
@@ -449,5 +446,110 @@ bool TriangleVSTriangle(D3DXVECTOR3 triangle1[3], D3DXVECTOR3 triangle2[3])
 		return true;
 	}
 
+	return false;
+}
+
+D3DXVECTOR3  closestPointOnTriangle(D3DXVECTOR3 a, D3DXVECTOR3 b, D3DXVECTOR3 c, D3DXVECTOR3 p)
+{
+	D3DXVECTOR3 Rab = closestPointOnLine(a, b, p);
+	D3DXVECTOR3 Rbc = closestPointOnLine(b, c, p);
+	D3DXVECTOR3 Rca = closestPointOnLine(c, a, p);
+	D3DXVECTOR3 closest;
+
+	float abL = D3DXVec3Length(&(p - Rab));
+	float bcL = D3DXVec3Length(&(p - Rbc));
+	float caL = D3DXVec3Length(&(p - Rca));
+	
+	float min = abL;
+	closest = Rab;
+
+	if(bcL < min)
+	{
+		min = bcL;
+		closest = Rbc;
+	}
+
+	if(caL < min)
+	{
+		closest = Rca;
+	}
+
+	return closest;
+}
+
+D3DXVECTOR3 closestPointOnLine(D3DXVECTOR3 a, D3DXVECTOR3 b, D3DXVECTOR3 p)
+{
+	// Determine t (the length of the vector from ‘a’ to ‘p’)
+
+	D3DXVECTOR3 c = p - a;
+	D3DXVECTOR3 V = b - a;
+	float d = D3DXVec3Length(&V);
+	D3DXVec3Normalize(&V, &V);
+	float t = D3DXVec3Dot(&V, &c);
+
+	// Check to see if ‘t’ is beyond the extents of the line segment
+
+	if (t < 0.0f) return a;
+	if (t > d) return b;
+ 
+	// Return the point between ‘a’ and ‘b’
+
+	V *= t;
+	return a + V;
+}
+
+
+float intersect(D3DXVECTOR3 pOrigin, D3DXVECTOR3 pNormal, D3DXVECTOR3 rOrigin, D3DXVECTOR3 rVector)
+{
+	float d = -D3DXVec3Dot(&pNormal, &pOrigin);	
+	float numer = D3DXVec3Dot(&pNormal, &rOrigin) + d;
+	float denom = D3DXVec3Dot(&pNormal, &rVector);
+
+	if(denom == 0.0f)
+	{
+		return -1.0f;
+	}
+
+	return -(numer / denom);
+}
+
+float intersectSphere(D3DXVECTOR3 rO, D3DXVECTOR3 rV, D3DXVECTOR3 sO, float sR)
+{
+   D3DXVECTOR3 Q = sO - rO;
+   float c = D3DXVec3Length(&Q);
+   float v = D3DXVec3Dot(&Q, &rV);
+   float d = sR*sR -  (c*c - v*v);
+
+   // If there was no intersection, return -1
+
+   if (d < 0.0) return -1.0f;
+
+   // Return the distance to the [first] intersecting point
+
+   return v - sqrt(d);
+}
+
+bool CheckPointInTriangle(D3DXVECTOR3 point, D3DXVECTOR3 a, D3DXVECTOR3 b, D3DXVECTOR3 c) 
+{
+	float total_angles = 0.0f;
+       
+	// make the 3 vectors
+	D3DXVECTOR3 v1 = point-a;
+	D3DXVECTOR3 v2 = point-b;
+	D3DXVECTOR3 v3 = point-c;
+  
+	D3DXVec3Normalize(&v1, &v1);
+	D3DXVec3Normalize(&v2, &v2);
+	D3DXVec3Normalize(&v3, &v3);
+
+	total_angles += acos(D3DXVec3Dot(&v1,&v2));   
+	total_angles += acos(D3DXVec3Dot(&v2,&v3));
+	total_angles += acos(D3DXVec3Dot(&v3,&v1)); 
+    
+	// allow a small margin because of the limited precision of
+	// floating point math.
+	if (fabs(total_angles-2*D3DX_PI) <= 0.005)
+		return true;
+     
 	return false;
 }
