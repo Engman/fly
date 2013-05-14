@@ -5,8 +5,9 @@ FlyMesh::FlyMesh()
 	:Entity(Type::OBJECT)
 {
 	D3DXMatrixIdentity(&this->world);
-	D3DXMatrixIdentity(&this->transformation);
+	this->translation = vec3(0.0f, 0.0f, 0.0f);
 	this->rotation	= vec3(0.0f, 0.0f, 0.0f);
+	this->scale = vec3(1.0f, 1.0f, 1.0f);
 	D3DXMatrixIdentity(&this->world);
 }
 FlyMesh::~FlyMesh()
@@ -23,10 +24,24 @@ void FlyMesh::Render(ViewFrustum& frustum)
 		if(this->shader && FrustumVSSphere(frustum, *this->boundingSphere))
 		{
 			IShader::DRAW_DATA data;
+			D3DXMATRIX rotation;
+			D3DXMATRIX scaling;
+			D3DXMATRIX translation;
+			D3DXMatrixIdentity(&this->world);
+
+			D3DXMatrixScaling(&scaling, this->scale.x, this->scale.y, this->scale.z);
+			D3DXMatrixRotationYawPitchRoll(&rotation, this->rotation.y, this->rotation.x, this->rotation.z);
+			D3DXMatrixTranslation(&translation, this->translation.x, this->translation.y, this->translation.z);
+
+			this->world *= scaling;
+			this->world *= rotation;
+			this->world *= translation;
+
+			data.worldMatrix = &this->world;
+
 		
 			for(int i = 0; i<(int)this->buffers.size(); i++)
 				data.buffers.push_back(this->buffers[i]);
-			data.worldMatrix = &this->transformation;
 
 
 			//data.worldMatrix = &this->world;

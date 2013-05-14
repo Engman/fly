@@ -13,7 +13,7 @@ using System.Drawing;
 namespace FlyEditUI { public partial class FlyEdit {
 
 
-	
+	String oldName = "";
 
 	private void loadGeomrtyToolStripMenuItem_Click(object sender, EventArgs e)
 	{
@@ -100,6 +100,7 @@ namespace FlyEditUI { public partial class FlyEdit {
 			Point location = PointToScreen(this.RenderWin.Location);
 			Rectangle rect = new Rectangle(location, this.RenderWin.Size);
 			Cursor.Clip = rect;
+			this.flyCLI.FreeFly(true);
 		}
 		else
 		{
@@ -208,5 +209,87 @@ namespace FlyEditUI { public partial class FlyEdit {
 
 		}
 		
+	}
+
+	private void trackBar_Rotation_Scroll(object sender, EventArgs e)
+	{
+		float x = this.trackBar_RotationX.Value * 0.017777777777777777777777777777778f;
+		float y = this.trackBar_RotationY.Value * 0.017777777777777777777777777777778f;
+		float z = this.trackBar_RotationZ.Value * 0.017777777777777777777777777777778f;
+
+		this.flyCLI.SetRotation(x, y, z);
+		this.ActiveControl = null;
+	}
+
+	private void trackBar_Scale_Scroll(object sender, EventArgs e)
+	{
+		float x = 1.0f;
+		float y = 1.0f;
+		float z = 1.0f;
+
+		if (this.checkBox_uniformScale.Checked)
+		{
+			x += ((TrackBar)sender).Value * 0.01f;
+			y += ((TrackBar)sender).Value * 0.01f;
+			z += ((TrackBar)sender).Value * 0.01f;
+
+			int val = ((TrackBar)sender).Value;
+			this.trackBar_ScaleX.Value = val;
+			this.trackBar_ScaleY.Value = val;
+			this.trackBar_ScaleZ.Value = val;
+		}
+		else
+		{
+			x += this.trackBar_ScaleX.Value * 0.005f;
+			y += this.trackBar_ScaleY.Value * 0.005f;
+			z += this.trackBar_ScaleZ.Value * 0.005f;
+		}
+
+		this.flyCLI.SetScale(x, y, z);
+		this.ActiveControl = null;
+	}
+
+	private void checkBox_uniformScale_CheckedChanged(object sender, EventArgs e)
+	{
+		if (!this.checkBox_uniformScale.Checked)
+		{
+			this.trackBar_ScaleX.Value = 1;
+			this.trackBar_ScaleY.Value = 1;
+			this.trackBar_ScaleZ.Value = 1;
+		}
+		this.ActiveControl = null;	
+	}
+
+	private void textBox_SelectedName_TextChanged(object sender, EventArgs e)
+	{
+		if (this.LoadedResources_name.Items.Count == 0)
+		{
+			return;
+		}
+
+		if (this.textBox_SelectedName.Text.Length > 3 && this.textBox_SelectedName.Text != "" && this.textBox_SelectedName.Text != oldName)
+		{
+			if(oldName != "")
+				this.button_nameApply.Enabled = true;
+		}
+	}
+
+	private void button_nameApply_Click(object sender, EventArgs e)
+	{
+		if (this.flyCLI.SetName(this.textBox_SelectedName.Text))
+		{
+			
+			for (int i = 0; i < this.LoadedResources_name.Items.Count; i++)
+			{
+				if (this.LoadedResources_name.Items[i].ToString() == oldName)
+				{
+					this.LoadedResources_name.Items[i] = this.textBox_SelectedName.Text;
+					oldName = this.textBox_SelectedName.Text;
+				}
+			}
+		}
+
+		this.button_nameApply.Enabled = false;
+		this.ActiveControl = null;
 	}
 }}

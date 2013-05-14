@@ -248,6 +248,9 @@ class Input
 			int	clientY;
 			int	screenX;
 			int	screenY;
+			bool shift;
+			bool alt;
+			bool ctrl;
 		};
 		/** Contains mouse keypress data */
 		struct MouseBtnData
@@ -260,6 +263,9 @@ class Input
 			int MousePos_screenY;
 			KeyCodes::Key key;
 			bool released;
+			bool shift;
+			bool alt;
+			bool ctrl;
 		};
 		/** Contains information about a keypress */
 		struct KeyPressData

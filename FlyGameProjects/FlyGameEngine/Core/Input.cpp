@@ -230,59 +230,74 @@ void Input::_PrSt::proccessRawKeyboardData	(RAWKEYBOARD& k)
 	//The key is released.
 	if(k.Flags == RI_KEY_BREAK)
 	{
-		if( i != -1 )
+		if(v == KeyCodes::K_Ctrl)	
 		{
+			CONTROLDOWN = false;
+			KEY_INPUT_keyData.ctrl = false;
+			MOUSE_INPUT_btnData.ctrl = false;
+			MOUSE_INPUT_moveData.ctrl = false;
+		}
+		else if(v == KeyCodes::K_Shift)	
+		{
+			SHIFTDOWN	= false;
+			KEY_INPUT_keyData.shift = false;
+			MOUSE_INPUT_btnData.shift = false;
+			MOUSE_INPUT_moveData.shift = false;
+		}
+		else if(v == KeyCodes::K_Alt)	
+		{
+				
+			ALTDOWN		= false;
+			KEY_INPUT_keyData.alt = false;
+			MOUSE_INPUT_btnData.alt = false;
+			MOUSE_INPUT_moveData.alt = false;
+		}
+		else if( i != -1 )
+		{
+			KEY_INPUT_keyData.released = true;
+
+			Input::self()->_keyUpProc.procEvent(KEY_INPUT_keyData); 
+
 			while(procThreadBussy);
 			procThreadWaitForUpdate = true;
 				this->keyList.erase(this->keyList.begin() + i);
 			procThreadWaitForUpdate = false;
-
-			if(v == KeyCodes::K_Ctrl)	
-			{
-				CONTROLDOWN = false;
-				KEY_INPUT_keyData.ctrl = false;
-			}
-			else if(v == KeyCodes::K_Shift)	
-			{
-				SHIFTDOWN	= false;
-				KEY_INPUT_keyData.shift = false;
-			}
-			else if(v == KeyCodes::K_Alt)	
-			{
-				ALTDOWN		= false;
-				KEY_INPUT_keyData.alt = false;
-			}
-
-			Input::self()->_keyUpProc.procEvent(KEY_INPUT_keyData); 
 		}
 		
 	}
 	//The key is pressed.
 	else if (k.Flags == RI_KEY_MAKE)
 	{
-		if(i == -1)
+		if(v == KeyCodes::K_Ctrl)	
+		{
+			CONTROLDOWN = true;
+			KEY_INPUT_keyData.ctrl = true;
+			MOUSE_INPUT_btnData.ctrl = true;
+			MOUSE_INPUT_moveData.ctrl = true;
+		}
+		else if(v == KeyCodes::K_Shift)	
+		{
+			SHIFTDOWN	= true;
+			KEY_INPUT_keyData.shift = true;
+			MOUSE_INPUT_btnData.shift = true;
+			MOUSE_INPUT_moveData.shift = true;
+		}
+		else if(v == KeyCodes::K_Alt)	
+		{
+			ALTDOWN		= true;
+			KEY_INPUT_keyData.alt = true;
+			MOUSE_INPUT_btnData.alt = true;
+			MOUSE_INPUT_moveData.alt = true;
+		}
+		else if(i == -1)
 		{
 			KEY_INPUT_keyData.key = v;
+
+			KEY_INPUT_keyData.released = false;
 			while(procThreadBussy);
 			procThreadWaitForUpdate = true;
 				this->keyList.push_back(KEY_INPUT_keyData);
 			procThreadWaitForUpdate = false;
-
-			if(v == KeyCodes::K_Ctrl)	
-			{
-				CONTROLDOWN = true;
-				KEY_INPUT_keyData.ctrl = true;
-			}
-			else if(v == KeyCodes::K_Shift)	
-			{
-				SHIFTDOWN	= true;
-				KEY_INPUT_keyData.shift = true;
-			}
-			else if(v == KeyCodes::K_Alt)	
-			{
-				ALTDOWN		= true;
-				KEY_INPUT_keyData.alt = true;
-			}
 		}
 	}
 		
@@ -330,7 +345,6 @@ void Input::_PrSt::proccessRawMouseData		(RAWMOUSE& m)
 			case RI_MOUSE_RIGHT_BUTTON_DOWN:
 			case RI_MOUSE_MIDDLE_BUTTON_DOWN:
 			{
-				//MessageBox(0, L"InputDown", L"", 0);
 				if(m.usButtonFlags == RI_MOUSE_LEFT_BUTTON_DOWN)	
 				{
 					MOUSE_INPUT_btnData.key = KeyCodes::M_LeftBtn;
@@ -441,6 +455,7 @@ DWORD WINAPI Input::ProcThread(LPVOID lpParameter)
 		int size = (int)Input::self()->_PrPtr->keyList.size();
 		if(size)
 		{
+			//MessageBox(0, L"SIZE", L"", 0);
 			while(procThreadWaitForUpdate);
 			procThreadBussy = true;
 			for (int i = 0; i < size; i++)
@@ -448,11 +463,7 @@ DWORD WINAPI Input::ProcThread(LPVOID lpParameter)
 			procThreadBussy = false;
 		}
 
-		if(LBTNDOWN)	
-		{
-			//MessageBox(0, L"LBTNDOWN in Input", L"", 0);
-			Input::self()->_mouseBtnDown.procEvent(MOUSE_INPUT_btnData);
-		}
+		if(LBTNDOWN)	Input::self()->_mouseBtnDown.procEvent(MOUSE_INPUT_btnData);
 		if(RBTNDOWN)	Input::self()->_mouseBtnDown.procEvent(MOUSE_INPUT_btnData);
 		if(MBTNDOWN)	Input::self()->_mouseBtnDown.procEvent(MOUSE_INPUT_btnData);
 	}

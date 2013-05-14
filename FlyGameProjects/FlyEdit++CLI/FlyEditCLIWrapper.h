@@ -45,8 +45,13 @@ namespace System
 					void OnResize				(int width, int height);
 					bool ChangeView				(int id);
 					bool SelectObject			(int id);
-					void GetSelected			(String^ name, int^ id);
+					void GetSelected			(String^% name, int% id, float% rx, float% ry, float% rz, float% sx, float% sy, float% sz);
 					void GetCameras				(Dictionary<String^, int>^ outCameras);
+					void SetRotation			(float x, float y, float z);
+					void SetScale				(float x, float y, float z);
+					bool SetName				(String^ name);
+					void FreeFly				(bool set);
+					bool GetFlyState			();
 			};
 		}
 	}

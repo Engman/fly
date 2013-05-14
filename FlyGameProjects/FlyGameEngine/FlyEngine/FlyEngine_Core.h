@@ -70,6 +70,7 @@ class FlyEngine_Core	:public FlyEngine
 		bool		FLYCALL		Geometry_Load				(vector<const wchar_t*> loadData, vector<Entity*>* objects);
 		bool		FLYCALL		Geometry_Load				(const wchar_t* path, vector<Entity*>* object, FlyEngineGeometry special);
 		Entity*		FLYCALL		Geometry_Pick				(const vector<Entity*>& objectToTest, int posX, int posY);
+		void		FLYCALL		FromScreenSpaceToWorldSpace	(int x, int y, float& wx, float& wy, float& wz) override;
 
 
 
