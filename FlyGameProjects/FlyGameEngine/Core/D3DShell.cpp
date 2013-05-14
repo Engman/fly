@@ -348,7 +348,7 @@ bool D3DShell::init(D3D_INIT_DESC& desc)
 	swapChainDesc.BufferUsage						= DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swapChainDesc.BufferCount						= 1;
 	swapChainDesc.OutputWindow						= desc.hwnd;
-	swapChainDesc.Windowed							= !desc.fullScreen;
+	swapChainDesc.Windowed							= desc.fullScreen;
 	swapChainDesc.SwapEffect						= DXGI_SWAP_EFFECT_DISCARD;
 	swapChainDesc.Flags								= 0;
 

@@ -7,9 +7,10 @@ int WINAPI WinMain( HINSTANCE hInst, HINSTANCE prevInst, PSTR cmdLine, int cmdSh
 {
 	FlyGame fg;
 
-	fg.Initiate();
+	fg.Initiate(Level);
 	fg.Run();
 	
+	//fg.Destroy();
 	return cmdShow;
 
 }

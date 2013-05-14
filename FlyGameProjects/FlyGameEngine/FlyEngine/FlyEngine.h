@@ -87,6 +87,8 @@ class FlyEngine
 		virtual bool		FLYCALL		Core_Initialize			(FLY_ENGINE_INIT_DESC& initDesc)	= 0;
 		/** Shuts down engine */
 		virtual void		FLYCALL		Core_Shutdown			()									= 0;
+		/** Used for windows message handling */
+		virtual bool		FLYCALL		Core_Message			()									= 0;
 		/** Updates a sceen */
 		virtual void		FLYCALL		Gfx_Update				()									= 0;
 		/** Begin forward scene */
@@ -97,6 +99,8 @@ class FlyEngine
 		virtual void		FLYCALL		Gfx_BeginDeferredScene	()									= 0;
 		/** End deferred scene */
 		virtual void		FLYCALL		Gfx_EndDeferredScene	()									= 0;
+		/** End deferred scene with ortho */
+		virtual void		FLYCALL		Gfx_EndDeferredSceneOrtho()									= 0;
 		/** Resizes the render targets */
 		virtual void		FLYCALL		Gfx_Resize				(int width, int height)				= 0;
 		/** Sets active camera, if parameter is NULL the default cam is set */

@@ -95,7 +95,7 @@ bool FLYCALL FlyEngine_Core::Geometry_Load(const wchar_t* path, vector<Entity*>*
 		d.vCount = (int)raw.objects[i].vertex->size();
 		d.vertecies = raw.objects[i].vertex;
 
-		FlyMesh *obj = new FlyMesh();
+		Terrain *obj = new Terrain();
 		if(!obj->Initialize(d))
 			return false;
 		objects->push_back(obj);

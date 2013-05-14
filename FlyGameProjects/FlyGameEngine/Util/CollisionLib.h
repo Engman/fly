@@ -25,5 +25,14 @@ bool SphereVSSphere(BoundingSphere& sphere, BoundingSphere& sphere2);
 
 bool TriangleVSTriangle(D3DXVECTOR3 triangle1[3], D3DXVECTOR3 triangle2[3]);
 
+D3DXVECTOR3  closestPointOnTriangle(D3DXVECTOR3 a, D3DXVECTOR3 b, D3DXVECTOR3 c, D3DXVECTOR3 p);
+
+D3DXVECTOR3 closestPointOnLine(D3DXVECTOR3 a, D3DXVECTOR3 b, D3DXVECTOR3 p);
+
+float intersect(D3DXVECTOR3 pOrigin, D3DXVECTOR3 pNormal, D3DXVECTOR3 rOrigin, D3DXVECTOR3 rVector);
+float intersectSphere(D3DXVECTOR3 rO, D3DXVECTOR3 rV, D3DXVECTOR3 sO, float sR);
+
+bool CheckPointInTriangle(D3DXVECTOR3 point, D3DXVECTOR3 a, D3DXVECTOR3 b, D3DXVECTOR3 c);
+
 #endif
 

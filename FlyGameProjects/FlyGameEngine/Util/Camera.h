@@ -32,6 +32,8 @@ class Camera
 		void RelativeForward(float speed);
 		void RelativeRight(float speed);
 		void RelativeUp(float speed);
+		void RelativeParallelForward(float speed);
+		void RelativeParallelRight(float speed);
 
 		/**Angles are set in degrees*/
 		void SetRotation(float x, float y, float z);

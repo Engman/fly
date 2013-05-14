@@ -1,375 +1,254 @@
 #include "Input.h"
-#include <WindowsX.h>
-#include <algorithm>
-#include <ctime>
 
-static bool procThreadBussy = false;
-static bool procThreadWaitForUpdate = false;
+bool Input::instanceFlag = false;
+Input* Input::single = NULL;
 
-template<typename T>
-int existsInVectorList(std::vector<T>& obj, T elem);
-
-
-struct Input::_PrSt
+Input* Input::self()
 {
-	public:
-		HANDLE procThreadHandle;
-		bool isActive;
-
-	public:
-		HWND targetKeyApp;
-		HWND targetMouseApp;
-		std::vector<Input::KeyCodes::Key> keyList;
-
-	public:
-		void proccessRawMouseData		(RAWMOUSE&);
-		void proccessRawKeyboardData	(RAWKEYBOARD&);
-		void proccessRawHidData			(RAWHID&);
-};
-
-static Input* gInstanceInput = NULL;
-
-
-Input::Input								()
-{
-	this->_PrPtr					= new Input::_PrSt();
-	this->_PrPtr->targetKeyApp		= 0;
-	this->_PrPtr->targetMouseApp	= 0;
-	this->_PrPtr->isActive			= false;
-	this->_PrPtr->procThreadHandle	= CreateThread(NULL, 4*255, ProcThread, NULL, CREATE_SUSPENDED, NULL);
-	ResumeThread(this->_PrPtr->procThreadHandle);
-}
-Input::~Input								()
-{
-	delete this->_PrPtr;
-	this->_PrPtr = NULL;
+	if(!instanceFlag)
+    {
+        single = new Input();
+        instanceFlag = true;
+        return single;
+    }
+    else
+    {
+        return single;
+    }
 }
 
-Input* Input::self							()
+Input::Input()
 {
-	if(!gInstanceInput)
-		gInstanceInput = new Input();
-
-	return gInstanceInput;
-}
-void Input::destroy							()
-{
-	TerminateThread(gInstanceInput->_PrPtr->procThreadHandle, 0);
-	delete gInstanceInput;
-	gInstanceInput = NULL;
+	m_pDirectInput = 0;
+	m_pKeyboard = 0;
+	m_pMouse = 0;
+	this->m_screenHeight = 0;
+	this->m_screenWidth = 0;
 }
 
-void Input::proccessRawDeviceData			(const LPARAM& lParam)
+Input::Input(const Input& input)
 {
-	if(!this->_PrPtr->isActive)
-		return;
+
+}
+
+Input::~Input()
+{
+
+}
+
+HRESULT Input::Initialize(HINSTANCE hInstance, HWND hWnd, int screenWidth, int screenHeight)
+{
+	this->m_screenWidth = screenWidth;
+	this->m_screenHeight = screenHeight;
+
+	this->m_mouseX = 0;
+	this->m_mouseY = 0;
+
+	this->hWnd = hWnd;
+
+	if(FAILED(DirectInput8Create(hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&this->m_pDirectInput, NULL)))
+	{
+		return E_FAIL;
+	}
+
+	//Keyboard
+	if(FAILED(this->m_pDirectInput->CreateDevice(GUID_SysKeyboard, &this->m_pKeyboard, NULL)))
+	{
+		return E_FAIL;
+	}
+
+	if(FAILED(this->m_pKeyboard->SetDataFormat(&c_dfDIKeyboard)))
+	{
+		return E_FAIL;
+	}
+
+	if(FAILED(this->m_pKeyboard->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE)))
+	{
+		return E_FAIL;
+	}
+
+	if(FAILED(this->m_pKeyboard->Acquire()))
+	{
+		return E_FAIL;
+	}
+	//Keyboard done
+
+	//Mouse
+	if(FAILED(this->m_pDirectInput->CreateDevice(GUID_SysMouse, &this->m_pMouse, NULL)))
+	{
+		return E_FAIL;
+	}
+
+	if(FAILED(this->m_pMouse->SetDataFormat(&c_dfDIMouse2)))
+	{
+		return E_FAIL;
+	}
+
+	if(FAILED(this->m_pMouse->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE)))
+	{
+		return E_FAIL;
+	}
+
+	if(FAILED(this->m_pMouse->Acquire()))
+	{
+		return E_FAIL;
+	}
+	//Mouse done
+
+	return S_OK;
+}
+
+void Input::ReleaseInput()
+{
+	if(this->m_pMouse)
+	{
+		this->m_pMouse->Unacquire();
+		this->m_pMouse->Release();
+		this->m_pMouse = 0;
+	}
+
+	if(this->m_pKeyboard)
+	{
+		this->m_pKeyboard->Unacquire();
+		this->m_pKeyboard->Release();
+		this->m_pKeyboard = 0;
+	}
+
+	if(this->m_pDirectInput)
+	{
+		this->m_pDirectInput->Release();
+		this->m_pDirectInput = 0;
+	}
+}
+
+HRESULT Input::Frame()
+{
+	if(FAILED(ReadKeyboard()))
+	{
+		return E_FAIL;
+	}
+
+	if(FAILED(ReadMouse()))
+	{
+		return E_FAIL;
+	}
+
+	ProcessInput();
+
+	return S_OK;
+}
+
+HRESULT Input::ReadKeyboard()
+{
+	HRESULT result;
+
+	result = this->m_pKeyboard->GetDeviceState(sizeof(this->m_keyboardState), (LPVOID) &this->m_keyboardState);
+
+	if(FAILED(result))
+	{
+		if(result == DIERR_INPUTLOST || result == DIERR_NOTACQUIRED)
+		{
+			this->m_pKeyboard->Acquire();
+		}
+		else
+		{
+			return E_FAIL;
+		}
+	}
+
+	return S_OK;
+}
+
+HRESULT Input::ReadMouse()
+{
+	HRESULT result;
+
+	result = this->m_pMouse->GetDeviceState(sizeof(this->m_mouseState), (LPVOID) &this->m_mouseState);
+
+	if(FAILED(result))
+	{
+		if(result == DIERR_INPUTLOST || result == DIERR_NOTACQUIRED)
+		{
+			this->m_pMouse->Acquire();
+		}
+		else
+		{
+			return E_FAIL;
+		}
+	}
+
+	return S_OK;
+}
+
+void Input::ProcessInput()
+{
+	this->m_mouseX += this->m_mouseState.lX;
+	this->m_mouseY += this->m_mouseState.lY;
+
+	if(this->m_mouseX < 0) this->m_mouseX = 0;
+	if(this->m_mouseY < 0) this->m_mouseY = 0;
+
+	if(this->m_screenWidth < this->m_mouseX) this->m_mouseX = this->m_screenWidth;
 	
-	//Get The size of the raw data buffer
-	UINT bufferSize;
-	GetRawInputData((HRAWINPUT)lParam, RID_INPUT, NULL, &bufferSize, sizeof(RAWINPUTHEADER));
-	if (bufferSize < 1) 
-	{
-		//Something went wrong
-		MessageBox(0, L"Failed to read raw buffer data in input class", L"Error", 0);
-		return;
-	} 
-
-	//Create and read the raw input data
-	LPBYTE rawBufferIn = new BYTE[bufferSize];
-	UINT readBytes = GetRawInputData((HRAWINPUT)lParam, RID_INPUT, rawBufferIn, &bufferSize,  sizeof(RAWINPUTHEADER));
-	if ( readBytes != bufferSize )
-	{
-		//Something went wrong
-		delete [] rawBufferIn;
-		return;
-	}
-
-
-	RAWINPUT* raw = (RAWINPUT*)rawBufferIn;
-
-	switch (raw->header.dwType)
-	{
-		case RIM_TYPEMOUSE:
-			this->_PrPtr->proccessRawMouseData(raw->data.mouse);
-		break;
-
-		case RIM_TYPEKEYBOARD:
-			this->_PrPtr->proccessRawKeyboardData(raw->data.keyboard);
-		break;
-
-		default:
-			this->_PrPtr->proccessRawHidData(raw->data.hid);
-		break;
-	}
-   
-	delete[] rawBufferIn; 
+	if(this->m_screenHeight < this->m_mouseY) this->m_mouseY = this->m_screenHeight;
 }
 
-bool Input::Register						(const Input::GLARE_INPUT_INIT_DESC& desc)
+bool Input::IsButtonPressed(int key)
 {
-	static bool keyReg = false;
-	static bool mouseReg = false;
-	bool retVal = true;
-	HWND target = desc.target;
-		if(desc.deviceType == Flags::REMOVE)
-			target = 0;
-
-	
-	switch (desc.deviceType)
+	if(this->m_keyboardState[key] & 0x80)
 	{
-		case Input::Flags::keyboard:
-		{
-			RAWINPUTDEVICE k = { 0x01, desc.deviceType, desc.deviceFlag, target };
-			if(!RegisterRawInputDevices(&k, 1, sizeof(k)))
-			{
-				retVal = false;
-				MessageBox(0, L"Failed to register [Keyboard] device", L"Error", MB_OK);
-			}
-		}
-		break;
-		
-		case Input::Flags::mouse:
-		{
-			RAWINPUTDEVICE k = { 0x01, desc.deviceType, desc.deviceFlag, target };
-
-			if(!RegisterRawInputDevices(&k, 1, sizeof(k)))
-			{
-				retVal = false;
-				MessageBox(0, L"Failed to register [Mouse] device", L"Error", MB_OK);
-			}
-		}
-		break;
-
-		case Input::Flags::gamepad:
-		case Input::Flags::joystick:
-		case Input::Flags::keypad:
-		case Input::Flags::multiAxisController:
-		case Input::Flags::pointer:
-		case Input::Flags::TabletPCcontrols:
-		{
-			RAWINPUTDEVICE k = { 0x01, desc.deviceType, desc.deviceFlag, desc.target };
-
-			if(!RegisterRawInputDevices(&k, 1, sizeof(k)))
-			{
-				retVal = false;
-				MessageBox(0, L"Failed to register [HID] dvice", L"Error", MB_OK);
-			}
-		}
-		break;
-
-		default:
-			//No valid input device
-			MessageBox(0, L"Error\nNo valid device", L"Error", MB_OK);
-			retVal = false;
-		break;
+		return true;
 	}
-	return retVal;
+
+	return false;
 }
-bool Input::Register						(const RAWINPUTDEVICE& iDevice)
+
+bool Input::IsMouseButtonPressed(int key)
+{	
+	if(this->m_mouseState.rgbButtons[key] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+void Input::GetMouseLocation(int& mouseX, int& mouseY)
 {
-	if(!RegisterRawInputDevices(&iDevice, 1, sizeof(iDevice)))
-	{
-		MessageBox(0, L"Failed to register device", L"Error", MB_OK);
-		return false;
-	}
-
-	
-	return true;
+	mouseX = this->m_mouseX;
+	mouseY = this->m_mouseY;
 }
-bool Input::Unregister						(Flags::DeviceType type)
+
+void Input::GetMouseRelative(int& mouseX, int& mouseY)
 {
-	RAWINPUTDEVICE d = { 0x01, type, RIDEV_REMOVE, NULL };
-
-	if(!RegisterRawInputDevices(&d, 1, sizeof(RAWINPUTDEVICE)))
-	{
-		MessageBox(0, L"Failed to unregister device", L"Error", MB_OK);
-		return false;
-	}
-
-	return true;
+	mouseX = this->m_mouseState.lX;
+	mouseY = this->m_mouseState.lY;
 }
-void Input::ActivateCallback				()
+
+void Input::SetCoopExclusive()
 {
-	this->_PrPtr->isActive = true;
+	this->m_pMouse->Unacquire();
+
+	this->m_pDirectInput->CreateDevice(GUID_SysMouse, &this->m_pMouse, NULL);
+
+	this->m_pMouse->SetDataFormat(&c_dfDIMouse2);
+
+	this->m_pMouse->SetCooperativeLevel(this->hWnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
+
+	this->m_pMouse->Acquire();
 }
-void Input::DeactivateCallback				()
+void Input::SetCoopNonExclusive()
 {
-	this->_PrPtr->isActive = false;
+	this->m_mouseX = this->m_screenWidth/2;
+	this->m_mouseY = this->m_screenHeight/2;
+
+	this->m_pMouse->Unacquire();
+
+	this->m_pDirectInput->CreateDevice(GUID_SysMouse, &this->m_pMouse, NULL);
+
+	this->m_pMouse->SetDataFormat(&c_dfDIMouse2);
+
+	this->m_pMouse->SetCooperativeLevel(this->hWnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
+
+	this->m_pMouse->Acquire();
 }
-
-
-
-bool Input::getActive() const
-{
-	return this->_PrPtr->isActive;
-}
-
-void Input::_PrSt::proccessRawKeyboardData	(RAWKEYBOARD& k)
-{
-	if(Input::self()->_rawKeyboardData.getCount() > 0)
-	{
-		Input::self()->_rawKeyboardData.procEvent(k);
-	}
-
-	Input::KeyCodes::Key v = (Input::KeyCodes::Key)k.VKey;
-	int i = existsInVectorList<Input::KeyCodes::Key>(this->keyList, v);
-
-
-	//The key is released.
-	if(k.Flags == RI_KEY_BREAK)
-	{
-		if( i != -1 )
-		{
-			while(procThreadBussy);
-			procThreadWaitForUpdate = true;
-				this->keyList.erase(this->keyList.begin() + i);
-			procThreadWaitForUpdate = false;
-
-			Input::self()->_keyUpProc.procEvent(v); 
-		}
-		
-	}
-	//The key is pressed.
-	else if (k.Flags == RI_KEY_MAKE)
-	{
-		if(i == -1)
-		{
-			while(procThreadBussy);
-			procThreadWaitForUpdate = true;
-				this->keyList.push_back(v);
-			procThreadWaitForUpdate = false;
-		}
-	}
-		
-	//RI_KEY_E0 = This is the left version of the key.
-	//RI_KEY_E1 = This is the right version of the key.
-		
-
-}
-void Input::_PrSt::proccessRawMouseData		(RAWMOUSE& m)
-{
-	if(Input::self()->_rawMouseData.getCount() > 0)
-	{
-		Input::self()->_rawMouseData.procEvent(m);
-		return;
-	}
-
-	Input::MouseMoveData moveData;
-	POINT p;
-
-	//Get Mouse position
-	if(m.lLastX != 0 || m.lLastY != 0)
-	{
-		GetCursorPos(&p);
-
-		moveData.relativeX = m.lLastX;
-		moveData.relativeY = m.lLastY;
-
-		moveData.screenX = p.x; 
-		moveData.screenY = p.y;
-
-		ScreenToClient(this->targetMouseApp, &p);
-		moveData.clientX = p.x;
-		moveData.clientY = p.y;
-			
-		Input::self()->_mouseMove.procEvent(moveData);
-	}
-	else if( m.usButtonFlags > 0 )
-	{
-		Input::KeyCodes::Key v = (Input::KeyCodes::Key)m.usButtonFlags;
-		//int i = existsInVectorList<Input::KeyCodes::Key>(this->keyList, v);
-
-		switch (v)
-		{
-			case 0x0001:
-			case 0x0004:
-			case 0x0010:
-			case 0x0040:
-			case 0x100:
-			{
-				//if(i == -1)
-				//{
-					//this->keyList.push_back(v);
-					Input::self()->_mouseBtnDown.procEvent(v);
-				//}
-			}
-			break;
-
-			case 0x0200:
-			case 0x0080:
-			case 0x0020:
-			case 0x0008:
-			case 0x0002:
-			{
-				//if(i != -1)
-				//{
-					//this->keyList.erase(this->keyList.begin() + i);
-					Input::self()->_mouseBtnUp.procEvent(v);
-				//}
-			}
-			break;
-			
-			case Input::KeyCodes::M_Scroll:
-			{
-				int delta = ((int)m.usButtonData);
-				if(delta > 120)
-					delta = -1;
-				Input::self()->_mouseScroll.procEvent(delta);
-			}
-			break;
-		}
-	}
-}
-void Input::_PrSt::proccessRawHidData		(RAWHID& h)
-{
-	//Send hid data to client
-
-	if(Input::self()->_rawHidData.getCount() > 0)
-		Input::self()->_rawHidData.procEvent(h);
-}
-
-
-template<typename T>
-/* Returns position of element or -1 if not found */
-int existsInVectorList(std::vector<T>& obj, T elem)
-{
-	int pos = -1;
-
-	std::vector<T>::iterator i = std::find(obj.begin(), obj.end(), elem);
-	if(i != obj.end())
-	{
-		pos = (int)(i - obj.begin());
-	}
-
-	return pos;
-}
-
-
-
-
-
-
-//##########################################################//
-//				THREADING FUNCTION FOR PROC					//
-//##########################################################//
-
-DWORD WINAPI Input::ProcThread(LPVOID lpParameter)
-{
-	while (true)
-	{
-		Sleep(10);
-		int size = (int)Input::self()->_PrPtr->keyList.size();
-		if(size)
-		{
-			while(procThreadWaitForUpdate);
-			procThreadBussy = true;
-			for (int i = 0; i < size; i++)
-				Input::self()->_keyDownProc.procEvent(Input::self()->_PrPtr->keyList[i]);
-			procThreadBussy = false;
-		}
-	}
-	return NULL;
-}
-
-//##########################################################//
-

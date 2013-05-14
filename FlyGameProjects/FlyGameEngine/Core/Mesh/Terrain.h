@@ -19,9 +19,9 @@ class Terrain : public FlyMesh
 		void Update();
 		void Render(ViewFrustum& frustum);
 
-		vector<VERTEX::VertexPNT> GetCollidedBoxes(BoundingBox box);
+		vector<vector<D3DXVECTOR3>*> GetCollidedBoxes(BoundingSphere sphere);
 
-		void Release();
+		void Release() override;
 };
 
 #endif
