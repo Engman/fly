@@ -29,12 +29,7 @@ class FlyLevelEditor
 		virtual bool FLYCALL Entity_Select(int id)							= 0;
 		virtual bool FLYCALL Entity_LoadData(std::vector<const wchar_t*>& files, std::map<std::wstring, int>* loaded)	= 0;
 		virtual void FLYCALL GetCameras (std::map<std::wstring, int>* outCameras) = 0;
-		virtual bool FLYCALL GetSelected (std::wstring& name, int& id, float& rx, float& ry, float& rz, float& sx, float& sy, float& sz) = 0;
-		virtual void FLYCALL SetRotation(float x, float y, float z)			= 0;
-		virtual void FLYCALL SetScale(float x, float y, float z)			= 0;
-		virtual bool FLYCALL SetName(const std::wstring& name)				= 0;
-		virtual void FLYCALL FreeFlyMode(bool set)							= 0;
-		virtual bool FLYCALL GetFlyStatus()									= 0;
+		virtual void FLYCALL GetSelected (std::wstring& name, int& id) = 0;
 };
 
 extern "C"

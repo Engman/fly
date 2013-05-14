@@ -13,7 +13,7 @@ void ColorShader::draw(PER_FRAME_DATA& wMatrixData)
 	this->setSRVBuffer();
 
 	this->shader->Render();
-	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_NoCullNoMs);
+	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_BackCullNoMS);
 	
 	//------------------Light
 	/*float blend[4] = {1,1,1,1};

@@ -21,4 +21,10 @@ struct ViewFrustum
 	BoundingSphere sphere;
 };
 
+struct BoundingEllipse
+{
+	D3DXVECTOR3 center;
+	D3DXVECTOR3 radiusVector;
+};
+
 #endif

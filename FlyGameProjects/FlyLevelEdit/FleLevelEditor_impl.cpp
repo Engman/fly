@@ -25,7 +25,6 @@ FlyLevelEditor_impl::FlyLevelEditor_impl()
 {
 	this->core = FlyEngineCreate();
 	this->selected = 0;
-	this->flyMode = false;
 }
 FlyLevelEditor_impl::~FlyLevelEditor_impl()
 {
@@ -58,7 +57,6 @@ bool FLYCALL FlyLevelEditor_impl::Initiate(HWND parent, int width, int height)
 	this->core->Input_Initialize();
 	this->core->Input_Activate();
 
-	Input::self()->subscribeKeyDown(this, &FlyLevelEditor_impl::KeyPress);
 	Input::self()->subscribeMouseBtnDown(this, &FlyLevelEditor_impl::KeyDownEvent);
 	Input::self()->subscribeMouseBtnUp(this, &FlyLevelEditor_impl::KeyReleaseEvent);
 	Input::self()->subscribeMouseMove(this, &FlyLevelEditor_impl::MouseMoveEvent);
@@ -172,76 +170,28 @@ void FLYCALL FlyLevelEditor_impl::GetCameras(std::map<std::wstring, int>* outCam
 		}
 	}
 }
-bool FLYCALL FlyLevelEditor_impl::GetSelected (std::wstring& name, int& id, float& rx, float& ry, float& rz, float& sx, float& sy, float& sz)
+void FLYCALL FlyLevelEditor_impl::GetSelected (std::wstring& name, int& id)
 {
-	if(!this->selected)
-		return false;
+	if(this->selected->getID() == -1)
+		MessageBox(0, L"Negativ one", L"", 0);
+	else
+		MessageBox(0, L"none", L"", 0);
 
-	name = this->selected->getName();
-	id = this->selected->getID();
-	vec3 rot = this->selected->getRotation();
-	vec3 scale = this->selected->getScale();
-
-	rx = rot.x;
-	ry = rot.y;
-	rz = rot.z;
-	
-	sx = scale.x;
-	sy = scale.y;
-	sz = scale.z;
-
-	return true;
-}
-void FLYCALL FlyLevelEditor_impl::SetRotation(float x, float y, float z)
-{
 	if(this->selected)
-		this->selected->setRotation(vec3(x, y, z));
-}
-void FLYCALL FlyLevelEditor_impl::SetScale(float x, float y, float z)
-{
-	if(this->selected)
-		this->selected->setScale(vec3(x, y, z));
-}
-bool FLYCALL FlyLevelEditor_impl::SetName(const std::wstring& name)
-{
-	for (int i = 0; i < (int)this->mesh.size(); i++)
 	{
-		if(this->mesh[i]->getName() == name)
-			return false;
+		name = this->selected->getName();
+		id = this->selected->getID();
 	}
-
-	this->selected->setName(name);
-	return true;
-}
-void FLYCALL FlyLevelEditor_impl::FreeFlyMode(bool set)
-{
-	this->flyMode = set;
-}
-bool FLYCALL FlyLevelEditor_impl::GetFlyStatus()
-{
-	return this->flyMode;
-}
-
-
-
-
-
-void FlyLevelEditor_impl::KeyPress(Input::KeyPressData &data)
-{
-	if(this->flyMode)
+	else
 	{
-		if(data.key == Input::KeyCodes::K_W)
-			this->core->Gfx_GetCamera()->RelativeForward(1.0f);
-		else if(data.key == Input::KeyCodes::K_S)
-			this->core->Gfx_GetCamera()->RelativeForward(-1.0f);
-		else if(data.key == Input::KeyCodes::K_A)
-			this->core->Gfx_GetCamera()->RelativeRight(-1.0f);
-		else if(data.key == Input::KeyCodes::K_D)
-			this->core->Gfx_GetCamera()->RelativeRight(1.0f);
-		else if(data.key == Input::KeyCodes::K_Escape)
-			this->flyMode = false;
+		name = L"";
+		id = -1;
 	}
 }
+
+
+
+
 void FlyLevelEditor_impl::MouseScrollEvent(int &delta)
 {
 	Camera* cam = this->core->Gfx_GetCamera();
@@ -255,21 +205,17 @@ void FlyLevelEditor_impl::KeyDownEvent(Input::MouseBtnData& data)
 	if(data.MousePos_clientX >= 0 && data.MousePos_clientX < D3DShell::self()->getWidth() &&
 				data.MousePos_clientY >= 0 && data.MousePos_clientY < D3DShell::self()->getHeight())
 	{
-		if (data.key == Input::KeyCodes::M_LeftBtn && !data.alt)
+		if (data.key == Input::KeyCodes::M_LeftBtn)
 		{
+			//if (!this->selected)
+			//{
 			if(!selectedDrag)
 				this->selected = this->core->Geometry_Pick(this->mesh, data.MousePos_clientX, data.MousePos_clientY);
+			//}
 			if (this->selected)
+			{
 				selectedDrag = true;
-		}
-		if(data.key == Input::KeyCodes::K_Alt)
-		{
-			//wchar_t buff[5];
-			//wchar_t* temp = _itow(data.MousePos_relativeX, buff, 10);
-			//MessageBox(0, temp, L"", 0);
-
-			this->core->Gfx_GetCamera()->SetRotationX((float)data.MousePos_relativeX);
-			this->core->Gfx_GetCamera()->SetRotationY((float)data.MousePos_relativeY);
+			}
 		}
 	}
 }
@@ -285,12 +231,6 @@ void FlyLevelEditor_impl::KeyReleaseEvent(Input::MouseBtnData& data)
 }
 void FlyLevelEditor_impl::MouseMoveEvent(Input::MouseMoveData& data)
 {
-	if(this->flyMode)
-	{
-		this->core->Gfx_GetCamera()->RelativeYaw((float)data.relativeX);
-		this->core->Gfx_GetCamera()->RelativePitch((float)data.relativeY);
-		return;
-	}
 	if(selectedDrag && this->selected)
 	{
 		Camera* cam = this->core->Gfx_GetCamera();

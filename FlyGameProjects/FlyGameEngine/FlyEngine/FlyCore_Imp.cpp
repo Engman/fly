@@ -42,7 +42,7 @@ FlyEngine_Core::FlyEngine_Core()
 {
 	D3DShell::self();
 	WindowShell::self();
-	Input::self();
+	//Input::self();
 
 	this->gbufferShader			= new GBufferShader();
 	this->colorShader			= new ColorShader();
@@ -134,7 +134,7 @@ void FLYCALL FlyEngine_Core::Core_Shutdown()
 {
 	D3DShell::self()->destroy();
 	WindowShell::self()->destroy();
-	Input::self()->destroy();
+	Input::self()->ReleaseInput();
 
 	this->gbufferShader.Destroy();			
 	this->colorShader.Destroy();			
@@ -146,8 +146,26 @@ void FLYCALL FlyEngine_Core::Core_Shutdown()
 	pFlyEngine.Destroy();
 }
 
+bool FLYCALL FlyEngine_Core::Core_Message()
+{
+	MSG	msg;
 
+	if(!WindowShell::self()->getParent())
+	{
+		if (PeekMessage(&msg,NULL,0,0,PM_REMOVE))
+		{ 
+			if (msg.message == WM_QUIT)
+			{
+				PostQuitMessage(0);
+				return false;
+			}
+			DispatchMessage(&msg);
+			return true;
+		}
+	}
 
+	return true;
+}
 
 LRESULT CALLBACK FlyEngineCoreWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -159,7 +177,7 @@ LRESULT CALLBACK FlyEngineCoreWndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 		break;
 		
 		case WM_INPUT:
-			Input::self()->proccessRawDeviceData(lParam);
+			//Input::self()->proccessRawDeviceData(lParam);
 		break;
 
 		case WM_LBUTTONDOWN:

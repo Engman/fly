@@ -18,3 +18,8 @@ void FlyState_Editor::Frame()
 {
 
 }
+
+void FlyState_Editor::Release()
+{
+
+}

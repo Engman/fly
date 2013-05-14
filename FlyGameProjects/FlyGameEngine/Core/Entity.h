@@ -29,10 +29,9 @@ class Entity abstract
 	protected:
 		std::wstring	name;
 		Matrix			world;
-
-		vec3			translation;
+		Matrix			transformation;
 		vec3			rotation;
-		vec3			scale;
+		vec3			translation;
 
 		ObjectMaterial	*material;
 		IShader			*shader;
@@ -46,9 +45,9 @@ class Entity abstract
 		Entity									(const Entity& origObj)
 		{
 			this->world				= origObj.world;
-			this->translation		= origObj.translation;
+			this->transformation	= origObj.transformation;
 			this->rotation			= origObj.rotation;
-			this->scale				= origObj.scale;
+			this->translation		= origObj.translation;
 			this->buffers			= origObj.buffers;
 			this->name				= origObj.name;
 			this->material			= origObj.material;
@@ -61,15 +60,9 @@ class Entity abstract
 		Entity&			operator=				(const Entity& origObj)
 		{
 			this->world				= origObj.world;
-			this->translation		= origObj.translation;
-			this->scale				= origObj.scale;
+			this->transformation	= origObj.transformation;
 			this->rotation			= origObj.rotation;
 			this->buffers			= origObj.buffers;
-			this->material			= origObj.material;
-			this->shader			= origObj.shader;
-			this->boundingSphere	= origObj.boundingSphere;
-			this->name				= origObj.name;
-			this->type				= origObj.type;
 
 			return *this;
 		}
@@ -106,30 +99,26 @@ class Entity abstract
 		{
 			return this->rotation;
 		}
-		vec3			getScale				()	const
+		vec3			getFront				()	const  
 		{
-			return this->scale;
+			return vec3(this->transformation.m[2]);
 		}
-		//vec3			getFront				()	const  
-		//{
-		//	return vec3(this->transformation.m[2]);
-		//}
-		//vec3			getRight				()	const  
-		//{
-		//	return vec3(this->transformation.m[0]);
-		//}
-		//vec3			getUp					()	const  
-		//{
-		//	return vec3(this->transformation.m[1]);
-		//}
+		vec3			getRight				()	const  
+		{
+			return vec3(this->transformation.m[0]);
+		}
+		vec3			getUp					()	const  
+		{
+			return vec3(this->transformation.m[1]);
+		}
 		Matrix			getWorld				()	const
 		{
 			return this->world;
 		}
-		//Matrix			getTransformation		()	const
-		//{
-		//	return this->transformation;
-		//}
+		Matrix			getTransformation		()	const
+		{
+			return this->transformation;
+		}
 		IShader*		getShader				()
 		{
 			return this->shader;
@@ -154,41 +143,38 @@ class Entity abstract
 		void			setRotation				(vec3 _rotation)
 		{
 			this->rotation = _rotation;
+
+			
 		}
-		void			setScale				(vec3 _scale)
+		void			setFront				(vec3 _front)
 		{
-			this->scale = _scale;
+			this->transformation._31 = _front.x;
+			this->transformation._32 = _front.y;
+			this->transformation._33 = _front.z;
 		}
-		void			setName					(std::wstring _name)
+		void			setRight				(vec3 _right)
 		{
-			this->name = _name;
+			this->transformation._11 = _right.x;
+			this->transformation._12 = _right.y;
+			this->transformation._13 = _right.z;
 		}
-		//void			setFront				(vec3 _front)
-		//{
-		//	this->transformation._31 = _front.x;
-		//	this->transformation._32 = _front.y;
-		//	this->transformation._33 = _front.z;
-		//}
-		//void			setRight				(vec3 _right)
-		//{
-		//	this->transformation._11 = _right.x;
-		//	this->transformation._12 = _right.y;
-		//	this->transformation._13 = _right.z;
-		//}
-		//void			setUp					(vec3 _up)
-		//{
-		//	this->transformation._21 = _up.x;
-		//	this->transformation._22 = _up.y;
-		//	this->transformation._23 = _up.z;
-		//}
+		void			setUp					(vec3 _up)
+		{
+			this->transformation._21 = _up.x;
+			this->transformation._22 = _up.y;
+			this->transformation._23 = _up.z;
+		}
 		void			setShader				(IShader* _shader)
 		{
 			this->shader = _shader;
 		}
-		void			setBoundingSphere		(BoundingSphere _sphere)
+		void			setBoundingSphere				(BoundingSphere* _sphere)
 		{
-			this->boundingSphere->center = _sphere.center;
-			this->boundingSphere->radius = _sphere.radius;
+			this->boundingSphere = _sphere;
+		}
+		BoundingSphere*			getBoundingSphere				()
+		{
+			return this->boundingSphere;
 		}
 		
 

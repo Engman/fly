@@ -138,7 +138,7 @@ bool FLYCALL FlyEngine_Core::Geometry_Load(const wchar_t* path, vector<Entity*>*
 		d.vertecies = raw.objects[i].vertex;
 		d.boundingSphere = bs;
 
-		FlyMesh *obj = new FlyMesh();
+		Terrain *obj = new Terrain();
 		if(!obj->Initialize(d))
 			return false;
 		objects->push_back(obj);
@@ -199,43 +199,6 @@ Entity* FLYCALL FlyEngine_Core::Geometry_Pick(const vector<Entity*>& obj, int po
 	return picked;
 }
 
-void FLYCALL FlyEngine_Core::FromScreenSpaceToWorldSpace(int x, int y, float& wx, float& wy, float& wz)
-{
-	D3DXMATRIX InvView = this->activeCamera->GetViewMatrix();
-	D3DXVECTOR3 direction;
-	D3DXVECTOR3 rayOrigin;
-	D3DXVECTOR3 rayDirection;
-	D3DXMATRIX iw;
-	D3DXMatrixIdentity(&iw);
-	
-
-	D3DXMatrixInverse(&InvView, 0, &InvView);
-
-	// Move the mouse coordinates into the -1 to +1 range.
-	float pointX = ((2.0f * (float)x) / D3DShell::self()->getWidth()) - 1.0f;
-	float pointY = (((2.0f * (float)y) / D3DShell::self()->getHeight()) - 1.0f) * -1.0f;
-		
-	// Adjust the points using the projection matrix to account for the aspect ratio of the viewport.
-	pointX = pointX / this->activeCamera->GetProjectionMatrix()._11;
-	pointY = pointY / this->activeCamera->GetProjectionMatrix()._22;
-
-	// Calculate the direction of the picking ray in view space.
-	direction.x = (pointX * InvView._11) + (pointY * InvView._21) + InvView._31;
-	direction.y = (pointX * InvView._12) + (pointY * InvView._22) + InvView._32;
-	direction.z = (pointX * InvView._13) + (pointY * InvView._23) + InvView._33;
-
-	
-	//// Transform the ray origin and the ray direction from view space to world space.
-	D3DXVec3TransformCoord(&rayOrigin, &this->activeCamera->GetPosition(), &iw);
-	D3DXVec3TransformNormal(&rayDirection, &direction, &iw);
-
-	// Normalize the ray direction.
-	D3DXVec3Normalize(&rayDirection, &rayDirection);
-
-	wx = rayDirection.x;
-	wy = rayDirection.y;
-	wz = rayDirection.z;
-}
 
 
 

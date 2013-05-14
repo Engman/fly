@@ -50,12 +50,14 @@ class FlyEngine_Core	:public FlyEngine
 		bool		FLYCALL		Core_Run					();
 		bool		FLYCALL		Core_Initialize				(FLY_ENGINE_INIT_DESC& initDesc);
 		void		FLYCALL		Core_Shutdown				();
+		bool		FLYCALL		Core_Message				();
 
 		void		FLYCALL		Gfx_Update					();
 		void		FLYCALL		Gfx_BeginForwardScene		();
 		void		FLYCALL		Gfx_EndForwardScene			();
 		void		FLYCALL		Gfx_BeginDeferredScene		();
 		void		FLYCALL		Gfx_EndDeferredScene		();
+		void		FLYCALL		Gfx_EndDeferredSceneOrtho	();
 		void		FLYCALL		Gfx_Resize					(int width, int height);
 		void		FLYCALL		Gfx_SetCamera				(Camera* cam, bool isOrthographic = false);
 		Camera*		FLYCALL		Gfx_GetCamera				();
@@ -70,7 +72,6 @@ class FlyEngine_Core	:public FlyEngine
 		bool		FLYCALL		Geometry_Load				(vector<const wchar_t*> loadData, vector<Entity*>* objects);
 		bool		FLYCALL		Geometry_Load				(const wchar_t* path, vector<Entity*>* object, FlyEngineGeometry special);
 		Entity*		FLYCALL		Geometry_Pick				(const vector<Entity*>& objectToTest, int posX, int posY);
-		void		FLYCALL		FromScreenSpaceToWorldSpace	(int x, int y, float& wx, float& wy, float& wz) override;
 
 
 
