@@ -54,4 +54,7 @@ void LightShader::setSRVBuffer()
 	srv = D3DShell::self()->getDefferedSRV();
 	D3DShell::self()->getDeviceContext()->PSSetShaderResources(0, nr, srv);
 }
-
+int LightShader::getType() const
+{
+	return this->type;
+}

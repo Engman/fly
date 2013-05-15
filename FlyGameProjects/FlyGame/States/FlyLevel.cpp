@@ -174,7 +174,7 @@ bool FlyState_Level::MenuUpdate()
 		this->state = 0;
 	}
 
-	this->cursor[0]->setPosition(vec3(mouseX-600, -(mouseY-300) , -1.0f));
+	this->cursor[0]->setPosition(vec3((float)mouseX-600.0f, -(float)(mouseY-300.0f) , -1.0f));
 
 	return true;
 }

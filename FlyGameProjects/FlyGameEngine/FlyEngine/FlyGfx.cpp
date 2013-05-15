@@ -116,8 +116,8 @@ IShader* FLYCALL FlyEngine_Core::Gfx_GetShader(FlyEngineShaders shader)
 
 void FLYCALL FlyEngine_Core::Gfx_GetShader(vector<IShader*>& shaders)
 {
-	shaders.push_back(this->colorShader);
 	shaders.push_back(this->gbufferShader);
+	shaders.push_back(this->colorShader);
 	shaders.push_back(this->lightShader);
 }
 
@@ -169,7 +169,7 @@ bool FlyEngine_Core::_InitGBuffers()
 	gBufferDesc.nrOfElements = 3;
 
 	this->gbufferShader = new GBufferShader();
-	if(!this->gbufferShader->init(gBufferDesc))	
+	if(!this->gbufferShader->init(gBufferDesc, FlyShader_Default))	
 		return false;
 
 	return true;
@@ -187,7 +187,7 @@ bool FlyEngine_Core::_InitLightShader()
 	lightShaderDesc.nrOfElements = 3;
 
 	this->lightShader = new LightShader();
-	if(!this->lightShader->init(lightShaderDesc))	
+	if(!this->lightShader->init(lightShaderDesc, FlyShader_Light))	
 		return false;
 
 	return true;
@@ -205,7 +205,7 @@ bool FlyEngine_Core::_InitColorShader()
 	colorShaderDesc.nrOfElements = 2;
 
 	this->colorShader = new ColorShader();
-	if(!this->colorShader->init(colorShaderDesc))
+	if(!this->colorShader->init(colorShaderDesc, FlyShader_Color))
 		return false;
 
 	return true;

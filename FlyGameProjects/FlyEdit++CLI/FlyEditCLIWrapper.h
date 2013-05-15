@@ -45,8 +45,21 @@ namespace System
 					void OnResize				(int width, int height);
 					bool ChangeView				(int id);
 					bool SelectObject			(int id);
-					void GetSelected			(String^ name, int^ id);
+					void GetSelected			(String^% name, int% id, float% rx, float% ry, float% rz, float% sx, float% sy, float% sz);
 					void GetCameras				(Dictionary<String^, int>^ outCameras);
+					void SetRotation			(float x, float y, float z);
+					void SetScale				(float x, float y, float z);
+					bool SetName				(String^ name);
+					void SetFlyMode				(bool flymode);
+					void GetSpeed				(float% speed);
+					void SetSpeed				(float speed);
+					bool LoadLevel				(String^ path, Dictionary<String^, int>^ mesh, Dictionary<String^, int>^ lights, Dictionary<String^, int>^ pickups);
+					bool SaveLevel				(String^ path, String^ levelName);
+
+					void OnKeyEvent(int key, bool released, bool ctrl, bool shift, bool alt);
+					void OnMouseBtnEvent(int key, bool released, bool ctrl, bool shift, bool alt);
+					void OnMouseMoveEvent(int cx, int cy, int rx, int ry, bool ctrl, bool shift, bool alt);
+					void OnMouseScrollEvent(int delta, bool ctrl, bool shift, bool alt);
 			};
 		}
 	}

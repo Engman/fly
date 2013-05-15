@@ -13,6 +13,7 @@ public:
 
 	void draw(PER_FRAME_DATA& drawData);
 	void setSRVBuffer();
+	int getType() const;
 
 private:
 

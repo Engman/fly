@@ -56,12 +56,12 @@ namespace ObjImpFormat
 
 
 
-bool ObjectImporter::Import(std::wstring file, ImportedObjectData* rawData)
+bool ObjectImporter::Import		(std::wstring file, ImportedObjectData* rawData)
 {
 	size_t first = file.find_last_of('\\') + 1;
 	size_t last = file.find_last_of('.');
 	rawData->name = file.substr(first, last-first);
-	
+
 
 	std::wifstream in (file);
 	if(!in.is_open())

@@ -68,4 +68,8 @@ void ColorShader::setSRVBuffer()
 	srv = D3DShell::self()->getDefferedSRV();
 	D3DShell::self()->getDeviceContext()->PSSetShaderResources(0,nr, srv);
 }
+int ColorShader::getType() const
+{
+	return this->type;
+}
 

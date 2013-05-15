@@ -84,7 +84,7 @@ HRESULT Input::Initialize(HINSTANCE hInstance, HWND hWnd, int screenWidth, int s
 		return E_FAIL;
 	}
 
-	if(FAILED(this->m_pMouse->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE)))
+	if(FAILED(this->m_pMouse->SetCooperativeLevel(hWnd, DISCL_BACKGROUND | DISCL_EXCLUSIVE)))
 	{
 		return E_FAIL;
 	}
@@ -132,8 +132,8 @@ HRESULT Input::Frame()
 	{
 		return E_FAIL;
 	}
-
-	ProcessInput();
+	//
+	//ProcessInput();
 
 	return S_OK;
 }

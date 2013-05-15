@@ -53,6 +53,7 @@ bool FLYCALL FlyEngine_Core::Geometry_Load(const wchar_t* resourcesToLoad, vecto
 		d.deviceContext = D3DShell::self()->getDeviceContext();
 		d.material_id = raw.objects[i].material;
 		d.name = raw.name;
+		d.filename = raw.name;
 		d.shader = 0;
 		d.vCount = (int)raw.objects[i].vertex->size();
 		d.vertecies = raw.objects[i].vertex;
@@ -92,6 +93,7 @@ bool FLYCALL FlyEngine_Core::Geometry_Load(vector<const wchar_t*> resourcesToLoa
 			d.deviceContext = D3DShell::self()->getDeviceContext();
 			d.material_id = raw[i].objects[k].material;
 			d.name = raw[i].name;
+			d.filename = raw[i].name;
 			d.shader = 0;
 			d.vCount = (int)raw[i].objects[k].vertex->size();
 			d.vertecies = raw[i].objects[k].vertex;
@@ -133,6 +135,7 @@ bool FLYCALL FlyEngine_Core::Geometry_Load(const wchar_t* path, vector<Entity*>*
 		d.deviceContext = D3DShell::self()->getDeviceContext();
 		d.material_id = raw.objects[i].material;
 		d.name = raw.name;
+		d.filename = raw.name;
 		d.shader = 0;
 		d.vCount = (int)raw.objects[i].vertex->size();
 		d.vertecies = raw.objects[i].vertex;

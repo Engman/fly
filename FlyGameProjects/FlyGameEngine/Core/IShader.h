@@ -40,14 +40,17 @@ class IShader
 		BaseBuffer* matrixBuffer;
 		SmartPtrStd<BaseShader> shader;
 		std::vector<DRAW_DATA> drawData;
+		int type;
 
 	public:
 		IShader() 
 		{ 
 			this->shader = NULL; 
 			this->drawData = std::vector<DRAW_DATA>(); 
+			this->type = -1;
 		}
-
+		virtual~IShader()
+		{}
 		virtual void draw(PER_FRAME_DATA&) = 0;
 		/** Use this each frame to clear old content */
 		void clearData()
@@ -56,9 +59,10 @@ class IShader
 			this->drawData.shrink_to_fit();
 		}
 
-		bool init(BaseShader::BASE_SHADER_DESC& desc)
+		bool init(BaseShader::BASE_SHADER_DESC& desc, int type)
 		{
 			this->shader = new BaseShader();
+			this->type = type;
 			if( FAILED (this->shader->Initialize(desc) ) )
 				return false;
 
@@ -98,7 +102,7 @@ class IShader
 		{
 			return this->id.get();
 		}
-
+		virtual int getType() const = 0;
 };
 
 

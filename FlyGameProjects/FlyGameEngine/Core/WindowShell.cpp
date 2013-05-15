@@ -158,7 +158,7 @@ bool WindowShell::createWin(INIT_DESC_WINDOW &desc)
 								  ); 
 	else
 		pData->hWnd = CreateWindowEx(	
-									0,
+									WS_EX_TOPMOST,
 									WINDOW_CLASS_NAME , 
 									desc.windowName.c_str(),
 									style, 

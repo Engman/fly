@@ -1,11 +1,7 @@
 #include "GBufferShader.h"
 
 GBufferShader::GBufferShader()
-{
-	
-
-	
-}
+{ }
 
 void GBufferShader::draw(PER_FRAME_DATA& frameData)
 {
@@ -68,4 +64,8 @@ void GBufferShader::draw(PER_FRAME_DATA& frameData)
 	}
 
 	this->clearData();
+}
+int GBufferShader::getType() const
+{
+	return this->type;
 }
