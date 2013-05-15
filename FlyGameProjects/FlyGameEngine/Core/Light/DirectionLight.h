@@ -23,7 +23,7 @@ private:
 
 public:
 	DirectionLight(int type);
-	~DirectionLight();
+	virtual ~DirectionLight();
 
 	void Initialize(DirectionalLightProxy data, IShader* shader, bool castShadow);
 	BaseBuffer* getLight();

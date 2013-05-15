@@ -39,7 +39,7 @@ float4 FPixelShader(PSIn input) :  SV_Target
 
 	float4 neighborNormalDepth;
 	float totalWeight = Weight[0];
-	float scale = blurFactor * centerNormalDepth.z; //I want the scale to decay with the depht * 	(centerNormalDepth.w );
+	float scale = blurFactor; //* centerNormalDepth.z; //I want the scale to decay with the depht * 	(centerNormalDepth.w );
 		
     for( int i = 1; i < 5; i++ )
     {

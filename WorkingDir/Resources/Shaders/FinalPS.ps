@@ -85,7 +85,7 @@ float4 FPixelShader(PSIn input) :  SV_Target
 		shadow = ShadowFactor( depthLightVP, lightSamp, scale);
 	}
 	finalColor = saturate(color*0.5 + lighting*0.5);//* (shadow+0.1);
-	//finalColor = saturate( finalColor + glowColor );
+	finalColor = saturate( finalColor + glowColor );
 	return finalColor;
 }
 
