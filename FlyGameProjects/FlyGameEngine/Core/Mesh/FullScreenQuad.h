@@ -27,7 +27,8 @@ public:
 	~FullScreenQuad();
 	bool			Initialize(ID3D11Device* g_Device, IShader* shader);
 	
-	void			Render( ID3D11DeviceContext* g_DeviceContext);
+	void			Render();
+	void			Render(BaseBuffer* light, BaseBuffer* lightViewProj);
 
 	void			SetShader(IShader* shader);
 };

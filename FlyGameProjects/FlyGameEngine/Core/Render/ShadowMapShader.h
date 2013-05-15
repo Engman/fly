@@ -10,11 +10,13 @@ class ShadowMapShader : public IShader
 public:
 
 	ShadowMapShader();
+	~ShadowMapShader();
+	bool init(BaseShader::BASE_SHADER_DESC& desc);
 	void draw(PER_FRAME_DATA& drawData);
 
 private:
 
-	
+	SmartPtrStd<BaseBuffer> lightViewBuffer; 
 
 };
 #endif

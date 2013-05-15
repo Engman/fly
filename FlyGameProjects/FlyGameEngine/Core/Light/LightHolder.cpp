@@ -24,14 +24,17 @@ bool LightHolder::Initialize()
 
 	return true;
 }
-void LightHolder::addLight(DirectionalLightProxy lightProxy)
+void LightHolder::addLight(DirectionalLightProxy lightProxy, IShader* shader)
 {
-	DirectionLight light(Type::LIGHT); 
+	/*DirectionLight light(Type::LIGHT); 
 	light.Initialize(lightProxy);
-	dirLights.push_back(light);
+
+	dirLights.push_back(light);*/
+	this->dLight = new DirectionLight(Type::LIGHT);
+	this->dLight->Initialize(lightProxy, shader, true);
 }
 
-void LightHolder::addLight(PointLightProxy lightProxy)
+void LightHolder::addLight(PointLightProxy lightProxy, IShader* shader)
 {
 	PointLight light(Type::LIGHT); 
 	light.Initialize(lightProxy);
@@ -80,3 +83,19 @@ int LightHolder::getNrOfDirLight()
 	return (int)this->dirLights.size();
 }
 
+void LightHolder::RenderDirLight(ViewFrustum viewFustrum, IShader* lightShader, IShader* shadowShader)
+{
+
+	for(int i=0; i<(int)this->dirLights.size(); i++)
+	{
+		this->dirLights[i].Render(viewFustrum);
+	}
+	this->dLight->setShader(lightShader);
+	this->dLight->Render(viewFustrum);
+
+	if(this->dLight->castShadow())
+	{
+		this->dLight->setShader(lightShader);
+		this->dLight->Render(viewFustrum);
+	}
+}

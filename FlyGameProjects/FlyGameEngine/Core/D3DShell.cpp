@@ -8,7 +8,7 @@ using namespace ShaderStates;
 struct D3DShell::PrDat
 {
 	static D3DShell					*d3dShellInstance;
-
+	
 	ID3D11Device					*d3dDevice;
 	ID3D11DeviceContext				*d3dDeviceContext;
 	IDXGISwapChain					*swapChain;
@@ -18,6 +18,8 @@ struct D3DShell::PrDat
 	D3D11_VIEWPORT					screenViewport;
 	D3D_DRIVER_TYPE					driverType;
 	D3D_FEATURE_LEVEL				featurelevel;
+
+	HWND							wndHandle;
 
 	DrawableTexture g_buffTextures [DeferredRenderLayout::MRT_COUNT];
 	DrawableTexture g_bufferDepthTexture;
@@ -815,7 +817,7 @@ void D3DShell::BeginShadowRenderTarget()
 {
 	float clearColor[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 	//ID3D11RenderTargetView* rtv[1] = {this->_prDatPtr->shadowTexture.getRenderTargetView()};
-
+	
 	this->getDeviceContext()->ClearDepthStencilView(this->_prDatPtr->shadowTexture.getDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0, 0);
 
 	this->getDeviceContext()->OMSetRenderTargets(0, NULL, this->_prDatPtr->shadowTexture.getDepthStencilView());

@@ -152,7 +152,7 @@ bool ParseAnimationFile			(std::wifstream& in, ImportedObjectData* d)
 		in >> flag;
 
 		if(in.eof())
-			continue;
+			break;
 
 		if(flag == ObjImpFormat::vertexCount)	
 		{

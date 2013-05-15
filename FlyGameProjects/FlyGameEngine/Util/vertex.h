@@ -119,6 +119,7 @@ namespace VERTEX
 		D3DXVECTOR4 position1;
 		D3DXVECTOR4 normal1;
 		D3DXVECTOR2 texcoord1;
+
 	};
 	static D3D11_INPUT_ELEMENT_DESC Animation_2Frame_InputElementDesc[] = 
 	{

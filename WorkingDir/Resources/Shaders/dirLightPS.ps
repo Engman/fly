@@ -1,15 +1,16 @@
 #include "LightHelp.fx"
 
-cbuffer Camera : register(b0)
+cbuffer LightBuffer : register(b0)
+{
+	DirLight dirLight;
+};
+cbuffer Camera : register(b1)
 {
   float4x4 mInvViewProj;
   float4x4 mInvView;
   float3 cameraPos;
 };
-cbuffer LightBuffer : register(b1)
-{
-	DirLight dirLight;
-};
+
 
 //albedo RGBA, normalRGB_depthA, specular, worldPosition
 Texture2D gBufferText[4] : register (t0);
