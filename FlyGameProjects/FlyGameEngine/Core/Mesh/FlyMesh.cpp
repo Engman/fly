@@ -10,7 +10,9 @@ FlyMesh::FlyMesh()
 	D3DXMatrixIdentity(&this->world);
 }
 FlyMesh::~FlyMesh()
-{}
+{
+
+}
 
 void FlyMesh::Update()
 {
@@ -22,6 +24,15 @@ void FlyMesh::Render(ViewFrustum& frustum)
 	{
 		if(this->shader && FrustumVSSphere(frustum, *this->boundingSphere))
 		{
+			D3DXMATRIX rotation, translation;
+			D3DXMatrixRotationYawPitchRoll(&rotation, this->rotation.y, this->rotation.x, this->rotation.z);
+			D3DXMatrixTranslation(&translation, this->translation.x, this->translation.y, this->translation.z);
+
+			D3DXMatrixIdentity(&this->world);
+
+			this->world *= rotation;
+			this->world *= translation;
+
 			IShader::DRAW_DATA data;
 		
 			for(int i = 0; i<(int)this->buffers.size(); i++)
@@ -36,42 +47,26 @@ void FlyMesh::Render(ViewFrustum& frustum)
 	}
 	else
 	{
+		D3DXMATRIX rotation, translation;
+		D3DXMatrixRotationYawPitchRoll(&rotation, this->rotation.y, this->rotation.x, this->rotation.z);
+		D3DXMatrixTranslation(&translation, this->translation.x, this->translation.y, this->translation.z);
+
+		D3DXMatrixIdentity(&this->world);
+
+		this->world *= rotation;
+		this->world *= translation;
+
 		IShader::DRAW_DATA data;
+		
 		for(int i = 0; i<(int)this->buffers.size(); i++)
 		{
 			data.buffers.push_back(this->buffers[i]);
 		}
-		//get local world
-		//rotate
-		//scale
-		//translate
-		D3DXMATRIX rotX, translation, scaleM;
-		D3DXVECTOR3 scale = this->scale; 
-
-		D3DXMatrixIdentity(&this->world);
-		D3DXMatrixIdentity(&translation);
-		D3DXMatrixIdentity(&scaleM);
-
-		D3DXMatrixRotationZ(&rotX, this->rotation.x);
-
-		D3DXMatrixScaling(&scaleM, scale.x, scale.y, scale.z);
-		D3DXVECTOR3 pos; 
-		pos = getPosition();
-		translation._41 = pos.x;
-		translation._42 = pos.y;
-		translation._43 = pos.z;
-
-		
-		this->world *= rotX;
-
-	
-		this->world *= scaleM;
-		this->world *= translation;
-		
 		
 		data.worldMatrix = &this->world;
 		data.material = this->material;
 		this->shader->addDrawData(data);
+		
 	}
 }
 
@@ -94,6 +89,19 @@ bool FlyMesh::Initialize(OBJECT_DESC& data)
 		return false;
 	}
 	
+	vec3 vertex;
+
+	this->vertexList = new vector<vec3>;
+
+	for(unsigned int i = 0; i < data.vertecies->size(); i++)
+	{
+		vertex.x = data.vertecies->at(i).position.x;
+		vertex.y = data.vertecies->at(i).position.y;
+		vertex.z = data.vertecies->at(i).position.z;
+
+		this->vertexList->push_back(vertex);
+	}
+
 	this->material = MaterialHandler::GetMaterial(data.material_id);
 	if(!this->material)
 		DisplayText("A material could not be found", "Warning!");
@@ -121,3 +129,7 @@ bool FlyMesh::Initialize(OBJECT_DESC& data)
 	return true;
 }
 
+vector<vec3>* FlyMesh::GetTriangles()
+{
+	return this->vertexList;
+}

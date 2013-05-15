@@ -20,17 +20,12 @@
 *.suo
 *.opensdf
 *.sdf
-
-#C-sharp
-*.config
 *.manifest
 
 Dependencies/
 WorkingDir/AssemblyFiles
 WorkingDir/Bin
 
-#C-sharp
-WorkingDir/Assembly
 FlyGameProjects/ipch
 FlyGameProjects/FlyEditUI/obj
-FlyGameProjects/FlyEditUI/Properties
+FlyGameProjects/FlyWindEditor/obj

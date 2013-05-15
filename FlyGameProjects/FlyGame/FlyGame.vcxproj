@@ -168,6 +168,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="FlyGame.cpp" />
+    <ClCompile Include="GameObjects\FlyPlayer.cpp" />
     <ClCompile Include="States\FlyEditor.cpp" />
     <ClCompile Include="States\FlyLevel.cpp" />
     <ClCompile Include="Main.cpp" />

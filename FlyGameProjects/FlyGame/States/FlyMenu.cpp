@@ -18,3 +18,7 @@ void FlyState_Menu::Frame()
 {
 
 }
+void FlyState_Menu::Release()
+{
+
+}
