@@ -5,6 +5,30 @@ ShadowMapShader::ShadowMapShader()
 {
 
 }
+ShadowMapShader::~ShadowMapShader()
+{
+	this->lightViewBuffer.Destroy();
+}
+bool ShadowMapShader::init(BaseShader::BASE_SHADER_DESC& desc)
+{
+	IShader::init(desc);
+	this->lightViewBuffer = new BaseBuffer();
+
+	BaseBuffer::BUFFER_INIT_DESC lightBufferDesc;
+	lightBufferDesc.dc = D3DShell::self()->getDeviceContext();
+	lightBufferDesc.device = D3DShell::self()->getDevice();
+	lightBufferDesc.elementSize = sizeof(CameraView);
+	lightBufferDesc.nrOfElements = 1;
+	lightBufferDesc.type = BUFFER_FLAG::TYPE_CONSTANT_PS_BUFFER;
+	lightBufferDesc.usage = BUFFER_FLAG::USAGE_DYNAMIC_CPU_WRITE_DISCARD;
+
+	if(FAILED(lightViewBuffer->Initialize(lightBufferDesc)))
+	{
+		DisplayText("Could not initialize lightShader camera constant buffer!");
+	}
+	return true;
+
+}
 
 void ShadowMapShader::draw(PER_FRAME_DATA& frameData)
 {

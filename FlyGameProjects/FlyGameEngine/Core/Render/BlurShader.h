@@ -11,6 +11,7 @@ class BlurShader : public IShader
 public:
 
 	BlurShader();
+	~BlurShader();
 	void draw(PER_FRAME_DATA& drawData);
 	bool init(BaseShader::BASE_SHADER_DESC& desc);
 

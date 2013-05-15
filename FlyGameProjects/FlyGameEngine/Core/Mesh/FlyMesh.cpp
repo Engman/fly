@@ -26,7 +26,33 @@ void FlyMesh::Render(ViewFrustum& frustum)
 		
 			for(int i = 0; i<(int)this->buffers.size(); i++)
 				data.buffers.push_back(this->buffers[i]);
-			data.worldMatrix = &this->transformation;
+			
+			D3DXMATRIX rotX, translation, scaleM;
+			D3DXVECTOR3 scale = this->scale; 
+
+			D3DXMatrixIdentity(&this->world);
+			D3DXMatrixIdentity(&translation);
+			D3DXMatrixIdentity(&scaleM);
+
+			D3DXMatrixRotationZ(&rotX, this->rotation.x);
+
+			D3DXMatrixScaling(&scaleM, scale.x, scale.y, scale.z);
+			D3DXVECTOR3 pos; 
+			pos = getPosition();
+			translation._41 = pos.x;
+			translation._42 = pos.y;
+			translation._43 = pos.z;
+
+
+			this->world *= rotX;
+
+
+			//this->world *= scaleM;
+			this->world *= translation;
+
+
+			data.worldMatrix = &this->world;
+			//data.worldMatrix = &this->transformation;
 
 
 			//data.worldMatrix = &this->world;

@@ -10,7 +10,6 @@ GBufferShader::GBufferShader()
 
 void GBufferShader::draw(PER_FRAME_DATA& frameData)
 {	
-
 	int indexC = 0;
 	int vertexC = 0;
 	
@@ -19,9 +18,6 @@ void GBufferShader::draw(PER_FRAME_DATA& frameData)
 	D3DShell::self()->setSamplerState(samp, FLAGS::PS, 0, 1);
 
 	this->shader->Render();
-
-	
-	//D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_NoCullNoMs);
 
 	int count = (int)this->drawData.size();
 	for( int i = 0; i< count;i++)

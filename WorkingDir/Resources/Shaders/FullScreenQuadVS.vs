@@ -1,4 +1,3 @@
-
 struct VSIn
 {
 	float4 position		: POSITION;
@@ -13,7 +12,6 @@ struct PSIn
 	float2 TextCoord  	: TEXCOORD; 
 
 };
-
 
 //-----------------------------------------------------------------------------------------
 // VertexShader: VSScene

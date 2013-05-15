@@ -70,12 +70,19 @@ enum FlyEngineGeometry
 
 enum FlyEngineShaders
 {
-	FlyShader_Default,
-	FlyShader_Color,
-	FlyShader_Light,
+	FlyShader_gBufferDefault,
+	FlyShader_gBufferNoDepth,
+	FlyShader_gBufferAnimated,
+	FlyShader_Final,
+	FlyShader_DirLight,
+	FlyShader_Shadow,
+	FlyShader_BlurHorizont,
+	FlyShader_BlurVertical,
+
 
 	SHADER_COUNT
 };
+
 
 
 class FlyEngine

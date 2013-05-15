@@ -9,6 +9,7 @@
 #include "States\FlyState_Editor.h"
 #include "States\FlyState_Level.h"
 #include "States\FlyState_Menu.h"
+#include "..\FlyGameEngine\Util\SmartPtrs.h"
 
 
 static FlyGame* FlyGameInstance = NULL;

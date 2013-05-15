@@ -64,6 +64,12 @@ struct CameraView
 	float padd;
 };
 
+struct LightViewProj
+{
+	D3DXMATRIX lView;
+	D3DXMATRIX lProj;
+};
+
 
 
 #endif

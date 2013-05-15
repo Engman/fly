@@ -18,6 +18,7 @@ private:
 	std::vector<DirectionLight> dirLights;
 	std::vector<PointLight> pointLights;
 	SmartPtrStd<BaseBuffer> camView;
+	DirectionLight* dLight; 
 
 public:
 
@@ -26,8 +27,8 @@ public:
 
 	
 	bool Initialize();
-	void addLight(DirectionalLightProxy lightProxy);
-	void addLight(PointLightProxy lightProxy);
+	void addLight(DirectionalLightProxy lightProxy, IShader* shader);
+	void addLight(PointLightProxy lightProxy, IShader* shader);
 	BaseBuffer* getDirLight(int nr);
 	BaseBuffer* getPointLight(int nr);
 	void setCamViewBuffer(D3DXMATRIX view, D3DXMATRIX projection, D3DXVECTOR3 camPos);
@@ -35,6 +36,6 @@ public:
 	int getNrOfDirLight();
 	D3DXMATRIX getDirLightView(int nr);
 	D3DXMATRIX getDirLightProjection(int nr);
-
+	void RenderDirLight(ViewFrustum viewFustrum, IShader* lightShader, IShader* shadowShader);
 };
 #endif

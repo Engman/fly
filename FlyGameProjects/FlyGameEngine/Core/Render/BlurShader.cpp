@@ -5,6 +5,10 @@ BlurShader::BlurShader()
 {
 	
 }
+BlurShader::~BlurShader()
+{
+	this->blurCB.Destroy();
+}
 bool BlurShader::init(BaseShader::BASE_SHADER_DESC& desc)
 {
 	IShader::init(desc);
@@ -37,7 +41,7 @@ void BlurShader::draw(PER_FRAME_DATA& frameData)
 {
 
 	int indexC = 0;
-
+	int vertexC = 0; 
 
 	this->shader->Render();
 	FLAGS::STATE_SAMPLING samp[1] =  { FLAGS::SAMPLER_LinearClamp };
@@ -50,16 +54,27 @@ void BlurShader::draw(PER_FRAME_DATA& frameData)
 	int count = (int)this->drawData.size();
 	for( int i = 0; i< count;i++)
 	{
-		for(int k = 0; k <(int)this->drawData[i].buffers.size(); k++)
+
+		for(int k = 0; k <(int)this->drawData[i].buffers.size(); k++)	// set vertex and index buffers
 		{
 			this->drawData[i].buffers[k]->setBuffer();
-		
+
 			if(this->drawData[i].buffers[k]->getType() == BUFFER_FLAG::TYPE_INDEX_BUFFER)
 				indexC = this->drawData[i].buffers[k]->getNrOfElements();
+			else if(this->drawData[i].buffers[k]->getType() == BUFFER_FLAG::TYPE_VERTEX_BUFFER)
+				vertexC = this->drawData[i].buffers[k]->getNrOfElements();
 		}
-		
 		this->shader->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		this->shader->GetDeviceContext()->DrawIndexed(indexC, 0, 0);
+
+		if(indexC)
+			this->shader->GetDeviceContext()->DrawIndexed(indexC, 0, 0);
+		else if(vertexC)
+			this->shader->GetDeviceContext()->Draw(vertexC, 0);
+
+		indexC = 0;
+		vertexC = 0;
+		
+		
 	}
 	this->clearData();
 }

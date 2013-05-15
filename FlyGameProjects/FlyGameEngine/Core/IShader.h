@@ -23,12 +23,15 @@ class IShader
 			//buffer for view, projection and camPos in light PS
 			BaseBuffer* camForLight;
 		};
+
 		/** Used to set data for a draw call */
 		struct DRAW_DATA
 		{
 			D3DXMATRIX* worldMatrix;
 			std::vector<BaseBuffer*> buffers;
 			ObjectMaterial* material;
+			std::vector<BaseBuffer*> lightBuffers;
+
 			//std::vector<Texture2D>* textures; 
 			DRAW_DATA()
 				:worldMatrix(0), material(0)
@@ -49,7 +52,10 @@ class IShader
 			this->shader = NULL; 
 			this->drawData = std::vector<DRAW_DATA>(); 
 		}
+		virtual ~IShader()
+		{
 
+		}
 		virtual void draw(PER_FRAME_DATA&) = 0;
 		/** Use this each frame to clear old content */
 		void clearData()

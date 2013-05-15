@@ -10,9 +10,11 @@ class LightShader : public IShader
 public:
 
 	LightShader();
+	~LightShader();
+	bool init(BaseShader::BASE_SHADER_DESC& desc);
 	void draw(PER_FRAME_DATA& drawData);
 
 private:
-	
+	SmartPtrStd<BaseBuffer> cameraBuffer; 
 };
 #endif

@@ -3,8 +3,11 @@
 #include "..\Core\WindowShell.h"
 #include "..\Core\Input.h"
 #include "..\Core\Render\GBufferShader.h"
-#include "..\Core\Render\ColorShader.h"
+#include "..\Core\Render\GBufferAnimationShader.h"
+#include "..\Core\Render\FinalShader.h"
 #include "..\Core\Render\LightShader.h"
+#include "..\Core\Render\ShadowMapShader.h"
+#include "..\Core\Render\BlurShader.h"
 #include "..\Util\Camera.h"
 
 
@@ -45,9 +48,15 @@ FlyEngine_Core::FlyEngine_Core()
 	Input::self();
 
 	this->gbufferShader			= new GBufferShader();
-	this->colorShader			= new ColorShader();
-	this->lightShader			= new LightShader();
-	this->matrixBuffer			= new BaseBuffer();
+	this->gBufferNoDepthShader	= new GBufferShader();
+	this->gBufferAnimationShader = new GBufferAnimationShader();
+	this->finalShader			= new FinalShader();
+	this->dirLightShader		= new LightShader();
+	this->shadowMapShader		= new ShadowMapShader();
+	this->blurHorizontShader	= new BlurShader();
+	this->blurVerticalShader	= new BlurShader();
+
+	this->cameraBuffer			= new BaseBuffer();
 	this->fsq					= new FullScreenQuad();
 	this->defaultCam			= new Camera();
 	this->activeCamera			= NULL;
@@ -89,9 +98,17 @@ bool FLYCALL FlyEngine_Core::Core_Run()
 		if(this->deferredUpdateFunc) this->deferredUpdateFunc();
 		if(this->deferredRenderFunc) 
 		{
-			Gfx_BeginDeferredScene();
+			//Gfx_BeginDeferredScene();
+			// add all the objects to the draw data 
 			this->deferredRenderFunc();
-			Gfx_EndDeferredScene();
+			Gfx_DrawSkyBox();
+			Gfx_DrawGbuffer();
+			Gfx_DrawBlur();
+			Gfx_DrawShadows();
+			Gfx_DrawLighting();
+			Gfx_DrawFinalPicture();
+
+			//Gfx_EndDeferredScene();
 		}
 
 		//Forward rendering pass
@@ -118,11 +135,17 @@ bool FLYCALL FlyEngine_Core::Core_Initialize(FLY_ENGINE_INIT_DESC& desc)
 
 	if(!this->_InitWin(desc))			return false;
 	if(!this->_InitGfx(desc))			return false;
-	if(!this->_InitGBuffers())			return false;
-	if(!this->_InitColorShader())		return false;
-	if(!this->_InitMatrixBuffer())		return false;
 
-	if(!this->fsq->Initialize(D3DShell::self()->getDevice(), this->colorShader))
+	if(!this->_InitGBufferShader())			return false;
+	if(!this->_InitAnimationShader())	return false;
+	if(!this->_InitFinalShader())		return false;
+	if(!this->_InitDirLightShader())	return false;
+	if(!this->_InitShadowMapShader())	return false;
+	if(!this->_InitBlurShaders())		return false;
+	
+	if(!this->_InitCameraBuffer())		return false;
+
+	if(!this->fsq->Initialize(D3DShell::self()->getDevice(), this->finalShader))
 		return false;
 
 	this->_InitCam();
@@ -136,10 +159,16 @@ void FLYCALL FlyEngine_Core::Core_Shutdown()
 	WindowShell::self()->destroy();
 	Input::self()->destroy();
 
-	this->gbufferShader.Destroy();			
-	this->colorShader.Destroy();			
-	this->lightShader.Destroy();			
-	this->matrixBuffer.Destroy();			
+	this->gbufferShader.Destroy();
+	this->gBufferNoDepthShader.Destroy();
+	this->gBufferAnimationShader.Destroy();			
+	this->finalShader.Destroy();			
+	this->dirLightShader.Destroy();			
+	this->shadowMapShader.Destroy();
+	this->blurHorizontShader.Destroy();
+	this->blurVerticalShader.Destroy();
+
+	this->cameraBuffer.Destroy();			
 	this->fsq.Destroy();
 	this->defaultCam.Destroy();
 
@@ -217,7 +246,7 @@ void FlyEngine_Core::_ShowSplash()
 
 	this->Gfx_BeginForwardScene();
 	IShader::DRAW_DATA d;
-	this->colorShader->getShader()->Render();
+	this->finalShader->getShader()->Render();
 	D3DShell::self()->getDeviceContext()->PSSetShaderResources(0, 1, &(*texture.getTextures())[0]);
 	this->Gfx_EndForwardScene();
 
