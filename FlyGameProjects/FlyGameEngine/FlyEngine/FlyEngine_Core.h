@@ -26,6 +26,7 @@ class FlyEngine_Core	:public FlyEngine
 		SmartPtrStd<IShader>					gBufferNoDepthShader;
 		SmartPtrStd<IShader>					gBufferAnimationShader;
 		SmartPtrStd<IShader>					finalShader; 
+		SmartPtrStd<IShader>					finalColorShader; 
 		SmartPtrStd<IShader>					dirLightShader;
 		SmartPtrStd<IShader>					shadowMapShader;
 		SmartPtrStd<IShader>					blurHorizontShader;
@@ -58,6 +59,7 @@ class FlyEngine_Core	:public FlyEngine
 		bool		FLYCALL		Core_Run					();
 		bool		FLYCALL		Core_Initialize				(FLY_ENGINE_INIT_DESC& initDesc);
 		void		FLYCALL		Core_Shutdown				();
+		bool		FLYCALL		Core_Message				();
 
 		void		FLYCALL		Gfx_Update					();
 		void		FLYCALL		Gfx_BeginForwardScene		();
@@ -66,12 +68,15 @@ class FlyEngine_Core	:public FlyEngine
 		//--------------
 		void		FLYCALL Gfx_DrawSkyBox();
 		void		FLYCALL Gfx_DrawGbuffer();
-		void		FLYCALL	Gfx_DrawShadows();
+		void		FLYCALL	Gfx_DrawShadows(vector<BaseBuffer*>* shadowViews);
 		void		FLYCALL Gfx_DrawLighting();
 		void		FLYCALL Gfx_DrawBlur();
 		void		FLYCALL Gfx_DrawFinalPicture();
 		//-----------------
+		void		FLYCALL PlaySound(const wchar_t* path);
+		//------------------
 		void		FLYCALL		Gfx_EndDeferredScene		();
+		void		FLYCALL		Gfx_EndDeferredSceneOrtho	();
 		void		FLYCALL		Gfx_Resize					(int width, int height);
 		void		FLYCALL		Gfx_SetCamera				(Camera* cam, bool isOrthographic = false);
 		Camera*		FLYCALL		Gfx_GetCamera				();

@@ -266,8 +266,8 @@ void Cube::Initialize(D3DXMATRIX world,  float height, float width, float depht,
 		animationMesh[i].position1	= mesh2[i].position;
 		animationMesh[i].normal1	= mesh2[i].normal;
 		animationMesh[i].texcoord1	= mesh2[i].texcoord;
-
 	}
+
 	//m_VertexBuffer->Unmap();
 	//m_VertexBuffer2->Unmap();
 

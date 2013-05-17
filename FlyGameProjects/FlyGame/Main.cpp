@@ -7,9 +7,12 @@ int WINAPI WinMain( HINSTANCE hInst, HINSTANCE prevInst, PSTR cmdLine, int cmdSh
 {
 	FlyGame fg;
 
-	fg.Initiate();
+	if(!fg.Initiate(Level))
+		MessageBox(0,L"Failed to initialize Fly Game", L"Error!", 0);
+
 	fg.Run();
 	
+	//fg.Destroy();
 	return cmdShow;
 
 }

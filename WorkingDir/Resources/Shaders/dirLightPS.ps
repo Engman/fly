@@ -1,15 +1,16 @@
 #include "LightHelp.fx"
 
-cbuffer LightBuffer : register(b0)
-{
-	DirLight dirLight;
-};
-cbuffer Camera : register(b1)
+cbuffer Camera : register(b0)
 {
   float4x4 mInvViewProj;
   float4x4 mInvView;
   float3 cameraPos;
 };
+cbuffer LightBuffer : register(b1)
+{
+	DirLight dirLight;
+};
+
 
 
 //albedo RGBA, normalRGB_depthA, specular, worldPosition
@@ -65,6 +66,7 @@ float4 Phong(float3 Position, float3 N,float SpecularIntensity, float SpecularPo
 	
 	//Calculate Final Product 
 	return float4(resultColor, 1); 
+	
 }
 
   //float4 ColorRGBA 				: SV_TARGET0;
@@ -114,6 +116,6 @@ PSOut FPixelShader(PSIn input)
 	}
 	
 	output.LightMap = LightColor;
-
+	
 	return output;
 }

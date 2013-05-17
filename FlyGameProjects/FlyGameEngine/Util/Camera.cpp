@@ -98,7 +98,24 @@ void Camera::RelativeUp(float speed)
 	this->positionY += norm.y*speed;
 	this->positionZ += norm.z*speed;
 }
+void Camera::RelativeParallelForward(float speed)
+{
+	D3DXVECTOR3 norm;
+	D3DXVec3Normalize(&norm, &(this->GetParallelForward()));
 
+	this->positionX += norm.x*speed;
+	this->positionY += norm.y*speed;
+	this->positionZ += norm.z*speed;
+}
+void Camera::RelativeParallelRight(float speed)
+{
+	D3DXVECTOR3 norm;
+	D3DXVec3Normalize(&norm, &(this->GetParallelRight()));
+
+	this->positionX += norm.x*speed;
+	this->positionY += norm.y*speed;
+	this->positionZ += norm.z*speed;
+}
 
 void Camera::SetRotation(float x, float y, float z)
 {

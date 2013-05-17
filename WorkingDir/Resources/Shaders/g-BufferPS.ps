@@ -52,6 +52,7 @@ PS_OUT FPixelShader( PS_IN input )
 	float4 spec = specular + textSpec;
 	spec= clamp(spec, 0,1);
 	float pow = specularPower * 0.00392; // *255
+
 	output.AmbR_diffG_specB_powA = float4( spec.x, 0,0 , specularPower);
 	//output.AmbR_diffG_specB_powA = float4( textSpec.x, 0,0 , pow);
 	
@@ -77,7 +78,6 @@ PS_OUT FPixelShader( PS_IN input )
     else
     {
         output.GlowRGB_ = objTexture[0].Sample(SampleTypeClamp, input.textCoord);
-		
     }
   return output;
 }

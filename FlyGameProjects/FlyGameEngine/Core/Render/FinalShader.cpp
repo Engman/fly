@@ -32,8 +32,8 @@ void FinalShader::draw(PER_FRAME_DATA& frameData)
 		}
 
 	
-		//set camdata, same for all lights
-		//frameData.camForLight->setBuffer(0);
+		//buffer for the shadow 
+		frameData.camForLight->setBuffer(0);
 
 		this->shader->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 

@@ -112,7 +112,7 @@ class D3DShell
 		void setLightSRV();
 
 		//-------------shadow maps--------------//
-		void BeginShadowRenderTarget();
+		void BeginShadowRenderTarget(int shadowNr);
 		void setShadowSRV();
 
 		//-------------blur pass-----------------//

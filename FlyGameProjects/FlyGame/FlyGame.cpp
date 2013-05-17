@@ -34,6 +34,9 @@ FlyGame::FlyGame()
 }
 FlyGame::~FlyGame()
 {
+	this->_pData->fly->Core_Shutdown();
+	this->_pData->fly = NULL;
+	this->_pData->level->Release();
 	delete this->_pData;
 }
 
@@ -64,9 +67,12 @@ bool FlyGame::Initiate(FlyGameSystemState state)
 		break;
 	}
 
+	
 	this->_pData->fly = FlyEngineCreate();
+	if(!this->_pData->fly->Core_Initialize(cd))
+		return false;
 	this->_pData->state->Initiate(this);
-	return this->_pData->fly->Core_Initialize(cd);
+	return true;
 }
 void FlyGame::Run()							  
 {
@@ -81,7 +87,12 @@ void FlyGame::Run()
 
 	while (this->_pData->state)
 	{
+		if(!this->_pData->fly->Core_Message())
+		{
+			break;
+		}
 
+		this->_pData->state->Frame();
 	}
 }
 void FlyGame::Update()						  
@@ -108,4 +119,10 @@ void FlyGame::Destroy()
 	FlyGameInstance->_pData->fly = NULL;
 	delete FlyGameInstance;
 	FlyGameInstance = NULL;
+}
+
+
+FlyEngine* FlyGame::GetCoreInstance()
+{
+	return this->_pData->fly;
 }

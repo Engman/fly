@@ -45,7 +45,6 @@ float4 FPixelShader(PSIn input) :  SV_Target
     {
 		sum += GlowSRV.Sample(SampleTypeClamp,  input.TextCoord  + float2(PixOffset[i], 0.0) * scale * dx ) * Weight[i];
 		sum += GlowSRV.Sample(SampleTypeClamp,  input.TextCoord - float2(PixOffset[i], 0.0) * scale * dx ) * Weight[i];
-
     }
 	
     /*for( int i = 1; i < 5; i++ )

@@ -85,34 +85,34 @@ class Lukas
 			}
 
 		}
-		void mkeydown(Input::MouseBtnData& d)
-		{
-			Entity* pick = this->fly->Geometry_Pick(this->obj, d.MousePos_clientX, d.MousePos_clientY);
-			if(pick)
-			{
-				vec3 tt = pick->getPosition();
-				tt.z -= 2;
-				pick->setPosition(tt);
-			}
-		}
-		void Keydown(Input::KeyPressData& key)
-		{
-			Camera *c = Lukas::fly->Gfx_GetCamera();
+		//void mkeydown(Input::MouseBtnData& d)
+		//{
+		//	Entity* pick = this->fly->Geometry_Pick(this->obj, d.MousePos_clientX, d.MousePos_clientY);
+		//	if(pick)
+		//	{
+		//		vec3 tt = pick->getPosition();
+		//		tt.z -= 2;
+		//		pick->setPosition(tt);
+		//	}
+		//}
+		//void Keydown(Input::KeyPressData& key)
+		//{
+		//	Camera *c = Lukas::fly->Gfx_GetCamera();
 
-				 if(key.key == Input::KeyCodes::K_W)		c->RelativeForward	(0.3f);
-			else if(key.key == Input::KeyCodes::K_S)		c->RelativeForward	(-0.3f);
-			else if(key.key == Input::KeyCodes::K_A)		c->RelativeRight	(-0.1f);
-			else if(key.key == Input::KeyCodes::K_D)		c->RelativeRight	(0.1f);
-			else if(key.key == Input::KeyCodes::K_Space)	c->RelativeUp		(0.3f);
-			else if(key.key == Input::KeyCodes::K_Ctrl)		c->RelativeUp		(-0.3f);
-			else if(key.key == Input::KeyCodes::K_Escape)	PostQuitMessage		(0);
-		}
-		void MouseMove(Input::MouseMoveData& d)
-		{
-			Camera *c = Lukas::fly->Gfx_GetCamera();
-			c->RelativeYaw((float)D3DXToRadian(d.relativeX*0.2)); //* this->gtime->DeltaTime() * 150);
-			c->RelativePitch((float)D3DXToRadian(d.relativeY*0.2)); //* this->gtime->DeltaTime() * 150);
-		}
+		//		 if(Input::self()->IsButtonPressed(DIK_W))		c->RelativeForward	(0.3f);
+		//	else if(Input::self()->IsButtonPressed(DIK_S)		c->RelativeForward	(-0.3f);
+		//	else if(Input::self()->IsButtonPressed(DIK_A))		c->RelativeRight	(-0.1f);
+		//	else if(Input::self()->IsButtonPressed(DIK_D))		c->RelativeRight	(0.1f);
+		//	else if(Input::self()->IsButtonPressed(DIK_SPACE))	c->RelativeUp		(0.3f);
+		//	else if(Input::self()->IsButtonPressed(DIK_LCONTROL))	c->RelativeUp		(-0.3f);
+		//	else if(Input::self()->IsButtonPressed(DIK_ESCAPE))	PostQuitMessage		(0);
+		//}
+		//void MouseMove(Input::MouseMoveData& d)
+		//{
+		//	Camera *c = Lukas::fly->Gfx_GetCamera();
+		//	c->RelativeYaw((float)D3DXToRadian(d.relativeX*0.2)); //* this->gtime->DeltaTime() * 150);
+		//	c->RelativePitch((float)D3DXToRadian(d.relativeY*0.2)); //* this->gtime->DeltaTime() * 150);
+		//}
 };
 
 std::vector<Entity*> Lukas::obj = std::vector<Entity*>();
@@ -141,9 +141,9 @@ int WINAPI WinMain( HINSTANCE hInst, HINSTANCE prevInst, PSTR cmdLine, int cmdSh
 	
 	Lukas::fly->Input_Initialize();
 	Lukas::fly->Input_Activate();
-	Input::self()->subscribeKeyDown<Lukas>(&lukor, &Lukas::Keydown);
-	Input::self()->subscribeMouseMove<Lukas>(&lukor, &Lukas::MouseMove);
-	Input::self()->subscribeMouseBtnDown(&lukor, &Lukas::mkeydown);
+	//Input::self()->subscribeKeyDown<Lukas>(&lukor, &Lukas::Keydown);
+	//Input::self()->subscribeMouseMove<Lukas>(&lukor, &Lukas::MouseMove);
+	//Input::self()->subscribeMouseBtnDown(&lukor, &Lukas::mkeydown);
 	
 	
 	vector<const wchar_t*> files;
@@ -183,12 +183,13 @@ int WINAPI WinMain( HINSTANCE hInst, HINSTANCE prevInst, PSTR cmdLine, int cmdSh
 
 	DirectionLight light(Type::LIGHT);
 	bool hasShadow = true;
-	light.Initialize(dirLightProxy, sh[FlyShader_DirLight], hasShadow);
+
+	//light.Initialize(dirLightProxy, sh[FlyShader_DirLight], hasShadow);
 
 	Lukas::dirLight.push_back(&light);
 
 	DirectionLight light2(Type::LIGHT);
-	light2.Initialize(dirLightProxy2, sh[FlyShader_DirLight], hasShadow);
+	//light2.Initialize(dirLightProxy2, sh[FlyShader_DirLight], hasShadow);
 
 	Lukas::dirLight.push_back(&light2);
 

@@ -31,7 +31,7 @@ void LightHolder::addLight(DirectionalLightProxy lightProxy, IShader* shader)
 
 	dirLights.push_back(light);*/
 	this->dLight = new DirectionLight(Type::LIGHT);
-	this->dLight->Initialize(lightProxy, shader, true);
+	//this->dLight->Initialize(lightProxy, shader, true);
 }
 
 void LightHolder::addLight(PointLightProxy lightProxy, IShader* shader)

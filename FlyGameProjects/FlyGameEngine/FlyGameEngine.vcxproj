@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Core\AudioClass.cpp" />
     <ClCompile Include="Core\DrawableTexture.cpp" />
     <ClCompile Include="Core\Light\PointLight.cpp" />
     <ClCompile Include="Core\Mesh\Terrain.cpp" />
@@ -65,6 +66,7 @@
     <ClCompile Include="Util\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Core\AudioClass.h" />
     <ClInclude Include="Core\D3DxLink.h" />
     <ClInclude Include="Core\DrawableTexture.h" />
     <ClInclude Include="Core\Light\PointLight.h" />
@@ -178,7 +180,7 @@
     <IntDir>$(SolutionDir)..\WorkingDir\AssemblyFiles\$(ProjectName)\x86\Debug\</IntDir>
     <TargetName>$(ProjectName)Dx86</TargetName>
     <IncludePath>$(IncludePath);$(SolutionDir)..\Dependencies\Include</IncludePath>
-    <LibraryPath>$(LibraryPath);$(SolutionDir)..\Dependencies\Lib\D3DX11\x86\;$(SolutionDir)..\Dependencies\Lib\Python\x86\;</LibraryPath>
+    <LibraryPath>$(LibraryPath);$(SolutionDir)..\Dependencies\Lib\D3DX11\x86\;$(SolutionDir)..\Dependencies\Lib\Python\x86\;$(SolutionDir)..\Dependencies\Lib\FMod\</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>

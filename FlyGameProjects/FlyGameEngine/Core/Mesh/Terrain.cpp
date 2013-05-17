@@ -8,7 +8,7 @@ Terrain::Terrain()
 
 Terrain::~Terrain()
 {
-
+	this->octTree.Release();
 }
 
 bool Terrain::Initialize(OBJECT_DESC& data)
@@ -21,7 +21,7 @@ bool Terrain::Initialize(OBJECT_DESC& data)
 
 	this->shader = data.shader;
 
-	this->octTree.Initialize(this->vertices, data.vCount, 2);
+	this->octTree.Initialize(this->vertices, data.vCount, 1);
 	
 	return true;
 }
@@ -33,18 +33,16 @@ void Terrain::Update()
 
 void Terrain::Render(ViewFrustum& frustum)
 {
-	vector<OctTree::RenderBufferType> nodeBuffers = this->octTree.Render(frustum);
-
 	if(this->shader)
 	{
 		IShader::DRAW_DATA data;
-
-		for(int i = 0; i<(int)nodeBuffers.size(); i++)
-			data.buffers.push_back(nodeBuffers[i].vertexBuffer);
-
 		data.worldMatrix = &this->world;
 		data.material = this->material;
-		this->shader->addDrawData(data);
+
+		this->octTree.Render(frustum, this->shader, data);
+
+		
+		//this->shader->addDrawData(data);
 	}
 }
 
@@ -52,4 +50,10 @@ void Terrain::Render(ViewFrustum& frustum)
 void Terrain::Release()
 {
 	this->octTree.Release();
+}
+
+
+vector<vector<D3DXVECTOR3>*> Terrain::GetCollidedBoxes(BoundingSphere sphere)
+{
+	return this->octTree.GetCollidedBoxes(sphere);
 }

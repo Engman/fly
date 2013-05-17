@@ -11,6 +11,8 @@ class IFlySystemState
 	public:
 		virtual void Initiate(FlyGame*) = 0;
 		virtual void Frame() = 0;
+
+		virtual void Release() = 0;
 };
 
 
