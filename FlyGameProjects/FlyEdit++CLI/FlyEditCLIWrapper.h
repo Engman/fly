@@ -42,6 +42,7 @@ namespace System
 					bool Shutdown				();
 					bool ProcessFrame			();
 					bool LoadResources			(array<String^>^ resourcePath, Dictionary<String^, int>^ loadedObjects);
+					bool LoadTerrain			(String^ path);
 					void OnResize				(int width, int height);
 					bool ChangeView				(int id);
 					bool SelectObject			(int id);

@@ -68,6 +68,15 @@ class Lukas
 std::vector<Entity*> Lukas::obj = std::vector<Entity*>();
 FlyEngine* Lukas::fly = NULL;
 
+void mouse(int x, int y, int btn, bool pressed)
+{
+	Entity *t = Lukas::fly->Geometry_Pick(Lukas::obj);
+	if(t)
+	{
+		int i = 0;
+	}
+}
+
 int WINAPI WinMain( HINSTANCE hInst, HINSTANCE prevInst, PSTR cmdLine, int cmdShow)
 {
 
@@ -83,6 +92,7 @@ int WINAPI WinMain( HINSTANCE hInst, HINSTANCE prevInst, PSTR cmdLine, int cmdSh
 	desc.showSplash = true;
 	desc.deferredRenderFunc = Lukas::Render;
 	desc.deferredUpdateFunc = Lukas::Update;
+	desc.mouseEventFunc = mouse;
 	if(!Lukas::fly->Core_Initialize(desc))
 		return cmdShow;
 	
@@ -97,7 +107,7 @@ int WINAPI WinMain( HINSTANCE hInst, HINSTANCE prevInst, PSTR cmdLine, int cmdSh
 	Lukas::fly->Geometry_Load(files, &Lukas::obj);
 	vector<IShader*> sh;
 	Lukas::fly->Gfx_GetShader(sh);
-	Lukas::obj[0]->setShader(sh[1]);
+	Lukas::obj[0]->setShader(sh[FlyShader_Default]);
 	
 
 	Lukas::fly->Core_Run();

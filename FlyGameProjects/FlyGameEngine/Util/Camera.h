@@ -67,6 +67,9 @@ class Camera
 		D3DXVECTOR3	GetParallelForward() const;
 		D3DXVECTOR3 GetParallelRight() const;
 
+		float GetFarZ() const;
+		float GetNearZ() const;
+
 		 void ConstructViewFrustum(ViewFrustum& frustum);
 };
 

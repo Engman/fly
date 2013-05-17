@@ -10,8 +10,8 @@
 
 
 SmartPtrStd<FlyEngine> pFlyEngine;
+FlyEngine_Core* pOwner;
 
-static LRESULT CALLBACK FlyEngineCoreWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 
 BOOL APIENTRY DllMain(HANDLE, DWORD, LPVOID)
@@ -57,6 +57,7 @@ FlyEngine_Core::FlyEngine_Core()
 	this->forwardUpdateFunc		= 0;
 	this->splash				= 0;
 	this->orthographicCamera	= 0;
+	pOwner = this;
 }
 
 
@@ -114,6 +115,7 @@ bool FLYCALL FlyEngine_Core::Core_Initialize(FLY_ENGINE_INIT_DESC& desc)
 	this->deferredUpdateFunc	= desc.deferredUpdateFunc;
 	this->forwardRenderFunc		= desc.forwardRenderFunc;
 	this->forwardUpdateFunc		= desc.forwardUpdateFunc;
+	this->mouseCallbackFunc		= desc.mouseEventFunc;
 	this->splash				= desc.showSplash;
 
 	if(!this->_InitWin(desc))			return false;
@@ -167,7 +169,7 @@ bool FLYCALL FlyEngine_Core::Core_Message()
 	return true;
 }
 
-LRESULT CALLBACK FlyEngineCoreWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK FlyEngine_Core::_FlyEngineCoreWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	static int cc = 0;
 	switch (message)
@@ -177,23 +179,24 @@ LRESULT CALLBACK FlyEngineCoreWndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 		break;
 		
 		case WM_INPUT:
-			//Input::self()->proccessRawDeviceData(lParam);
+
 		break;
 
 		case WM_LBUTTONDOWN:
 		case WM_MBUTTONDOWN:
 		case WM_RBUTTONDOWN:
-			PostMessage(WindowShell::self()->getParent(), message, wParam, lParam);
+			MessageBox(0, L"", L"", 0);
+			//pOwner->_procMouseEvent(message, true);
 		break;
 
 		case WM_LBUTTONUP:
 		case WM_MBUTTONUP:
 		case WM_RBUTTONUP:
-			PostMessage(WindowShell::self()->getParent(), message, wParam, lParam);
+			//pOwner->_procMouseEvent(message, false);
 		break;
 
 		case WM_MOUSEMOVE:
-			PostMessage(WindowShell::self()->getParent(), message, wParam, lParam);
+
 		break;
 		case 0x020A: // WM_MOUSEWHEEL, GET_WHEEL_DELTA_WPARAM(wparam);
 		break;
@@ -219,7 +222,7 @@ bool FlyEngine_Core::_InitWin(FLY_ENGINE_INIT_DESC& desc)
 	descWindow.windowClassName		= L"FlyEngineWindowClass";
 	descWindow.parent				= desc.parent;
 	descWindow.windowPosition		= Point2D(desc.winPosX, desc.winPosY);
-	descWindow.windowProcCallback	= FlyEngineCoreWndProc;
+	descWindow.windowProcCallback	= _FlyEngineCoreWndProc;
 	descWindow.windowSize			= Point2D(desc.winWidth, desc.winHeight);
 
 	if(!WindowShell::self()->createWin(descWindow))
@@ -240,5 +243,18 @@ void FlyEngine_Core::_ShowSplash()
 	this->Gfx_EndForwardScene();
 
 	this->splash = false;
+}
+
+void FlyEngine_Core::_procMouseEvent(int button, bool pressed)
+{
+	if(!this->mouseCallbackFunc)
+		return;
+
+	POINT p;
+	GetCursorPos(&p);
+	ScreenToClient(WindowShell::self()->getHWND(), &p);
+
+	this->mouseCallbackFunc(p.x, p.y, button, pressed);
+
 }
 //####################################################################//

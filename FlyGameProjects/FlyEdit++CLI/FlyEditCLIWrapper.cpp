@@ -65,6 +65,11 @@ namespace System { namespace Windows { namespace Interop {
 
 				return true;
 			}
+			bool FlyEditCLIWrapper::LoadTerrain(String^ path)
+			{
+				std::wstring temp = (wchar_t*)Marshal::StringToHGlobalUni(path).ToPointer();
+				return this->flyEngine->LoadTerrain(temp);
+			}
 
 			void FlyEditCLIWrapper::OnResize	(int width, int height)
 			{
@@ -168,22 +173,22 @@ namespace System { namespace Windows { namespace Interop {
 
 				if(!this->flyEngine->LoadLevel((wchar_t*)Marshal::StringToHGlobalUni(path).ToPointer(), &_m, &_l, &_p))
 					return false;
-				MessageBox::Show(gcnew Window(), "1");
+
 				//Mesh
 				std::map<std::wstring, int>::iterator _im = _m.begin();
 				for (_im; _im != _m.end(); _im++)
 					mesh->Add(gcnew String(_im->first.c_str()), _im->second);
-				MessageBox::Show(gcnew Window(), "2");
+
 				//Lights
 				std::map<std::wstring, int>::iterator _il = _l.begin();
 				for (_il; _il != _l.end(); _il++)
 					lights->Add(gcnew String(_il->first.c_str()), _il->second);
-				MessageBox::Show(gcnew Window(), "3");
+
 				//Pickups
 				std::map<std::wstring, int>::iterator _ip = _p.begin();
 				for (_ip; _ip != _p.end(); _ip++)
 					pickups->Add(gcnew String(_ip->first.c_str()), _ip->second);
-				MessageBox::Show(gcnew Window(), "4");
+
 				return true;
 			}
 			bool FlyEditCLIWrapper::SaveLevel(String^ path, String^ levelName)

@@ -29,6 +29,8 @@ typedef void(*ForwardRenderFunc)();
 typedef void(*DeferredUpdateFunc)();
 typedef void(*DeferredRenderFunc)();
 
+typedef void(*FlyCallbackMouseEvent)(int x, int y, int button, bool pressed);
+
 
 
 struct FLY_ENGINE_INIT_DESC
@@ -48,12 +50,14 @@ struct FLY_ENGINE_INIT_DESC
 	ForwardRenderFunc forwardRenderFunc;
 	DeferredUpdateFunc deferredUpdateFunc;
 	DeferredRenderFunc deferredRenderFunc;
+	FlyCallbackMouseEvent mouseEventFunc;
 
 	FLY_ENGINE_INIT_DESC()
 		:parent(0), handle(0), winHeight(0), winWidth(0), winPosX(0), winPosY(0), 
 		multisampling(0), vSync(0), fullscreen(0), windowName(L"FlyEngine"),
 		forwardRenderFunc(0), forwardUpdateFunc(0),
-		deferredRenderFunc(0), deferredUpdateFunc(0)
+		deferredRenderFunc(0), deferredUpdateFunc(0),
+		mouseEventFunc(0)
 	{}
 };
 
@@ -128,7 +132,7 @@ class FlyEngine
 		*	New Reference */
 		virtual bool		FLYCALL		Geometry_Load			(const wchar_t* path, vector<Entity*>*, FlyEngineGeometry special)	= 0;
 		/** Trys to pick an object in world space from given cordinates, returns pointer to object on success */
-		virtual Entity*		FLYCALL		Geometry_Pick			(const vector<Entity*>& objectToTest, int posX, int posY)			= 0;
+		virtual Entity*		FLYCALL		Geometry_Pick			(const vector<Entity*>& objectToTest)								= 0;
 		/** Initializes raw input */
 		virtual bool		FLYCALL		Input_Initialize		()																	= 0;
 		/** Removes device input from application */

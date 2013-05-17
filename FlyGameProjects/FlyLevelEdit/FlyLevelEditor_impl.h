@@ -43,21 +43,32 @@ class FlyLevelEditor_impl		:public FlyLevelEditor
 		virtual bool FLYCALL SetCamera(int id)												override;
 		virtual bool FLYCALL Entity_Select(int id)											override;
 		virtual void FLYCALL GetCameras(std::map<std::wstring, int>* outCameras)			override;
-		virtual void FLYCALL FlyLevelEditor_impl::SetRotation(float x, float y, float z)	override;
-		virtual void FLYCALL FlyLevelEditor_impl::SetScale(float x, float y, float z)		override;
+		virtual void FLYCALL SetRotation(float x, float y, float z)	override;
+		virtual void FLYCALL SetScale(float x, float y, float z)		override;
 		virtual bool FLYCALL SetName(const std::wstring& name)								override;
 		virtual void FLYCALL SetFlyMode(bool flyMode)										override;
-		virtual bool FLYCALL Entity_LoadData(std::vector<const wchar_t*>& files, std::map<std::wstring, int>* loaded) override;
-		virtual bool FLYCALL GetSelected (std::wstring& name, int& id, float& rx, float& ry, float& rz, float& sx, float& sy, float& sz) override;
-		virtual void FLYCALL GetSpeed(float& speed)											override;
-		virtual void FLYCALL SetSpeed(float speed)											override;
-		virtual bool FLYCALL LoadLevel(const std::wstring& path, std::map<std::wstring, int>* meshEntity, std::map<std::wstring, int>* lights, std::map<std::wstring, int>* pickups)							override;
-		virtual bool FLYCALL SaveLevel(const std::wstring& path, const std::wstring& levelName)								override;
-
-		virtual void FLYCALL OnKeyEvent(int key, bool released, bool ctrl, bool shift, bool alt)							override;
-		virtual void FLYCALL OnMouseBtnEvent(int key, bool released, bool ctrl, bool shift, bool alt)						override;
-		virtual void FLYCALL OnMouseMoveEvent(int cx, int cy, int rx, int ry, bool ctrl, bool shift, bool alt)				override;
-		virtual void FLYCALL OnMouseScrollEvent(int delta, bool ctrl, bool shift, bool alt)									override;
+		virtual bool FLYCALL Entity_LoadData(std::vector<const wchar_t*>& files, 
+												std::map<std::wstring, int>* loaded)		override;
+		virtual bool FLYCALL LoadTerrain(std::wstring& path)								override;
+		virtual bool FLYCALL GetSelected (	std::wstring& name, int& id, 
+											float& rx, float& ry, float& rz, 
+											float& sx, float& sy, float& sz)				override;
+		virtual void FLYCALL GetSpeed( float& speed)										override;
+		virtual void FLYCALL SetSpeed( float speed)											override;
+		virtual bool FLYCALL LoadLevel( const std::wstring& path, 
+										std::map<std::wstring, int>* meshEntity, 
+										std::map<std::wstring, int>* lights, 
+										std::map<std::wstring, int>* pickups)				override;
+		virtual bool FLYCALL SaveLevel( const std::wstring& path, 
+										const std::wstring& levelName)						override;
+		virtual void FLYCALL OnKeyEvent(int key, bool released, 
+										bool ctrl, bool shift, bool alt)					override;
+		virtual void FLYCALL OnMouseBtnEvent(int key, bool released, 
+											 bool ctrl, bool shift, bool alt)				override;
+		virtual void FLYCALL OnMouseMoveEvent(int cx, int cy, int rx, int ry, 
+												bool ctrl, bool shift, bool alt)			override;
+		virtual void FLYCALL OnMouseScrollEvent(int delta, 
+												bool ctrl, bool shift, bool alt)			override;
 };
 
 extern FlyLevelEditor_impl* gEditorInstance;

@@ -11,9 +11,17 @@ using System.Windows.Interop;
 
 namespace FlyEditUI
 {
-	
 	public partial class FlyEdit : Form
 	{
+		public enum ReourceNodeIndex
+		{
+			NodeIndex_Mesh,
+			NodeIndex_Pickup,
+			NodeIndex_Light,
+			NodeIndex_Camera,
+			NodeIndex_Terrain,
+		}
+
 		public static readonly int KEY_W				= 0x57;
 		public static readonly int KEY_A				= 0x41;
 		public static readonly int KEY_S				= 0x53;
@@ -38,7 +46,8 @@ namespace FlyEditUI
 		ToolTip pictureBoxLockTooltip = new ToolTip();
 		Point lastMousePos = new Point(0, 0);
 		int currentSelectedID = -1;
-
+		bool scale = false;
+		bool rotate = false;
 		LevelGenerator levelGen = null;
 		
 
@@ -63,21 +72,37 @@ namespace FlyEditUI
 			(this.RenderWin as Control).MouseUp		+= new MouseEventHandler(RenderWin_MouseUpEvent);
 			(this.RenderWin as Control).KeyDown		+= new KeyEventHandler(RenderWin_KeyDownEvent);
 			(this.RenderWin as Control).KeyUp		+= new KeyEventHandler(RenderWin_KeyUpEvent);
+	
+			
+			this.trackBar_ScaleX.ValueChanged		+= new EventHandler(trackBar_Scale_Scroll);
+			this.trackBar_ScaleY.ValueChanged		+= new EventHandler(trackBar_Scale_Scroll);
+			this.trackBar_ScaleZ.ValueChanged		+= new EventHandler(trackBar_Scale_Scroll);
+			this.trackBar_RotationX.ValueChanged	+= new EventHandler(trackBar_Rotation_Scroll);
+			this.trackBar_RotationY.ValueChanged	+= new EventHandler(trackBar_Rotation_Scroll);
+			this.trackBar_RotationZ.ValueChanged	+= new EventHandler(trackBar_Rotation_Scroll);
+
+			this.panel_Geometry.Location = new Point(6, 229);
+			this.panel_Lights.Location = new Point(6, 229);
+			this.panel_Pickups.Location = new Point(6, 229);
+			this.panel_Terrain.Location = new Point(6, 229);
+			this.panel_Camera.Location = new Point(6, 229);
 		}
 
 	
 		public void Run()
 		{
+			Timer t = new Timer();
+			t.Interval = 100;
+			t.Start();
+			t.Tick += this.UpdateCoreData;
 			while (!this.terminate)
 			{
 				if (this.engineRuning)
 				{
 					FlyEdit.flyCLI.ProcessFrame();
-					this.UpdateCoreData();
 				}
 				Application.DoEvents();
 			}
-
 		}
 
 
@@ -101,16 +126,15 @@ namespace FlyEditUI
 				string[] camNames = this.levelGen.Cameras.Keys.ToArray();
 				for (int i = 0; i < camNames.Length; i++)
 				{
-					this.CameraDropBox.Items.Add(camNames[i]);
+					this.ResourceTree.Nodes[3].Nodes.Add(camNames[i]);
 				}
-				this.CameraDropBox.SelectedIndex = 0;
 			}
 
 			return true;
 		}
 
 
-		void UpdateCoreData()
+		void UpdateCoreData(object sender, EventArgs e)
 		{
 			String name = "";
 			int id = -1;
@@ -125,39 +149,40 @@ namespace FlyEditUI
 			this.CameraSpeedSelector.Value = (Decimal)((float)speed * 100.0f);
 			FlyEdit.flyCLI.GetSelected(ref name, ref id, ref rotX, ref rotY, ref rotZ, ref scaleX, ref scaleY, ref scaleZ);
 
-			if (id != -1 && this.currentSelectedID != id)
+			if (id != -1 && id != currentSelectedID)
 			{
-				for (int i = 0; i < this.LoadedMesh_name.Items.Count; i++)
-				{
-					if (this.LoadedMesh_name.Items[i].ToString() == name)
-					{
-						this.LoadedMesh_name.SelectedIndex = i;
-						break ;
-					}
-				}
-
 				this.label_selectedName.Text = "Selected: " + name;
 				oldName = name;
-				this.trackBar_RotationX.Value = (int)rotX;
-				this.trackBar_RotationY.Value = (int)rotY;
-				this.trackBar_RotationZ.Value = (int)rotZ;
-
-				this.trackBar_ScaleX.Value = (int)scaleX;
-				this.trackBar_ScaleY.Value = (int)scaleY;
-				this.trackBar_ScaleZ.Value = (int)scaleZ;
+				if (!this.rotate)
+				{
+					this.trackBar_RotationX.Value = (int)(rotX * (180.0f / (float)Math.PI));
+					this.trackBar_RotationY.Value = (int)(rotY * (180.0f / (float)Math.PI));
+					this.trackBar_RotationZ.Value = (int)(rotZ * (180.0f / (float)Math.PI));
+				}
+				if (!this.scale)
+				{
+					this.trackBar_ScaleX.Value = (int)(scaleX * 1000.0f);
+					this.trackBar_ScaleY.Value = (int)(scaleY * 1000.0f);
+					this.trackBar_ScaleZ.Value = (int)(scaleZ * 1000.0f);
+				}
+				this.ActiveControl = this.RenderWin;
 			}
 			else if (id == -1)
 			{
-				this.label_selectedName.Text = "Selected: ";
-				this.LoadedMesh_name.SelectedIndex = -1;
-				this.trackBar_ScaleX.Value = 1;
-				this.trackBar_ScaleY.Value = 1;
-				this.trackBar_ScaleZ.Value = 1;
-				this.trackBar_RotationX.Value = 0;
-				this.trackBar_RotationY.Value = 0;
-				this.trackBar_RotationZ.Value = 0;
+				this.label_selectedName.Text = "Selected: null";
+				if (!this.scale)
+				{
+					this.trackBar_ScaleX.Value = 1;
+					this.trackBar_ScaleY.Value = 1;
+					this.trackBar_ScaleZ.Value = 1;
+				}
+				if (!this.rotate)
+				{
+					this.trackBar_RotationX.Value = 0;
+					this.trackBar_RotationY.Value = 0;
+					this.trackBar_RotationZ.Value = 0;
+				}
 			}
-
 			this.currentSelectedID = id;
 		}
 
