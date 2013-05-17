@@ -12,7 +12,10 @@ LevelTest
 
 
 
+
+
 3 
+
 ..\\Resources\\Models\\character.fgm 0.0 10.0 0.0 0.0 0.0 0.0 0
  
 ..\\Resources\\Models\\character.fgm 10.0 10.0 10.0 0.0 0.0 0.0 0
@@ -54,5 +57,5 @@ d 2
 4
  
 
-0 10 -3 
-0 0 0 0
+0 10 -30
+0 0 0

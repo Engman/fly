@@ -410,6 +410,22 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 	this->theWorld[0]->setShader(shaders[readInt]);
 
 
+	//First to load is always terrain
+	file>>readString;
+	this->entryInstance->GetCoreInstance()->Geometry_Load(readString.c_str(), &this->skyBox);
+	file>>readVector.x;
+	file>>readVector.y;
+	file>>readVector.z;
+	this->skyBox[0]->setPosition(readVector);
+	file>>readVector.x;
+	file>>readVector.y;
+	file>>readVector.z;
+	this->skyBox[0]->setRotation(readVector);
+	file>>readInt;		
+
+	this->skyBox[0]->setShader(shaders[readInt]);
+
+
 	//Read rest of objects
 	for(int i = 0; i < nrOfStuff-2; i++)
 	{
@@ -548,7 +564,7 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 
 	this->entryInstance->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\character.fgm", this->player.GetModel());
 
-	this->player.GetModel()->at(0)->setShader(shaders[0]);
+	this->player.GetModel()->at(0)->setShader(shaders[FlyShader_gBufferDefault]);
 
 	this->player.SetPosition(this->mainCamera.GetPosition());
 
