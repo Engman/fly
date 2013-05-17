@@ -47,10 +47,11 @@ void LightShader::draw(PER_FRAME_DATA& frameData)
 		//frameData.lights->setBuffer(1);
 
 		int cbOffset = 0; 
-		this->drawData[i].lightBuffers[0]->setBuffer(cbOffset);
+		this->drawData[i].lightBuffers[0]->setBuffer(1);
 		cbOffset++;
 
-		frameData.camForLight->setBuffer(cbOffset);
+		frameData.camForLight->setBuffer(0);
+
 		
 		for(int k = 0; k <(int)this->drawData[i].buffers.size(); k++)	// set vertex and index buffers
 		{

@@ -806,14 +806,14 @@ void D3DShell::setLightSRV()
 	ID3D11ShaderResourceView* srv [5];
 	srv[0] = this->_prDatPtr->g_buffTextures[0].getColorSRV();	
 	srv[1] = this->_prDatPtr->lightTexture.getColorSRV();		
-	srv[2] = this->_prDatPtr->shadowTexture.getDepthSRV();		
+	srv[2] = this->_prDatPtr->shadowTexture.getDepthSRV();//g_bufferDepthTexture.getDepthSRV();  //		
 	srv[3] = this->_prDatPtr->g_buffTextures[1].getColorSRV();	
 	srv[4] = this->_prDatPtr->blurTexture.getColorSRV();			
 	D3DShell::self()->getDeviceContext()->PSSetShaderResources(0,nrOfsrv,srv);
 }
 
 //-----------------------Shadow maps---------------------//
-void D3DShell::BeginShadowRenderTarget()
+void D3DShell::BeginShadowRenderTarget(int shadowNr)
 {
 	float clearColor[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 	//ID3D11RenderTargetView* rtv[1] = {this->_prDatPtr->shadowTexture.getRenderTargetView()};

@@ -44,7 +44,7 @@ bool ObjectMaterial::CreateMaterial(OBJECT_MATERIAL_DESC& desc)
 
 	BaseBuffer::BUFFER_INIT_DESC bDesc;
 	bDesc.data = &p;
-	bDesc.elementSize = sizeof(ObjectMaterial);
+	bDesc.elementSize = sizeof(ObjectMaterialProxy);
 	bDesc.nrOfElements = 1;
 	bDesc.type = BUFFER_FLAG::TYPE_CONSTANT_PS_BUFFER;
 	bDesc.usage = BUFFER_FLAG::USAGE_IMMUTABLE;

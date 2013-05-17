@@ -9,13 +9,13 @@ DirectionLight::~DirectionLight()
 
 }
 
-void DirectionLight::Initialize(DirectionalLightProxy data, IShader* shader, bool castShadow)
+void DirectionLight::Initialize(DirectionalLightProxy data, IShader* shader, bool castShadow, D3DXVECTOR3 pos)
 {
 	D3DXVECTOR3 lookAt(1,-3,-1);
 	D3DXVec3Normalize(&lookAt,&lookAt);
 
 	this->camera.SetProjectionMatrix((float)D3DX_PI*0.2f, D3DShell::self()->getAspectRatio(), 1, 1000);
-	this->camera.SetPosition(D3DXVECTOR3(0.0f, 50.0f, -100.0f));
+	this->camera.SetPosition(pos);
 	this->camera.SetRotation(0,0,0);
 	
 	this->dirLight = data;

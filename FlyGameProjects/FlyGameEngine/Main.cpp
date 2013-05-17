@@ -13,6 +13,7 @@ class Lukas
 		static std::vector<Entity*> skyBox; 
 		static std::vector<Entity*> obj;
 		static std::vector<Entity*> dirLight;
+		static std::vector<BaseBuffer*> shadowViews;
 
 	public:
 		Lukas()
@@ -79,10 +80,12 @@ class Lukas
 
 			for(int i= 0; i<(int)shadowViews.size();i++ )
 			{
-
+				Lukas::obj[i]->setShader(sh[FlyShader_Shadow]);
+				Lukas::obj[i]->Render(f);
 			}
 
 		}
+
 		//void Keydown(Input::KeyCodes::Key key)
 		//{
 		//	Camera *c = Lukas::fly->Gfx_GetCamera();
@@ -102,6 +105,7 @@ class Lukas
 		//		PostQuitMessage(0);
 		//}
 		//void MouseMove(Input::MouseMoveData d)
+
 		//{
 		//	Camera *c = Lukas::fly->Gfx_GetCamera();
 		//	c->RelativeYaw((float)D3DXToRadian(d.relativeX*0.2)); //* this->gtime->DeltaTime() * 150);
@@ -113,6 +117,7 @@ std::vector<Entity*> Lukas::obj = std::vector<Entity*>();
 FlyEngine* Lukas::fly = NULL;
 std::vector<Entity*> Lukas::dirLight = std::vector<Entity*>();
 std::vector<Entity*> Lukas::skyBox = std::vector<Entity*>();
+std::vector<BaseBuffer*> Lukas::shadowViews = std::vector<BaseBuffer*>();
 
 int WINAPI WinMain( HINSTANCE hInst, HINSTANCE prevInst, PSTR cmdLine, int cmdShow)
 {
@@ -134,13 +139,15 @@ int WINAPI WinMain( HINSTANCE hInst, HINSTANCE prevInst, PSTR cmdLine, int cmdSh
 	
 	Lukas::fly->Input_Initialize();
 	Lukas::fly->Input_Activate();
-	/*Input::self()->subscribeKeyDown<Lukas>(&lukor, &Lukas::Keydown);
-	Input::self()->subscribeMouseMove<Lukas>(&lukor, &Lukas::MouseMove);*/
+
+	//Input::self()->subscribeKeyDown<Lukas>(&lukor, &Lukas::Keydown);
+	//Input::self()->subscribeMouseMove<Lukas>(&lukor, &Lukas::MouseMove);
+	//Input::self()->subscribeMouseBtnDown(&lukor, &Lukas::mkeydown);
+
 	
 	
 	vector<const wchar_t*> files;
 	files.push_back(L"shadow_test.fgm");
-	//files.push_back(L"AAskydome.fgm");
 	Lukas::fly->Geometry_Load(files, &Lukas::obj);
 	vector<IShader*> sh;
 	Lukas::fly->Gfx_GetShader(sh);
@@ -176,14 +183,17 @@ int WINAPI WinMain( HINSTANCE hInst, HINSTANCE prevInst, PSTR cmdLine, int cmdSh
 
 	DirectionLight light(Type::LIGHT);
 	bool hasShadow = true;
-	light.Initialize(dirLightProxy, sh[FlyShader_DirLight], hasShadow);
+
+	//light.Initialize(dirLightProxy, sh[FlyShader_DirLight], hasShadow);
 
 	Lukas::dirLight.push_back(&light);
 
 	DirectionLight light2(Type::LIGHT);
-	light2.Initialize(dirLightProxy2, sh[FlyShader_DirLight], hasShadow);
+	//light2.Initialize(dirLightProxy2, sh[FlyShader_DirLight], hasShadow);
 
 	Lukas::dirLight.push_back(&light2);
+
+	Lukas::shadowViews.push_back(light2.getLightViewProj()); 
 
 	Lukas::fly->Core_Run();
 	Lukas::fly->Core_Shutdown();

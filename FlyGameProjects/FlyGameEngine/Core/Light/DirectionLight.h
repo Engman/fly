@@ -23,9 +23,9 @@ private:
 
 public:
 	DirectionLight(int type);
-	~DirectionLight();
+	virtual ~DirectionLight();
 
-	void Initialize(DirectionalLightProxy data, IShader* shader, bool castShadow);
+	void Initialize(DirectionalLightProxy data, IShader* shader, bool castShadow, D3DXVECTOR3 pos);
 	BaseBuffer* getLight();
 	D3DXMATRIX getView();
 	D3DXMATRIX getProjection();

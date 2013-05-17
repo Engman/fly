@@ -2,13 +2,13 @@
 //-----------------------------------------------------------------------------------------
 // Input and Output Structures
 //-----------------------------------------------------------------------------------------
-cbuffer CB_CAMERA
+/*cbuffer CB_CAMERA
 {
   float4x4 mWorld;
   float4x4 mView;
   float4x4 mProj;
   float4x4 mWorldInvTrans;
-};
+};*/
 
 struct VSIn
 {

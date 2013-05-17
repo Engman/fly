@@ -26,6 +26,7 @@ class FlyEngine_Core	:public FlyEngine
 		SmartPtrStd<IShader>					gBufferNoDepthShader;
 		SmartPtrStd<IShader>					gBufferAnimationShader;
 		SmartPtrStd<IShader>					finalShader; 
+		SmartPtrStd<IShader>					finalColorShader; 
 		SmartPtrStd<IShader>					dirLightShader;
 		SmartPtrStd<IShader>					shadowMapShader;
 		SmartPtrStd<IShader>					blurHorizontShader;
@@ -67,11 +68,13 @@ class FlyEngine_Core	:public FlyEngine
 		//--------------
 		void		FLYCALL Gfx_DrawSkyBox();
 		void		FLYCALL Gfx_DrawGbuffer();
-		void		FLYCALL	Gfx_DrawShadows();
+		void		FLYCALL	Gfx_DrawShadows(vector<BaseBuffer*>* shadowViews);
 		void		FLYCALL Gfx_DrawLighting();
 		void		FLYCALL Gfx_DrawBlur();
 		void		FLYCALL Gfx_DrawFinalPicture();
 		//-----------------
+		void		FLYCALL PlaySound(const wchar_t* path);
+		//------------------
 		void		FLYCALL		Gfx_EndDeferredScene		();
 		void		FLYCALL		Gfx_EndDeferredSceneOrtho	();
 		void		FLYCALL		Gfx_Resize					(int width, int height);

@@ -9,7 +9,7 @@
 #include "..\Core\Render\ShadowMapShader.h"
 #include "..\Core\Render\BlurShader.h"
 #include "..\Util\Camera.h"
-
+#include "..\Core\AudioClass.h"
 
 
 SmartPtrStd<FlyEngine> pFlyEngine;
@@ -45,12 +45,18 @@ FlyEngine_Core::FlyEngine_Core()
 {
 	D3DShell::self();
 	WindowShell::self();
+
+	AudioClass::self();
+	AudioClass::self()->intitialize();
+	AudioClass::self()->loadSound();
+
 	//Input::self();
 
 	this->gbufferShader			= new GBufferShader();
 	this->gBufferNoDepthShader	= new GBufferShader();
 	this->gBufferAnimationShader = new GBufferAnimationShader();
 	this->finalShader			= new FinalShader();
+	this->finalColorShader		= new FinalShader();
 	this->dirLightShader		= new LightShader();
 	this->shadowMapShader		= new ShadowMapShader();
 	this->blurHorizontShader	= new BlurShader();
@@ -104,7 +110,7 @@ bool FLYCALL FlyEngine_Core::Core_Run()
 			Gfx_DrawSkyBox();
 			Gfx_DrawGbuffer();
 			Gfx_DrawBlur();
-			Gfx_DrawShadows();
+			//Gfx_DrawShadows();
 			Gfx_DrawLighting();
 			Gfx_DrawFinalPicture();
 

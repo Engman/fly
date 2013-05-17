@@ -40,7 +40,6 @@ void ShadowMapShader::draw(PER_FRAME_DATA& frameData)
 	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_NoCullNoMs);
 	
 	
-	
 	int count = (int)this->drawData.size();
 	for( int i = 0; i< count;i++)
 	{
