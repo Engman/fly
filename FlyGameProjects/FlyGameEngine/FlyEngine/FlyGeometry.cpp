@@ -214,3 +214,4 @@ void GetMinMax(BoundingBox& bb, const vec4& vertex)
 	if(vertex.y > bb.maxPoint.y)		bb.maxPoint.y = vertex.y;
 	if(vertex.z > bb.maxPoint.z)		bb.maxPoint.z = vertex.z;
  }
+

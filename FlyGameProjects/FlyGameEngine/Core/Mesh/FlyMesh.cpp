@@ -6,8 +6,8 @@ FlyMesh::FlyMesh()
 {
 	D3DXMatrixIdentity(&this->world);
 	D3DXMatrixIdentity(&this->transformation);
+	this->rotation	= vec3(0.0f, 0.0f, 0.0f);
 	D3DXMatrixIdentity(&this->world);
-	this->rotation = vec3(0.0f, 0.0f, 0.0f);
 }
 FlyMesh::~FlyMesh()
 {
@@ -37,9 +37,8 @@ void FlyMesh::Render(ViewFrustum& frustum)
 		
 			for(int i = 0; i<(int)this->buffers.size(); i++)
 				data.buffers.push_back(this->buffers[i]);
-			//data.worldMatrix = &this->transformation;
-
-
+			
+			
 			data.worldMatrix = &this->world;
 			data.material = this->material;
 			this->shader->addDrawData(data);
@@ -59,8 +58,10 @@ void FlyMesh::Render(ViewFrustum& frustum)
 		IShader::DRAW_DATA data;
 		
 		for(int i = 0; i<(int)this->buffers.size(); i++)
+		{
 			data.buffers.push_back(this->buffers[i]);
-
+		}
+		
 		data.worldMatrix = &this->world;
 		data.material = this->material;
 		this->shader->addDrawData(data);
@@ -75,6 +76,7 @@ bool FlyMesh::Initialize(OBJECT_DESC& data)
 		DisplayText("ID3D11Device is invalid!");
 		return false;
 	}
+
 	if(!data.vertecies->size())
 	{
 		DisplayText("Nothing to initialize!");

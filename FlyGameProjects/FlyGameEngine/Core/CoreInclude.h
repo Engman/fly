@@ -23,7 +23,7 @@
 #include "Mesh\FullScreenQuad.h"
 
 #include "Render\GBufferShader.h"
-#include "Render\ColorShader.h"
+#include "Render\FinalShader.h"
 #include "Render\LightShader.h"
 
 #include "..\Util\FlyCamera.h"

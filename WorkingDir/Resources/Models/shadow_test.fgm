@@ -1,13 +1,17 @@
 ac 1
 vc 876
-m Material
-sp 0.500000
+m MaterialX
+a 0.000000 0.000000 0.000000 1.000000
+d 1.000000 1.000000 1.000000 1.000000
+s 0.000000 0.000000 0.000000 1.000000
+sp 10
 ta 
-td ..\Resources\Textures\Baron_Nashor.png
-ts 
-tg 
-tn 
+td ..\Resources\Textures\testarea.png
+ts ..\Resources\Textures\fullGlow.png
+tg ..\Resources\Textures\fullGlow.png
+tn ..\Resources\Textures\fullGlow.png
 endmtl
+
 
 an 0 1
 fr 0 0.041667
@@ -2642,5 +2646,3 @@ vn
 -0.644459 0.542985 -0.538316
 0.501907 0.538743 -0.676626
 0.501907 0.538743 -0.676626
-
-

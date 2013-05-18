@@ -27,11 +27,15 @@ class Entity abstract
 		GID				id;
 
 	protected:
+
 		std::wstring	name;
-		Matrix			world;
-		Matrix			transformation;
-		vec3			translation;
-		vec3			rotation;
+
+		Matrix		world;
+		Matrix		transformation;
+		vec3		rotation;
+		vec3		scale;
+		vec3		translation;
+
 
 		ObjectMaterial	*material;
 		IShader			*shader;
@@ -47,6 +51,7 @@ class Entity abstract
 			this->world				= origObj.world;
 			this->transformation	= origObj.transformation;
 			this->rotation			= origObj.rotation;
+			this->scale				= origObj.scale;
 			this->translation		= origObj.translation;
 			this->buffers			= origObj.buffers;
 			this->name				= origObj.name;
@@ -62,6 +67,7 @@ class Entity abstract
 			this->world				= origObj.world;
 			this->transformation	= origObj.transformation;
 			this->rotation			= origObj.rotation;
+			this->scale				= origObj.scale;
 			this->buffers			= origObj.buffers;
 
 			return *this;
@@ -95,11 +101,17 @@ class Entity abstract
 		{
 			return this->translation;
 		}
-		vec3			getRotation				()  const
+		vec3			getRotation				()	const  
 		{
 			return this->rotation;
 		}
-		vec3			getFront				()	const  
+
+		vec3 getScale			() const
+		{
+			return this->scale;
+		}
+		vec3 getFront			()	const  
+
 		{
 			return vec3(this->transformation.m[2]);
 		}
@@ -143,8 +155,15 @@ class Entity abstract
 		void			setRotation				(vec3 _rotation)
 		{
 			this->rotation = _rotation;
+
+			
 		}
-		void			setFront				(vec3 _front)
+
+		void setScale			(vec3 _scale)
+		{
+			this->scale = _scale;
+		}	
+		void setFront			(vec3 _front)
 		{
 			this->transformation._31 = _front.x;
 			this->transformation._32 = _front.y;
@@ -180,3 +199,4 @@ class Entity abstract
 
 
 #endif
+

@@ -23,10 +23,16 @@ class FlyEngine_Core	:public FlyEngine
 		DeferredRenderFunc						deferredRenderFunc;
 
 		SmartPtrStd<IShader>					gbufferShader;
-		SmartPtrStd<IShader>					colorShader; 
-		SmartPtrStd<IShader>					lightShader;
+		SmartPtrStd<IShader>					gBufferNoDepthShader;
+		SmartPtrStd<IShader>					gBufferAnimationShader;
+		SmartPtrStd<IShader>					finalShader; 
+		SmartPtrStd<IShader>					finalColorShader; 
+		SmartPtrStd<IShader>					dirLightShader;
+		SmartPtrStd<IShader>					shadowMapShader;
+		SmartPtrStd<IShader>					blurHorizontShader;
+		SmartPtrStd<IShader>					blurVerticalShader;
 
-		SmartPtrStd<BaseBuffer>					matrixBuffer;
+		SmartPtrStd<BaseBuffer>					cameraBuffer;
 
 		SmartPtrStd<FullScreenQuad>				fsq;
 
@@ -37,10 +43,13 @@ class FlyEngine_Core	:public FlyEngine
 		bool									orthographicCamera;
 
 	private:
-		bool		_InitGBuffers							();
-		bool		_InitColorShader						();
-		bool		_InitLightShader						();
-		bool		_InitMatrixBuffer						();
+		bool		_InitGBufferShader							();
+		bool		_InitFinalShader						();
+		bool		_InitDirLightShader						();
+		bool		_InitShadowMapShader					();
+		bool		_InitBlurShaders						();
+		bool		_InitAnimationShader					();
+		bool		_InitCameraBuffer						();
 		bool		_InitGfx								(FLY_ENGINE_INIT_DESC& desc);
 		bool		_InitWin								(FLY_ENGINE_INIT_DESC& desc);
 		void		_InitCam								();
@@ -56,6 +65,16 @@ class FlyEngine_Core	:public FlyEngine
 		void		FLYCALL		Gfx_BeginForwardScene		();
 		void		FLYCALL		Gfx_EndForwardScene			();
 		void		FLYCALL		Gfx_BeginDeferredScene		();
+		//--------------
+		void		FLYCALL Gfx_DrawSkyBox();
+		void		FLYCALL Gfx_DrawGbuffer();
+		void		FLYCALL	Gfx_DrawShadows(vector<BaseBuffer*>* shadowViews);
+		void		FLYCALL Gfx_DrawLighting();
+		void		FLYCALL Gfx_DrawBlur();
+		void		FLYCALL Gfx_DrawFinalPicture();
+		//-----------------
+		void		FLYCALL PlaySound(const wchar_t* path);
+		//------------------
 		void		FLYCALL		Gfx_EndDeferredScene		();
 		void		FLYCALL		Gfx_EndDeferredSceneOrtho	();
 		void		FLYCALL		Gfx_Resize					(int width, int height);

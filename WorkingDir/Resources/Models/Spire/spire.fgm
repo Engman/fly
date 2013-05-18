@@ -1,12 +1,15 @@
 ac 1
 vc 750
-m Material.001
-sp 0.000000
+m spireMat
+a 0.000000 0.000000 0.000000 1.000000
+d 1.000000 1.000000 1.000000 1.000000
+s 0.000000 0.000000 0.000000 1.000000
+sp 10
 ta 
-td ..\\Resources\\Textures\\light_grey.png
-ts 
-tg 
-tn 
+td ..\\Resources\\Textures\\Baron_Nashor.png
+ts ..\Resources\Textures\noGlow.png
+tg ..\Resources\Textures\noGlow.png
+tn ..\Resources\Textures\noGlow.png
 endmtl
 
 an 0 1

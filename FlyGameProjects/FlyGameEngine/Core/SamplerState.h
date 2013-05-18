@@ -26,6 +26,7 @@ namespace ShaderStates
             ID3D11SamplerState* getAnisotropic4()				;
             ID3D11SamplerState* getAnisotropic8()				;
             ID3D11SamplerState* getAnisotropic16()				;
+			ID3D11SamplerState* getLinearClamp()				;
             ID3D11SamplerState* getCustom()						;
             ID3D11SamplerState* getState(FLAGS::STATE_SAMPLING)	;
 
