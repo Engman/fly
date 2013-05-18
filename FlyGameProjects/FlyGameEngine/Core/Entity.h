@@ -30,8 +30,8 @@ class Entity abstract
 		std::wstring	name;
 		Matrix			world;
 		Matrix			transformation;
-		vec3			rotation;
 		vec3			translation;
+		vec3			rotation;
 
 		ObjectMaterial	*material;
 		IShader			*shader;
@@ -95,7 +95,7 @@ class Entity abstract
 		{
 			return this->translation;
 		}
-		vec3			getRotation				()	const  
+		vec3			getRotation				()  const
 		{
 			return this->rotation;
 		}
@@ -143,8 +143,6 @@ class Entity abstract
 		void			setRotation				(vec3 _rotation)
 		{
 			this->rotation = _rotation;
-
-			
 		}
 		void			setFront				(vec3 _front)
 		{
@@ -171,10 +169,6 @@ class Entity abstract
 		void			setBoundingSphere				(BoundingSphere* _sphere)
 		{
 			this->boundingSphere = _sphere;
-		}
-		BoundingSphere*			getBoundingSphere				()
-		{
-			return this->boundingSphere;
 		}
 		
 

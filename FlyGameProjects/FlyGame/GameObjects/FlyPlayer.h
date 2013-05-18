@@ -15,6 +15,10 @@ class FlyPlayer
 
 		bool justChangedForm;
 
+		BoundingEllipse boundingEllipse;
+
+		float energy;
+		float maxEnergy;
 
 	public:
 		FlyPlayer();
@@ -23,6 +27,7 @@ class FlyPlayer
 		void Initialize();
 
 		void Render(ViewFrustum& frustum);
+		void Update();		
 
 		vector<Entity*>* GetModel();
 
@@ -36,11 +41,21 @@ class FlyPlayer
 		vec3 GetVelocity() const;
 		vec3 GetMaxVelocity() const;
 		bool GetJustChanged() const;
+		BoundingEllipse GetEllipse() const;
+		float GetEnergy() const;
 
 		BoundingSphere* GetBoundingSphere();
 		void SetBoundingSphere(BoundingSphere* sphere);
 
 		void Release();
+
+		void DeductEnergy(float howMuch);
+
+		//Controls
+		void RollLeft();
+		void RollRight(vec3 forward);
+		void BankLeft();
+		void BankRight();
 };
 
 

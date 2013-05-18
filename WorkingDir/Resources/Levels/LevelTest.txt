@@ -1,6 +1,6 @@
 LevelTest
 1
-..\\Resources\\Models\\test_canyon_map.fgm 0.0 0.0 0.0 0.0 0.0 0.0 1
+..\\Resources\\Models\\spire.fgm 0.0 0.0 0.0 0.0 0.0 0.0 1
 3
 ..\\Resources\\Models\\character.fgm 0.0 10.0 0.0 0.0 0.0 0.0 1
 ..\\Resources\\Models\\character.fgm 10.0 10.0 10.0 0.0 0.0 0.0 1
