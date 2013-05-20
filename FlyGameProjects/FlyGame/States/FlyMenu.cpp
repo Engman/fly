@@ -10,9 +10,9 @@ FlyState_Menu::~FlyState_Menu()
 
 }
 
-void FlyState_Menu::Initiate(FlyGame* instance)
+bool FlyState_Menu::Initiate(FlyGame* instance)
 {
-
+	return true;
 }
 void FlyState_Menu::Frame() 
 {

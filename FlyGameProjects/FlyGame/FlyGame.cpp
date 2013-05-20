@@ -6,8 +6,7 @@
 
 #include "..\FlyGameEngine\FlyEngine\FlyEngine.h"
 #include "States\IFlySystemState.h"
-#include "States\FlyState_Editor.h"
-#include "States\FlyState_Level.h"
+//#include "States\FlyState_Level.h"
 #include "States\FlyState_Menu.h"
 #include "..\FlyGameEngine\Util\SmartPtrs.h"
 
@@ -16,7 +15,6 @@ static FlyGame* FlyGameInstance = NULL;
 
 struct FlyGame::_DATA_
 {
-	SmartPtrStd<IFlySystemState> editor;
 	SmartPtrStd<IFlySystemState> level;
 	SmartPtrStd<IFlySystemState> menu;
 	FlyEngine* fly;
@@ -36,7 +34,7 @@ FlyGame::~FlyGame()
 {
 	this->_pData->fly->Core_Shutdown();
 	this->_pData->fly = NULL;
-	this->_pData->level->Release();
+	//this->_pData->level->Release();
 	delete this->_pData;
 }
 
@@ -52,18 +50,13 @@ bool FlyGame::Initiate(FlyGameSystemState state)
 	switch (state)
 	{
 		case Level:
-			this->_pData->level = new FlyState_Level();
-			this->_pData->state = this->_pData->level;
+			//this->_pData->level = new FlyState_Level();
+			//this->_pData->state = this->_pData->level;
 		break;
 
 		case Menu:
 			this->_pData->menu = new FlyState_Menu();
 			this->_pData->state = this->_pData->menu;
-		break;
-
-		case Editor:
-			this->_pData->editor = new FlyState_Editor();
-			this->_pData->state = this->_pData->editor;
 		break;
 	}
 
@@ -71,7 +64,8 @@ bool FlyGame::Initiate(FlyGameSystemState state)
 	this->_pData->fly = FlyEngineCreate();
 	if(!this->_pData->fly->Core_Initialize(cd))
 		return false;
-	this->_pData->state->Initiate(this);
+	if(!this->_pData->state->Initiate(this))
+		return false;
 	return true;
 }
 void FlyGame::Run()							  

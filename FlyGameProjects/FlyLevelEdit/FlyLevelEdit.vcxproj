@@ -167,7 +167,7 @@
     <ClInclude Include="FlyLevelEditor_impl.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="FlyLevelEditor_impl.cpp" />
+    <ClCompile Include="FleLevelEditor_impl.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

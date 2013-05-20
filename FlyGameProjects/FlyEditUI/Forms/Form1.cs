@@ -8,10 +8,9 @@ using System.Text;
 using System.Windows.Forms;
 using System.Windows.Interop;
 
-
 namespace FlyEditUI
 {
-	public partial class FlyEdit : Form
+	public partial class FlyEdit : Form, IMessageFilter
 	{
 		public enum ReourceNodeIndex
 		{
@@ -50,7 +49,7 @@ namespace FlyEditUI
 		bool rotate = false;
 		LevelGenerator levelGen = null;
 		
-
+		
 		public FlyEdit()
 		{
 			InitializeComponent();
@@ -60,32 +59,32 @@ namespace FlyEditUI
 			this.levelGen = new LevelGenerator();
 			this.KeyPreview = true;
 
-			this.Move += new EventHandler(MoveSubForm);
+			this.Move			+= new EventHandler(MoveSubForm);
+			this.KeyUp			+= new KeyEventHandler(FlyEdit_KeyUpEvent);
 
 
-			this.KeyUp		+= new KeyEventHandler(FlyEdit_KeyUpEvent);
-
-
-			(this.RenderWin as Control).MouseWheel	+= new MouseEventHandler(RenderWin_MouseScrollEvent);
-			(this.RenderWin as Control).MouseMove	+= new MouseEventHandler(RenderWin_MouseMoveEvent);
-			(this.RenderWin as Control).MouseDown	+= new MouseEventHandler(RenderWin_MouseDownEvent);
-			(this.RenderWin as Control).MouseUp		+= new MouseEventHandler(RenderWin_MouseUpEvent);
-			(this.RenderWin as Control).KeyDown		+= new KeyEventHandler(RenderWin_KeyDownEvent);
-			(this.RenderWin as Control).KeyUp		+= new KeyEventHandler(RenderWin_KeyUpEvent);
+			(this.RenderWin as Control).MouseWheel		+= new MouseEventHandler(RenderWin_MouseScrollEvent);
+			(this.RenderWin as Control).MouseMove		+= new MouseEventHandler(RenderWin_MouseMoveEvent);
+			(this.RenderWin as Control).MouseDown		+= new MouseEventHandler(RenderWin_MouseDownEvent);
+			(this.RenderWin as Control).MouseUp			+= new MouseEventHandler(RenderWin_MouseUpEvent);
+			(this.RenderWin as Control).KeyDown			+= new KeyEventHandler(RenderWin_KeyDownEvent);
+			(this.RenderWin as Control).KeyUp			+= new KeyEventHandler(RenderWin_KeyUpEvent);
 	
 			
-			this.trackBar_ScaleX.ValueChanged		+= new EventHandler(trackBar_Scale_Scroll);
-			this.trackBar_ScaleY.ValueChanged		+= new EventHandler(trackBar_Scale_Scroll);
-			this.trackBar_ScaleZ.ValueChanged		+= new EventHandler(trackBar_Scale_Scroll);
-			this.trackBar_RotationX.ValueChanged	+= new EventHandler(trackBar_Rotation_Scroll);
-			this.trackBar_RotationY.ValueChanged	+= new EventHandler(trackBar_Rotation_Scroll);
-			this.trackBar_RotationZ.ValueChanged	+= new EventHandler(trackBar_Rotation_Scroll);
+			this.trackBar_ScaleX.ValueChanged			+= new EventHandler(trackBar_Scale_Scroll);
+			this.trackBar_ScaleY.ValueChanged			+= new EventHandler(trackBar_Scale_Scroll);
+			this.trackBar_ScaleZ.ValueChanged			+= new EventHandler(trackBar_Scale_Scroll);
+			this.trackBar_RotationX.ValueChanged		+= new EventHandler(trackBar_Rotation_Scroll);
+			this.trackBar_RotationY.ValueChanged		+= new EventHandler(trackBar_Rotation_Scroll);
+			this.trackBar_RotationZ.ValueChanged		+= new EventHandler(trackBar_Rotation_Scroll);
 
 			this.panel_Geometry.Location = new Point(6, 229);
 			this.panel_Lights.Location = new Point(6, 229);
 			this.panel_Pickups.Location = new Point(6, 229);
 			this.panel_Terrain.Location = new Point(6, 229);
 			this.panel_Camera.Location = new Point(6, 229);
+
+			Application.AddMessageFilter(this);
 		}
 
 	
@@ -95,6 +94,7 @@ namespace FlyEditUI
 			t.Interval = 100;
 			t.Start();
 			t.Tick += this.UpdateCoreData;
+
 			while (!this.terminate)
 			{
 				if (this.engineRuning)
@@ -129,6 +129,9 @@ namespace FlyEditUI
 					this.ResourceTree.Nodes[3].Nodes.Add(camNames[i]);
 				}
 			}
+
+
+			this.Focus();
 
 			return true;
 		}
@@ -165,7 +168,6 @@ namespace FlyEditUI
 					this.trackBar_ScaleY.Value = (int)(scaleY * 1000.0f);
 					this.trackBar_ScaleZ.Value = (int)(scaleZ * 1000.0f);
 				}
-				this.ActiveControl = this.RenderWin;
 			}
 			else if (id == -1)
 			{
@@ -184,6 +186,42 @@ namespace FlyEditUI
 				}
 			}
 			this.currentSelectedID = id;
+		}
+
+
+
+		private bool isInRenderWin()
+		{
+			Point p = this.RenderWin.PointToClient(Cursor.Position);
+
+			return (	p.X >= 0 && p.X <= this.RenderWin.ClientRectangle.Width && 
+						p.Y >= 0 && p.Y <= this.RenderWin.ClientRectangle.Height);
+		}
+		public bool PreFilterMessage(ref Message m)
+		{
+			switch (m.Msg)
+			{
+				case 512://MoseMove
+				case 513://LeftMouseDown
+				case 514://LeftMouseUp
+				case 516://RightMouseDown
+				case 517://RightMouseUp
+				case 519://MidMouseDown
+				case 520://MidMouseUp
+				case 522://MouseWheel
+					if (isInRenderWin())
+					{
+
+					}
+				break;
+
+				case 256://KeyDown
+				case 257://KeyUp
+					
+				break;
+			}
+			
+			return false;
 		}
 
 	}

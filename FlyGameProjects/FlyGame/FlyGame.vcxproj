@@ -170,7 +170,9 @@
     <ClCompile Include="FlyGame.cpp" />
     <ClCompile Include="GameObjects\FlyPlayer.cpp" />
     <ClCompile Include="States\FlyEditor.cpp" />
-    <ClCompile Include="States\FlyLevel.cpp" />
+    <ClCompile Include="States\FlyLevel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="States\FlyMenu.cpp" />
   </ItemGroup>
@@ -178,7 +180,9 @@
     <ClInclude Include="FlyGame.h" />
     <ClInclude Include="GameObjects\FlyPickup.h" />
     <ClInclude Include="States\FlyState_Editor.h" />
-    <ClInclude Include="States\FlyState_Level.h" />
+    <ClInclude Include="States\FlyState_Level.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="GameObjects\FlyPlayer.h" />
     <ClInclude Include="States\FlyState_Menu.h" />
     <ClInclude Include="States\IFlySystemState.h" />

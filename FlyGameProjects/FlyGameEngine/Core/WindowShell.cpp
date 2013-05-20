@@ -119,7 +119,7 @@ bool WindowShell::createWin(INIT_DESC_WINDOW &desc)
 	RECT rectW;
 	int width;
 	int height;
-	DWORD style = WS_POPUP|WS_SYSMENU|WS_CAPTION;
+	DWORD style = WS_POPUPWINDOW|WS_SYSMENU|WS_CAPTION;
 	bool windowed = false;
 
 	width = desc.windowSize.x + GetSystemMetrics(SM_CXFIXEDFRAME)*2;

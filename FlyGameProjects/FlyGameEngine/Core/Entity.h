@@ -133,16 +133,6 @@ class Entity abstract
 
 		void			setPosition				(vec3 _position)
 		{
-			//D3DXMATRIX temp;
-			//D3DXMatrixMultiply(&temp, &picked->getWorld(), &this->activeCamera->GetViewMatrix());
-			//picked->getBoundingSphere()->center = vec3(temp.m[3][0], temp.m[3][1], temp.m[3][2]);
-			//this->boundingSphere->center = vec3(this->world.m[3][0], this->world.m[3][1], this->world.m[3][2]);
-			//picked->getBoundingSphere()->center = picked->getPosition();
-			//float len = D3DXVec3Length(&vec3(temp.m[0][0], temp.m[1][1], temp.m[2][2]));
-			//this->boundingSphere->radius = len*9;
-			if(this->boundingSphere.IsValid())
-				this->boundingSphere->center += _position - this->translation;
-
 			this->translation = _position;
 		}
 		void			setRotation				(vec3 _rotation)
@@ -167,9 +157,9 @@ class Entity abstract
 		}
 		
 
-		virtual void	Update					()							{  }
-		virtual void	Render					(ViewFrustum& frustum)		{  }
-		virtual void	Release					()							{  }
+		virtual void	Update					()						{  }
+		virtual void	Render					(ViewFrustum& frustum)	{  }
+		virtual void	Release					()						{  }
 		
 };
 

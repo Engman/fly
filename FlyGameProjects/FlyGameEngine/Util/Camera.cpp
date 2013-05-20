@@ -291,14 +291,6 @@ D3DXVECTOR3 Camera::GetParallelRight() const
 	return returnedValue;
 }
 
-float Camera::GetFarZ() const
-{
-	return this->projFar;
-}
-float Camera::GetNearZ() const
-{
-	return this->projNear;
-}
 
 void Camera::ConstructViewFrustum(ViewFrustum& frustum)
 {

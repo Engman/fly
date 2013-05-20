@@ -12,7 +12,7 @@ class FlyState_Editor		:public IFlySystemState
 		FlyState_Editor();
 		virtual~FlyState_Editor();
 
-		void Initiate(FlyGame*) override;
+		bool Initiate(FlyGame*) override;
 		void Frame() override;
 
 		void Release() override;

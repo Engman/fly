@@ -22,8 +22,6 @@ class FlyEngine_Core	:public FlyEngine
 		DeferredRenderFunc						deferredUpdateFunc;
 		DeferredRenderFunc						deferredRenderFunc;
 
-		FlyCallbackMouseEvent					mouseCallbackFunc;
-
 		SmartPtrStd<IShader>					gbufferShader;
 		SmartPtrStd<IShader>					colorShader; 
 		SmartPtrStd<IShader>					lightShader;
@@ -47,8 +45,6 @@ class FlyEngine_Core	:public FlyEngine
 		bool		_InitWin								(FLY_ENGINE_INIT_DESC& desc);
 		void		_InitCam								();
 		void		_ShowSplash								();
-		void		_procMouseEvent							(int button, bool pressed);
-		static LRESULT CALLBACK _FlyEngineCoreWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 	public:
 		bool		FLYCALL		Core_Run					();
@@ -75,7 +71,8 @@ class FlyEngine_Core	:public FlyEngine
 		bool		FLYCALL		Geometry_Load				(const wchar_t* loadData, vector<Entity*>* objects);
 		bool		FLYCALL		Geometry_Load				(vector<const wchar_t*> loadData, vector<Entity*>* objects);
 		bool		FLYCALL		Geometry_Load				(const wchar_t* path, vector<Entity*>* object, FlyEngineGeometry special);
-		Entity*		FLYCALL		Geometry_Pick				(const vector<Entity*>& obj);
+		Entity*		FLYCALL		Geometry_Pick				(const vector<Entity*>& objectToTest, int posX, int posY);
+
 
 
 		bool		FLYCALL		Input_Initialize			();

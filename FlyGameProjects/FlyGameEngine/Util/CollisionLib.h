@@ -14,7 +14,6 @@ bool RayVSPoint(D3DXVECTOR3& ray, D3DXVECTOR3& point);
 bool RayVSBox(D3DXVECTOR3& ray, D3DXVECTOR3& minPoint, D3DXVECTOR3& maxPoint);
 bool RayVSSphere(D3DXVECTOR3& rayDirection, D3DXVECTOR3& rayOrigin, D3DXVECTOR3& center, float& radius);
 float RayVSSphereLength(D3DXVECTOR3& rayDirection, D3DXVECTOR3& rayOrigin, D3DXVECTOR3& center, float& radius);
-bool RayVSTriangle(D3DXVECTOR3& rayOrigin, D3DXVECTOR3& rayDirection, D3DXVECTOR3 triangle[3]);
 
 bool PlaneVSPoint(D3DXPLANE& plane, D3DXVECTOR3& point);
 

@@ -73,7 +73,6 @@ namespace FlyEditUI { public partial class FlyEdit {
 			Rectangle rect = new Rectangle(location, this.RenderWin.Size);
 			Cursor.Clip = rect;
 			FlyEdit.flyCLI.SetFlyMode(true);
-			this.ActiveControl = this.RenderWin;
 		}
 		else
 		{
@@ -82,7 +81,6 @@ namespace FlyEditUI { public partial class FlyEdit {
 			Cursor.Show();
 			Cursor.Clip = SystemInformation.VirtualScreen ;
 			FlyEdit.flyCLI.SetFlyMode(false);
-			this.ActiveControl = null;
 		}
 	}
 	private void RenderLockPictureHover(object sender, EventArgs e)
@@ -169,7 +167,6 @@ namespace FlyEditUI { public partial class FlyEdit {
 		float z = (float)Math.PI * this.trackBar_RotationZ.Value / 180.0f;
 
 		FlyEdit.flyCLI.SetRotation(x, y, z);
-		this.ActiveControl = null;
 	}
 	private void trackBar_Scale_Scroll(object sender, EventArgs e)
 	{
@@ -196,7 +193,6 @@ namespace FlyEditUI { public partial class FlyEdit {
 		}
 
 		FlyEdit.flyCLI.SetScale(x, y, z);
-		this.ActiveControl = null;
 	}
 	private void checkBox_uniformScale_CheckedChanged(object sender, EventArgs e)
 	{
@@ -206,7 +202,6 @@ namespace FlyEditUI { public partial class FlyEdit {
 			this.trackBar_ScaleY.Value = 1;
 			this.trackBar_ScaleZ.Value = 1;
 		}
-		this.ActiveControl = null;	
 	}
 	private void button_LoadGeometry_Click(object sender, EventArgs e)
 	{
@@ -238,7 +233,6 @@ namespace FlyEditUI { public partial class FlyEdit {
 				this.ResourceTree.Nodes[0].Nodes.Add(it.Current.Value.ToString(), it.Current.Key); 
 			}
 		}
-		this.ActiveControl = null;
 	}
 	private void button_LoadTerrain_Click(object sender, EventArgs e)
 	{
@@ -298,10 +292,7 @@ namespace FlyEditUI { public partial class FlyEdit {
 	}
 	private void RenderWin_MouseScrollEvent(object sender, MouseEventArgs e)
 	{
-		if (sender.Equals(this.RenderWin))
-		{
-			FlyEdit.flyCLI.OnMouseScrollEvent(e.Delta, this.ctrl, this.shift, this.alt);
-		}
+		FlyEdit.flyCLI.OnMouseScrollEvent(e.Delta, this.ctrl, this.shift, this.alt);
 	}
 	private void RenderWin_KeyDownEvent(object sender, KeyEventArgs e)
 	{
@@ -329,8 +320,11 @@ namespace FlyEditUI { public partial class FlyEdit {
 		else if (e.KeyCode.Equals(Keys.A))		key = KEY_A;
 		else if (e.KeyCode.Equals(Keys.S))		key = KEY_S;
 		else if (e.KeyCode.Equals(Keys.D))		key = KEY_D;
-		else if (e.KeyCode.Equals(Keys.Escape))	key = KEY_ESC;
-		
+		else if (e.KeyCode.Equals(Keys.Escape))
+		{
+			RenderLockPictureLockClicked(null, null);
+			key = KEY_ESC;
+		}
 		FlyEdit.flyCLI.OnKeyEvent(key, true, this.ctrl, this.shift, this.alt);
 		
 	}
@@ -356,18 +350,11 @@ namespace FlyEditUI { public partial class FlyEdit {
 		this.shift = e.Shift;
 		this.ctrl = e.Control;
 		this.alt = e.Alt;
-
-		if (e.KeyCode.Equals(Keys.Escape) && this.RenderWin == this.ActiveControl)
-		{
-			this.RenderLockPictureLockClicked(null, null);
-		}
-		
 	}
 
 	
 	private void CameraSpeedSelector_ValueChanged(object sender, EventArgs e)
 	{
-		this.ActiveControl = null;
 		float _s = (float)this.CameraSpeedSelector.Value * 0.01f;
 		FlyEdit.flyCLI.SetSpeed(_s);
 	}
@@ -386,7 +373,6 @@ namespace FlyEditUI { public partial class FlyEdit {
 			topLevel = temp.Index;
 			temp = temp.Parent;
 		}
-
 		switch (topLevel)
 		{
 			case (int)ReourceNodeIndex.NodeIndex_Mesh:
@@ -418,6 +404,7 @@ namespace FlyEditUI { public partial class FlyEdit {
 					current.Visible = false;
 				current = this.panel_Camera;
 				current.Visible = true;
+
 				CameraNodeSelected(e.Node);
 			break;
 
@@ -432,7 +419,6 @@ namespace FlyEditUI { public partial class FlyEdit {
 			default:
 			break;
 		}
-		this.ActiveControl = null;
 	}
 	private void MeshNodeSelected(TreeNode node)
 	{
@@ -451,17 +437,14 @@ namespace FlyEditUI { public partial class FlyEdit {
 			}
 		}
 
-		this.ActiveControl = null;
 	}
 	private void PickupNodeSelected(TreeNode node)
 	{
 		
-		this.ActiveControl = null;
 	}
 	private void LightNodeSelected(TreeNode node)
 	{
 
-		this.ActiveControl = null;
 	}
 	private void CameraNodeSelected(TreeNode node)
 	{
@@ -469,13 +452,15 @@ namespace FlyEditUI { public partial class FlyEdit {
 		{}
 		else
 		{
+			for (int i = 0; i < this.ResourceTree.Nodes[(int)ReourceNodeIndex.NodeIndex_Camera].Nodes.Count; i++)
+				this.ResourceTree.Nodes[(int)ReourceNodeIndex.NodeIndex_Camera].Nodes[i].ForeColor = Color.Black;
+
+			node.ForeColor = Color.White;
 			FlyEdit.flyCLI.ChangeView(this.levelGen.Cameras[node.Text]);
 		}
-		this.ActiveControl = null;
 	}
 	private void TerrainNodeSelected(TreeNode node)
 	{
 
-		this.ActiveControl = null;
 	}
 }}

@@ -21,7 +21,7 @@ namespace System { namespace Windows { namespace Interop {
 			{
 				HWND hwnd = (HWND)(void*)_hWnd;
 
-				if( FAILED (this->flyEngine->Initiate(hwnd, width, height) ) )
+				if( !this->flyEngine->Initiate(hwnd, width, height) )
 					return false;
 
 				return true;
@@ -195,4 +195,5 @@ namespace System { namespace Windows { namespace Interop {
 			{
 				return this->flyEngine->SaveLevel((wchar_t*)Marshal::StringToHGlobalUni(path).ToPointer(), (wchar_t*)Marshal::StringToHGlobalUni(levelName).ToPointer());
 			}
+
 }}}

@@ -10,9 +10,9 @@ FlyState_Editor::~FlyState_Editor()
 
 }
 
-void FlyState_Editor::Initiate(FlyGame* instance)
+bool FlyState_Editor::Initiate(FlyGame* instance)
 {
-
+	return true;
 }
 void FlyState_Editor::Frame()
 {

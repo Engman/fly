@@ -16,9 +16,6 @@
 */
 class FlyMesh		:public Entity
 {
-	private:
-		std::wstring _filename;
-
 	public:
 		struct OBJECT_DESC
 		{
@@ -44,6 +41,7 @@ class FlyMesh		:public Entity
 				:device(0), deviceContext(0), vertecies(0), vCount(0), material_id(-1), shader(0), name(L""), filename(L""), boundingSphere(0)
 			{}
 		};
+
 	private:
 		SmartPtrStd<std::vector<vec3>> vertexList;
 

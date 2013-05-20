@@ -28,11 +28,11 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.Windows.Forms.TreeNode treeNode21 = new System.Windows.Forms.TreeNode("Mesh");
-			System.Windows.Forms.TreeNode treeNode22 = new System.Windows.Forms.TreeNode("Pickups");
-			System.Windows.Forms.TreeNode treeNode23 = new System.Windows.Forms.TreeNode("Lights");
-			System.Windows.Forms.TreeNode treeNode24 = new System.Windows.Forms.TreeNode("Camera");
-			System.Windows.Forms.TreeNode treeNode25 = new System.Windows.Forms.TreeNode("Terrain");
+			System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Mesh");
+			System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Pickups");
+			System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Lights");
+			System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Camera");
+			System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Terrain");
 			this.RenderWin = new System.Windows.Forms.Panel();
 			this.RenderLockPictureBox = new System.Windows.Forms.PictureBox();
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -43,12 +43,12 @@
 			this.shutdownEngineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.ToolContainer = new System.Windows.Forms.Panel();
-			this.panel_Lights = new System.Windows.Forms.Panel();
-			this.panel_Pickups = new System.Windows.Forms.Panel();
-			this.panel_Terrain = new System.Windows.Forms.Panel();
-			this.button_LoadTerrain = new System.Windows.Forms.Button();
 			this.panel_Geometry = new System.Windows.Forms.Panel();
 			this.button_LoadGeometry = new System.Windows.Forms.Button();
+			this.panel_Lights = new System.Windows.Forms.Panel();
+			this.panel_Terrain = new System.Windows.Forms.Panel();
+			this.button_LoadTerrain = new System.Windows.Forms.Button();
+			this.panel_Pickups = new System.Windows.Forms.Panel();
 			this.ResourceTree = new System.Windows.Forms.TreeView();
 			this.panel_Camera = new System.Windows.Forms.Panel();
 			this.button_CreateCamera = new System.Windows.Forms.Button();
@@ -69,8 +69,8 @@
 			((System.ComponentModel.ISupportInitialize)(this.RenderLockPictureBox)).BeginInit();
 			this.menuStrip1.SuspendLayout();
 			this.ToolContainer.SuspendLayout();
-			this.panel_Terrain.SuspendLayout();
 			this.panel_Geometry.SuspendLayout();
+			this.panel_Terrain.SuspendLayout();
 			this.panel_Camera.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.CameraSpeedSelector)).BeginInit();
 			this.panel_SelectedScale.SuspendLayout();
@@ -85,7 +85,8 @@
 			// RenderWin
 			// 
 			this.RenderWin.BackColor = System.Drawing.SystemColors.ActiveCaption;
-			this.RenderWin.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.RenderWin.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.RenderWin.Cursor = System.Windows.Forms.Cursors.Cross;
 			this.RenderWin.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.RenderWin.Location = new System.Drawing.Point(0, 24);
 			this.RenderWin.Name = "RenderWin";
@@ -182,6 +183,30 @@
 			this.ToolContainer.Size = new System.Drawing.Size(264, 473);
 			this.ToolContainer.TabIndex = 2;
 			// 
+			// panel_Geometry
+			// 
+			this.panel_Geometry.BackColor = System.Drawing.Color.DarkGray;
+			this.panel_Geometry.Controls.Add(this.button_LoadGeometry);
+			this.panel_Geometry.Location = new System.Drawing.Point(266, 229);
+			this.panel_Geometry.Name = "panel_Geometry";
+			this.panel_Geometry.Size = new System.Drawing.Size(254, 240);
+			this.panel_Geometry.TabIndex = 14;
+			this.panel_Geometry.Visible = false;
+			// 
+			// button_LoadGeometry
+			// 
+			this.button_LoadGeometry.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+			this.button_LoadGeometry.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.button_LoadGeometry.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.button_LoadGeometry.Location = new System.Drawing.Point(7, 9);
+			this.button_LoadGeometry.Margin = new System.Windows.Forms.Padding(0);
+			this.button_LoadGeometry.Name = "button_LoadGeometry";
+			this.button_LoadGeometry.Size = new System.Drawing.Size(94, 17);
+			this.button_LoadGeometry.TabIndex = 7;
+			this.button_LoadGeometry.Text = "Load Geometry";
+			this.button_LoadGeometry.UseVisualStyleBackColor = true;
+			this.button_LoadGeometry.Click += new System.EventHandler(this.button_LoadGeometry_Click);
+			// 
 			// panel_Lights
 			// 
 			this.panel_Lights.BackColor = System.Drawing.Color.DarkGray;
@@ -190,15 +215,6 @@
 			this.panel_Lights.Size = new System.Drawing.Size(254, 240);
 			this.panel_Lights.TabIndex = 16;
 			this.panel_Lights.Visible = false;
-			// 
-			// panel_Pickups
-			// 
-			this.panel_Pickups.BackColor = System.Drawing.Color.DarkGray;
-			this.panel_Pickups.Location = new System.Drawing.Point(266, 475);
-			this.panel_Pickups.Name = "panel_Pickups";
-			this.panel_Pickups.Size = new System.Drawing.Size(254, 240);
-			this.panel_Pickups.TabIndex = 16;
-			this.panel_Pickups.Visible = false;
 			// 
 			// panel_Terrain
 			// 
@@ -224,29 +240,14 @@
 			this.button_LoadTerrain.UseVisualStyleBackColor = true;
 			this.button_LoadTerrain.Click += new System.EventHandler(this.button_LoadTerrain_Click);
 			// 
-			// panel_Geometry
+			// panel_Pickups
 			// 
-			this.panel_Geometry.BackColor = System.Drawing.Color.DarkGray;
-			this.panel_Geometry.Controls.Add(this.button_LoadGeometry);
-			this.panel_Geometry.Location = new System.Drawing.Point(266, 229);
-			this.panel_Geometry.Name = "panel_Geometry";
-			this.panel_Geometry.Size = new System.Drawing.Size(254, 240);
-			this.panel_Geometry.TabIndex = 14;
-			this.panel_Geometry.Visible = false;
-			// 
-			// button_LoadGeometry
-			// 
-			this.button_LoadGeometry.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.button_LoadGeometry.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.button_LoadGeometry.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.button_LoadGeometry.Location = new System.Drawing.Point(7, 9);
-			this.button_LoadGeometry.Margin = new System.Windows.Forms.Padding(0);
-			this.button_LoadGeometry.Name = "button_LoadGeometry";
-			this.button_LoadGeometry.Size = new System.Drawing.Size(94, 17);
-			this.button_LoadGeometry.TabIndex = 7;
-			this.button_LoadGeometry.Text = "Load Geometry";
-			this.button_LoadGeometry.UseVisualStyleBackColor = true;
-			this.button_LoadGeometry.Click += new System.EventHandler(this.button_LoadGeometry_Click);
+			this.panel_Pickups.BackColor = System.Drawing.Color.DarkGray;
+			this.panel_Pickups.Location = new System.Drawing.Point(266, 475);
+			this.panel_Pickups.Name = "panel_Pickups";
+			this.panel_Pickups.Size = new System.Drawing.Size(254, 240);
+			this.panel_Pickups.TabIndex = 16;
+			this.panel_Pickups.Visible = false;
 			// 
 			// ResourceTree
 			// 
@@ -258,22 +259,22 @@
 			this.ResourceTree.LineColor = System.Drawing.Color.WhiteSmoke;
 			this.ResourceTree.Location = new System.Drawing.Point(6, 6);
 			this.ResourceTree.Name = "ResourceTree";
-			treeNode21.Name = "Node_GameMesh";
-			treeNode21.Text = "Mesh";
-			treeNode22.Name = "Node_Pickups";
-			treeNode22.Text = "Pickups";
-			treeNode23.Name = "Node_Lights";
-			treeNode23.Text = "Lights";
-			treeNode24.Name = "Node_Camera";
-			treeNode24.Text = "Camera";
-			treeNode25.Name = "Node_Terrain";
-			treeNode25.Text = "Terrain";
+			treeNode1.Name = "Node_GameMesh";
+			treeNode1.Text = "Mesh";
+			treeNode2.Name = "Node_Pickups";
+			treeNode2.Text = "Pickups";
+			treeNode3.Name = "Node_Lights";
+			treeNode3.Text = "Lights";
+			treeNode4.Name = "Node_Camera";
+			treeNode4.Text = "Camera";
+			treeNode5.Name = "Node_Terrain";
+			treeNode5.Text = "Terrain";
 			this.ResourceTree.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode21,
-            treeNode22,
-            treeNode23,
-            treeNode24,
-            treeNode25});
+            treeNode1,
+            treeNode2,
+            treeNode3,
+            treeNode4,
+            treeNode5});
 			this.ResourceTree.ShowNodeToolTips = true;
 			this.ResourceTree.Size = new System.Drawing.Size(154, 217);
 			this.ResourceTree.TabIndex = 14;
@@ -483,9 +484,9 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(1032, 497);
+			this.Controls.Add(this.RenderWin);
 			this.Controls.Add(this.label_selectedName);
 			this.Controls.Add(this.RenderLockPictureBox);
-			this.Controls.Add(this.RenderWin);
 			this.Controls.Add(this.splitter1);
 			this.Controls.Add(this.ToolContainer);
 			this.Controls.Add(this.menuStrip1);
@@ -501,8 +502,8 @@
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
 			this.ToolContainer.ResumeLayout(false);
-			this.panel_Terrain.ResumeLayout(false);
 			this.panel_Geometry.ResumeLayout(false);
+			this.panel_Terrain.ResumeLayout(false);
 			this.panel_Camera.ResumeLayout(false);
 			this.panel_Camera.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.CameraSpeedSelector)).EndInit();

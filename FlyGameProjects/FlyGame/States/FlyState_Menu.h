@@ -3,18 +3,18 @@
 
 #include "IFlySystemState.h"
 
+
 class FlyState_Menu		:public IFlySystemState
 {
 	private:
-
+		
 
 	public:
 		FlyState_Menu();
 		virtual~FlyState_Menu();
 
-		void Initiate(FlyGame*) override;
+		bool Initiate(FlyGame*) override;
 		void Frame() override;
-
 		void Release() override;
 };
 

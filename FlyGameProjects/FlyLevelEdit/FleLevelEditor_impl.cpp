@@ -14,15 +14,11 @@ int lastMouseY = 0;
 bool gFlyMode = false;
 float gSpeed = 0.01f;
 bool gRotateCamera = false;
-bool gMoveCameraScroll = false;
+
 bool gKeyW = false;
 bool gKeyA = false;
 bool gKeyS = false;
 bool gKeyD = false;
-bool gAlt = false;
-bool gCtrl = false;
-bool gShift = false;
-
 
 
 FlyLevelEditor* FLYCALL GetEditorInstance()
@@ -34,15 +30,6 @@ FlyLevelEditor* FLYCALL GetEditorInstance()
 }
 
 
-void mouseforward(int x, int y, int button, bool pressed, int delta)
-{
-
-}
-void keyboardforward(int button, bool pressed)
-{
-	MessageBox(0, L"K", L"", 0);
-}
-
 
 FlyLevelEditor_impl::FlyLevelEditor_impl()
 {
@@ -53,6 +40,7 @@ FlyLevelEditor_impl::~FlyLevelEditor_impl()
 {
 	this->selected = 0;
 }
+
 
 
 void FLYCALL FlyLevelEditor_impl::Terminate()
@@ -73,22 +61,16 @@ bool FLYCALL FlyLevelEditor_impl::Initiate(HWND parent, int width, int height)
 	d.winWidth = width;
 	d.parent = parent;
 	d.winHeight = height;
-	d.keyboardEvent = keyboardforward;
-	d.mouseEventFunc = mouseforward;
 	
 	if(!this->core->Core_Initialize(d)) return false;
-
-
-	this->core->Gfx_GetCamera()->SetPosition(0.0f, 100.0f, -100.0f);
-	this->core->Gfx_GetCamera()->SetRotationX(45.0f);
 
 
 	CameraObject *topCam = new CameraObject();
 	topCam->camera = new Camera();
 	topCam->camera->SetPosition(0.0f, 100.0f, 0.0f);
 	topCam->camera->SetProjectionMatrix((float)D3DX_PI*0.2f, D3DShell::self()->getAspectRatio(), 1.0f, 1000.0f);
-	topCam->camera->RelativePitch((float)D3DXToRadian(90.0f));
-	topCam->name = L"Brids eye";
+	topCam->camera->RelativePitch(90.0f);
+	topCam->name = L"Top view Camera";
 	this->cameras.push_back(topCam);
 
 
@@ -96,9 +78,8 @@ bool FLYCALL FlyLevelEditor_impl::Initiate(HWND parent, int width, int height)
 	frontCam->camera = new Camera();
 	frontCam->camera->SetPosition(0.0f, 0.0f, -100.0f);
 	frontCam->camera->SetProjectionMatrix((float)D3DX_PI*0.2f, D3DShell::self()->getAspectRatio(), 1.0f, 1000.0f);
-	frontCam->name = L"Gound level";
+	frontCam->name = L"Front view Camera";
 	this->cameras.push_back(frontCam);
-
 
 	return true;
 }
@@ -106,7 +87,7 @@ void FLYCALL FlyLevelEditor_impl::Frame()
 {
 	if(!this->core)			return;
 	if(!gEditorInstance)	return;
-
+	
 	this->core->Gfx_Update();
 
 			 if(gKeyW)	this->core->Gfx_GetCamera()->RelativeForward(gSpeed);
@@ -178,18 +159,6 @@ bool FLYCALL FlyLevelEditor_impl::Entity_LoadData(std::vector<const wchar_t*>& f
 
 	return true;
 }
-bool FLYCALL FlyLevelEditor_impl::LoadTerrain(std::wstring& path)
-{
-	if(this->theWorld.size() > 0)
-		this->theWorld.clear();
-
-	if(!this->core->Geometry_Load(path.c_str(), &this->theWorld, FlyGeometry_Terrain))
-		return false;
-
-	this->theWorld[0]->setShader(this->core->Gfx_GetShader(FlyShader_Default));
-
-	return true;
-}
 bool FLYCALL FlyLevelEditor_impl::Entity_Select(int id)
 {
 	if(id < 0)
@@ -207,15 +176,11 @@ bool FLYCALL FlyLevelEditor_impl::Entity_Select(int id)
 
 	return false;
 }
-void FLYCALL FlyLevelEditor_impl::GetHandle(HWND& hwnd)
-{
-	this->core->Core_GetHandle(hwnd);
-}
 void FLYCALL FlyLevelEditor_impl::GetCameras(std::map<std::wstring, int>* outCameras)
 {
 	if(outCameras)
 	{
-		(*outCameras)[L"Perspective"] = this->core->Gfx_GetDefaultCamera()->GetID();
+		(*outCameras)[L"First person view"] = this->core->Gfx_GetDefaultCamera()->GetID();
 		for (int i = 0; i < (int)this->cameras.size(); i++)
 		{
 			(*outCameras)[this->cameras[i]->name] = this->cameras[i]->camera->GetID();
@@ -274,6 +239,11 @@ void FLYCALL FlyLevelEditor_impl::GetSpeed(float& speed)
 void FLYCALL FlyLevelEditor_impl::SetSpeed(float speed)
 {
 	gSpeed = speed;
+}
+bool FLYCALL FlyLevelEditor_impl::LoadTerrain(std::wstring& path)
+{
+
+	return true;
 }
 
 
@@ -336,21 +306,36 @@ bool FLYCALL FlyLevelEditor_impl::LoadLevel(const std::wstring& path, std::map<s
 	//Pick-ups
 	for(int i = 0; i < nrOfStuff; i++)
 	{
-		file >> readString;
+		file>>readString;
 		this->core->Geometry_Load(readString.c_str(), &this->levelPickups);
-		file >> readVector.x;
-		file >> readVector.y;
-		file >> readVector.z;
+		file>>readVector.x;
+		file>>readVector.y;
+		file>>readVector.z;
 		this->levelPickups[i]->setPosition(readVector);
-		file >> readVector.x;
-		file >> readVector.y;
-		file >> readVector.z;
+		file>>readVector.x;
+		file>>readVector.y;
+		file>>readVector.z;
 		this->levelPickups[i]->setRotation(readVector);
-		file >> readInt;
+		file>>readInt;
 
 		this->levelPickups[i]->setShader(shaders[readInt]);
 		(*pickups)[this->levelPickups[i]->getName()] = this->levelPickups[i]->getID();
 	}
+
+
+	//Read player position
+	//vec3 player;
+	
+	//file>>player.x;
+	//file>>player.y;
+	//file>>player.z;
+	//this->mainCamera.SetPosition(player);
+	//file>>player.x;
+	//file>>player.y;
+	//file>>player.z;
+	//this->mainCamera.SetRotation(player.x, player.y, player.z);
+	//this->mainCamera.SetProjectionMatrix((float)D3DX_PI*0.2f, 1200.0f/600.0f, 8.0f, 400.0f);
+	//this->core->Gfx_SetCamera(&this->mainCamera);
 	
 	file.close();
 	return true;
@@ -436,13 +421,7 @@ void FLYCALL FlyLevelEditor_impl::OnMouseBtnEvent(int key, bool released, bool c
 			else if (!alt && !shift && ! ctrl)
 			{
 				if(!selectedDrag)
-					this->selected = this->core->Geometry_Pick(this->mesh);
-				
-				if(!this->selected)
-					this->selected = this->core->Geometry_Pick(this->levelPickups);
-				
-				if(!this->selected)
-					this->selected = this->core->Geometry_Pick(this->lights);
+					this->selected = this->core->Geometry_Pick(this->mesh, lastMouseX, lastMouseY);
 				
 				if (this->selected)
 					selectedDrag = true;
@@ -470,12 +449,11 @@ void FLYCALL FlyLevelEditor_impl::OnMouseBtnEvent(int key, bool released, bool c
 	{
 		if(released)
 		{
-			gMoveCameraScroll = false;
+
 		}
 		else
 		{
-			if(alt)
-				gMoveCameraScroll = true;
+
 		}
 	}
 }
@@ -483,8 +461,8 @@ void FLYCALL FlyLevelEditor_impl::OnMouseMoveEvent(int cx, int cy, int rx, int r
 {
 	if(gRotateCamera)
 	{
-		this->core->Gfx_GetCamera()->RelativeYaw((float)rx * 0.08f);
-		this->core->Gfx_GetCamera()->RelativePitch((float)ry * 0.08f);
+		this->core->Gfx_GetCamera()->RelativeYaw((float)rx);
+		this->core->Gfx_GetCamera()->RelativePitch((float)ry);
 	}
 	else if(gFlyMode)
 	{
@@ -494,10 +472,11 @@ void FLYCALL FlyLevelEditor_impl::OnMouseMoveEvent(int cx, int cy, int rx, int r
 	}
 	else if(selectedDrag && this->selected)
 	{
-		Camera* cam			= this->core->Gfx_GetCamera();
+		Camera* cam = this->core->Gfx_GetCamera();
 		vec3 currentPos		= this->selected->getPosition();
 		vec3 currentUp		= cam->GetUp();
-		vec3 currentRight	= cam->GetRight() * 0.5f;
+		vec3 currentRight	= cam->GetRight();
+		//vec3 currentFront	= this->selected->getFront();
 
 		if(rx < 0)
 		{
@@ -518,18 +497,6 @@ void FLYCALL FlyLevelEditor_impl::OnMouseMoveEvent(int cx, int cy, int rx, int r
 
 		this->selected->setPosition(currentPos);
 	}
-
-	if(gMoveCameraScroll)
-	{
-		if(rx < 0)
-			this->core->Gfx_GetCamera()->RelativeRight(2.0f);
-		else if(rx > 0)
-			this->core->Gfx_GetCamera()->RelativeRight(-2.0f);
-		else if(ry < 0)
-			this->core->Gfx_GetCamera()->RelativeUp(-2.0f);
-		else if(ry > 0)
-			this->core->Gfx_GetCamera()->RelativeUp(2.0f);
-	}
 	lastMouseX = cx;
 	lastMouseY = cy;
 }
@@ -544,5 +511,8 @@ void FLYCALL FlyLevelEditor_impl::OnMouseScrollEvent(int delta, bool ctrl, bool 
 			cam->RelativeForward(-6.5f);
 	}
 }
+
+
+
 
 

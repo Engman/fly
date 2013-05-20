@@ -45,7 +45,6 @@ class FlyLevelEditor
 		virtual bool FLYCALL SetCamera(int id)								= 0;
 		virtual bool FLYCALL Entity_Select(int id)							= 0;
 		virtual bool FLYCALL Entity_LoadData(std::vector<const wchar_t*>& files, std::map<std::wstring, int>* loaded)	= 0;
-		virtual bool FLYCALL LoadTerrain(std::wstring& path)				= 0;
 		virtual void FLYCALL GetCameras (std::map<std::wstring, int>* outCameras) = 0;
 		virtual bool FLYCALL GetSelected (std::wstring& name, int& id, float& rx, float& ry, float& rz, float& sx, float& sy, float& sz) = 0;
 		virtual void FLYCALL SetRotation(float x, float y, float z)			= 0;
@@ -56,6 +55,7 @@ class FlyLevelEditor
 		virtual void FLYCALL SetSpeed(float speed)							= 0;
 		virtual bool FLYCALL LoadLevel(const std::wstring& path, std::map<std::wstring, int>* meshEntity, std::map<std::wstring, int>* lights, std::map<std::wstring, int>* pickups)			= 0;
 		virtual bool FLYCALL SaveLevel(const std::wstring& path, const std::wstring& levelName)			= 0;
+		virtual bool FLYCALL LoadTerrain(std::wstring& path) = 0;
 
 		virtual void FLYCALL OnKeyEvent(int key, bool released, bool ctrl, bool shift, bool alt)					= 0;
 		virtual void FLYCALL OnMouseBtnEvent(int key, bool released, bool ctrl, bool shift, bool alt)				= 0;
