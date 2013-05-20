@@ -6,7 +6,7 @@
 #include <Windows.h>
 #include <string>
 #include <vector>
-
+#include "..\Core\BaseBuffer.h"
 
 class FlyMesh;
 class IShader;
@@ -70,12 +70,19 @@ enum FlyEngineGeometry
 
 enum FlyEngineShaders
 {
-	FlyShader_Default,
-	FlyShader_Color,
-	FlyShader_Light,
+	FlyShader_gBufferDefault,
+	FlyShader_gBufferNoDepth,
+	FlyShader_gBufferAnimated,
+	FlyShader_Final,
+	FlyShader_DirLight,
+	FlyShader_Shadow,
+	FlyShader_BlurHorizont,
+	FlyShader_BlurVertical,
+
 
 	SHADER_COUNT
 };
+
 
 
 class FlyEngine
@@ -101,6 +108,19 @@ class FlyEngine
 		virtual void		FLYCALL		Gfx_EndDeferredScene	()																	= 0;
 		/** End deferred scene with ortho */
 		virtual void		FLYCALL		Gfx_EndDeferredSceneOrtho()									= 0;
+
+		//--------------
+		virtual void		FLYCALL Gfx_DrawSkyBox()= 0;
+		virtual void		FLYCALL Gfx_DrawGbuffer()=0;
+		virtual void		FLYCALL	Gfx_DrawShadows(vector<BaseBuffer*> *shadowViews)=0;
+		virtual void		FLYCALL Gfx_DrawLighting()=0;
+		virtual void		FLYCALL Gfx_DrawBlur()=0;
+		virtual void		FLYCALL Gfx_DrawFinalPicture()=0;
+		//-----------------
+		//sound
+		virtual void		FLYCALL PlaySound(const wchar_t* path) =0;
+		//---------------------
+
 		/** Resizes the render targets */
 		virtual void		FLYCALL		Gfx_Resize				(int width, int height)												= 0;
 		/** Sets active camera, if parameter is NULL the default cam is set */

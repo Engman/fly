@@ -1,9 +1,6 @@
 Texture2D colorSRV : register(t0);
-Texture2D normal_depthSRV : register(t1);
 
 SamplerState SampleTypeClamp : register(s0);
-//SamplerState SampleTypeWrap : register(s1);
-
 
 //-----------------------------------------------------------------------------------------
 // Input and Output Structures
@@ -11,9 +8,9 @@ SamplerState SampleTypeClamp : register(s0);
 
 struct PSIn
 {
-	float4 Pos		: SV_Position;
-	//float3 Color	: COLOR;
-	float4 Texture  : TEXTCOORD; 
+	float4 Pos			: SV_Position;
+	float4 ScreenPos	: Position;
+	float2 TextCoord  	: TEXCOORD; 
 };
 
 //-----------------------------------------------------------------------------------------
@@ -21,12 +18,6 @@ struct PSIn
 //-----------------------------------------------------------------------------------------
 float4 FPixelShader(PSIn input) :  SV_Target
 {	
-  float2 textCoord;
-  //textCoord = float2(0.5f*input.Pos.x, -0.5f*input.Pos.y) + 0.5f;
-	float4 diffuse = colorSRV.Sample( SampleTypeClamp, input.Texture.xy); //textCoord );
-	
+	float4 diffuse = colorSRV.Sample( SampleTypeClamp, input.TextCoord);
   return diffuse;
-  
-  //float4 normal = normal_depthSRV.Sample( SampleTypeClamp, input.Texture.xy);
-  //return normal;
 }

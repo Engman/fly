@@ -20,13 +20,18 @@ class IShader
 			Matrix	view;
 			Matrix	projection;
 			BaseBuffer* lights;
+			//buffer for view, projection and camPos in light PS
+			BaseBuffer* camForLight;
 		};
+
 		/** Used to set data for a draw call */
 		struct DRAW_DATA
 		{
 			D3DXMATRIX* worldMatrix;
 			std::vector<BaseBuffer*> buffers;
 			ObjectMaterial* material;
+			std::vector<BaseBuffer*> lightBuffers;
+
 			//std::vector<Texture2D>* textures; 
 			DRAW_DATA()
 				:worldMatrix(0), material(0)
@@ -40,17 +45,17 @@ class IShader
 		BaseBuffer* matrixBuffer;
 		SmartPtrStd<BaseShader> shader;
 		std::vector<DRAW_DATA> drawData;
-		int type;
 
 	public:
 		IShader() 
 		{ 
 			this->shader = NULL; 
 			this->drawData = std::vector<DRAW_DATA>(); 
-			this->type = -1;
 		}
-		virtual~IShader()
-		{}
+		virtual ~IShader()
+		{
+
+		}
 		virtual void draw(PER_FRAME_DATA&) = 0;
 		/** Use this each frame to clear old content */
 		void clearData()
@@ -59,10 +64,9 @@ class IShader
 			this->drawData.shrink_to_fit();
 		}
 
-		bool init(BaseShader::BASE_SHADER_DESC& desc, int type)
+		virtual bool init(BaseShader::BASE_SHADER_DESC& desc)
 		{
 			this->shader = new BaseShader();
-			this->type = type;
 			if( FAILED (this->shader->Initialize(desc) ) )
 				return false;
 
@@ -71,6 +75,8 @@ class IShader
 			static bool initiated = false;
 
 			if(!initiated)
+
+
 			{
 				BaseBuffer::BUFFER_INIT_DESC matrixBufferDesc;
 				matrixBufferDesc.dc = desc.dc;
@@ -81,8 +87,8 @@ class IShader
 				matrixBufferDesc.usage = BUFFER_FLAG::USAGE_DYNAMIC_CPU_WRITE_DISCARD;
 				matrixBufferDesc.data = NULL;
 				if( FAILED( mb->Initialize(matrixBufferDesc) ) )
-					return false;
-				
+				return false;
+
 				initiated = true;
 			}
 
@@ -102,7 +108,7 @@ class IShader
 		{
 			return this->id.get();
 		}
-		virtual int getType() const = 0;
+
 };
 
 

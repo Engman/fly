@@ -6,12 +6,6 @@
 
 #include <Windows.h>
 
-#ifdef FLYDLL
-#define DLLEXPORT __declspec(dllexport)
-#else
-#define DLLEXPORT
-#endif
-
 
 class FlyEngine;
 
@@ -23,12 +17,11 @@ enum FlyGameSystemState
 };
 
 
-class DLLEXPORT FlyGame
+class FlyGame
 {
 	public:
 		
 	private:
-		friend class IFlySystemState;
 		struct _DATA_;
 		_DATA_ *_pData;
 

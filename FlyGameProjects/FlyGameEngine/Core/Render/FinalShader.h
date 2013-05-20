@@ -1,23 +1,19 @@
-#ifndef COLORSHADER_H
-#define COLORSHADER_H
+#ifndef FINALSHADER_H
+#define FINALSHADER_H
 
 #include "..\IShader.h"
 #include "..\D3DShell.h"
 #include "..\..\Util\misc.h"
 #include "..\Light\LightHolder.h"
 
-class ColorShader : public IShader
+class FinalShader : public IShader
 {
 public:
-	ColorShader();
 
+	FinalShader();
 	void draw(PER_FRAME_DATA& drawData);
-	void setSRVBuffer();
-	int getType() const;
 
 private:
-
-	
 
 };
 #endif
