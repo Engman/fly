@@ -3,6 +3,7 @@
 
 #include "..\Core\D3DShell.h"
 #include "..\Core\Mesh\Terrain.h"
+#include "..\Core\Mesh\FlyMeshAnimated.h"
 #include "..\Util\Importer\ObjectImporter.h"
 #include "..\Util\Importer\ResourceImporter.h"
 #include "..\Util\CollisionLib.h"
@@ -113,36 +114,108 @@ bool FLYCALL FlyEngine_Core::Geometry_Load(const wchar_t* path, vector<Entity*>*
 	if(!ResourceImporter::ImportObject(path, &raw))
 		return false;
 
-	
-	for (int i = 0; i < (int)raw.objects.size(); i++)
+	if(special == FlyGeometry_Terrain)
 	{
-		BoundingBox bb;
-		bb.minPoint = vec3((*raw.objects[i].vertex)[0].position.x, (*raw.objects[i].vertex)[0].position.y, (*raw.objects[i].vertex)[0].position.z);
-		bb.maxPoint = bb.minPoint;
-		for (int k = 0; k < (int)raw.objects[i].vertex->size(); k++)
+		for (int i = 0; i < (int)raw.objects.size(); i++)
 		{
-			GetMinMax(bb, (*raw.objects[i].vertex)[k].position);
+			BoundingBox bb;
+			bb.minPoint = vec3((*raw.objects[i].vertex)[0].position.x, (*raw.objects[i].vertex)[0].position.y, (*raw.objects[i].vertex)[0].position.z);
+			bb.maxPoint = bb.minPoint;
+			for (int k = 0; k < (int)raw.objects[i].vertex->size(); k++)
+			{
+				GetMinMax(bb, (*raw.objects[i].vertex)[k].position);
+			}
+			BoundingSphere* bs = new BoundingSphere();
+			bs->radius = D3DXVec3Length(&(bb.maxPoint - bb.minPoint)) * 0.5f;
+			bs->center = (bb.maxPoint + bb.minPoint) * 0.5f;
+
+
+			FlyMesh::OBJECT_DESC d;
+			d.device = D3DShell::self()->getDevice();
+			d.deviceContext = D3DShell::self()->getDeviceContext();
+			d.material_id = raw.objects[i].material;
+			d.name = raw.name;
+			d.shader = 0;
+			d.vCount = (int)raw.objects[i].vertex->size();
+			d.vertecies = raw.objects[i].vertex;
+			d.boundingSphere = bs;
+
+			Terrain *obj = new Terrain();
+			if(!obj->Initialize(d))
+				return false;
+			objects->push_back(obj);
 		}
-		BoundingSphere* bs = new BoundingSphere();
-		bs->radius = D3DXVec3Length(&(bb.maxPoint - bb.minPoint)) * 0.5f;
-		bs->center = (bb.maxPoint + bb.minPoint) * 0.5f;
+	}
+	else if(special == FlyGeometry_AnimatedMesh)
+	{
 
+		ImportedObjectData raw;
+		if(!ResourceImporter::ImportObject(path, &raw))
+			return false;
 
-		FlyMesh::OBJECT_DESC d;
+		SmartPtrStd<std::vector<BoundingSphere>> boundingSpheres; 
+		boundingSpheres = new vector<BoundingSphere>; 
+		SmartPtrStd<std::vector<std::vector<FrameData>>> frames; 
+		frames  = new vector<vector<FrameData>>; 
+		SmartPtrStd<std::vector<std::vector<VERTEX::VertexPNT>>> vert; 
+		vert = new vector<vector<VERTEX::VertexPNT>>;
+
+		for (int i = 0; i < (int)raw.objects.size(); i++)
+		{
+			BoundingBox bb;
+			bb.minPoint = vec3((*raw.objects[i].vertex)[0].position.x, (*raw.objects[i].vertex)[0].position.y, (*raw.objects[i].vertex)[0].position.z);
+			bb.maxPoint = bb.minPoint;
+			for (int k = 0; k < (int)raw.objects[i].vertex->size(); k++)
+			{
+				GetMinMax(bb, (*raw.objects[i].vertex)[k].position);
+			}
+			BoundingSphere bs;
+			bs.radius = D3DXVec3Length(&(bb.maxPoint - bb.minPoint)) * 0.5f;
+			bs.center = (bb.maxPoint + bb.minPoint) * 0.5f;
+			(*boundingSpheres).push_back(bs);
+			
+		
+			std::vector<VERTEX::VertexPNT> tempVector;
+			tempVector.resize(raw.objects[i].vertex->size());
+
+			for(int k =0;k<(int)raw.objects[i].vertex->size(); k++)
+			{
+				tempVector.at(k) = raw.objects[i].vertex->at(k);
+			}
+			(*vert).push_back(tempVector);
+			
+		}
+		(*frames).resize(raw.animations.size());
+		for(int i = 0; i<(int)raw.animations.size(); i++)
+		{
+			for(int k = 0; k<(int)raw.animations.at(i).frames.size(); k++)
+			{
+				(*frames).at(i).push_back(raw.animations.at(i).frames.at(k));
+			}
+		}
+
+		
+		FlyMeshAnimated::ANIM_OBJECT_DESC d;
 		d.device = D3DShell::self()->getDevice();
 		d.deviceContext = D3DShell::self()->getDeviceContext();
-		d.material_id = raw.objects[i].material;
+		d.material_id = raw.objects[0].material;
 		d.name = raw.name;
 		d.shader = 0;
-		d.vCount = (int)raw.objects[i].vertex->size();
-		d.vertecies = raw.objects[i].vertex;
-		d.boundingSphere = bs;
+		d.vCount = (int)raw.objects[0].vertex->size();
+		d.vertecies = vert;
+		d.boundingSphere = boundingSpheres;
+		d.frames =  frames;
 
-		Terrain *obj = new Terrain();
+		FlyMeshAnimated *obj = new FlyMeshAnimated();
 		if(!obj->Initialize(d))
 			return false;
 		objects->push_back(obj);
+
+		(*boundingSpheres).clear();
+		(*frames).clear(); 
+		(*vert).clear(); 
 	}
+
 	return true;
 }
 

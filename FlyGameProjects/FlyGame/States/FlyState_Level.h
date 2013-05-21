@@ -25,6 +25,7 @@ class FlyState_Level		:public IFlySystemState
 		vector<Entity*> dirLights;
 		vector<Entity*> gameMenu;
 		vector<Entity*> cursor;
+		vector<Entity*> UIorthographic; 
 		vector<BaseBuffer*> shadowViews;
 		FlyPlayer player;
 

@@ -152,6 +152,17 @@ void FlyPlayer::SetBoundingSphere(BoundingSphere* sphere)
 	this->playerModel[0]->setBoundingSphere(sphere);
 }
 
+void FlyPlayer::UpdateAnimation(int nr)
+{
+	((FlyMeshAnimated*)this->playerModel[0])->UpdateAnimation(nr); 
+}
+
+void FlyPlayer::StopAnimation(int nr)
+{
+	((FlyMeshAnimated*)this->playerModel[0])->StopAnimation(nr); 
+}
+
+
 void FlyPlayer::Release()
 {
 	for(unsigned int i = 0; i < this->playerModel.size(); i++)

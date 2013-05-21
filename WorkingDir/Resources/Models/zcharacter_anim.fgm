@@ -1,12 +1,15 @@
 ac 3
 vc 132
-m Material.002
-sp 0.000000
+m cahr2
+a 0.000000 0.000000 0.000000 1.000000
+d 1.000000 1.000000 1.000000 1.000000
+s 0.200000 0.000000 0.000000 1.000000
+sp 2
 ta 
-td ..\\Resources\\Textures\\character_tex.png
-ts 
-tg 
-tn 
+td ..\Resources\Textures\character_tex.png
+ts ..\Resources\Textures\noGlow.png
+tg ..\Resources\Textures\halfGlow.png
+tn ..\Resources\Textures\noGlow.png
 endmtl
 
 an 0 2

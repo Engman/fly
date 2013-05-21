@@ -47,7 +47,9 @@ class Camera
 		void RelativeYaw(float degrees);
 		void RelativeRoll(float degrees);
 
+		void SetViewMatrix(D3DXMATRIX view);
 		void SetProjectionMatrix(float fieldOfView, float aspectRatio, float nearPlane, float farPlane);
+		void SetProjectionMatrix(D3DXMATRIX projection);
 		void SetOrthogonalMatrix(float width, float height, float nearPlane, float farPlane);
 
 		D3DXVECTOR3 GetPosition() const;

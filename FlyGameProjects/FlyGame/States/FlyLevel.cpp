@@ -16,7 +16,8 @@ FlyState_Level::FlyState_Level()
 }
 FlyState_Level::~FlyState_Level()
 {
-
+	delete this->mainTimer;
+	//this->entryInstance->GetCoreInstance()->Audio_Shutdown();
 }
 
 void FlyState_Level::Initiate(FlyGame* instance)
@@ -36,9 +37,12 @@ void FlyState_Level::Initiate(FlyGame* instance)
 	this->menuCamera.SetPosition(0.0f, 0.0f, -3.0f);
 	this->menuCamera.SetOrthogonalMatrix(1200.0f, 600.0f, 0.1f, 10.0f);
 
-	this->mainCamera.Render();
-	//this->entryInstance->GetCoreInstance()->PlaySoundTrack(L"path");
+	this->mainCamera.SetOrthogonalMatrix(1200.0f, 600.0f, 0.1f, 10.0f);
 
+	this->mainCamera.Render();
+	this->menuCamera.Render();
+	this->entryInstance->GetCoreInstance()->Audio_Initialize();
+	//this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wind);
 	this->engineParticlesLeft.Initialize();
 	this->engineParticlesRight.Initialize();
 	this->collisionParticle.Initialize();
@@ -112,6 +116,21 @@ bool FlyState_Level::Update()
 	this->collisionParticle.Frame(this->player.GetPosition(), this->mainTimer->GetDeltaTime()*10.0f);
 	this->collisionParticle.SetRotation(this->mainCamera.GetRotation()*((float)D3DX_PI/180.0f));
 	//this->collisionParticle.SetRotation(this->mainCamera.GetRotation()*((float)D3DX_PI/180.0f));
+	
+	for(unsigned int i = 0; i < this->levelPickups.size(); i++)
+	{
+		//if(typeid(this->levelPickups[i]) == typeid(FlyMeshAnimated) )
+		//	((FlyMeshAnimated*)this->levelPickups[0])->UpdateAnimation(1); 
+		
+		//if(SphereVSSphere(*this->levelPickups[i]->getBoundingSphere(), *this->player.GetBoundingSphere()))
+		//{
+		//	this->levelPickups.erase(this->levelPickups.begin()+i);
+		//	i--;
+		//	//play sound
+		//	this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Collision);
+		//}
+	}
+	this->player.GetModel()->at(0)->Update();
 	
 	return true;
 }
@@ -233,6 +252,8 @@ bool FlyState_Level::UpdatePlayer()
 
 	this->player.Update();
 
+	//AudioClass::self()->uppdateSounds();
+
 	return true;
 }
 
@@ -245,6 +266,7 @@ bool FlyState_Level::Render()
 	
 	ViewFrustum f;
 	this->mainCamera.ConstructViewFrustum(f);
+	this->entryInstance->GetCoreInstance()->Gfx_SetCamera(&this->mainCamera);
 
 	this->theWorld[0]->setShader(shaders[FlyShader_gBufferDefault]);
 	this->theWorld[0]->Render(f);
@@ -279,9 +301,20 @@ bool FlyState_Level::Render()
 	{
 		this->dirLights[i]->Render(f);
 	}
-	for(unsigned int i = 0; i < this->shadowViews.size(); i++)
+
+	for(unsigned int i = 0; i <(int) this->shadowViews.size(); i++)
 	{
-		for(unsigned int i = 0; i < this->levelEntities.size(); i++)
+		Camera cam;
+
+		LightViewProj* shadow = (LightViewProj*)(shadowViews[0])->Map();
+
+		cam.SetViewMatrix(shadow->lView);
+		cam.SetProjectionMatrix(shadow->lProj);
+		cam.Render();
+		cam.ConstructViewFrustum(f);
+		shadowViews[0]->Unmap();
+
+		for(unsigned int i = 0; i <(int) this->levelEntities.size(); i++)
 		{	
 			this->levelEntities[i]->setShader(shaders[FlyShader_Shadow]);
 			this->levelEntities[i]->Render(f);
@@ -293,10 +326,21 @@ bool FlyState_Level::Render()
 	}
 	this->entryInstance->GetCoreInstance()->Gfx_DrawSkyBox();
 	this->entryInstance->GetCoreInstance()->Gfx_DrawGbuffer();
+	
+	this->menuCamera.ConstructViewFrustum(f);
+	this->entryInstance->GetCoreInstance()->Gfx_SetCamera(&this->menuCamera);
+
+	for(int i =0; i<(int)UIorthographic.size(); i++ )
+	{
+		this->UIorthographic[i]->Render(f);
+	}
+	this->entryInstance->GetCoreInstance()->Gfx_DrawGbufferOrtho();
+	this->entryInstance->GetCoreInstance()->Gfx_SetCamera(&this->mainCamera);
+
 	this->entryInstance->GetCoreInstance()->Gfx_DrawLighting();
 	this->entryInstance->GetCoreInstance()->Gfx_DrawBlur();
 	this->entryInstance->GetCoreInstance()->Gfx_DrawShadows(&shadowViews);
-	this->entryInstance->GetCoreInstance()->Gfx_DrawFinalPicture();
+	this->entryInstance->GetCoreInstance()->Gfx_DrawFinalPicture(&shadowViews);
 	
 
 	return true;
@@ -483,19 +527,26 @@ void FlyState_Level::Input()
 	/*if(Input::self()->IsButtonPressed(DIK_W))
 	{
 		this->mainCamera.RelativeForward(0.2f);
+		this->player.UpdateAnimation(1);
+		this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wings);
+
 	}
 	if(Input::self()->IsButtonPressed(DIK_S))
 	{
 		this->mainCamera.RelativeForward(-0.2f);
+		this->player.StopAnimation(1);
 	}
 
 	if(Input::self()->IsButtonPressed(DIK_A))
 	{
 		this->mainCamera.RelativeRight(-0.2f);
+		this->player.UpdateAnimation(2);
+		this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wings);
 	}
 	if(Input::self()->IsButtonPressed(DIK_D))
 	{
 		this->mainCamera.RelativeRight(0.2f);
+		this->player.StopAnimation(2);
 	}
 	if(mouseY < 0)
 	{
@@ -557,11 +608,13 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 	file>>readVector.z;
 	this->theWorld[0]->setRotation(readVector);
 	file>>readInt;		
-						
+	
+	readVector = D3DXVECTOR3(1,1,1);
+	this->theWorld[0]->setScale(readVector);
 	this->theWorld[0]->setShader(shaders[readInt]);
 
 
-	//First to load is always terrain
+	//second is the skybox
 	file>>readString;
 	this->entryInstance->GetCoreInstance()->Geometry_Load(readString.c_str(), &this->skyBox);
 	file>>readVector.x;
@@ -574,7 +627,11 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 	this->skyBox[0]->setRotation(readVector);
 	file>>readInt;		
 
+	readVector = D3DXVECTOR3(20,20,20);
+	this->skyBox[0]->setScale(readVector);
 	this->skyBox[0]->setShader(shaders[readInt]);
+
+	//read in the water
 
 
 	////Read rest of objects
@@ -591,7 +648,8 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 		file>>readVector.z;
 		this->levelEntities[i]->setRotation(readVector);
 		file>>readInt;
-
+		readVector = D3DXVECTOR3(1,1,1);
+		this->levelEntities[i]->setScale(readVector);
 		this->levelEntities[i]->setShader(shaders[readInt]);
 	}
 
@@ -611,7 +669,8 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 		file>>readVector.z;
 		this->levelPickups[i]->setRotation(readVector);
 		file>>readInt;
-
+		readVector = D3DXVECTOR3(3,3,3);
+		this->levelPickups[i]->setScale(readVector);
 		this->levelPickups[i]->setShader(shaders[readInt]);
 	}
 
@@ -640,7 +699,6 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 		this->energyPickups[i]->setBoundingSphere(energySphere);
 	}
 
-	char type; 
 	file>>readString;
 	file>>nrOfStuff;
 
@@ -685,40 +743,47 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 
 
 		file>>hasShadow;
-		file>>readInt;		
+		file>>readInt;
 
+		Camera lightCam;
+		lightCam.SetProjectionMatrix((float)D3DX_PI*0.2f, D3DShell::self()->getAspectRatio(), 1, 1000);
+		lightCam.SetPosition(pos);
+		lightCam.SetRotation(rot.x, rot.y, rot.z);
+		lightCam.Render();
+		
+		LightViewProj lightViewProj; 
+		lightViewProj.lView = lightCam.GetViewMatrix();
+		lightViewProj.lProj = lightCam.GetProjectionMatrix();
+		
+		BaseBuffer* dirLightViewProj = new BaseBuffer();
+		BaseBuffer::BUFFER_INIT_DESC viewProjBufferDesc;
+		viewProjBufferDesc.dc = D3DShell::self()->getDeviceContext();
+		viewProjBufferDesc.device = D3DShell::self()->getDevice();
+		viewProjBufferDesc.elementSize = sizeof(LightViewProj);
+		viewProjBufferDesc.nrOfElements = 1;
+		viewProjBufferDesc.data = &lightViewProj;
+		viewProjBufferDesc.type = BUFFER_FLAG::TYPE_CONSTANT_PS_BUFFER;
+		viewProjBufferDesc.usage = BUFFER_FLAG::USAGE_DYNAMIC_CPU_WRITE_DISCARD;
+
+		if(FAILED(dirLightViewProj->Initialize(viewProjBufferDesc)))
+		{
+
+		}
 		DirectionLight* light = new DirectionLight(Type::LIGHT);
-		light->Initialize(dirLightProxy, shaders[FlyShader_DirLight], hasShadow, pos);
+		DirectionLight::DIRLIGHT_DESC dirLight; 
+		dirLight.data = dirLightProxy; 
+		dirLight.viewProj = lightViewProj;
+		dirLight.shader =  shaders[FlyShader_DirLight];
+	
+		light->Initialize(dirLight);
 		
 		dirLights.push_back(light);
 
 		if(hasShadow)
 		{
-			Camera lightCam;
-			lightCam.SetProjectionMatrix((float)D3DX_PI*0.2f, D3DShell::self()->getAspectRatio(), 8, 1000);
-			lightCam.SetPosition(pos);
-			lightCam.SetRotation(rot.x, rot.y, rot.z);
-			lightCam.Render();
-			BaseBuffer* dirLightViewProj = new BaseBuffer();
-			LightViewProj lightViewProj; 
-			lightViewProj.lView = lightCam.GetViewMatrix();
-			lightViewProj.lProj = lightCam.GetProjectionMatrix();
-
-			BaseBuffer::BUFFER_INIT_DESC viewProjBufferDesc;
-			viewProjBufferDesc.dc = D3DShell::self()->getDeviceContext();
-			viewProjBufferDesc.device = D3DShell::self()->getDevice();
-			viewProjBufferDesc.elementSize = sizeof(LightViewProj);
-			viewProjBufferDesc.nrOfElements = 1;
-			viewProjBufferDesc.data = &lightViewProj;
-			viewProjBufferDesc.type = BUFFER_FLAG::TYPE_CONSTANT_PS_BUFFER;
-			viewProjBufferDesc.usage = BUFFER_FLAG::USAGE_DYNAMIC_CPU_WRITE_DISCARD;
-
-			if(FAILED(dirLightViewProj->Initialize(viewProjBufferDesc)))
-			{
-
-			}
 			shadowViews.push_back(dirLightViewProj);
 		}
+		
 	}
 
 
@@ -734,13 +799,16 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 	file>>player.z;
 	this->mainCamera.SetRotation(player.x, player.y, player.z);
 	this->mainCamera.SetProjectionMatrix((float)D3DX_PI*0.2f, 1200.0f/600.0f, 1.0f, 400.0f);
+
 	this->entryInstance->GetCoreInstance()->Gfx_SetCamera(&this->mainCamera);
 	
 	file.close();
 	//Done reading info
 
 	//Set player model and player info
-	this->entryInstance->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\character.fgm", this->player.GetModel());
+	this->entryInstance->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\zcharacter_anim.fgm", this->player.GetModel(), FlyGeometry_AnimatedMesh);
+	readVector = D3DXVECTOR3(1,1,1);
+	this->player.GetModel()->at(0)->setScale(readVector);
 	this->player.GetModel()->at(0)->setShader(shaders[FlyShader_gBufferDefault]);
 	this->player.SetPosition(this->mainCamera.GetPosition());
 
@@ -771,16 +839,32 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 	this->entryInstance->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\in_game_menu.fgm", &this->gameMenu);
 
 	this->gameMenu[0]->setShader(shaders[FlyShader_gBufferDefault]);
-
+	this->gameMenu[0]->setScale(vec3(1,1,1));
 	this->gameMenu[0]->setPosition(vec3(0.0f, 0.0f, 0.0f));
 
 	//Cursor
 	this->entryInstance->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\mouse_cursor.fgm", &this->cursor);
 
 	this->cursor[0]->setShader(shaders[FlyShader_gBufferDefault]);
+	this->cursor[0]->setScale(vec3(1,1,1));
 	this->cursor[0]->setPosition(vec3(0.0f, 0.0f, 0.0f));
 
+	//UI
+	vector<const wchar_t*> UIpaths;
+	UIpaths.push_back(L"..\\Resources\\Models\\mouse_cursor.fgm");
+	UIpaths.push_back(L"..\\Resources\\Models\\menu.fgm");
+
+	this->entryInstance->GetCoreInstance()->Geometry_Load(UIpaths, &this->UIorthographic);
+
+	this->UIorthographic[0]->setShader(shaders[FlyShader_gBufferDefault]);
+	this->UIorthographic[0]->setScale(vec3(3,3,1));
+	this->UIorthographic[0]->setPosition(vec3(-100.0f, 50.0f, 0.0f));
+
+	//UI
 	
+	this->UIorthographic[1]->setShader(shaders[FlyShader_gBufferDefault]);
+	this->UIorthographic[1]->setScale(vec3(10,10,1));
+	this->UIorthographic[1]->setPosition(vec3(0.0f, 0.0f, 0.0f));
 	return true;
 }
 

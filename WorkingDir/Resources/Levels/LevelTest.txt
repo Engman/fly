@@ -1,19 +1,20 @@
 
 LevelTest
 
-2 
+3
 
 ..\\Resources\\Models\\test_fortress_walls.fgm 0.0 0.0 0.0 0.0 0.0 0.0 0
  
-..\\Resources\\Models\\sky_dome.fgm 0.0 0.0 0.0 0.0 0.0 0.0 1
+..\\Resources\\Models\\skydome.fgm 0.0 0.0 0.0 0.0 0.0 0.0 1
 
+..\\Resources\\Models\\test_object2.fgm 10.0 10.0 20.0 0.0 0.0 0.0 0 
 3 
 
-..\\Resources\\Models\\character.fgm 0.0 10.0 0.0 0.0 0.0 0.0 0
+..\\Resources\\Models\\untitled.fgm 0.0 10.0 0.0 0.0 0.0 0.0 0
  
-..\\Resources\\Models\\character.fgm 10.0 10.0 10.0 0.0 0.0 0.0 0
+..\\Resources\\Models\\untitled.fgm 10.0 10.0 10.0 0.0 0.0 0.0 0
  
-..\\Resources\\Models\\character.fgm 0.0 10.0 5.0 0.0 0.0 0.0 0
+..\\Resources\\Models\\untitled.fgm 0.0 10.0 5.0 0.0 0.0 0.0 0
 
 3 
 
@@ -36,7 +37,7 @@ d 2
  
 0 0 0 
 
-1 
+0 
 
 4
  
@@ -52,7 +53,7 @@ d 2
  
 0 0 0 
 
-0 
+1 
 
 4
  

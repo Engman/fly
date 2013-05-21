@@ -59,7 +59,7 @@ float4 FPixelShader(PSIn input) :  SV_Target
   
 	float4 lighting = LightSRV.Sample( SampleTypeClamp, input.TextCoord);
  
-	float depth = DephtSRV.Sample( SampleTypeClamp, input.TextCoord).w;
+	float depth = DephtSRV.Sample( SampleTypeClamp, input.TextCoord).r;
 	
 	float4 position = float4(0,0,0,1);
 	
@@ -83,14 +83,16 @@ float4 FPixelShader(PSIn input) :  SV_Target
 	{
 		float scale = depth;
 		shadow = ShadowFactor( depthLightVP, lightSamp, scale);
+		finalColor = saturate(color*0.5 + lighting*0.5) *(shadow+0.1);
+		
+		return finalColor;
 	}
 	
-	shadow = (ShadowSRV.Sample(SampleTypeClamp, input.TextCoord).r + 0.001 < depth) ? 0.0f : 1.0f;
+	//shadow = (ShadowSRV.Sample(SampleTypeClamp, input.TextCoord).r + 0.001 < depthLightVP) ? 0.0f : 1.0f;
 	
-	finalColor = saturate(color*0.5 + lighting*0.5) *(shadow+0.1);
+	finalColor = color; 
+	
 	//finalColor = saturate( finalColor + glowColor );
-	
-	
 	return finalColor;
 }
 

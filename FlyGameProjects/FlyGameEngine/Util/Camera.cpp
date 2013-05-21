@@ -148,6 +148,14 @@ void Camera::RelativeRoll(float degrees)
 	this->rotationZ += degrees;
 }
 
+void Camera::SetViewMatrix(D3DXMATRIX view)
+{
+	this->viewMatrix = view;
+}
+void Camera::SetProjectionMatrix(D3DXMATRIX projection)
+{
+	this->projectionMatrix = projection;
+}
 void Camera::SetProjectionMatrix(float fieldOfView, float aspectRatio, float nearPlane, float farPlane)
 {
 	this->projFar = farPlane;

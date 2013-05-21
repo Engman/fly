@@ -46,12 +46,6 @@ FlyEngine_Core::FlyEngine_Core()
 	D3DShell::self();
 	WindowShell::self();
 
-	AudioClass::self();
-	AudioClass::self()->intitialize();
-	AudioClass::self()->loadSound();
-
-	//Input::self();
-
 	this->gbufferShader			= new GBufferShader();
 	this->gBufferNoDepthShader	= new GBufferShader();
 	this->gBufferAnimationShader = new GBufferAnimationShader();
@@ -112,7 +106,7 @@ bool FLYCALL FlyEngine_Core::Core_Run()
 			Gfx_DrawBlur();
 			//Gfx_DrawShadows();
 			Gfx_DrawLighting();
-			Gfx_DrawFinalPicture();
+			//Gfx_DrawFinalPicture();
 
 			//Gfx_EndDeferredScene();
 		}
@@ -164,6 +158,7 @@ void FLYCALL FlyEngine_Core::Core_Shutdown()
 	D3DShell::self()->destroy();
 	WindowShell::self()->destroy();
 	Input::self()->ReleaseInput();
+	AudioClass::self()->shutdown();
 
 	this->gbufferShader.Destroy();
 	this->gBufferNoDepthShader.Destroy();

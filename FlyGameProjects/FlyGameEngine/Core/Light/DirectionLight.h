@@ -12,23 +12,30 @@
 
 class DirectionLight : public Entity
 {
+public:
+	struct DIRLIGHT_DESC
+	{
+		DirectionalLightProxy data;
+		LightViewProj viewProj; 
+		IShader* shader;
+	
+	};
 private:
-	DirectionalLightProxy dirLight; 
 	SmartPtrStd<BaseBuffer> dirLightData; 
 	SmartPtrStd<BaseBuffer> dirLightViewProj;
-	Camera camera;
 	FullScreenQuad fullScreenLight;
-	bool castShadows; 
+	bool castShadows;
 
+
+	void initLightDataBuffer(DirectionalLightProxy data);
+	void initLightViewProjBuffer(LightViewProj viewProj);
 
 public:
 	DirectionLight(int type);
 	virtual ~DirectionLight();
 
-	void Initialize(DirectionalLightProxy data, IShader* shader, bool castShadow, D3DXVECTOR3 pos);
+	void Initialize(DIRLIGHT_DESC lightData);
 	BaseBuffer* getLight();
-	D3DXMATRIX getView();
-	D3DXMATRIX getProjection();
 	void Render(ViewFrustum& frustum);
 	bool castShadow();
 	BaseBuffer* getLightViewProj();
