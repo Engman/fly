@@ -42,7 +42,7 @@ void FlyState_Level::Initiate(FlyGame* instance)
 	this->mainCamera.Render();
 	this->menuCamera.Render();
 	this->entryInstance->GetCoreInstance()->Audio_Initialize();
-	//this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wind);
+	//this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Collision);
 	this->engineParticlesLeft.Initialize();
 	this->engineParticlesRight.Initialize();
 	this->collisionParticle.Initialize();
@@ -87,7 +87,7 @@ bool FlyState_Level::Update()
 		{
 			this->levelPickups.erase(this->levelPickups.begin()+i);
 			i--;
-			this->entryInstance->GetCoreInstance()->PlaySound(L"path");
+			this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wings);
 		}
 	}
 	//Collision against energy
@@ -98,7 +98,7 @@ bool FlyState_Level::Update()
 			this->energyPickups.erase(this->energyPickups.begin()+i);
 			i--;
 			this->player.DeductEnergy(-1000);
-			this->entryInstance->GetCoreInstance()->PlaySound(L"path");
+			this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wings);
 		}
 	}
 	
@@ -120,15 +120,15 @@ bool FlyState_Level::Update()
 	for(unsigned int i = 0; i < this->levelPickups.size(); i++)
 	{
 		//if(typeid(this->levelPickups[i]) == typeid(FlyMeshAnimated) )
-		//	((FlyMeshAnimated*)this->levelPickups[0])->UpdateAnimation(1); 
+			((FlyMeshAnimated*)this->levelPickups[i])->UpdateAnimation(1); 
 		
-		//if(SphereVSSphere(*this->levelPickups[i]->getBoundingSphere(), *this->player.GetBoundingSphere()))
-		//{
-		//	this->levelPickups.erase(this->levelPickups.begin()+i);
-		//	i--;
-		//	//play sound
-		//	this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Collision);
-		//}
+		if(SphereVSSphere(*this->levelPickups[i]->getBoundingSphere(), *this->player.GetBoundingSphere()))
+		{
+			this->levelPickups.erase(this->levelPickups.begin()+i);
+			i--;
+			//play sound
+			this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Collision);
+		}
 	}
 	this->player.GetModel()->at(0)->Update();
 	
@@ -284,7 +284,6 @@ bool FlyState_Level::Render()
 
 	for(unsigned int i = 0; i < this->levelEntities.size(); i++)
 	{	
-
 		this->levelEntities[i]->setShader(shaders[FlyShader_gBufferDefault]);
 		this->levelEntities[i]->Render(f);
 	}
@@ -294,6 +293,7 @@ bool FlyState_Level::Render()
 	}
 	for(unsigned int i = 0; i < this->energyPickups.size(); i++)
 	{
+		this->energyPickups[i]->setShader(shaders[FlyShader_gBufferDefault]);
 		this->energyPickups[i]->Render(f);
 	}
 
@@ -330,14 +330,14 @@ bool FlyState_Level::Render()
 	this->menuCamera.ConstructViewFrustum(f);
 	this->entryInstance->GetCoreInstance()->Gfx_SetCamera(&this->menuCamera);
 
-	for(int i =0; i<(int)UIorthographic.size(); i++ )
+	/*for(int i =0; i<(int)UIorthographic.size(); i++ )
 	{
 		this->UIorthographic[i]->Render(f);
-	}
+	}*/
 	this->entryInstance->GetCoreInstance()->Gfx_DrawGbufferOrtho();
 	this->entryInstance->GetCoreInstance()->Gfx_SetCamera(&this->mainCamera);
 
-	this->entryInstance->GetCoreInstance()->Gfx_DrawLighting();
+	//this->entryInstance->GetCoreInstance()->Gfx_DrawLighting();
 	this->entryInstance->GetCoreInstance()->Gfx_DrawBlur();
 	this->entryInstance->GetCoreInstance()->Gfx_DrawShadows(&shadowViews);
 	this->entryInstance->GetCoreInstance()->Gfx_DrawFinalPicture(&shadowViews);
@@ -659,7 +659,7 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 	for(int i = 0; i < nrOfStuff; i++)
 	{
 		file>>readString;
-		this->entryInstance->GetCoreInstance()->Geometry_Load(readString.c_str(), &this->levelPickups);
+		this->entryInstance->GetCoreInstance()->Geometry_Load(readString.c_str(), &this->levelPickups, FlyGeometry_AnimatedMesh);
 		file>>readVector.x;
 		file>>readVector.y;
 		file>>readVector.z;
@@ -669,7 +669,7 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 		file>>readVector.z;
 		this->levelPickups[i]->setRotation(readVector);
 		file>>readInt;
-		readVector = D3DXVECTOR3(3,3,3);
+		readVector = D3DXVECTOR3(1,1,1);
 		this->levelPickups[i]->setScale(readVector);
 		this->levelPickups[i]->setShader(shaders[readInt]);
 	}
@@ -690,10 +690,15 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 		file>>readVector.z;
 		this->energyPickups[i]->setRotation(readVector);
 		file>>readInt;
+		readVector = D3DXVECTOR3(1,1,1);
+		this->energyPickups[i]->setScale(readVector);
+
 
 		this->energyPickups[i]->setShader(shaders[readInt]);
 		BoundingSphere* energySphere = new BoundingSphere;
 	
+
+
 		energySphere->center = this->energyPickups[i]->getPosition();
 		energySphere->radius = 2.0f;
 		this->energyPickups[i]->setBoundingSphere(energySphere);
@@ -897,6 +902,7 @@ vec3 FlyState_Level::SlideCollision(vec3 oldPosition, vec3 velocity, int iterati
 	D3DXVECTOR3 nearestSphereIntersectionPoint;
 	D3DXVECTOR3 nearestPolygonIntersectionPoint;
 	D3DXMATRIX nearestPolygonTransform;
+	D3DXMatrixIdentity(&nearestPolygonTransform);
 
 	for(unsigned int u = 0; u < this->levelEntities.size(); u++)
 	{
@@ -994,7 +1000,7 @@ vec3 FlyState_Level::SlideCollision(vec3 oldPosition, vec3 velocity, int iterati
  
 			if(stuckD <= 1.0f)
 			{	
-				this->entryInstance->GetCoreInstance()->PlaySound(L"path");
+				//this->entryInstance->GetCoreInstance()->PlaySound(L"path");
 
 				if(this->player.GetSmall())
 				{
@@ -1019,6 +1025,13 @@ vec3 FlyState_Level::SlideCollision(vec3 oldPosition, vec3 velocity, int iterati
 
 					return SlideCollision(oldPosition, velocity, iterations, oldPosition);
 				}
+
+				D3DXVECTOR4 tempVectorFourCol;
+				D3DXVECTOR3 collisionParticle = *D3DXVec3Transform(&tempVectorFourCol, &polyIPoint, &world);
+				this->collisionParticle.SetPosition(vec3(collisionParticle.x*this->player.GetEllipse().radiusVector.x, collisionParticle.y*this->player.GetEllipse().radiusVector.y, collisionParticle.z*this->player.GetEllipse().radiusVector.z));
+				this->collisionParticle.EmitParticles(this->mainTimer->GetDeltaTime()*1000.0f, vec3(normalizedVelocity));
+
+				this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wings);
 
 				return safeLocation + pNormal*0.1f;
 			}
@@ -1121,7 +1134,7 @@ vec3 FlyState_Level::SlideCollision(vec3 oldPosition, vec3 velocity, int iterati
  
 			if(stuckD <= 1.0f)
 			{	
-				this->entryInstance->GetCoreInstance()->PlaySound(L"path");
+				//this->entryInstance->GetCoreInstance()->PlaySound(L"path");
 
 				if(this->player.GetSmall())
 				{
@@ -1146,6 +1159,13 @@ vec3 FlyState_Level::SlideCollision(vec3 oldPosition, vec3 velocity, int iterati
 
 					return SlideCollision(oldPosition, velocity, iterations, oldPosition);
 				}
+
+				D3DXVECTOR4 tempVectorFourCol;
+				D3DXVECTOR3 collisionParticle = *D3DXVec3Transform(&tempVectorFourCol, &polyIPoint, &nearestPolygonTransform);
+				this->collisionParticle.SetPosition(vec3(collisionParticle.x*this->player.GetEllipse().radiusVector.x, collisionParticle.y*this->player.GetEllipse().radiusVector.y, collisionParticle.z*this->player.GetEllipse().radiusVector.z));
+				this->collisionParticle.EmitParticles(this->mainTimer->GetDeltaTime()*1000.0f, vec3(normalizedVelocity));
+				
+				this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wings);
 
 				return safeLocation + pNormal*0.1f;
 			}
@@ -1179,7 +1199,7 @@ vec3 FlyState_Level::SlideCollision(vec3 oldPosition, vec3 velocity, int iterati
 	}
 
 	
-	this->entryInstance->GetCoreInstance()->PlaySound(L"path");
+	this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wings);
 	D3DXVECTOR3 newPosition;
 
 	if(nearestDistance >= D3DXVec3Length(&this->player.GetVelocity())*0.01f)
@@ -1200,10 +1220,10 @@ vec3 FlyState_Level::SlideCollision(vec3 oldPosition, vec3 velocity, int iterati
 	D3DXVECTOR3 slidePlaneOrigin = *D3DXVec3Transform(&tempVectorFour, &nearestPolygonIntersectionPoint, &nearestPolygonTransform);
 	D3DXVECTOR3 slidePlaneNormal = newPosition - slidePlaneOrigin;
 	D3DXVec3Normalize(&slidePlaneNormal, &slidePlaneNormal);
-      
-	this->collisionParticle.EmitParticles(this->mainTimer->GetDeltaTime()*1000.0f, -slidePlaneNormal);
-	this->collisionParticle.SetPosition(vec3(slidePlaneOrigin.x*this->player.GetEllipse().radiusVector.x, slidePlaneOrigin.y*this->player.GetEllipse().radiusVector.y, slidePlaneOrigin.z*this->player.GetEllipse().radiusVector.z));
 
+    this->collisionParticle.SetPosition(vec3(slidePlaneOrigin.x*this->player.GetEllipse().radiusVector.x, slidePlaneOrigin.y*this->player.GetEllipse().radiusVector.y, slidePlaneOrigin.z*this->player.GetEllipse().radiusVector.z)); 
+	this->collisionParticle.EmitParticles(this->mainTimer->GetDeltaTime()*1000.0f, -slidePlaneNormal);
+	
     // We now project the destination point onto the sliding plane
     float l = intersect(slidePlaneOrigin, slidePlaneNormal, destinationPoint, slidePlaneNormal); 
     

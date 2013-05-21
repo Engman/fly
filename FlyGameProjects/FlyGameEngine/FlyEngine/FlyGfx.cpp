@@ -209,7 +209,6 @@ void FLYCALL FlyEngine_Core::Gfx_DrawFinalPicture(vector<BaseBuffer*> *shadowVie
 	this->fsq->Render();
 	this->finalShader->draw(finalPictureDrawData);
 
-	delete finalBuffer;
 	D3DShell::self()->releaseSRV();
 	D3DShell::self()->endScene();
 
@@ -266,7 +265,6 @@ void FLYCALL FlyEngine_Core::Gfx_EndDeferredSceneOrtho()
 	gBufferDrawData.camForLight = new BaseBuffer(); //finalBuffer;//
 	this->finalColorShader->draw(gBufferDrawData);
 	delete gBufferDrawData.camForLight; 
-	delete finalBuffer;
 
 	D3DShell::self()->releaseSRV();
 	D3DShell::self()->endScene();
@@ -349,10 +347,11 @@ Camera*	FLYCALL	FlyEngine_Core::Gfx_GetDefaultCamera()
 	return this->defaultCam;
 }
 
-}
+
 void FLYCALL FlyEngine_Core::PlaySoundTrack(const wchar_t* path)
 {
 	AudioClass::self()->playSoundTrack();
+}
 //################################//
 //########### LOCAL DATA #########//
 //####################################################################//
