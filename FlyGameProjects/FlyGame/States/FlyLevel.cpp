@@ -122,8 +122,6 @@ bool FlyState_Level::Update()
 		//	//play sound
 		//	this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Collision);
 		//}
-
-		
 	}
 	
 	this->player.GetModel()->at(0)->Update();
@@ -133,7 +131,9 @@ bool FlyState_Level::Update()
 
 	this->skyBox[0]->Update();
 
-	AudioClass::self()->uppdateSounds();
+
+	//AudioClass::self()->uppdateSounds();
+
 	return true;
 }
 
@@ -209,11 +209,6 @@ bool FlyState_Level::Render()
 	this->entryInstance->GetCoreInstance()->Gfx_DrawLighting();
 	this->entryInstance->GetCoreInstance()->Gfx_DrawBlur();
 	this->entryInstance->GetCoreInstance()->Gfx_DrawShadows(&shadowViews);
-	
-	
-	
-
-
 	this->entryInstance->GetCoreInstance()->Gfx_DrawFinalPicture(&shadowViews);
 
 	return true;
@@ -518,6 +513,7 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 		this->levelPickups[i]->setShader(shaders[readInt]);
 	}
 
+
 	file>>readString;
 	file>>nrOfStuff;
 
@@ -623,6 +619,7 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 	this->entryInstance->GetCoreInstance()->Gfx_SetCamera(&this->mainCamera);
 	
 	file.close();
+
 
 	this->entryInstance->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\zcharacter_anim.fgm", this->player.GetModel(), FlyGeometry_AnimatedMesh);
 	readVector = D3DXVECTOR3(1,1,1);
