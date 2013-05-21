@@ -40,11 +40,14 @@ class OctTree
 
 		Node* head;
 
+		int renderIter;
+		int collIter;
+
 		SmartPtrStd<std::vector<VERTEX::VertexPNT>> pVertexList;
 		unsigned long vertexCount;
 		unsigned long indexCount;
 
-		void NewChild(Node* parent, D3DXVECTOR3 minPoint, D3DXVECTOR3 maxPoint, int iterations);
+		void NewChild(Node* parent, D3DXVECTOR3 minPoint, D3DXVECTOR3 maxPoint, int renderIterations, int collisionIterations);
 		void CalculateBoxSize();
 
 		bool IsPointContained(int index, D3DXVECTOR3 minPoint, D3DXVECTOR3 maxPoint);
@@ -55,16 +58,16 @@ class OctTree
 
 		void ReleaseChild(Node* parent);
 
-		void PutVerticesInBox(Node* parent, int index);
+		void PutVerticesInBox(Node* parent, int index, int renderIterations, int collisionIterations);
 
-		void InitNodeBuffers(Node* parent);
+		void InitNodeBuffers(Node* parent, int renderIterations);
 
 	public:
 		OctTree();
 		virtual ~OctTree();
 
 		/** The vertex list sent to Initialize will be handled by the QuadTree class, i.e. the data pointed to will be deleted in this method*/
-		void Initialize(SmartPtrStd<std::vector<VERTEX::VertexPNT>> vertexList, int vertexCount, int iterations);
+		void Initialize(SmartPtrStd<std::vector<VERTEX::VertexPNT>> vertexList, int vertexCount, int renderIterations, int collisionIterations);
 		void Release();
 
 		/** The returned value contains a list of buffer structures which are prepared to be rendered*/

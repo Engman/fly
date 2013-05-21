@@ -38,11 +38,11 @@ void AudioClass::loadSound()
 {
 	//create sound for small sound effects
 	result = fmodSystem->createSound("../../WorkingDir/Resources/Sound/jaguar.wav", FMOD_DEFAULT, 0, & sound1);
-	sound1->setMode(FMOD_LOOP_NORMAL);
+	sound1->setMode(FMOD_LOOP_OFF);
 
 	////stream the big sound files 
-	//result = fmodSystem->createStream("soundtrac.wma", FMOD_DEFAULT, 0 ,& soundTrack);
-	//soundTrack->setMode(FMOD_LOOP_NORMAL);
+	result = fmodSystem->createStream("../../WorkingDir/Resources/Sound/swish.wav", FMOD_DEFAULT, 0 ,& soundTrack);
+	soundTrack->setMode(FMOD_LOOP_NORMAL);
 }
 void AudioClass::uppdateSounds()
 {

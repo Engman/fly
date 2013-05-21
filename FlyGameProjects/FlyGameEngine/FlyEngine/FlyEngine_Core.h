@@ -74,6 +74,7 @@ class FlyEngine_Core	:public FlyEngine
 		void		FLYCALL Gfx_DrawFinalPicture();
 		//-----------------
 		void		FLYCALL PlaySound(const wchar_t* path);
+		void		FLYCALL PlaySoundTrack(const wchar_t* path);
 		//------------------
 		void		FLYCALL		Gfx_EndDeferredScene		();
 		void		FLYCALL		Gfx_EndDeferredSceneOrtho	();

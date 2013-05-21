@@ -3,8 +3,15 @@
 
 
 #pragma comment(lib, "FlyGameEngineDx86.lib")
+#pragma comment(lib, "lua52.lib")
 
 #include <Windows.h>
+extern "C"
+{
+	#include <Lua/lua.h>
+	#include <Lua/lualib.h>
+	#include <Lua/lauxlib.h>
+}
 
 #ifdef FLYDLL
 #define DLLEXPORT __declspec(dllexport)
@@ -41,8 +48,8 @@ class DLLEXPORT FlyGame
 		bool Initiate(FlyGameSystemState state = Level);
 
 
-		FlyEngine* GetCoreInstance();
-
+		FlyEngine* GetCoreInstance() const;
+		lua_State* GetLuaState() const;
 
 		void Run();
 		void Update();

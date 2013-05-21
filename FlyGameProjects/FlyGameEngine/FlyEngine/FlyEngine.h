@@ -119,6 +119,7 @@ class FlyEngine
 		//-----------------
 		//sound
 		virtual void		FLYCALL PlaySound(const wchar_t* path) =0;
+		virtual void		FLYCALL PlaySoundTrack(const wchar_t* path) =0;
 		//---------------------
 
 		/** Resizes the render targets */

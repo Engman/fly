@@ -232,6 +232,7 @@ void FLYCALL FlyEngine_Core::Gfx_DrawFinalPicture()
 	this->fsq->Render();
 	this->finalShader->draw(finalPictureDrawData);
 
+	delete finalBuffer;
 
 	D3DShell::self()->releaseSRV();
 	D3DShell::self()->endScene();
@@ -304,6 +305,7 @@ void FLYCALL FlyEngine_Core::Gfx_EndDeferredSceneOrtho()
 
 	this->finalColorShader->draw(gBufferDrawData);
 
+	delete finalBuffer;
 
 	D3DShell::self()->releaseSRV();
 	D3DShell::self()->endScene();
@@ -389,6 +391,10 @@ Camera*	FLYCALL	FlyEngine_Core::Gfx_GetDefaultCamera()
 void FLYCALL FlyEngine_Core::PlaySound(const wchar_t* path)
 {
 	AudioClass::self()->playSound1();
+}
+void FLYCALL FlyEngine_Core::PlaySoundTrack(const wchar_t* path)
+{
+	AudioClass::self()->playSoundTrack();
 }
 
 

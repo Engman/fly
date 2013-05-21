@@ -22,6 +22,7 @@
     <ClCompile Include="Core\AudioClass.cpp" />
     <ClCompile Include="Core\DrawableTexture.cpp" />
     <ClCompile Include="Core\Light\PointLight.cpp" />
+    <ClCompile Include="Core\Mesh\ParticleMesh.cpp" />
     <ClCompile Include="Core\Mesh\Terrain.cpp" />
     <ClCompile Include="Core\BaseBuffer.cpp" />
     <ClCompile Include="Core\BaseShader.cpp" />
@@ -37,6 +38,7 @@
     <ClCompile Include="Core\Mesh\FlyMesh.cpp" />
     <ClCompile Include="Core\Mesh\ObjectMaterial.cpp" />
     <ClCompile Include="Core\Mesh\Plane.cpp" />
+    <ClCompile Include="Core\ParticleSystem.cpp" />
     <ClCompile Include="Core\RasterizerState.cpp" />
     <ClCompile Include="Core\Render\BlurShader.cpp" />
     <ClCompile Include="Core\Render\FinalShader.cpp" />
@@ -70,7 +72,9 @@
     <ClInclude Include="Core\D3DxLink.h" />
     <ClInclude Include="Core\DrawableTexture.h" />
     <ClInclude Include="Core\Light\PointLight.h" />
+    <ClInclude Include="Core\Mesh\ParticleMesh.h" />
     <ClInclude Include="Core\Mesh\Terrain.h" />
+    <ClInclude Include="Core\ParticleSystem.h" />
     <ClInclude Include="Core\Render\BlurShader.h" />
     <ClInclude Include="Core\Render\FinalShader.h" />
     <ClInclude Include="Core\Render\GBufferAnimationShader.h" />

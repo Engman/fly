@@ -4,8 +4,11 @@ FlyPlayer::FlyPlayer()
 {
 	this->velocity = vec3(0.0f, 0.0f, 0.0f);
 	this->maxVelocity = vec3(0.2f, 0.2f, 0.2f);
-	this->maxEnergy = 5000;
-	this->energy = 5000;
+	this->maxEnergy = 10000;
+	this->energy = maxEnergy;
+	this->boundingEllipse.radiusVector.x = 2.0f;
+	this->boundingEllipse.radiusVector.y = 0.5f;
+	this->boundingEllipse.radiusVector.z = 2.0f;
 }
 
 FlyPlayer::~FlyPlayer()
@@ -69,9 +72,8 @@ void FlyPlayer::Update()
 	}
 
 	this->boundingEllipse.radiusVector = (box.maxPoint - box.minPoint)*0.5f;
-	this->boundingEllipse.radiusVector.x = 2.0f;
-	this->boundingEllipse.radiusVector.y = 0.5f;
-	this->boundingEllipse.radiusVector.z = 2.0f;
+	this->boundingEllipse.center = this->GetPosition();
+
 	this->boundingEllipse.center = this->GetPosition();
 }
 
@@ -95,9 +97,14 @@ void FlyPlayer::SetVelocity(vec3 velocity)
 	this->velocity = velocity;
 }
 
-void FlyPlayer::SetJustChanged(bool changed)
+void FlyPlayer::SetSmall(bool changed)
 {
-	this->justChangedForm = changed;
+	this->smallModel = changed;
+}
+
+void FlyPlayer::SetEllipseVector(vec3 radius)
+{
+	this->boundingEllipse.radiusVector = radius;
 }
 
 vec3 FlyPlayer::GetPosition() const
@@ -120,9 +127,9 @@ vec3 FlyPlayer::GetMaxVelocity() const
 	return this->maxVelocity;
 }
 
-bool FlyPlayer::GetJustChanged() const
+bool FlyPlayer::GetSmall() const
 {
-	return this->justChangedForm;
+	return this->smallModel;
 }
 
 float FlyPlayer::GetEnergy() const

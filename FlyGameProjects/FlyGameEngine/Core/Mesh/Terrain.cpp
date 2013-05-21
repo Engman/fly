@@ -21,7 +21,7 @@ bool Terrain::Initialize(OBJECT_DESC& data)
 
 	this->shader = data.shader;
 
-	this->octTree.Initialize(this->vertices, data.vCount, 1);
+	this->octTree.Initialize(this->vertices, data.vCount, 1, 8);
 	
 	return true;
 }

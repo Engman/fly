@@ -1,18 +1,11 @@
 
 LevelTest
 
-3 
+2 
 
-..\\Resources\\Models\\spire.fgm 0.0 0.0 0.0 0.0 0.0 0.0 0
+..\\Resources\\Models\\test_fortress_walls.fgm 0.0 0.0 0.0 0.0 0.0 0.0 0
  
 ..\\Resources\\Models\\sky_dome.fgm 0.0 0.0 0.0 0.0 0.0 0.0 1
-
- 
-..\\Resources\\Models\\test_object2.fgm 0.0 10.0 0.0 0.0 0.0 0.0 0 
-
-
-
-
 
 3 
 
@@ -22,6 +15,13 @@ LevelTest
  
 ..\\Resources\\Models\\character.fgm 0.0 10.0 5.0 0.0 0.0 0.0 0
 
+3 
+
+..\\Resources\\Models\\character.fgm 0.0 40.0 0.0 0.0 0.0 0.0 0
+ 
+..\\Resources\\Models\\character.fgm 40.0 10.0 10.0 0.0 0.0 0.0 0
+ 
+..\\Resources\\Models\\character.fgm -40.0 10.0 5.0 0.0 0.0 0.0 0
  
 d 2
 

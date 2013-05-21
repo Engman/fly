@@ -13,7 +13,7 @@ class FlyPlayer
 		vec3 velocity;
 		vec3 maxVelocity;
 
-		bool justChangedForm;
+		bool smallModel;
 
 		BoundingEllipse boundingEllipse;
 
@@ -34,13 +34,14 @@ class FlyPlayer
 		void SetPosition(vec3 position);
 		void SetRotation(vec3 rotation);
 		void SetVelocity(vec3 velocity);
-		void SetJustChanged(bool changed);
+		void SetEllipseVector(vec3 radius);
+		void SetSmall(bool changed);
 
 		vec3 GetPosition() const;
 		vec3 GetRotation() const;
 		vec3 GetVelocity() const;
 		vec3 GetMaxVelocity() const;
-		bool GetJustChanged() const;
+		bool GetSmall() const;
 		BoundingEllipse GetEllipse() const;
 		float GetEnergy() const;
 
