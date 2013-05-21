@@ -65,16 +65,15 @@ class FlyEngine_Core	:public FlyEngine
 		void		FLYCALL		Gfx_BeginForwardScene		();
 		void		FLYCALL		Gfx_EndForwardScene			();
 		void		FLYCALL		Gfx_BeginDeferredScene		();
-		//--------------
-		void		FLYCALL Gfx_DrawSkyBox();
-		void		FLYCALL Gfx_DrawGbuffer();
-		void		FLYCALL	Gfx_DrawShadows(vector<BaseBuffer*>* shadowViews);
-		void		FLYCALL Gfx_DrawLighting();
-		void		FLYCALL Gfx_DrawBlur();
-		void		FLYCALL Gfx_DrawFinalPicture();
-		//-----------------
-		void		FLYCALL PlaySound(const wchar_t* path);
-		//------------------
+
+		void		FLYCALL		Gfx_DrawSkyBox				();
+		void		FLYCALL		Gfx_DrawGbuffer				();
+		void		FLYCALL		Gfx_DrawShadows				(vector<BaseBuffer*>* shadowViews);
+		void		FLYCALL		Gfx_DrawLighting			();
+		void		FLYCALL		Gfx_DrawBlur				();
+		void		FLYCALL		Gfx_DrawGbufferOrtho		();
+		void		FLYCALL		Gfx_DrawFinalPicture		(vector<BaseBuffer*> *shadowViews);
+		
 		void		FLYCALL		Gfx_EndDeferredScene		();
 		void		FLYCALL		Gfx_EndDeferredSceneOrtho	();
 		void		FLYCALL		Gfx_Resize					(int width, int height);
@@ -98,6 +97,11 @@ class FlyEngine_Core	:public FlyEngine
 		bool		FLYCALL		Input_Shutdown				();
 		void		FLYCALL		Input_Activate				();
 		void		FLYCALL		Input_Deactivate			();
+		
+		
+		void		FLYCALL		Audio_Initialize			();
+		void		FLYCALL		Audio_PlaySound				(FlyEngineSounds sound);
+		void		FLYCALL		Audio_Shutdown				();	
 
 		static void  _Interface();
 };

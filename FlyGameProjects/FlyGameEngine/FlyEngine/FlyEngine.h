@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include "..\Core\BaseBuffer.h"
+#include "..\Core\AudioClass.h"
 
 class FlyMesh;
 class IShader;
@@ -64,6 +65,7 @@ enum FlyEngineGeometry
 	FlyGeometry_Plane,
 	FlyGeometry_Line,
 	FlyGeometry_Terrain,
+	FlyGeometry_AnimatedMesh,
 
 	GEOMETRY_COUNT
 };
@@ -115,12 +117,10 @@ class FlyEngine
 		virtual void		FLYCALL	Gfx_DrawShadows(vector<BaseBuffer*> *shadowViews)=0;
 		virtual void		FLYCALL Gfx_DrawLighting()=0;
 		virtual void		FLYCALL Gfx_DrawBlur()=0;
-		virtual void		FLYCALL Gfx_DrawFinalPicture()=0;
+		virtual void		FLYCALL Gfx_DrawGbufferOrtho()=0;
+		virtual void		FLYCALL Gfx_DrawFinalPicture(vector<BaseBuffer*> *shadowViews)=0;
 		//-----------------
-		//sound
-		virtual void		FLYCALL PlaySound(const wchar_t* path) =0;
-		//---------------------
-
+		
 		/** Resizes the render targets */
 		virtual void		FLYCALL		Gfx_Resize				(int width, int height)												= 0;
 		/** Sets active camera, if parameter is NULL the default cam is set */
@@ -157,6 +157,13 @@ class FlyEngine
 		virtual void		FLYCALL		Input_Activate			()																	= 0;
 		/** Deavctivates raw input */
 		virtual void		FLYCALL		Input_Deactivate		()																	= 0;
+		
+		//sound
+		virtual void		FLYCALL Audio_Initialize()=0;
+		virtual void		FLYCALL Audio_PlaySound(FlyEngineSounds sound) =0;
+		virtual void		FLYCALL		Audio_Shutdown()=0;
+		//---------------------
+
 };
 
 

@@ -2,6 +2,7 @@
 #define FLY_PLAYER_H
 
 #include "..\..\FlyGameEngine\Core\Mesh\FlyMesh.h"
+#include "..\..\FlyGameEngine\Core\Mesh\FlyMeshAnimated.h"
 #include "..\..\FlyGameEngine\Core\Entity.h"
 #include "..\..\FlyGameEngine\Util\BoundingVolumes.h"
 
@@ -40,6 +41,9 @@ class FlyPlayer
 		BoundingSphere* GetBoundingSphere();
 		void SetBoundingSphere(BoundingSphere* sphere);
 
+		void UpdateAnimation(int nr);
+		void StopAnimation(int nr);
+	
 		void Release();
 };
 

@@ -1,12 +1,12 @@
 ac 1
 vc 6
-m mouseMat
+m menuMat
 a 0.500000 0.500000 0.500000 1.000000
 d 1.000000 1.000000 1.000000 1.000000
 s 0.000000 0.000000 0.000000 1.000000
 sp 0
 ta 
-td ..\\Resources\\Textures\\mountain.png
+td ..\\Resources\\Textures\\LvlMenu.png
 ts ..\Resources\Textures\noGlow.png
 tg ..\Resources\Textures\noGlow.png
 tn ..\Resources\Textures\noGlow.png

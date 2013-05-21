@@ -24,12 +24,14 @@ void FlyMesh::Render(ViewFrustum& frustum)
 	{
 		if(this->shader && FrustumVSSphere(frustum, *this->boundingSphere))
 		{
-			D3DXMATRIX rotation, translation;
+			D3DXMATRIX scale, rotation, translation;
+			D3DXMatrixScaling(&scale, this->scale.x, this->scale.y, this->scale.z);
 			D3DXMatrixRotationYawPitchRoll(&rotation, this->rotation.y, this->rotation.x, this->rotation.z);
 			D3DXMatrixTranslation(&translation, this->translation.x, this->translation.y, this->translation.z);
 
 			D3DXMatrixIdentity(&this->world);
 
+			this->world *= scale;
 			this->world *= rotation;
 			this->world *= translation;
 
@@ -46,22 +48,23 @@ void FlyMesh::Render(ViewFrustum& frustum)
 	}
 	else
 	{
-		D3DXMATRIX rotation, translation;
+		D3DXMATRIX scale, rotation, translation;
+		D3DXMatrixScaling(&scale, this->scale.x, this->scale.y, this->scale.z);
 		D3DXMatrixRotationYawPitchRoll(&rotation, this->rotation.y, this->rotation.x, this->rotation.z);
 		D3DXMatrixTranslation(&translation, this->translation.x, this->translation.y, this->translation.z);
 
 		D3DXMatrixIdentity(&this->world);
 
+		this->world *= scale;
 		this->world *= rotation;
 		this->world *= translation;
 
 		IShader::DRAW_DATA data;
-		
+
 		for(int i = 0; i<(int)this->buffers.size(); i++)
-		{
 			data.buffers.push_back(this->buffers[i]);
-		}
-		
+
+
 		data.worldMatrix = &this->world;
 		data.material = this->material;
 		this->shader->addDrawData(data);
