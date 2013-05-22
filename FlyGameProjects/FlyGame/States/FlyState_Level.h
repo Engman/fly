@@ -11,6 +11,7 @@
 #include "..\GameObjects\FlyPlayer.h"
 #include "..\..\FlyGameEngine\Core\Light\DirectionLight.h"
 #include "..\..\FlyGameEngine\Util\Proxy.h"
+#include "../../FlyGameEngine/Core/ParticleSystem.h"
 
 
 class FlyState_Level		:public IFlySystemState
@@ -18,6 +19,7 @@ class FlyState_Level		:public IFlySystemState
 	private:
 		vector<Entity*> levelEntities;
 		vector<Entity*> levelPickups;
+		vector<Entity*> energyPickups;
 		vector<Entity*> theWorld;
 		vector<Entity*> skyBox;
 		vector<Entity*> dirLights;
@@ -30,8 +32,10 @@ class FlyState_Level		:public IFlySystemState
 		Camera mainCamera;
 		Camera menuCamera;
 		Timer* mainTimer;
-		Input* gameInput;
 
+		ParticleSystem engineParticlesLeft;
+		ParticleSystem engineParticlesRight;
+		ParticleSystem collisionParticle;
 
 		int state;
 
@@ -41,6 +45,7 @@ class FlyState_Level		:public IFlySystemState
 
 
 		bool Update();
+		bool UpdatePlayer();
 		bool Render();
 
 		bool MenuRender();

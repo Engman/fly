@@ -14,8 +14,12 @@ class FlyPlayer
 		vec3 velocity;
 		vec3 maxVelocity;
 
-		bool justChangedForm;
+		bool smallModel;
 
+		BoundingEllipse boundingEllipse;
+
+		float energy;
+		float maxEnergy;
 
 	public:
 		FlyPlayer();
@@ -24,19 +28,23 @@ class FlyPlayer
 		void Initialize();
 
 		void Render(ViewFrustum& frustum);
+		void Update();		
 
 		vector<Entity*>* GetModel();
 
 		void SetPosition(vec3 position);
 		void SetRotation(vec3 rotation);
 		void SetVelocity(vec3 velocity);
-		void SetJustChanged(bool changed);
+		void SetEllipseVector(vec3 radius);
+		void SetSmall(bool changed);
 
 		vec3 GetPosition() const;
 		vec3 GetRotation() const;
 		vec3 GetVelocity() const;
 		vec3 GetMaxVelocity() const;
-		bool GetJustChanged() const;
+		bool GetSmall() const;
+		BoundingEllipse GetEllipse() const;
+		float GetEnergy() const;
 
 		BoundingSphere* GetBoundingSphere();
 		void SetBoundingSphere(BoundingSphere* sphere);
@@ -45,6 +53,14 @@ class FlyPlayer
 		void StopAnimation(int nr);
 	
 		void Release();
+
+		void DeductEnergy(float howMuch);
+
+		//Controls
+		void RollLeft();
+		void RollRight(vec3 forward);
+		void BankLeft();
+		void BankRight();
 };
 
 

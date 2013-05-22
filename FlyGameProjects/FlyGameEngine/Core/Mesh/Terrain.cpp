@@ -21,8 +21,7 @@ bool Terrain::Initialize(OBJECT_DESC& data)
 
 	this->shader = data.shader;
 
-
-	this->octTree.Initialize(this->vertices, data.vCount, 1);
+	this->octTree.Initialize(this->vertices, data.vCount, 1, 8);
 	
 	return true;
 }
@@ -41,9 +40,6 @@ void Terrain::Render(ViewFrustum& frustum)
 		data.material = this->material;
 
 		this->octTree.Render(frustum, this->shader, data);
-
-		
-		//this->shader->addDrawData(data);
 	}
 }
 

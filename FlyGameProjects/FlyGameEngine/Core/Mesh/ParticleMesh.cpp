@@ -1,7 +1,7 @@
-#include "FlyMesh.h"
+#include "ParticleMesh.h"
 #include "..\..\Util\CollisionLib.h"
 
-FlyMesh::FlyMesh()
+ParticleMesh::ParticleMesh()
 	:Entity(Type::OBJECT)
 {
 	D3DXMatrixIdentity(&this->world);
@@ -9,29 +9,28 @@ FlyMesh::FlyMesh()
 	this->rotation	= vec3(0.0f, 0.0f, 0.0f);
 	D3DXMatrixIdentity(&this->world);
 }
-FlyMesh::~FlyMesh()
+ParticleMesh::~ParticleMesh()
 {
 
 }
 
-void FlyMesh::Update()
+void ParticleMesh::Update()
 {
 	this->boundingSphere->center = this->getPosition();
 }
-void FlyMesh::Render(ViewFrustum& frustum)
+
+void ParticleMesh::Render(ViewFrustum& frustum)
 {
 	if(this->boundingSphere.IsValid())
 	{
 		if(this->shader && FrustumVSSphere(frustum, *this->boundingSphere))
 		{
-			D3DXMATRIX scale, rotation, translation;
-			D3DXMatrixScaling(&scale, this->scale.x, this->scale.y, this->scale.z);
+			D3DXMATRIX rotation, translation;
 			D3DXMatrixRotationYawPitchRoll(&rotation, this->rotation.y, this->rotation.x, this->rotation.z);
 			D3DXMatrixTranslation(&translation, this->translation.x, this->translation.y, this->translation.z);
 
 			D3DXMatrixIdentity(&this->world);
 
-			this->world *= scale;
 			this->world *= rotation;
 			this->world *= translation;
 
@@ -48,23 +47,22 @@ void FlyMesh::Render(ViewFrustum& frustum)
 	}
 	else
 	{
-		D3DXMATRIX scale, rotation, translation;
-		D3DXMatrixScaling(&scale, this->scale.x, this->scale.y, this->scale.z);
+		D3DXMATRIX rotation, translation;
 		D3DXMatrixRotationYawPitchRoll(&rotation, this->rotation.y, this->rotation.x, this->rotation.z);
 		D3DXMatrixTranslation(&translation, this->translation.x, this->translation.y, this->translation.z);
 
 		D3DXMatrixIdentity(&this->world);
 
-		this->world *= scale;
 		this->world *= rotation;
 		this->world *= translation;
 
 		IShader::DRAW_DATA data;
-
+		
 		for(int i = 0; i<(int)this->buffers.size(); i++)
+		{
 			data.buffers.push_back(this->buffers[i]);
-
-
+		}
+		
 		data.worldMatrix = &this->world;
 		data.material = this->material;
 		this->shader->addDrawData(data);
@@ -72,7 +70,7 @@ void FlyMesh::Render(ViewFrustum& frustum)
 	}
 }
 
-bool FlyMesh::Initialize(OBJECT_DESC& data)
+bool ParticleMesh::Initialize(OBJECT_DESC& data)
 {
 	if(!data.device)
 	{
@@ -116,7 +114,7 @@ bool FlyMesh::Initialize(OBJECT_DESC& data)
 	desc.elementSize	= sizeof(VERTEX::VertexPNT);
 	desc.nrOfElements	= (int)data.vCount;
 	desc.type			= BUFFER_FLAG::TYPE_VERTEX_BUFFER;
-	desc.usage			= BUFFER_FLAG::USAGE_DEFAULT;
+	desc.usage			= BUFFER_FLAG::USAGE_DYNAMIC_CPU_WRITE_DISCARD;
 	if( FAILED( b->Initialize(desc) ) )
 	{
 		DisplayText("Failed to initiate Buffer in FlyMesh");
@@ -131,7 +129,7 @@ bool FlyMesh::Initialize(OBJECT_DESC& data)
 	return true;
 }
 
-vector<vec3>* FlyMesh::GetTriangles()
+vector<vec3>* ParticleMesh::GetTriangles()
 {
 	return this->vertexList;
 }

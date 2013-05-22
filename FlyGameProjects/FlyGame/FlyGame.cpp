@@ -21,6 +21,7 @@ struct FlyGame::_DATA_
 	SmartPtrStd<IFlySystemState> menu;
 	FlyEngine* fly;
 	IFlySystemState* state;
+	lua_State* luaState;
 };
 
 
@@ -34,6 +35,7 @@ FlyGame::FlyGame()
 }
 FlyGame::~FlyGame()
 {
+	lua_close(this->_pData->luaState);
 	this->_pData->fly->Core_Shutdown();
 	this->_pData->fly = NULL;
 	this->_pData->level->Release();
@@ -67,7 +69,9 @@ bool FlyGame::Initiate(FlyGameSystemState state)
 		break;
 	}
 
-	
+	this->_pData->luaState = luaL_newstate();
+	luaL_openlibs(this->_pData->luaState);
+
 	this->_pData->fly = FlyEngineCreate();
 	if(!this->_pData->fly->Core_Initialize(cd))
 		return false;
@@ -122,7 +126,12 @@ void FlyGame::Destroy()
 }
 
 
-FlyEngine* FlyGame::GetCoreInstance()
+FlyEngine* FlyGame::GetCoreInstance() const
 {
 	return this->_pData->fly;
+}
+
+lua_State* FlyGame::GetLuaState() const
+{
+	return this->_pData->luaState;
 }

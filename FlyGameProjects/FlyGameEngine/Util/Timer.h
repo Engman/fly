@@ -10,9 +10,11 @@ class Timer
 		INT64 frequency;
 		INT64 ticksPerFrame;
 		INT64 startTime;
+		INT64 ticksLastFrame;
 
 		float ticksPerMs;
 		float frameTime;
+		float fps;
 
 	public:
 		Timer();
@@ -20,7 +22,11 @@ class Timer
 		~Timer();
 
 		bool Initialize();
-		void Frame();	
+		void Frame();
+
+		/** Returns time between two frames in seconds */
+		float GetDeltaTime();
+		float GetFPS();
 };
 
 #endif

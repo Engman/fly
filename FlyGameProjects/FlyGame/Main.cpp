@@ -6,6 +6,7 @@
 int WINAPI WinMain( HINSTANCE hInst, HINSTANCE prevInst, PSTR cmdLine, int cmdShow)
 {
 	FIND_MEMORY_LEAKS;
+
 	FlyGame fg;
 
 

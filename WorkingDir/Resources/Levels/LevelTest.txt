@@ -1,31 +1,30 @@
 
 LevelTest
 
-3
+2
+
 ..\\Resources\\Models\\spire.fgm 0.0 0.0 0.0 0.0 0.0 0.0 0
+
+
+
+..\\Resources\\Models\\AAskydome.fgm 10.0 10.0 10.0 0.0 0.0 0.0 0
  
-..\\Resources\\Models\\skydome.fgm 0.0 0.0 0.0 0.0 0.0 0.0 1
-
- 
-..\\Resources\\Models\\test_object2.fgm 10.0 10.0 20.0 0.0 0.0 0.0 0 
-
-
-
 
 
 3 
 
-..\\Resources\\Models\\untitled.fgm 0.0 10.0 0.0 0.0 0.0 0.0 0
+..\\Resources\\Models\\untitled.fgm 0.0 40.0 0.0 0.0 0.0 0.0 0
  
-..\\Resources\\Models\\untitled.fgm 10.0 10.0 10.0 0.0 0.0 0.0 0
+..\\Resources\\Models\\untitled.fgm 40.0 10.0 10.0 0.0 0.0 0.0 0
  
-..\\Resources\\Models\\untitled.fgm 0.0 10.0 5.0 0.0 0.0 0.0 0
+..\\Resources\\Models\\untitled.fgm -40.0 10.0 5.0 0.0 0.0 0.0 0
+ 
+0
 
- 
 d 2
 
 0.2 0.2 0.2 1
- 
+
 0.0 1.0 0.0 1 
 
 0 0 1 1 
@@ -38,23 +37,17 @@ d 2
 1 
 
 4
+
  
 0.2 0.2 0.2 1 
-
 0.0 0.0 1.0 1
- 
 0 0 1 1 
-
 1 3 1 
-
-0 0 -100
- 
+0 50 -100
 0 0 0 
-
-0 
-
+0
 4
- 
+
 
 0 10 -30
 0 0 0

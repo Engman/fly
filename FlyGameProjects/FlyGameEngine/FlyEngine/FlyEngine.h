@@ -120,6 +120,7 @@ class FlyEngine
 		virtual void		FLYCALL Gfx_DrawGbufferOrtho()=0;
 		virtual void		FLYCALL Gfx_DrawFinalPicture(vector<BaseBuffer*> *shadowViews)=0;
 		//-----------------
+		virtual void		FLYCALL PlaySoundTrack(const wchar_t* path) =0;
 		
 		/** Resizes the render targets */
 		virtual void		FLYCALL		Gfx_Resize				(int width, int height)												= 0;
