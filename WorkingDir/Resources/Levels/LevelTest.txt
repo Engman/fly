@@ -1,18 +1,63 @@
 
 LevelTest
 
-2
+24
 
-..\\Resources\\Models\\test_fortress_walls.fgm 0.0 0.0 0.0 0.0 0.0 0.0 0
+..\\Resources\\Models\\test_canyon_map.fgm 0.0 0.0 0.0 0.0 0.0 0.0 0
  
 ..\\Resources\\Models\\skydome.fgm 0.0 0.0 0.0 0.0 0.0 0.0 1
 
+..\\Resources\\Models\\spire.fgm -50.0 0.0 0.0 0.0 0.0 0.0 0
+
+..\\Resources\\Models\\spire.fgm 50.0 50.0 0.0 0.0 0.0 0.0 0
+
+..\\Resources\\Models\\spire.fgm 100.0 0.0 100.0 0.0 0.0 0.0 0
+
+..\\Resources\\Models\\spire.fgm -100.0 0.0 0.0 0.0 0.0 0.0 0
+
+..\\Resources\\Models\\spire.fgm 100.0 0.0 0.0 0.0 0.0 0.0 0
+
+..\\Resources\\Models\\spire.fgm 50.0 0.0 50.0 0.0 0.0 0.0 0
+
+..\\Resources\\Models\\spire.fgm 50.0 0.0 50.0 0.0 0.0 0.0 0
+
+..\\Resources\\Models\\spire.fgm 50.0 0.0 50.0 0.0 0.0 0.0 0
+
+..\\Resources\\Models\\spire.fgm 50.0 0.0 50.0 0.0 0.0 0.0 0
+
+..\\Resources\\Models\\spire.fgm 50.0 0.0 50.0 0.0 0.0 0.0 0
+
+..\\Resources\\Models\\spire.fgm 50.0 0.0 50.0 0.0 0.0 0.0 0
+
+..\\Resources\\Models\\spire.fgm 50.0 0.0 50.0 0.0 0.0 0.0 0
+
+..\\Resources\\Models\\spire.fgm 50.0 0.0 50.0 0.0 0.0 0.0 0
+
+..\\Resources\\Models\\spire.fgm 50.0 0.0 50.0 0.0 0.0 0.0 0
+
+..\\Resources\\Models\\spire.fgm 50.0 0.0 50.0 0.0 0.0 0.0 0
+
+..\\Resources\\Models\\spire.fgm 50.0 0.0 50.0 0.0 0.0 0.0 0
+
+..\\Resources\\Models\\spire.fgm 50.0 0.0 50.0 0.0 0.0 0.0 0
+
+..\\Resources\\Models\\spire.fgm 50.0 0.0 50.0 0.0 0.0 0.0 0
+
+..\\Resources\\Models\\spire.fgm 50.0 0.0 50.0 0.0 0.0 0.0 0
+
+..\\Resources\\Models\\spire.fgm 50.0 0.0 50.0 0.0 0.0 0.0 0
+
+..\\Resources\\Models\\spire.fgm 50.0 0.0 50.0 0.0 0.0 0.0 0
+
+..\\Resources\\Models\\spire.fgm 50.0 0.0 50.0 0.0 0.0 0.0 0
+
+
 3
-..\\Resources\\Models\\zcharacter_anim.fgm 0.0 10.0 0.0 0.0 0.0 0.0 0
+..\\Resources\\Models\\untitled.fgm 0.0 10.0 0.0 0.0 0.0 0.0 0
  
-..\\Resources\\Models\\zcharacter_anim.fgm 10.0 10.0 10.0 0.0 0.0 0.0 0
+..\\Resources\\Models\\untitled.fgm 10.0 10.0 10.0 0.0 0.0 0.0 0
  
-..\\Resources\\Models\\zcharacter_anim.fgm 0.0 10.0 5.0 0.0 0.0 0.0 0
+..\\Resources\\Models\\untitled.fgm 0.0 10.0 5.0 0.0 0.0 0.0 0
 
 3 
 
@@ -22,39 +67,24 @@ LevelTest
  
 ..\\Resources\\Models\\untitled.fgm -40.0 10.0 5.0 0.0 0.0 0.0 0
  
-d 2
+d 1
 
 0.2 0.2 0.2 1
- 
-1.0 0.0 0.0 1 
+
+0.9 0.8 0.8 1 
 
 0 0 1 1 
 
-1 -3 -1
-0 50 100
+-1 -1 0
+2000 100 0
  
-0 0 0 
-
-0 
-
-4
- 
-0.2 0.2 0.2 1 
-
-0.0 0.0 1.0 1
- 
-0 0 1 1 
-
-1 3 1 
-
-0 50 -100
- 
-0 0 0 
+90 0 0 
 
 1 
 
-4
+5
  
+
 
 0 10 -30
 0 0 0

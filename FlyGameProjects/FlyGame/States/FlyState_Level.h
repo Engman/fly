@@ -11,7 +11,9 @@
 #include "..\GameObjects\FlyPlayer.h"
 #include "..\..\FlyGameEngine\Core\Light\DirectionLight.h"
 #include "..\..\FlyGameEngine\Util\Proxy.h"
-#include "../../FlyGameEngine/Core/ParticleSystem.h"
+#include "../../FlyGameEngine/Core/ParticleEngineSystem.h"
+#include "../../FlyGameEngine/Core/ParticleCollisionSystem.h"
+#include "../../FlyGameEngine/Core/ParticlePickupSystem.h"
 
 
 class FlyState_Level		:public IFlySystemState
@@ -31,11 +33,15 @@ class FlyState_Level		:public IFlySystemState
 
 		Camera mainCamera;
 		Camera menuCamera;
+		Camera lightCamera;
 		Timer* mainTimer;
 
-		ParticleSystem engineParticlesLeft;
-		ParticleSystem engineParticlesRight;
-		ParticleSystem collisionParticle;
+		vec3 worldWind;
+
+		ParticleEngineSystem engineParticlesLeft;
+		ParticleEngineSystem engineParticlesRight;
+		ParticleCollisionSystem collisionParticle;
+		ParticlePickupSystem pickupParticle;
 
 		int state;
 

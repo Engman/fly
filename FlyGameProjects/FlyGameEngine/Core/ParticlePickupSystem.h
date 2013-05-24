@@ -1,5 +1,5 @@
-#ifndef PARTICLESYSTEM_H
-#define PARTICLESYSTEM_H
+#ifndef PARTICLEPICKUPSYSTEM_H
+#define PARTICLEPICKUPSYSTEM_H
 
 #include <D3DX11\D3D11.h>
 #include <D3DX11\d3dx10math.h>
@@ -13,7 +13,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: ParticleSystemClass
 ////////////////////////////////////////////////////////////////////////////////
-class ParticleSystem
+class ParticlePickupSystem
 {
 	private:
 		struct Particle
@@ -26,9 +26,9 @@ class ParticleSystem
 		};
 
 	public:
-		ParticleSystem();
-		ParticleSystem(const ParticleSystem&);
-		virtual ~ParticleSystem();
+		ParticlePickupSystem();
+		ParticlePickupSystem(const ParticlePickupSystem&);
+		virtual ~ParticlePickupSystem();
 
 		bool Initialize();
 		void Shutdown();

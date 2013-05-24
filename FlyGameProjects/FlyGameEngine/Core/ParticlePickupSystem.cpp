@@ -1,24 +1,25 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Filename: particlesystemclass.cpp
 ////////////////////////////////////////////////////////////////////////////////
-#include "ParticleSystem.h"
+#include "ParticlePickupSystem.h"
+#include "../Core/Mesh/MaterialHandler.h"
 
-ParticleSystem::ParticleSystem()
+ParticlePickupSystem::ParticlePickupSystem()
 {
 	
 }
 
 
-ParticleSystem::ParticleSystem(const ParticleSystem& other)
+ParticlePickupSystem::ParticlePickupSystem(const ParticlePickupSystem& other)
 {
 }
 
 
-ParticleSystem::~ParticleSystem()
+ParticlePickupSystem::~ParticlePickupSystem()
 {
 }
 
-bool ParticleSystem::Initialize()
+bool ParticlePickupSystem::Initialize()
 {
 	// Set the random deviation of where the particles can be located when emitted.
 	this->particleDeviationX = 20.0f;
@@ -48,10 +49,27 @@ bool ParticleSystem::Initialize()
 	this->vertexList = new vector<VERTEX::VertexPNT>;
 	this->vertexCount = 6;
 
+	ObjectMaterial::OBJECT_MATERIAL_DESC materialDesc;
+
+	materialDesc.dc = D3DShell::self()->getDeviceContext();
+	materialDesc.ambient = vec4(0.5f, 0.5f, 0.5f, 1.0f);
+	materialDesc.diffuse = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	materialDesc.ambient = vec4(0.1f, 0.8f, 0.2f, 1.0f);
+	materialDesc.specualarPow = 0.0f;
+	materialDesc.device = D3DShell::self()->getDevice();
+	materialDesc.ambientTexture = L"";
+	materialDesc.diffuseTexture = L"..\\Resources\\Textures\\pickup_particle.png";
+	materialDesc.specularTexture = L"..\\Resources\\Textures\\noGlow.png";
+	materialDesc.glowTexture = L"..\\Resources\\Textures\\noGlow.png";
+	materialDesc.normalTexture = L"..\\Resources\\Textures\\noGlow.png";
+	materialDesc.name = L"pickup_particle";
+
+	MaterialHandler::AddMaterial(materialDesc);
+
 	ParticleMesh::OBJECT_DESC desc;
 	desc.device = D3DShell::self()->getDevice();
 	desc.deviceContext = D3DShell::self()->getDeviceContext();
-	desc.material_id = 34;
+	desc.material_id = MaterialHandler::GetMaterial(L"pickup_particle")->GetID();
 	desc.name = L"particles";
 	desc.vCount = 6;
 
@@ -73,29 +91,31 @@ bool ParticleSystem::Initialize()
 		this->particleList[i].model = new ParticleMesh();
 		this->particleList[i].life = 10000.0f;
 
+		float texCoordX = (rand()%3)*0.3333333f;
+		float texCoordY = (rand()%3)*0.3333333f;
 		this->vertexList->at(0).position = vec4(-this->particleSize, -this->particleSize, 0.0f, 1.0f);
 		this->vertexList->at(0).normal = vec4(0.0f, 0.0f, 1.0f, 0.0f);
-		this->vertexList->at(0).texcoord = vec2(0.0f, 1.0f);
+		this->vertexList->at(0).texcoord = vec2(texCoordX, texCoordY+0.3333333f);
 
 		this->vertexList->at(1).position = vec4(-this->particleSize, this->particleSize, 0.0f, 1.0f);
 		this->vertexList->at(1).normal = vec4(0.0f, 0.0f, 1.0f, 0.0f);
-		this->vertexList->at(1).texcoord = vec2(0.0f, 0.0f);
+		this->vertexList->at(1).texcoord = vec2(texCoordX, texCoordY);
 
 		this->vertexList->at(2).position = vec4(this->particleSize, this->particleSize, 0.0f, 1.0f);
 		this->vertexList->at(2).normal = vec4(0.0f, 0.0f, 1.0f, 0.0f);
-		this->vertexList->at(2).texcoord = vec2(1.0f, 0.0f);
+		this->vertexList->at(2).texcoord = vec2(texCoordX+0.3333333f, texCoordY);
 
 		this->vertexList->at(3).position = vec4(this->particleSize, this->particleSize, 0.0f, 1.0f);
 		this->vertexList->at(3).normal = vec4(0.0f, 0.0f, 1.0f, 0.0f);
-		this->vertexList->at(3).texcoord = vec2(1.0f, 0.0f);
+		this->vertexList->at(3).texcoord = vec2(texCoordX+0.3333333f, texCoordY);
 
 		this->vertexList->at(4).position = vec4(this->particleSize, -this->particleSize, 0.0f, 1.0f);
 		this->vertexList->at(4).normal = vec4(0.0f, 0.0f, 1.0f, 0.0f);
-		this->vertexList->at(4).texcoord = vec2(1.0f, 1.0f);
+		this->vertexList->at(4).texcoord = vec2(texCoordX+0.3333333f, texCoordY+0.3333333f);
 
 		this->vertexList->at(5).position = vec4(-this->particleSize, -this->particleSize, 0.0f, 1.0f);
 		this->vertexList->at(5).normal = vec4(0.0f, 0.0f, 1.0f, 0.0f);
-		this->vertexList->at(5).texcoord = vec2(0.0f, 1.0f);
+		this->vertexList->at(5).texcoord = vec2(texCoordX, texCoordY+0.3333333f);
 
 		desc.vertecies = this->vertexList;
 
@@ -108,7 +128,7 @@ bool ParticleSystem::Initialize()
 	return true;
 }
 
-void ParticleSystem::Shutdown()
+void ParticlePickupSystem::Shutdown()
 {
 	// Release the texture used for the particles.
 
@@ -116,7 +136,7 @@ void ParticleSystem::Shutdown()
 }
 
 
-bool ParticleSystem::Frame(vec3 forward, float deltaTime)
+bool ParticlePickupSystem::Frame(vec3 forward, float deltaTime)
 {
 	bool result;
 
@@ -134,7 +154,7 @@ bool ParticleSystem::Frame(vec3 forward, float deltaTime)
 	return true;
 }
 
-void ParticleSystem::Render(ViewFrustum f)
+void ParticlePickupSystem::Render(ViewFrustum f)
 {
 	// Put the vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	//RenderBuffers(deviceContext);
@@ -148,28 +168,15 @@ void ParticleSystem::Render(ViewFrustum f)
 }
 
 
-void ParticleSystem::EmitParticles(float frameTime, vec3 forward)
+void ParticlePickupSystem::EmitParticles(float frameTime, vec3 forward)
 {
 	bool emitParticle;
 	float positionX, positionY, positionZ;
 	vec3 velocity;
-
-
-	// Increment the frame time.
-	this->accumulatedTime += frameTime;
-
-	// Set emit particle to false for now.
-	emitParticle = false;
 	
-	// Check if it is time to emit a new particle or not.
-	if(this->accumulatedTime > (1000.0f / this->particlesPerSecond))
-	{
-		this->accumulatedTime = 0.0f;
-		emitParticle = true;
-	}
 
 	// If there are particles to emit then emit one per frame.
-	if((emitParticle == true) && (this->currentParticleCount < (this->maxParticles - 1)))
+	if((this->currentParticleCount < (this->maxParticles - 1)))
 	{
 		// Now generate the randomized particle properties.
 		positionX = this->particleDeviationX;
@@ -178,27 +185,49 @@ void ParticleSystem::EmitParticles(float frameTime, vec3 forward)
 
 		for(int i = 0; i < 10; i++)
 		{
-			this->currentParticleCount++;
+			
 			D3DXMATRIX rotation;
 			D3DXMatrixRotationYawPitchRoll(&rotation, i*0.628f, 0.0f, 0.0f);
 			vec4 vectorFour;
 
 			vec3 velocityThree = *D3DXVec4Transform(&vectorFour, &vec4(-forward, 0.0f), &rotation);
 
-		
+	
+			// Now insert it into the particle array in the correct depth order.
+			this->particleList[this->currentParticleCount].model->setPosition(vec3(positionX, positionY, positionZ));
+			this->particleList[this->currentParticleCount].velocity = velocityThree;
+			this->particleList[this->currentParticleCount].active = true;
+			this->particleList[this->currentParticleCount].life = 2000.0f;
+			this->currentParticleCount++;
+
+			D3DXMatrixRotationYawPitchRoll(&rotation, 0.0, i*0.628f, 0.0f);
+
+			velocityThree = (vec3)*D3DXVec4Transform(&vectorFour, &vec4(-forward, 0.0f), &rotation);
 
 			// Now insert it into the particle array in the correct depth order.
-			this->particleList[this->currentParticleCount-1].model->setPosition(vec3(positionX, positionY, positionZ));
-			this->particleList[this->currentParticleCount-1].velocity = velocityThree;
-			this->particleList[this->currentParticleCount-1].active = true;
-			this->particleList[this->currentParticleCount-1].life = 2000.0f;
+			this->particleList[this->currentParticleCount].model->setPosition(vec3(positionX, positionY, positionZ));
+			this->particleList[this->currentParticleCount].velocity = velocityThree;
+			this->particleList[this->currentParticleCount].active = true;
+			this->particleList[this->currentParticleCount].life = 2000.0f;
+			this->currentParticleCount++;
+
+			D3DXMatrixRotationYawPitchRoll(&rotation, D3DX_PI*0.5f, i*0.628f, 0.0f);
+
+			velocityThree = (vec3)*D3DXVec4Transform(&vectorFour, &vec4(-forward, 0.0f), &rotation);
+
+			// Now insert it into the particle array in the correct depth order.
+			this->particleList[this->currentParticleCount].model->setPosition(vec3(positionX, positionY, positionZ));
+			this->particleList[this->currentParticleCount].velocity = velocityThree;
+			this->particleList[this->currentParticleCount].active = true;
+			this->particleList[this->currentParticleCount].life = 2000.0f;
+			this->currentParticleCount++;
 		}
 	}
 
 	return;
 }
 
-void ParticleSystem::UpdateParticles(float frameTime)
+void ParticlePickupSystem::UpdateParticles(float frameTime)
 {
 	int i;
 
@@ -212,7 +241,7 @@ void ParticleSystem::UpdateParticles(float frameTime)
 	return;
 }
 
-void ParticleSystem::KillParticles(vec3 position)
+void ParticlePickupSystem::KillParticles(vec3 position)
 {
 	int i;
 
@@ -235,7 +264,7 @@ void ParticleSystem::KillParticles(vec3 position)
 	return;
 }
 
-void ParticleSystem::SetRotation(vec3 rotation)
+void ParticlePickupSystem::SetRotation(vec3 rotation)
 {
 	for(int i = 0; i < this->currentParticleCount; i++)
 	{
@@ -243,14 +272,14 @@ void ParticleSystem::SetRotation(vec3 rotation)
 	}
 }
 
-void ParticleSystem::SetPosition(vec3 position)
+void ParticlePickupSystem::SetPosition(vec3 position)
 {
 	this->particleDeviationX = position.x;
 	this->particleDeviationY = position.y;
 	this->particleDeviationZ = position.z;
 }
 
-void ParticleSystem::SetParticleShader(IShader* shader)
+void ParticlePickupSystem::SetParticleShader(IShader* shader)
 {
 	for(int i = 0; i < this->currentParticleCount; i++)
 	{

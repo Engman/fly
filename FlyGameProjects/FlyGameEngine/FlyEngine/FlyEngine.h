@@ -114,11 +114,11 @@ class FlyEngine
 		//--------------
 		virtual void		FLYCALL Gfx_DrawSkyBox()= 0;
 		virtual void		FLYCALL Gfx_DrawGbuffer()=0;
-		virtual void		FLYCALL	Gfx_DrawShadows(vector<BaseBuffer*> *shadowViews)=0;
+		virtual void		FLYCALL	Gfx_DrawShadows(Camera theCamera)=0;
 		virtual void		FLYCALL Gfx_DrawLighting()=0;
 		virtual void		FLYCALL Gfx_DrawBlur()=0;
 		virtual void		FLYCALL Gfx_DrawGbufferOrtho()=0;
-		virtual void		FLYCALL Gfx_DrawFinalPicture(vector<BaseBuffer*> *shadowViews)=0;
+		virtual void		FLYCALL Gfx_DrawFinalPicture(Camera theCamera)=0;
 		//-----------------
 		virtual void		FLYCALL PlaySoundTrack(const wchar_t* path) =0;
 		

@@ -3,7 +3,7 @@
 FlyPlayer::FlyPlayer()
 {
 	this->velocity = vec3(0.0f, 0.0f, 0.0f);
-	this->maxVelocity = vec3(0.2f, 0.2f, 0.2f);
+	this->maxVelocity = vec3(0.4f, 0.4f, 0.8f);
 	this->maxEnergy = 10000;
 	this->energy = maxEnergy;
 	this->boundingEllipse.radiusVector.x = 2.0f;
@@ -71,7 +71,7 @@ void FlyPlayer::Update()
 		}
 	}
 
-	this->boundingEllipse.radiusVector = (box.maxPoint - box.minPoint)*0.5f;
+	this->boundingEllipse.radiusVector = (box.maxPoint - box.minPoint)*0.5f+vec3(0.1f, 0.0f, 0.1f);
 	this->boundingEllipse.center = this->GetPosition();
 
 	this->boundingEllipse.center = this->GetPosition();
@@ -145,6 +145,11 @@ BoundingEllipse FlyPlayer::GetEllipse() const
 BoundingSphere* FlyPlayer::GetBoundingSphere()
 {
 	return this->playerModel[0]->getBoundingSphere();
+}
+
+float FlyPlayer::GetMaxEnergy() const
+{
+	return this->maxEnergy;
 }
 
 void FlyPlayer::SetBoundingSphere(BoundingSphere* sphere)

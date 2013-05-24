@@ -329,3 +329,28 @@ vector<vector<D3DXVECTOR3>*> OctTree::GetCollidedBoxNode(Node* parent, BoundingS
 
 	return vertexList;
 }
+
+BoundingBox OctTree::GetTopBox() const
+{
+	return this->head->box;
+}
+
+void OctTree::TransformBoxes(Matrix transform)
+{
+	TransformChildBox(this->head, transform);
+}
+
+void OctTree::TransformChildBox(Node* parent, Matrix transform)
+{
+	vec4 vectorFour;
+	parent->box.minPoint = (vec3)*D3DXVec3Transform(&vectorFour, &parent->box.minPoint, &transform);
+	parent->box.maxPoint = (vec3)*D3DXVec3Transform(&vectorFour, &parent->box.maxPoint, &transform);
+
+	if(parent->children != NULL)
+	{
+		TransformChildBox(&parent->children[0], transform);
+		TransformChildBox(&parent->children[1], transform);
+		TransformChildBox(&parent->children[2], transform);
+		TransformChildBox(&parent->children[3], transform);
+	}
+}

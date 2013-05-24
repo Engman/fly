@@ -45,6 +45,7 @@ class FlyPlayer
 		bool GetSmall() const;
 		BoundingEllipse GetEllipse() const;
 		float GetEnergy() const;
+		float GetMaxEnergy() const;
 
 		BoundingSphere* GetBoundingSphere();
 		void SetBoundingSphere(BoundingSphere* sphere);

@@ -82,21 +82,19 @@ void FLYCALL FlyEngine_Core::Gfx_DrawGbufferOrtho()
 	D3DShell::self()->getDeviceContext()->OMSetBlendState(0,0,0xffffffff);
 	D3DShell::self()->setDepthStencilState(FLAGS::DEPTH_STENCIL_EnabledDepth,1);
 }
-void FLYCALL FlyEngine_Core::Gfx_DrawShadows(vector<BaseBuffer*> *shadowViews)
+void FLYCALL FlyEngine_Core::Gfx_DrawShadows(Camera theCamera)
 {
 	IShader::PER_FRAME_DATA shadowsDrawData;
 	shadowsDrawData.dc = D3DShell::self()->getDeviceContext(); 
 
-	for(int i= 0; i<(int)shadowViews->size(); i++)
+	for(int i= 0; i<1; i++)
 	{
 		D3DShell::self()->BeginShadowRenderTarget(i);
 
-		LightViewProj* shadow = (LightViewProj*)shadowViews->at(0)->Map();
 
-		shadowsDrawData.view = shadow->lView; 
-		shadowsDrawData.projection = shadow->lProj; 
+		shadowsDrawData.view = theCamera.GetViewMatrix(); 
+		shadowsDrawData.projection = theCamera.GetProjectionMatrix(); 
 
-		shadowViews->at(0)->Unmap();
 
 		
 		this->shadowMapShader->draw(shadowsDrawData);
@@ -167,7 +165,7 @@ void FLYCALL FlyEngine_Core::Gfx_DrawBlur()
 	this->blurVerticalShader->draw(blurDrawData);
 }
 
-void FLYCALL FlyEngine_Core::Gfx_DrawFinalPicture(vector<BaseBuffer*> *shadowViews)
+void FLYCALL FlyEngine_Core::Gfx_DrawFinalPicture(Camera theCamera)
 {
 	D3DShell::self()->setRenderTarget();
 	D3DShell::self()->beginScene();
@@ -185,12 +183,10 @@ void FLYCALL FlyEngine_Core::Gfx_DrawFinalPicture(vector<BaseBuffer*> *shadowVie
 	
 	D3DXMATRIX lightViewProj;
 
-	LightViewProj* shadow = (LightViewProj*)shadowViews->at(0)->Map();
 	
-	D3DXMATRIX lView = shadow->lView;
-	D3DXMATRIX lProj = shadow->lProj; 
+	D3DXMATRIX lView = theCamera.GetViewMatrix();
+	D3DXMATRIX lProj = theCamera.GetProjectionMatrix(); 
 	
-	shadowViews->at(0)->Unmap();
 
 	D3DXMATRIX lViewProj = lView * lProj;
 	D3DXMatrixTranspose(&lViewProj, &lViewProj);
@@ -211,7 +207,6 @@ void FLYCALL FlyEngine_Core::Gfx_DrawFinalPicture(vector<BaseBuffer*> *shadowVie
 
 	D3DShell::self()->releaseSRV();
 	D3DShell::self()->endScene();
-
 }
 
 

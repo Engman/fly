@@ -35,7 +35,7 @@ AudioClass::~AudioClass(void)
 
 void AudioClass::intitialize()
 {
-	maxChannels = 2; // max two sound playing 
+	maxChannels = 4; // max two sound playing 
 	result = System_Create(&fmodSystem);
 	
 	result = fmodSystem->init(maxChannels, FMOD_INIT_NORMAL,0);
@@ -63,6 +63,8 @@ void AudioClass::loadSound()
 	result = fmodSystem->createSound("../../WorkingDir/Resources/Sound/swish.wav", FMOD_DEFAULT, 0, & sounds[FlySound_Collision]);
 	sounds[FlySound_Collision]->setMode(FMOD_LOOP_NORMAL);
 
+	result = fmodSystem->createSound("../../WorkingDir/Resources/Sound/1978-039 Kansas - Dust In The Wind.mp3", FMOD_DEFAULT, 0, & sounds[FlySound_LevelMusic]);
+	sounds[FlySound_LevelMusic]->setMode(FMOD_LOOP_NORMAL);
 
 	result = fmodSystem->createSound("../../WorkingDir/Resources/Sound/swish.wav", FMOD_3D, 0, & sounds[FlySound_Wind]);
 	result = sounds[FlySound_Wind]->set3DMinMaxDistance(0.5f * DISTANCEFACTOR, 5000.0f * DISTANCEFACTOR);
@@ -114,6 +116,10 @@ void AudioClass::playSound(FlyEngineSounds sound)
 
 		case FlyEngineSounds::FlySound_Collision:
 			result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_Collision], false,&channel);
+			result = channel->setVolume(0.8f);
+		break;
+		case FlyEngineSounds::FlySound_LevelMusic:
+			result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_LevelMusic], false,&channel);
 			result = channel->setVolume(0.8f);
 		break;
 		case FlyEngineSounds::FlySound_Wind:

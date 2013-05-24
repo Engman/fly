@@ -67,7 +67,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\WorkingDir\Bin\</OutDir>
     <IntDir>$(SolutionDir)..\WorkingDir\AssemblyFiles\$(ProjectName)\x86\Debug\</IntDir>
     <TargetName>$(ProjectName)x86D</TargetName>
