@@ -50,29 +50,30 @@ FlyEngine_Core::FlyEngine_Core()
 	AudioClass::self()->intitialize();
 	AudioClass::self()->loadSound();
 
-	//Input::self();
 
-	this->gbufferShader			= new GBufferShader();
-	this->gBufferNoDepthShader	= new GBufferShader();
-	this->gBufferAnimationShader = new GBufferAnimationShader();
-	this->finalShader			= new FinalShader();
-	this->finalColorShader		= new FinalShader();
-	this->dirLightShader		= new LightShader();
-	this->shadowMapShader		= new ShadowMapShader();
-	this->blurHorizontShader	= new BlurShader();
-	this->blurVerticalShader	= new BlurShader();
-
-	this->cameraBuffer			= new BaseBuffer();
-	this->fsq					= new FullScreenQuad();
-	this->defaultCam			= new Camera();
-	this->activeCamera			= NULL;
-	this->deferredRenderFunc	= 0;
-	this->deferredUpdateFunc	= 0;
-	this->forwardRenderFunc		= 0;
-	this->forwardUpdateFunc		= 0;
-	this->splash				= 0;
-	this->orthographicCamera	= 0;
+	this->gbufferShader				= new GBufferShader();
+	this->gBufferNoDepthShader		= new GBufferShader();
+	this->gBufferAnimationShader	= new GBufferAnimationShader();
+	this->finalShader				= new FinalShader();
+	this->finalColorShader			= new FinalShader();
+	this->dirLightShader			= new LightShader();
+	this->shadowMapShader			= new ShadowMapShader();
+	this->blurHorizontShader		= new BlurShader();
+	this->blurVerticalShader		= new BlurShader();
+	
+	this->cameraBuffer				= new BaseBuffer();
+	this->fsq						= new FullScreenQuad();
+	this->defaultCam				= new Camera();
+	this->activeCamera				= 0;
+	this->deferredRenderFunc		= 0;
+	this->deferredUpdateFunc		= 0;
+	this->forwardRenderFunc			= 0;
+	this->forwardUpdateFunc			= 0;
+	this->splash					= 0;
+	this->orthographicCamera		= 0;
 }
+FlyEngine_Core::~FlyEngine_Core()
+{}
 
 
 
@@ -138,10 +139,10 @@ bool FLYCALL FlyEngine_Core::Core_Initialize(FLY_ENGINE_INIT_DESC& desc)
 	this->forwardRenderFunc		= desc.forwardRenderFunc;
 	this->forwardUpdateFunc		= desc.forwardUpdateFunc;
 	this->splash				= desc.showSplash;
-
+	
 	if(!this->_InitWin(desc))			return false;
 	if(!this->_InitGfx(desc))			return false;
-
+	
 	if(!this->_InitGBufferShader())			return false;
 	if(!this->_InitAnimationShader())	return false;
 	if(!this->_InitFinalShader())		return false;
@@ -150,10 +151,10 @@ bool FLYCALL FlyEngine_Core::Core_Initialize(FLY_ENGINE_INIT_DESC& desc)
 	if(!this->_InitBlurShaders())		return false;
 	
 	if(!this->_InitCameraBuffer())		return false;
-
+	
 	if(!this->fsq->Initialize(D3DShell::self()->getDevice(), this->finalShader))
 		return false;
-
+	
 	this->_InitCam();
 
 	return true;
@@ -201,6 +202,14 @@ bool FLYCALL FlyEngine_Core::Core_Message()
 
 	return true;
 }
+
+void FLYCALL FlyEngine_Core::Core_Dimensions(int& width, int& height)
+{
+	width = (int)D3DShell::self()->getWidth();
+	height = (int)D3DShell::self()->getHeight();
+}
+
+
 
 LRESULT CALLBACK FlyEngineCoreWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {

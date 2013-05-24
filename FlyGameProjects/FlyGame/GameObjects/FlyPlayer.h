@@ -28,6 +28,7 @@ class FlyPlayer
 
 		void SetPosition(vec3 position);
 		void SetRotation(vec3 rotation);
+		void SetScale(vec3 scale);
 		void SetVelocity(vec3 velocity);
 		void SetJustChanged(bool changed);
 

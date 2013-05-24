@@ -4,11 +4,7 @@
 #include "..\..\FlyGameEngine\Util\CollisionLib.h"
 #include "..\..\FlyGameEngine\Core\Light\DirectionLight.h"
 #include "..\..\FlyGameEngine\Util\Proxy.h"
-<<<<<<< HEAD
 
-=======
-
->>>>>>> 30a37571a9b620256b0540bf684145da5ea7ab26
 
 #include <fstream>
 #include <iostream>
@@ -29,10 +25,13 @@ bool FlyState_Level::Initiate(FlyGame* instance)
 
 	this->entryInstance = instance;
 
-	this->ReadLevel(L"..\\Resources\\Levels\\LevelTest.txt");
+	if(!this->entryInstance->GetCoreInstance()->Input_Initialize())
+		return false;
 
-	this->entryInstance->GetCoreInstance()->Input_Initialize();
-	this->entryInstance->GetCoreInstance()->Input_Activate();
+
+	if(!this->ReadLevel(L"..\\Resources\\Levels\\canyon.fgl"))
+		return false;
+
 
 	this->mainTimer = new Timer();
 	this->mainTimer->Initialize();
@@ -41,12 +40,11 @@ bool FlyState_Level::Initiate(FlyGame* instance)
 	this->menuCamera.SetOrthogonalMatrix(1200.0f, 600.0f, 0.1f, 10.0f);
 
 	this->mainCamera.Render();
-<<<<<<< HEAD
-	//this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wind);
-=======
-	this->entryInstance->GetCoreInstance()->PlaySound(L"path");
->>>>>>> 30a37571a9b620256b0540bf684145da5ea7ab26
 
+	//this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wind);
+	this->entryInstance->GetCoreInstance()->Audio_PlaySound(L"path");
+
+	return true;
 }
 void FlyState_Level::Frame()
 {
@@ -116,7 +114,7 @@ bool FlyState_Level::Update()
 
 	for(unsigned int i = 0; i < this->levelPickups.size(); i++)
 	{
-<<<<<<< HEAD
+
 		//if(typeid(this->levelPickups[i]) == typeid(FlyMeshAnimated) )
 		//	((FlyMeshAnimated*)this->levelPickups[0])->UpdateAnimation(1); 
 		
@@ -131,26 +129,11 @@ bool FlyState_Level::Update()
 		
 	}
 	
-	this->player.GetModel()->at(0)->Update();
-	
-	D3DXVECTOR3 pos = this->player.GetPosition();
-	this->skyBox[0]->setPosition(pos);
-=======
-		if(SphereVSSphere(*this->levelPickups[i]->getBoundingSphere(), *this->player.GetBoundingSphere()))
-		{
-			this->levelPickups.erase(this->levelPickups.begin()+i);
-			i--;
-			//play sound
-		}
-	}
-	
-	
 	D3DXVECTOR3 pos = this->player.GetPosition();
 	this->skyBox[0]->setPosition(pos);
 
 	this->skyBox[0]->Update();
 
->>>>>>> 30a37571a9b620256b0540bf684145da5ea7ab26
 
 	this->skyBox[0]->Update();
 
@@ -161,42 +144,22 @@ bool FlyState_Level::Update()
 bool FlyState_Level::Render()
 {
 	this->entryInstance->GetCoreInstance()->Gfx_Update();
-<<<<<<< HEAD
 
-=======
-
->>>>>>> 30a37571a9b620256b0540bf684145da5ea7ab26
 	vector<IShader*> shaders;
 	this->entryInstance->GetCoreInstance()->Gfx_GetShader(shaders);
 	
 	ViewFrustum f;
 	this->mainCamera.ConstructViewFrustum(f);
-<<<<<<< HEAD
+
 	
-	this->theWorld[0]->setShader(shaders[FlyShader_Default]);
-	this->theWorld[0]->Render(f);
-
-	this->skyBox[0]->Render(f);
-
-=======
-
 	this->theWorld[0]->setShader(shaders[FlyShader_gBufferDefault]);
 	this->theWorld[0]->Render(f);
-
 	this->skyBox[0]->Render(f);
-
->>>>>>> 30a37571a9b620256b0540bf684145da5ea7ab26
 	this->player.Render(f);
 
 	for(unsigned int i = 0; i < this->levelEntities.size(); i++)
-	{	
-<<<<<<< HEAD
-
-		this->levelEntities[i]->setShader(shaders[FlyShader_Default]);
-=======
-
+	{
 		this->levelEntities[i]->setShader(shaders[FlyShader_gBufferDefault]);
->>>>>>> 30a37571a9b620256b0540bf684145da5ea7ab26
 		this->levelEntities[i]->Render(f);
 	}
 	for(unsigned int i = 0; i < this->levelPickups.size(); i++)
@@ -218,9 +181,8 @@ bool FlyState_Level::Render()
 
 		this->theWorld[0]->setShader(shaders[FlyShader_Shadow]);
 		this->theWorld[0]->Render(f);
+	}
 
-<<<<<<< HEAD
-=======
 	for(unsigned int i = 0; i < this->dirLights.size(); i++)
 	{
 		this->dirLights[i]->Render(f);
@@ -236,18 +198,14 @@ bool FlyState_Level::Render()
 		this->theWorld[0]->setShader(shaders[FlyShader_Shadow]);
 		this->theWorld[0]->Render(f);
 
->>>>>>> 30a37571a9b620256b0540bf684145da5ea7ab26
 	}
 	this->entryInstance->GetCoreInstance()->Gfx_DrawSkyBox();
 	this->entryInstance->GetCoreInstance()->Gfx_DrawGbuffer();
 	this->entryInstance->GetCoreInstance()->Gfx_DrawLighting();
 	this->entryInstance->GetCoreInstance()->Gfx_DrawBlur();
 	this->entryInstance->GetCoreInstance()->Gfx_DrawShadows(&shadowViews);
-<<<<<<< HEAD
-	this->entryInstance->GetCoreInstance()->Gfx_DrawFinalPicture(&shadowViews);
-=======
 	this->entryInstance->GetCoreInstance()->Gfx_DrawFinalPicture();
->>>>>>> 30a37571a9b620256b0540bf684145da5ea7ab26
+
 
 	return true;
 }
@@ -285,7 +243,7 @@ bool FlyState_Level::MenuUpdate()
 		this->state = 0;
 	}
 
-	this->cursor[0]->setPosition(vec3(mouseX-600, -(mouseY-300) , -1.0f));
+	this->cursor[0]->setPosition(vec3((float)mouseX-600, (float)-(mouseY-300) , -1.0f));
 
 	return true;
 }
@@ -372,15 +330,11 @@ void FlyState_Level::Input()
 			this->player.SetVelocity(this->player.GetVelocity() + vec3(0.0f, 0.0f, 0.001f));
 		if(this->player.GetVelocity().x > -this->player.GetMaxVelocity().x)
 			this->player.SetVelocity(this->player.GetVelocity() + vec3(-0.001f, 0.0f, 0.0f));
-		this->player.UpdateAnimation(1);
-		this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wings);
-
 	}
 	else
 	{
 		if(this->player.GetVelocity().x < -0.001f)
 			this->player.SetVelocity(this->player.GetVelocity() + vec3(0.001f, 0.0f, 0.0f));
-		this->player.StopAnimation(1);
 	}
 
 	if(Input::self()->IsMouseButtonPressed(0))
@@ -389,14 +343,11 @@ void FlyState_Level::Input()
 			this->player.SetVelocity(this->player.GetVelocity() + vec3(0.0f, 0.0f, 0.001f));
 		if(this->player.GetVelocity().x < this->player.GetMaxVelocity().x)
 			this->player.SetVelocity(this->player.GetVelocity() + vec3(0.001f, 0.0f, 0.0f));
-		this->player.UpdateAnimation(2);
-		this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wings);
 	}
 	else
 	{
 		if(this->player.GetVelocity().x > 0.001f)
 			this->player.SetVelocity(this->player.GetVelocity() + vec3(-0.001f, 0.0f, 0.0f));
-		this->player.StopAnimation(2);
 	}
 
 	//Casual
@@ -447,13 +398,6 @@ void FlyState_Level::Input()
 	}
 	if(Input::self()->IsButtonPressed(DIK_ESCAPE))
 	{
-<<<<<<< HEAD
-
-		//PostQuitMessage(0);
-=======
-
-		//PostQuitMessage(0);
->>>>>>> 30a37571a9b620256b0540bf684145da5ea7ab26
 		this->state = this->state = 1;
 	}
 }
@@ -461,13 +405,9 @@ void FlyState_Level::Input()
 bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 {
 	wifstream file(fileName);
-<<<<<<< HEAD
+
 	vec3 readVector;
 	D3DXVECTOR4 readVector4;
-=======
-	vec3 readVector;
-	D3DXVECTOR4 readVector4;
->>>>>>> 30a37571a9b620256b0540bf684145da5ea7ab26
 	int readInt = 0;
 	wstring readString = L"";
 	int nrOfStuff = 0;
@@ -482,183 +422,131 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 
 	file>>readString;
 	file>>nrOfStuff;
-
-	//First to load is always terrain
+	
+//______________________________________________//
+//------------------- Terrain ----------------//
+//____________________________________________//
 	file>>readString;
 	this->entryInstance->GetCoreInstance()->Geometry_Load(readString.c_str(), &this->theWorld, FlyGeometry_Terrain);
-	file>>readVector.x;
-	file>>readVector.y;
-	file>>readVector.z;
-	this->theWorld[0]->setPosition(readVector);
-	file>>readVector.x;
-	file>>readVector.y;
-	file>>readVector.z;
-	this->theWorld[0]->setRotation(readVector);
-	file>>readInt;		
-	
-	readVector = D3DXVECTOR3(1,1,1);
-	this->theWorld[0]->setScale(readVector);
-	this->theWorld[0]->setShader(shaders[readInt]);
+	this->theWorld[0]->setPosition(ReadVector3(file));
+	this->theWorld[0]->setRotation(ReadVector3(file));	
+	this->theWorld[0]->setScale(ReadVector3(file));
+	this->theWorld[0]->setShader(shaders[ReadInt(file)]);
 
-
-<<<<<<< HEAD
-	//second is the skybox
-=======
-	//First to load is always terrain
->>>>>>> 30a37571a9b620256b0540bf684145da5ea7ab26
+//______________________________________________//
+//------------------- Skybox -----------------//
+//____________________________________________//
 	file>>readString;
 	this->entryInstance->GetCoreInstance()->Geometry_Load(readString.c_str(), &this->skyBox);
-	file>>readVector.x;
-	file>>readVector.y;
-	file>>readVector.z;
-	this->skyBox[0]->setPosition(readVector);
-	file>>readVector.x;
-	file>>readVector.y;
-	file>>readVector.z;
-	this->skyBox[0]->setRotation(readVector);
-	file>>readInt;		
+	this->skyBox[0]->setShader(shaders[ReadInt(file)]);
 
-<<<<<<< HEAD
-	readVector = D3DXVECTOR3(20,20,20);
-	this->skyBox[0]->setScale(readVector);
-=======
->>>>>>> 30a37571a9b620256b0540bf684145da5ea7ab26
-	this->skyBox[0]->setShader(shaders[readInt]);
+//______________________________________________//
+//------------------- Water ------------------//
+//____________________________________________//
+	file>>readString;
+	ReadVector3(file);
+	ReadVector3(file);
+	ReadVector3(file);
+	ReadInt(file);
 
-
-	//Read rest of objects
-<<<<<<< HEAD
-	for(int i = 0; i < nrOfStuff-2; i++)
-=======
-	for(int i = 0; i < nrOfStuff-2; i++)
->>>>>>> 30a37571a9b620256b0540bf684145da5ea7ab26
+//_______________________________________________________//
+//------------------- Default objects -----------------//
+//_____________________________________________________//
+	for(int i = 0; i < nrOfStuff-3; i++)
 	{
-		file>>readString;
-		this->entryInstance->GetCoreInstance()->Geometry_Load(readString.c_str(), &this->levelEntities);
-		file>>readVector.x;
-		file>>readVector.y;
-		file>>readVector.z;
-		this->levelEntities[i]->setPosition(readVector);
-		file>>readVector.x;
-		file>>readVector.y;
-		file>>readVector.z;
-		this->levelEntities[i]->setRotation(readVector);
-		file>>readInt;
-		readVector = D3DXVECTOR3(1,1,1);
-		this->levelEntities[i]->setScale(readVector);
-		this->levelEntities[i]->setShader(shaders[readInt]);
+		file >> readString;
+		if(this->entryInstance->GetCoreInstance()->Geometry_Load(readString.c_str(), &this->levelEntities))
+		{
+			int k = (int)this->levelEntities.size() - 1;
+			this->levelEntities[k]->setPosition(ReadVector3(file));
+			this->levelEntities[k]->setRotation(ReadVector3(file));
+			this->levelEntities[k]->setScale(ReadVector3(file));
+			this->levelEntities[k]->setShader(shaders[ReadInt(file)]);
+		}
+		else
+		{
+			ReadVector3(file);
+			ReadVector3(file);
+			ReadVector3(file);
+			ReadInt(file);
+		}
 	}
 
-	file>>nrOfStuff;
+	nrOfStuff = ReadInt(file);
 
-	//Pick-ups
+//______________________________________________//
+//------------------- Pickups ----------------//
+//____________________________________________//
 	for(int i = 0; i < nrOfStuff; i++)
 	{
 		file>>readString;
-		this->entryInstance->GetCoreInstance()->Geometry_Load(readString.c_str(), &this->levelPickups);
-		file>>readVector.x;
-		file>>readVector.y;
-		file>>readVector.z;
-		this->levelPickups[i]->setPosition(readVector);
-		file>>readVector.x;
-		file>>readVector.y;
-		file>>readVector.z;
-		this->levelPickups[i]->setRotation(readVector);
-		file>>readInt;
-		readVector = D3DXVECTOR3(3,3,3);
-		this->levelPickups[i]->setScale(readVector);
-		this->levelPickups[i]->setShader(shaders[readInt]);
+		if(this->entryInstance->GetCoreInstance()->Geometry_Load(readString.c_str(), &this->levelPickups))
+		{
+			int k = (int)this->levelPickups.size() - 1;
+			this->levelPickups[k]->setPosition(ReadVector3(file));
+			this->levelPickups[k]->setRotation(ReadVector3(file));
+			this->levelPickups[k]->setScale(ReadVector3(file));
+			this->levelPickups[k]->setShader(shaders[ReadInt(file)]);
+		}
+		else
+		{
+			ReadVector3(file);
+			ReadVector3(file);
+			ReadVector3(file);
+			ReadInt(file);
+		}
 	}
 
-	char type; 
-	file>>readString;
-	file>>nrOfStuff;
+	nrOfStuff = ReadInt(file);
+
+//______________________________________________//
+//------------------- Energy -----------------//
+//____________________________________________//
+	for(int i = 0; i < nrOfStuff; i++)
+	{
+		file>>readString;
+		if(this->entryInstance->GetCoreInstance()->Geometry_Load(readString.c_str(), &this->levelPickups))
+		{
+			//int k = (int)this->levelPickups.size() - 1;
+			//this->energyOrb[k]->setPosition(ReadVector3(file));
+			//this->energyOrb[k]->setRotation(ReadVector3(file));
+			//this->energyOrb[k]->setScale(ReadVector3(file));
+			//this->energyOrb[k]->setShader(shaders[ReadInt(file)]);
+			ReadVector3(file);
+			ReadVector3(file);
+			ReadVector3(file);
+			ReadInt(file);
+		}
+		else
+		{
+			ReadVector3(file);
+			ReadVector3(file);
+			ReadVector3(file);
+			ReadInt(file);
+		}
+	}
+
+
+//______________________________________________//
+//------------------- Lights -----------------//
+//____________________________________________//
+	nrOfStuff = ReadInt(file);
 
 	DirectionalLightProxy dirLightProxy;
 	D3DXVECTOR3 pos; 
-	D3DXVECTOR3 rot;
+	D3DXVECTOR3 rot = vec3(0.0f, 0.0f, 0.0f);
 	bool hasShadow;
 	for(int i= 0 ; i<nrOfStuff; i++)
 	{
-
-		
-		file>>readVector4.x;
-		file>>readVector4.y;
-		file>>readVector4.z;
-		file>>readVector4.w; 
-		dirLightProxy.ambient = readVector4;
-		file>>readVector4.x;
-		file>>readVector4.y;
-		file>>readVector4.z;
-		file>>readVector4.w; 
-		dirLightProxy.diffuse = readVector4;
-		file>>readVector4.x;
-		file>>readVector4.y;
-		file>>readVector4.z;
-		file>>readVector4.w; 
-		dirLightProxy.specular = readVector4;
-
-		file>>readVector.x;
-		file>>readVector.y;
-		file>>readVector.z;
-		dirLightProxy.direction = D3DXVECTOR4(readVector, 0);
+		DirectionLight* light = new DirectionLight(Type::LIGHT);
+		dirLightProxy.ambient = ReadVector4(file);
+		dirLightProxy.diffuse = ReadVector4(file);
+		dirLightProxy.specular = ReadVector4(file);
+		dirLightProxy.direction = D3DXVECTOR4(ReadVector3(file), 0);
 	
-		file>>readVector.x;
-		file>>readVector.y;
-		file>>readVector.z;
-		pos = readVector;
-
-<<<<<<< HEAD
-=======
-	char type; 
-	file>>readString;
-	file>>nrOfStuff;
-
-	DirectionalLightProxy dirLightProxy;
-	D3DXVECTOR3 pos; 
-	D3DXVECTOR3 rot;
-	bool hasShadow;
-	for(int i= 0 ; i<nrOfStuff; i++)
-	{
-
-		
-		file>>readVector4.x;
-		file>>readVector4.y;
-		file>>readVector4.z;
-		file>>readVector4.w; 
-		dirLightProxy.ambient = readVector4;
-		file>>readVector4.x;
-		file>>readVector4.y;
-		file>>readVector4.z;
-		file>>readVector4.w; 
-		dirLightProxy.diffuse = readVector4;
-		file>>readVector4.x;
-		file>>readVector4.y;
-		file>>readVector4.z;
-		file>>readVector4.w; 
-		dirLightProxy.specular = readVector4;
-
-		file>>readVector.x;
-		file>>readVector.y;
-		file>>readVector.z;
-		dirLightProxy.direction = D3DXVECTOR4(readVector, 0);
-	
-		file>>readVector.x;
-		file>>readVector.y;
-		file>>readVector.z;
-		pos = readVector;
-
->>>>>>> 30a37571a9b620256b0540bf684145da5ea7ab26
-		file>>readVector.x;
-		file>>readVector.y;
-		file>>readVector.z;
-		rot = readVector;
-
-
+		pos = ReadVector3(file);
 		file>>hasShadow;
 		file>>readInt;		
-
-		DirectionLight* light = new DirectionLight(Type::LIGHT);
 		light->Initialize(dirLightProxy, shaders[FlyShader_DirLight], hasShadow, pos);
 		
 		dirLights.push_back(light);
@@ -671,7 +559,7 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 			lightCam.SetRotation(rot.x, rot.y, rot.z);
 			lightCam.Render();
 			BaseBuffer* dirLightViewProj = new BaseBuffer();
-			LightViewProj lightViewProj; 
+			LightViewProj lightViewProj;
 			lightViewProj.lView = lightCam.GetViewMatrix();
 			lightViewProj.lProj = lightCam.GetProjectionMatrix();
 
@@ -691,41 +579,30 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 			shadowViews.push_back(dirLightViewProj);
 		}
 	}
-<<<<<<< HEAD
 
-=======
 
->>>>>>> 30a37571a9b620256b0540bf684145da5ea7ab26
+//______________________________________________//
+//------------------- Player -----------------//
+//____________________________________________//
+	this->mainCamera.SetPosition(ReadVector3(file));
+	this->mainCamera.SetRotation(ReadVector3(file));
+	if(this->entryInstance->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\character.fgm", this->player.GetModel()))
+	{
+		this->player.SetScale(ReadVector3(file));
+		this->player.GetModel()->at(0)->setShader(shaders[FlyShader_gBufferDefault]);
+		this->player.SetPosition(this->mainCamera.GetPosition());
+	}
 
-	//Read player position
-	vec3 player;
-	
-	file>>player.x;
-	file>>player.y;
-	file>>player.z;
-	this->mainCamera.SetPosition(player);
-	file>>player.x;
-	file>>player.y;
-	file>>player.z;
-	this->mainCamera.SetRotation(player.x, player.y, player.z);
-	
-
-	this->mainCamera.SetProjectionMatrix((float)D3DX_PI*0.2f, 1200.0f/600.0f, 8.0f, 400.0f);
-	this->entryInstance->GetCoreInstance()->Gfx_SetCamera(&this->mainCamera);
-	
 	file.close();
+/*________________________________END OF FILE_______________________________________*/
 
-<<<<<<< HEAD
-	this->entryInstance->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\zcharacter_anim.fgm", this->player.GetModel(), FlyGeometry_AnimatedMesh);
-	readVector = D3DXVECTOR3(1,1,1);
-	this->player.GetModel()->at(0)->setScale(readVector);
-=======
-	this->entryInstance->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\character.fgm", this->player.GetModel());
+	
 
->>>>>>> 30a37571a9b620256b0540bf684145da5ea7ab26
-	this->player.GetModel()->at(0)->setShader(shaders[FlyShader_gBufferDefault]);
-
-	this->player.SetPosition(this->mainCamera.GetPosition());
+	int w = 0;
+	int h = 0;
+	this->entryInstance->GetCoreInstance()->Core_Dimensions(w, h);
+	this->mainCamera.SetProjectionMatrix((float)D3DX_PI*0.2f, (float)w/h, 8.0f, 400.0f);
+	this->entryInstance->GetCoreInstance()->Gfx_SetCamera(&this->mainCamera);
 
 	BoundingSphere* sphere1 = new BoundingSphere;
 	BoundingSphere* sphere2 = new BoundingSphere;
@@ -751,29 +628,46 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 
 	//Game Menu
 	this->entryInstance->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\in_game_menu.fgm", &this->gameMenu);
-<<<<<<< HEAD
 
 	this->gameMenu[0]->setShader(shaders[FlyShader_gBufferDefault]);
 	this->gameMenu[0]->setScale(vec3(1,1,1));
-=======
-
-	this->gameMenu[0]->setShader(shaders[FlyShader_gBufferDefault]);
-
->>>>>>> 30a37571a9b620256b0540bf684145da5ea7ab26
 	this->gameMenu[0]->setPosition(vec3(0.0f, 0.0f, 0.0f));
 
 	//Cursor
 	this->entryInstance->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\mouse_cursor.fgm", &this->cursor);
-<<<<<<< HEAD
-
 	this->cursor[0]->setShader(shaders[FlyShader_gBufferDefault]);
 	this->cursor[0]->setScale(vec3(1,1,1));
-=======
-
-	this->cursor[0]->setShader(shaders[FlyShader_gBufferDefault]);
->>>>>>> 30a37571a9b620256b0540bf684145da5ea7ab26
 	this->cursor[0]->setPosition(vec3(0.0f, 0.0f, 0.0f));
+	
 	return true;
+}
+
+vec4 FlyState_Level::ReadVector4(wifstream& in)
+{
+	vec4 ret = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	in >> ret.x;
+	in >> ret.y;
+	in >> ret.z;
+	in >> ret.w;
+
+	return ret;
+}
+vec3 FlyState_Level::ReadVector3(wifstream& in)
+{
+	vec3 ret = vec3(0.0f, 0.0f, 0.0f);
+
+	in >> ret.x;
+	in >> ret.y;
+	in >> ret.z;
+
+	return ret;
+}
+int FlyState_Level::ReadInt(wifstream& in)
+{
+	int i = 0;
+	in >> i;
+	return i;
 }
 
 

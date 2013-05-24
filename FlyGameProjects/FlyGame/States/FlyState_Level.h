@@ -36,6 +36,11 @@ class FlyState_Level		:public IFlySystemState
 
 		bool ReadLevel(const wchar_t* fileName);
 
+		//void ReadEntity(Entity* entity, wifstream& in);
+		vec4 ReadVector4(wifstream& in);
+		vec3 ReadVector3(wifstream& in);
+		int ReadInt(wifstream& in);
+
 		vec3 SlideCollision(vec3 oldPosition, vec3 velocity, int iterations, vec3 safeLocation);
 
 

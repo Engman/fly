@@ -29,21 +29,11 @@ class Entity abstract
 	protected:
 
 		std::wstring	name;
-<<<<<<< HEAD
 		Matrix			world;
 
 		vec3			translation;
 		vec3			rotation;
 		vec3			scale;
-=======
-
-		Matrix		world;
-		Matrix		transformation;
-		vec3		rotation;
-		vec3		scale;
-		vec3		translation;
-
->>>>>>> 30a37571a9b620256b0540bf684145da5ea7ab26
 
 		ObjectMaterial	*material;
 		IShader			*shader;
@@ -57,12 +47,6 @@ class Entity abstract
 		Entity									(const Entity& origObj)
 		{
 			this->world				= origObj.world;
-<<<<<<< HEAD
-=======
-			this->transformation	= origObj.transformation;
-			this->rotation			= origObj.rotation;
-			this->scale				= origObj.scale;
->>>>>>> 30a37571a9b620256b0540bf684145da5ea7ab26
 			this->translation		= origObj.translation;
 			this->rotation			= origObj.rotation;
 			this->scale				= origObj.scale;
@@ -124,25 +108,7 @@ class Entity abstract
 		{
 			return this->rotation;
 		}
-<<<<<<< HEAD
-		vec3			getScale				()	const
-=======
-
-		vec3 getScale			() const
-		{
-			return this->scale;
-		}
-		vec3 getFront			()	const  
-
-		{
-			return vec3(this->transformation.m[2]);
-		}
-		vec3			getRight				()	const  
-		{
-			return vec3(this->transformation.m[0]);
-		}
-		vec3			getUp					()	const  
->>>>>>> 30a37571a9b620256b0540bf684145da5ea7ab26
+		vec3			getScale			() const
 		{
 			return this->scale;
 		}
@@ -175,19 +141,10 @@ class Entity abstract
 		{
 			this->rotation = _rotation;
 		}
-<<<<<<< HEAD
 		void			setScale				(vec3 _scale)
-=======
-
-		void setScale			(vec3 _scale)
 		{
 			this->scale = _scale;
 		}	
-		void setFront			(vec3 _front)
->>>>>>> 30a37571a9b620256b0540bf684145da5ea7ab26
-		{
-			this->scale = _scale;
-		}
 		void			setName					(std::wstring _name)
 		{
 			this->name = _name;

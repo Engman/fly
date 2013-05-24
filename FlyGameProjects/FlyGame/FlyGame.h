@@ -7,6 +7,8 @@
 #include <Windows.h>
 
 
+
+
 class FlyEngine;
 
 enum FlyGameSystemState
@@ -40,10 +42,6 @@ class FlyGame
 		void Run();
 		void Update();
 		void Render();
-
-
-		static FlyGame* self();
-		static void Destroy();
 };
 
 #endif

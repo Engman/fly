@@ -87,7 +87,8 @@ float4 FPixelShader(PSIn input) :  SV_Target
 	
 	shadow = (ShadowSRV.Sample(SampleTypeClamp, input.TextCoord).r + 0.001 < depth) ? 0.0f : 1.0f;
 	
-	finalColor = saturate(color*0.5 + lighting*0.5) *(shadow+0.1);
+	//finalColor = saturate(color*0.5 + lighting*0.5) *(shadow+0.1);
+	finalColor = color;
 	//finalColor = saturate( finalColor + glowColor );
 	
 	

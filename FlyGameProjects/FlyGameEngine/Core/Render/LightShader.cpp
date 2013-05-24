@@ -64,7 +64,7 @@ void LightShader::draw(PER_FRAME_DATA& frameData)
 				vertexC = this->drawData[i].buffers[k]->getNrOfElements();
 
 		}
-
+		
 		this->shader->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		if(indexC)
@@ -78,8 +78,4 @@ void LightShader::draw(PER_FRAME_DATA& frameData)
 	}
 	this->clearData();
 	
-}
-int LightShader::getType() const
-{
-	return this->type;
 }

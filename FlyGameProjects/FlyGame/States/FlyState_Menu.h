@@ -2,12 +2,26 @@
 #define FLY_MENU_H
 
 #include "IFlySystemState.h"
+#include "..\..\FlyGameEngine\Core\Mesh\FlyMesh.h"
+
 
 
 class FlyState_Menu		:public IFlySystemState
 {
 	private:
-		
+		//Menu components
+		vector<Entity*> ui;
+		//Vector with pointers to check collision
+		vector<Entity*> uiBtn;
+
+		//Pointer to current submenu
+		Entity *subMenu;
+		Entity *highlightBtn;
+
+		void update();
+		void render();
+		void input();
+		void PickMenu();
 
 	public:
 		FlyState_Menu();

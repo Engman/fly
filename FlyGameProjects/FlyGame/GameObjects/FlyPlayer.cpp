@@ -36,6 +36,11 @@ void FlyPlayer::SetRotation(vec3 rotation)
 	this->playerModel[0]->setRotation(rotation);
 }
 
+void FlyPlayer::SetScale(vec3 scale)
+{
+	this->playerModel[0]->setScale(scale);
+}
+
 void FlyPlayer::SetVelocity(vec3 velocity)
 {
 	this->velocity = velocity;

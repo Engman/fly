@@ -22,6 +22,10 @@ class IShader
 			BaseBuffer* lights;
 			//buffer for view, projection and camPos in light PS
 			BaseBuffer* camForLight;
+
+			PER_FRAME_DATA()
+				:dc(0), lights(0), camForLight(0)
+			{}
 		};
 
 		/** Used to set data for a draw call */

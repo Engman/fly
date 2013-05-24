@@ -248,7 +248,6 @@ void FLYCALL FlyEngine_Core::Gfx_EndDeferredScene()
 	
 	this->gbufferShader->draw(gBufferDrawData);
 
-
 	D3DShell::self()->setRenderTarget();
 	D3DShell::self()->beginScene();
 
@@ -263,37 +262,22 @@ void FLYCALL FlyEngine_Core::Gfx_EndDeferredScene()
 
 void FLYCALL FlyEngine_Core::Gfx_EndDeferredSceneOrtho()
 {
-	IShader::PER_FRAME_DATA gBufferDrawData;
-	gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
-	gBufferDrawData.view = this->activeCamera->GetViewMatrix();
-	gBufferDrawData.projection = this->activeCamera->GetOrthogonalMatrix();
 
-	
-	D3DXMATRIX nullMatrix; 
-	CameraView viewBuffer;
-	viewBuffer.cameraPos = D3DXVECTOR3(0,0,0);
-	viewBuffer.mInvView = nullMatrix;
-	viewBuffer.mInvViewProj = nullMatrix;
-	viewBuffer.padd = 0;
+	 float blend[4] = {1.0f,1.0f,1.0f,1.0f};
 
-	BaseBuffer::BUFFER_INIT_DESC dirLightDesc;
-	dirLightDesc.dc = D3DShell::self()->getDeviceContext();
-	dirLightDesc.device = D3DShell::self()->getDevice();
-	dirLightDesc.elementSize = sizeof(CameraView);
-	dirLightDesc.nrOfElements = 1;
-	dirLightDesc.data = &viewBuffer;
-	dirLightDesc.type = BUFFER_FLAG::TYPE_CONSTANT_PS_BUFFER;
-	dirLightDesc.usage = BUFFER_FLAG::USAGE_DYNAMIC_CPU_WRITE_DISCARD;
+	 D3DShell::self()->setBlendModeState(FLAGS::BLEND_MODE_AlphaBlend, blend,  0xffffffff);
+	 D3DShell::self()->setDepthStencilState(FLAGS::DEPTH_STENCIL_DisabledDepth,1); 
 
-	BaseBuffer* finalBuffer; 
-	finalBuffer = new BaseBuffer();
-	if(FAILED(finalBuffer->Initialize(dirLightDesc)))
-	{
-		//return false;
-	}
-	gBufferDrawData.camForLight = finalBuffer;
-	this->gbufferShader->draw(gBufferDrawData);
+	 IShader::PER_FRAME_DATA gBufferDrawData;
+	 gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
+	 gBufferDrawData.view = this->activeCamera->GetViewMatrix();
+	 gBufferDrawData.projection = this->activeCamera->GetOrthogonalMatrix();
+ 
+	 this->gbufferShader->draw(gBufferDrawData);
 
+	 //reset the blend state to normal
+	 D3DShell::self()->getDeviceContext()->OMSetBlendState(0,0,0xffffffff);
+	 D3DShell::self()->setDepthStencilState(FLAGS::DEPTH_STENCIL_EnabledDepth,1);
 
 	D3DShell::self()->setRenderTarget();
 	D3DShell::self()->beginScene();
@@ -384,11 +368,6 @@ Camera* FLYCALL FlyEngine_Core::Gfx_GetCamera()
 Camera*	FLYCALL	FlyEngine_Core::Gfx_GetDefaultCamera()
 {
 	return this->defaultCam;
-}
-
-void FLYCALL FlyEngine_Core::PlaySound(const wchar_t* path)
-{
-	AudioClass::self()->playSound1();
 }
 
 

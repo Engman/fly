@@ -24,6 +24,7 @@ Input::Input()
 	m_pMouse = 0;
 	this->m_screenHeight = 0;
 	this->m_screenWidth = 0;
+	this->hWnd = 0;
 }
 
 Input::Input(const Input& input)
@@ -38,6 +39,17 @@ Input::~Input()
 
 HRESULT Input::Initialize(HINSTANCE hInstance, HWND hWnd, int screenWidth, int screenHeight)
 {
+	if(this->hWnd)
+		return S_OK;
+
+	if(!hWnd)
+		return E_FAIL;
+
+	if(!IsWindowVisible(hWnd))
+		Sleep(10);
+	if(!IsWindowEnabled(hWnd))
+		EnableWindow(hWnd, TRUE);
+
 	this->m_screenWidth = screenWidth;
 	this->m_screenHeight = screenHeight;
 
@@ -84,7 +96,7 @@ HRESULT Input::Initialize(HINSTANCE hInstance, HWND hWnd, int screenWidth, int s
 		return E_FAIL;
 	}
 
-	if(FAILED(this->m_pMouse->SetCooperativeLevel(hWnd, DISCL_BACKGROUND | DISCL_EXCLUSIVE)))
+	if(FAILED(this->m_pMouse->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE)))
 	{
 		return E_FAIL;
 	}
@@ -132,8 +144,8 @@ HRESULT Input::Frame()
 	{
 		return E_FAIL;
 	}
-	//
-	//ProcessInput();
+	
+	ProcessInput();
 
 	return S_OK;
 }

@@ -6,17 +6,52 @@
 
 #include "..\FlyGameEngine\FlyEngine\FlyEngine.h"
 #include "States\IFlySystemState.h"
-//#include "States\FlyState_Level.h"
+#include "States\FlyState_Level.h"
 #include "States\FlyState_Menu.h"
 #include "..\FlyGameEngine\Util\SmartPtrs.h"
 
 
-static FlyGame* FlyGameInstance = NULL;
+#if defined(_DEBUG) || defined(DEBUG)
+#include <fcntl.h>
+#include <io.h>
+#include <iostream>
+void SetStdOutToNewConsole()
+{
+    // allocate a console for this app
+    AllocConsole();
+
+    // redirect unbuffered STDOUT to the console
+    HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+    int fileDescriptor = _open_osfhandle((intptr_t)consoleHandle, _O_TEXT);
+    FILE *fp = _fdopen( fileDescriptor, "w" );
+    *stdout = *fp;
+    setvbuf( stdout, NULL, _IONBF, 0 );
+ 
+    // give the console window a nicer title
+ wchar_t str[256];
+ 
+ wsprintf(str, L"Debug Output");
+
+    SetConsoleTitle(str);
+
+    // give the console window a bigger buffer size
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    if ( GetConsoleScreenBufferInfo(consoleHandle, &csbi) )
+    {
+        COORD bufferSize;
+        bufferSize.X = csbi.dwSize.X;
+        bufferSize.Y = 50;
+        SetConsoleScreenBufferSize(consoleHandle, bufferSize);
+    }
+}
+#endif
+
+
 
 struct FlyGame::_DATA_
 {
 	SmartPtrStd<IFlySystemState> level;
-	SmartPtrStd<IFlySystemState> menu;
+	SmartPtrStd<IFlySystemState> mainMenu;
 	FlyEngine* fly;
 	IFlySystemState* state;
 };
@@ -32,14 +67,21 @@ FlyGame::FlyGame()
 }
 FlyGame::~FlyGame()
 {
-	this->_pData->fly->Core_Shutdown();
-	this->_pData->fly = NULL;
-	//this->_pData->level->Release();
+	if(this->_pData->fly)
+		this->_pData->fly->Core_Shutdown();
+	if(this->_pData->level.IsValid())
+		this->_pData->level->Release();
+	if(this->_pData->mainMenu.IsValid())
+		this->_pData->mainMenu->Release();
 	delete this->_pData;
 }
 
 bool FlyGame::Initiate(FlyGameSystemState state)		  
 {
+#if defined(_DEBUG) || defined(DEBUG)
+	SetStdOutToNewConsole();
+	std::cout << "Starting debug session!";
+#endif
 	//We should load an .ini file to determinate initialization values
 
 	FLY_ENGINE_INIT_DESC cd;
@@ -50,13 +92,13 @@ bool FlyGame::Initiate(FlyGameSystemState state)
 	switch (state)
 	{
 		case Level:
-			//this->_pData->level = new FlyState_Level();
-			//this->_pData->state = this->_pData->level;
+			this->_pData->level = new FlyState_Level();
+			this->_pData->state = this->_pData->level;
 		break;
 
 		case Menu:
-			this->_pData->menu = new FlyState_Menu();
-			this->_pData->state = this->_pData->menu;
+			this->_pData->mainMenu = new FlyState_Menu();
+			this->_pData->state = this->_pData->mainMenu;
 		break;
 	}
 
@@ -64,6 +106,7 @@ bool FlyGame::Initiate(FlyGameSystemState state)
 	this->_pData->fly = FlyEngineCreate();
 	if(!this->_pData->fly->Core_Initialize(cd))
 		return false;
+
 	if(!this->_pData->state->Initiate(this))
 		return false;
 	return true;
@@ -79,41 +122,24 @@ void FlyGame::Run()
 	if(!this->_pData->state)
 		return;
 
+	MSG msg;
 	while (this->_pData->state)
 	{
-		if(!this->_pData->fly->Core_Message())
-		{
-			break;
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{ 
+			if (msg.message == WM_QUIT)
+			{
+				break;
+			}
+			DispatchMessage(&msg);
 		}
-
-		this->_pData->state->Frame();
+		else
+		{
+			this->_pData->state->Frame();
+		}
 	}
 }
-void FlyGame::Update()						  
-{
 
-}
-void FlyGame::Render()						  
-{
-
-}
-
-
-
-FlyGame* FlyGame::self()					  
-{
-	if(!FlyGameInstance)
-		FlyGameInstance = new FlyGame();
-
-	return FlyGameInstance;
-}
-void FlyGame::Destroy()						  
-{
-	FlyGameInstance->_pData->fly->Core_Shutdown();
-	FlyGameInstance->_pData->fly = NULL;
-	delete FlyGameInstance;
-	FlyGameInstance = NULL;
-}
 
 
 FlyEngine* FlyGame::GetCoreInstance()

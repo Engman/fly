@@ -15,6 +15,7 @@ class FlyEngine_Core	:public FlyEngine
 {
 	private:
 		FlyEngine_Core();
+		~FlyEngine_Core();
 
 	private:
 		ForwardUpdateFunc						forwardUpdateFunc;
@@ -43,7 +44,7 @@ class FlyEngine_Core	:public FlyEngine
 		bool									orthographicCamera;
 
 	private:
-		bool		_InitGBufferShader							();
+		bool		_InitGBufferShader						();
 		bool		_InitFinalShader						();
 		bool		_InitDirLightShader						();
 		bool		_InitShadowMapShader					();
@@ -60,21 +61,19 @@ class FlyEngine_Core	:public FlyEngine
 		bool		FLYCALL		Core_Initialize				(FLY_ENGINE_INIT_DESC& initDesc);
 		void		FLYCALL		Core_Shutdown				();
 		bool		FLYCALL		Core_Message				();
+		void		FLYCALL		Core_Dimensions				(int& width, int& height);
+
 
 		void		FLYCALL		Gfx_Update					();
 		void		FLYCALL		Gfx_BeginForwardScene		();
 		void		FLYCALL		Gfx_EndForwardScene			();
 		void		FLYCALL		Gfx_BeginDeferredScene		();
-		//--------------
-		void		FLYCALL Gfx_DrawSkyBox();
-		void		FLYCALL Gfx_DrawGbuffer();
-		void		FLYCALL	Gfx_DrawShadows(vector<BaseBuffer*>* shadowViews);
-		void		FLYCALL Gfx_DrawLighting();
-		void		FLYCALL Gfx_DrawBlur();
-		void		FLYCALL Gfx_DrawFinalPicture();
-		//-----------------
-		void		FLYCALL PlaySound(const wchar_t* path);
-		//------------------
+		void		FLYCALL		Gfx_DrawSkyBox				();
+		void		FLYCALL		Gfx_DrawGbuffer				();
+		void		FLYCALL		Gfx_DrawShadows				(vector<BaseBuffer*>* shadowViews);
+		void		FLYCALL		Gfx_DrawLighting			();
+		void		FLYCALL		Gfx_DrawBlur				();
+		void		FLYCALL		Gfx_DrawFinalPicture		();
 		void		FLYCALL		Gfx_EndDeferredScene		();
 		void		FLYCALL		Gfx_EndDeferredSceneOrtho	();
 		void		FLYCALL		Gfx_Resize					(int width, int height);
@@ -85,13 +84,14 @@ class FlyEngine_Core	:public FlyEngine
 		void 		FLYCALL		Gfx_GetShader				(vector<IShader*>& shaders);
 		
 	
+		void		FLYCALL		Audio_PlaySound				(const wchar_t* path);
+
 
 		bool		FLYCALL		Geometry_Create				(FlyEngineGeometry type, Entity* object);
 		bool		FLYCALL		Geometry_Load				(const wchar_t* loadData, vector<Entity*>* objects);
 		bool		FLYCALL		Geometry_Load				(vector<const wchar_t*> loadData, vector<Entity*>* objects);
 		bool		FLYCALL		Geometry_Load				(const wchar_t* path, vector<Entity*>* object, FlyEngineGeometry special);
-		Entity*		FLYCALL		Geometry_Pick				(const vector<Entity*>& objectToTest, int posX, int posY);
-
+		Entity*		FLYCALL		Geometry_Pick				(const vector<Entity*>& obj, bool orto);
 
 
 		bool		FLYCALL		Input_Initialize			();

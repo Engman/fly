@@ -2,6 +2,7 @@
 
 
 #include "..\Core\D3DShell.h"
+#include "..\Core\WindowShell.h"
 #include "..\Core\Mesh\Terrain.h"
 #include "..\Util\Importer\ObjectImporter.h"
 #include "..\Util\Importer\ResourceImporter.h"
@@ -149,59 +150,93 @@ bool FLYCALL FlyEngine_Core::Geometry_Load(const wchar_t* path, vector<Entity*>*
 	return true;
 }
 
-Entity* FLYCALL FlyEngine_Core::Geometry_Pick(const vector<Entity*>& obj, int posX, int posY)
+Entity* FLYCALL FlyEngine_Core::Geometry_Pick(const vector<Entity*>& obj, bool orto)
 {
-	D3DXMATRIX inverseWorldMatrix;
-	D3DXMATRIX InvView = this->activeCamera->GetViewMatrix();
-	D3DXVECTOR3 origin = this->activeCamera->GetPosition();
-	D3DXVECTOR3 direction;
-	D3DXVECTOR3 rayOrigin;
-	D3DXVECTOR3 rayDirection;
-	float length = 1000000.0f;
-	Entity* picked = NULL;
-	
+	POINT p;
+	GetCursorPos(&p);
+	ScreenToClient(WindowShell::self()->getHWND(), &p);
 
-	D3DXMatrixInverse(&InvView, 0, &InvView);
+	float farZ = this->activeCamera->GetFarZ();
+	Entity* retVal = 0;
+	float pointX, pointY;
+	D3DXMATRIX inverseViewMatrix, worldMatrix, translateMatrix, inverseWorldMatrix;
+	D3DXVECTOR3 direction, origin, rayOrigin, rayDirection;
 
-	// Move the mouse coordinates into the -1 to +1 range.
-	float pointX = ((2.0f * (float)posX) / D3DShell::self()->getWidth()) - 1.0f;
-	float pointY = (((2.0f * (float)posY) / D3DShell::self()->getHeight()) - 1.0f) * -1.0f;
+
+	// Move the mouse cursor coordinates into the -1 to +1 range.
+	pointX = ((2.0f * (float)p.x) / (float)D3DShell::self()->getWidth()) - 1.0f;
+	pointY = (((2.0f * (float)p.x) / (float)D3DShell::self()->getHeight()) - 1.0f) * -1.0f;
 		
 	// Adjust the points using the projection matrix to account for the aspect ratio of the viewport.
-	pointX = pointX / this->activeCamera->GetProjectionMatrix()._11;
-	pointY = pointY / this->activeCamera->GetProjectionMatrix()._22;
+	
+	if(orto)
+	{
+		pointX = pointX / this->activeCamera->GetOrthogonalMatrix()._11;
+		pointY = pointY / this->activeCamera->GetOrthogonalMatrix()._22;
+	}
+	else
+	{
+		pointX = pointX / this->activeCamera->GetProjectionMatrix()._11;
+		pointY = pointY / this->activeCamera->GetProjectionMatrix()._22;	
+	}
+
+
+	// Get the inverse of the view matrix.
+	D3DXMatrixInverse(&inverseViewMatrix, NULL, &this->activeCamera->GetViewMatrix());
 
 	// Calculate the direction of the picking ray in view space.
-	direction.x = (pointX * InvView._11) + (pointY * InvView._21) + InvView._31;
-	direction.y = (pointX * InvView._12) + (pointY * InvView._22) + InvView._32;
-	direction.z = (pointX * InvView._13) + (pointY * InvView._23) + InvView._33;
+	direction.x = (pointX * inverseViewMatrix._11) + (pointY * inverseViewMatrix._21) + inverseViewMatrix._31;
+	direction.y = (pointX * inverseViewMatrix._12) + (pointY * inverseViewMatrix._22) + inverseViewMatrix._32;
+	direction.z = (pointX * inverseViewMatrix._13) + (pointY * inverseViewMatrix._23) + inverseViewMatrix._33;
 
-	for (int i = 0; i < (int)obj.size(); i++)
+	// Get the origin of the picking ray which is the position of the camera.
+	origin = this->activeCamera->GetPosition();
+
+
+	for(int i = 0; i < (int)obj.size(); i++)
 	{
-		//// Get the inverse of the translated world matrix.
-		D3DXMatrixInverse(&inverseWorldMatrix, NULL, &obj[i]->getWorld());
-		//
-		//// Transform the ray origin and the ray direction from view space to world space.
+		// Get the world matrix and translate to the location of the sphere.
+		D3DXMatrixTranslation(&translateMatrix, -5.0f, 1.0f, 5.0f);
+		D3DXMatrixMultiply(&worldMatrix, &obj[i]->getWorld(), &translateMatrix); 
+
+		// Now get the inverse of the translated world matrix.
+		D3DXMatrixInverse(&inverseWorldMatrix, NULL, &worldMatrix);
+
+		// Now transform the ray origin and the ray direction from view space to world space.
 		D3DXVec3TransformCoord(&rayOrigin, &origin, &inverseWorldMatrix);
 		D3DXVec3TransformNormal(&rayDirection, &direction, &inverseWorldMatrix);
 
-
 		// Normalize the ray direction.
 		D3DXVec3Normalize(&rayDirection, &rayDirection);
-		
-		float len = RayVSSphereLength(rayDirection, rayOrigin, obj[i]->getBoundingSphere()->center, obj[i]->getBoundingSphere()->radius);
+
 		// Now perform the ray-sphere intersection test.
-		if(len != -1 && len <= length)
+		float length = RayVSSphereLength(rayOrigin, rayDirection, obj[i]->getBoundingSphere()->center, obj[i]->getBoundingSphere()->radius);
+	
+		if(length >= 0 && length < farZ)
 		{
-			length = len;
-			picked = obj[i];
+			FlyMesh* temp = (FlyMesh*)obj[i];
+			vector<vec3> *tris = temp->GetTriangles();
+			if(tris)
+			{
+				for (int i = 0; i < (int)tris->size(); i+=3)
+				{
+					vec3 tri[3] = 
+					{
+						(*tris)[i],
+						(*tris)[i + 1],
+						(*tris)[i + 2]
+					};
+					if(RayVSTriangle(rayOrigin, rayDirection,tri))
+					{
+						retVal = obj[i];
+					}
+				}
+			}
 		}
-		
 	}
 
-	return picked;
+	return retVal;
 }
-
 
 
 

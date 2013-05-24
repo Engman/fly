@@ -5,7 +5,6 @@ FlyMesh::FlyMesh()
 	:Entity(Type::OBJECT)
 {
 	D3DXMatrixIdentity(&this->world);
-	D3DXMatrixIdentity(&this->transformation);
 	this->rotation	= vec3(0.0f, 0.0f, 0.0f);
 	D3DXMatrixIdentity(&this->world);
 }
@@ -16,7 +15,21 @@ FlyMesh::~FlyMesh()
 
 void FlyMesh::Update()
 {
-	this->boundingSphere->center = this->getPosition();
+	if(this->boundingSphere.IsValid())
+		this->boundingSphere->center = this->translation;
+
+	D3DXMATRIX rotation;
+	D3DXMATRIX scaling;
+	D3DXMATRIX translation;
+	D3DXMatrixIdentity(&this->world);
+
+	D3DXMatrixScaling(&scaling, this->scale.x, this->scale.y, this->scale.z);
+	D3DXMatrixRotationYawPitchRoll(&rotation, this->rotation.y, this->rotation.x, this->rotation.z);
+	D3DXMatrixTranslation(&translation, this->translation.x, this->translation.y, this->translation.z);
+
+	this->world *= scaling;
+	this->world *= rotation;
+	this->world *= translation;
 }
 void FlyMesh::Render(ViewFrustum& frustum)
 {
@@ -24,15 +37,6 @@ void FlyMesh::Render(ViewFrustum& frustum)
 	{
 		if(this->shader && FrustumVSSphere(frustum, *this->boundingSphere))
 		{
-			D3DXMATRIX rotation, translation;
-			D3DXMatrixRotationYawPitchRoll(&rotation, this->rotation.y, this->rotation.x, this->rotation.z);
-			D3DXMatrixTranslation(&translation, this->translation.x, this->translation.y, this->translation.z);
-
-			D3DXMatrixIdentity(&this->world);
-
-			this->world *= rotation;
-			this->world *= translation;
-
 			IShader::DRAW_DATA data;
 		
 			for(int i = 0; i<(int)this->buffers.size(); i++)
@@ -46,15 +50,6 @@ void FlyMesh::Render(ViewFrustum& frustum)
 	}
 	else
 	{
-		D3DXMATRIX rotation, translation;
-		D3DXMatrixRotationYawPitchRoll(&rotation, this->rotation.y, this->rotation.x, this->rotation.z);
-		D3DXMatrixTranslation(&translation, this->translation.x, this->translation.y, this->translation.z);
-
-		D3DXMatrixIdentity(&this->world);
-
-		this->world *= rotation;
-		this->world *= translation;
-
 		IShader::DRAW_DATA data;
 		
 		for(int i = 0; i<(int)this->buffers.size(); i++)

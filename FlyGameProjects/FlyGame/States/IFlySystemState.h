@@ -9,9 +9,9 @@ class IFlySystemState
 		FlyGame* entryInstance;
 
 	public:
+		virtual~IFlySystemState() {}
 		virtual bool Initiate(FlyGame*) = 0;
 		virtual void Frame() = 0;
-
 		virtual void Release() = 0;
 };
 
