@@ -42,6 +42,7 @@ void FLYCALL FlyEngine_Core::Gfx_BeginDeferredScene()
 }
 void FLYCALL FlyEngine_Core::Gfx_DrawSkyBox()
 {
+	//draw without depth
 	D3DShell::self()->BeginGBufferRenderTargets(false);
 	IShader::PER_FRAME_DATA gBufferDrawData;
 	gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
@@ -54,7 +55,6 @@ void FLYCALL FlyEngine_Core::Gfx_DrawSkyBox()
 
 void FLYCALL FlyEngine_Core::Gfx_DrawGbuffer()
 {
-	//D3DShell::self()->BeginGBufferRenderTargets(false);
 	D3DShell::self()->BeginGBufferRenderTargets(true);
 
 	IShader::PER_FRAME_DATA gBufferDrawData;
@@ -64,43 +64,41 @@ void FLYCALL FlyEngine_Core::Gfx_DrawGbuffer()
 	
 	this->gbufferShader->draw(gBufferDrawData);
 }
-void FLYCALL FlyEngine_Core::Gfx_DrawShadows(vector<BaseBuffer*> *shadowViews)
+void FLYCALL FlyEngine_Core::Gfx_DrawGbufferOrtho()
 {
-	
-	//get the view, proj from the light 
-	//for nr of shadow maps
-	IShader::PER_FRAME_DATA shadowsDrawData;
-	shadowsDrawData.dc = D3DShell::self()->getDeviceContext();
+	float blend[4] = {1.0f,1.0f,1.0f,1.0f};
 
-	for(int i= 0; i<(int)shadowViews->size(); i++)
+	D3DShell::self()->setBlendModeState(FLAGS::BLEND_MODE_AlphaBlend, blend,  0xffffffff);
+	D3DShell::self()->setDepthStencilState(FLAGS::DEPTH_STENCIL_DisabledDepth,1); 
+
+	IShader::PER_FRAME_DATA gBufferDrawData;
+	gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
+	gBufferDrawData.view = this->activeCamera->GetViewMatrix();
+	gBufferDrawData.projection = this->activeCamera->GetOrthogonalMatrix();
+
+	this->gbufferShader->draw(gBufferDrawData);
+
+	//reset the blend state to normal
+	D3DShell::self()->getDeviceContext()->OMSetBlendState(0,0,0xffffffff);
+	D3DShell::self()->setDepthStencilState(FLAGS::DEPTH_STENCIL_EnabledDepth,1);
+}
+void FLYCALL FlyEngine_Core::Gfx_DrawShadows(Camera theCamera)
+{
+	IShader::PER_FRAME_DATA shadowsDrawData;
+	shadowsDrawData.dc = D3DShell::self()->getDeviceContext(); 
+
+	for(int i= 0; i<1; i++)
 	{
 		D3DShell::self()->BeginShadowRenderTarget(i);
-		BaseBuffer buff= *shadowViews->at(i);
-		LightViewProj* shadow = (LightViewProj*)buff.Map();
-
-		Camera camera;
-		camera.SetProjectionMatrix((float)D3DX_PI*0.2f, D3DShell::self()->getAspectRatio(), 1, 1000);
-		camera.SetPosition(0,50,-100);
-		camera.SetRotation(0,0,0);
-		camera.Render();
-
-		//shadowsDrawData.view = shadow->lView; 
-		//shadowsDrawData.projection = shadow->lProj; 
-
-		shadowsDrawData.view = camera.GetViewMatrix();
-		shadowsDrawData.projection = camera.GetProjectionMatrix();
-
-		//D3DXMatrixTranspose(&shadowsDrawData.view, &shadowsDrawData.view);
-		//D3DXMatrixTranspose(&shadowsDrawData.projection, &shadowsDrawData.projection);
 
 
-		buff.Unmap();
+		shadowsDrawData.view = theCamera.GetViewMatrix(); 
+		shadowsDrawData.projection = theCamera.GetProjectionMatrix(); 
+
+
 		
 		this->shadowMapShader->draw(shadowsDrawData);
 	}
-	
-	
-
 }
 void FLYCALL FlyEngine_Core::Gfx_DrawLighting()
 {
@@ -166,7 +164,8 @@ void FLYCALL FlyEngine_Core::Gfx_DrawBlur()
 
 	this->blurVerticalShader->draw(blurDrawData);
 }
-void FLYCALL FlyEngine_Core::Gfx_DrawFinalPicture()
+
+void FLYCALL FlyEngine_Core::Gfx_DrawFinalPicture(Camera theCamera)
 {
 	D3DShell::self()->setRenderTarget();
 	D3DShell::self()->beginScene();
@@ -175,67 +174,39 @@ void FLYCALL FlyEngine_Core::Gfx_DrawFinalPicture()
 	finalPictureDrawData.dc = D3DShell::self()->getDeviceContext();
 	finalPictureDrawData.view = this->activeCamera->GetViewMatrix();
 	finalPictureDrawData.projection = this->activeCamera->GetProjectionMatrix();
-	
 
-	D3DXMATRIX invViewProj; 
-	invViewProj =  finalPictureDrawData.view *  finalPictureDrawData.projection;
-	float det = D3DXMatrixDeterminant(&invViewProj);
-	D3DXMatrixInverse(&invViewProj, &det, &invViewProj);
+
+	D3DXMATRIX invCameraViewProj; 
+	invCameraViewProj =  finalPictureDrawData.view *  finalPictureDrawData.projection;
+	float det = D3DXMatrixDeterminant(&invCameraViewProj);
+	D3DXMatrixInverse(&invCameraViewProj, &det, &invCameraViewProj);
 	
 	D3DXMATRIX lightViewProj;
-	/*lightViewProj = g_lightHolder->getDirLightView(0)* g_lightHolder->getDirLightProjection(0);
-	g_lightHolder->setCamViewBuffer( lightViewProj, invViewProj,this->activeCamera->GetPosition());
-	finalPictureDrawData.camForLight  = g_lightHolder->getCamViewBuffer();*/
 
-	Camera camera;
-	camera.SetProjectionMatrix((float)D3DX_PI*0.2f, D3DShell::self()->getAspectRatio(), 1, 1000);
-	camera.SetPosition(0,50,-100);
-	camera.SetRotation(0,0,0);
-	camera.Render();
-
-
-	D3DXMATRIX lView = camera.GetViewMatrix();
-	D3DXMATRIX lProj = camera.GetProjectionMatrix();
+	
+	D3DXMATRIX lView = theCamera.GetViewMatrix();
+	D3DXMATRIX lProj = theCamera.GetProjectionMatrix(); 
+	
 
 	D3DXMATRIX lViewProj = lView * lProj;
 	D3DXMatrixTranspose(&lViewProj, &lViewProj);
+	D3DXMatrixTranspose(&invCameraViewProj, &invCameraViewProj);
 
-	D3DXMatrixTranspose(&invViewProj, &invViewProj);
+	CameraView* camView = (CameraView*)cameraBuffer->Map();
+	camView->mInvViewProj = invCameraViewProj;
+	camView->mInvView	  = lViewProj; 
+	camView->cameraPos	= this->activeCamera->GetPosition();
+	camView->padd		=600;
+	cameraBuffer->Unmap();
 
-
-	CameraView viewBuffer;
-	viewBuffer.cameraPos = this->activeCamera->GetPosition();
-	viewBuffer.mInvView = lView;
-	viewBuffer.mInvViewProj = invViewProj;
-	viewBuffer.padd = 600;
-
-	BaseBuffer::BUFFER_INIT_DESC dirLightDesc;
-	dirLightDesc.dc = D3DShell::self()->getDeviceContext();
-	dirLightDesc.device = D3DShell::self()->getDevice();
-	dirLightDesc.elementSize = sizeof(CameraView);
-	dirLightDesc.nrOfElements = 1;
-	dirLightDesc.data = &viewBuffer;
-	dirLightDesc.type = BUFFER_FLAG::TYPE_CONSTANT_PS_BUFFER;
-	dirLightDesc.usage = BUFFER_FLAG::USAGE_DYNAMIC_CPU_WRITE_DISCARD;
-
-	BaseBuffer* finalBuffer; 
-	finalBuffer = new BaseBuffer();
-	if(FAILED(finalBuffer->Initialize(dirLightDesc)))
-	{
-		//return false;
-	}
-
-	finalPictureDrawData.camForLight = finalBuffer;
-
+	finalPictureDrawData.camForLight = cameraBuffer;
 
 	this->fsq->SetShader(this->finalShader);
 	this->fsq->Render();
 	this->finalShader->draw(finalPictureDrawData);
 
-
 	D3DShell::self()->releaseSRV();
 	D3DShell::self()->endScene();
-
 }
 
 
@@ -286,8 +257,9 @@ void FLYCALL FlyEngine_Core::Gfx_EndDeferredSceneOrtho()
 	this->fsq->SetShader(this->finalColorShader);
 	this->fsq->Render();
 
+	gBufferDrawData.camForLight = new BaseBuffer(); //finalBuffer;//
 	this->finalColorShader->draw(gBufferDrawData);
-
+	delete gBufferDrawData.camForLight; 
 
 	D3DShell::self()->releaseSRV();
 	D3DShell::self()->endScene();
@@ -370,7 +342,7 @@ Camera*	FLYCALL	FlyEngine_Core::Gfx_GetDefaultCamera()
 	return this->defaultCam;
 }
 
-
+void FLYCALL FlyEngine_Core::PlaySoundTrack(const wchar_t* path)
 //################################//
 //########### LOCAL DATA #########//
 //####################################################################//
@@ -405,7 +377,6 @@ bool FlyEngine_Core::_InitGBufferShader()
 	gBufferDesc.polygonLayout = VERTEX::VertexPNT_InputElementDesc;
 	gBufferDesc.nrOfElements = 3;
 
-	//this->gbufferShader = new GBufferShader();
 	if(!this->gbufferShader->init(gBufferDesc))	
 		return false;
 
@@ -426,7 +397,6 @@ bool FlyEngine_Core::_InitAnimationShader()
 	gBufferAnimationDesc.polygonLayout = VERTEX::Animation_2Frame_InputElementDesc;
 	gBufferAnimationDesc.nrOfElements = 6;
 
-	//this->gBufferAnimationShader = new GBufferShader();
 	if(!this->gBufferAnimationShader->init(gBufferAnimationDesc))	
 		return false;
 

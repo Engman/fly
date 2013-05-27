@@ -15,10 +15,10 @@ namespace
 				desc.RenderTarget[i].BlendOp				= D3D11_BLEND_OP_ADD;
 				desc.RenderTarget[i].BlendOpAlpha			= D3D11_BLEND_OP_ADD;
 				desc.RenderTarget[i].DestBlend				= D3D11_BLEND_INV_SRC_ALPHA;
-				desc.RenderTarget[i].DestBlendAlpha			= D3D11_BLEND_ONE;
+				desc.RenderTarget[i].DestBlendAlpha			= D3D11_BLEND_ZERO;//ONE;
 				desc.RenderTarget[i].RenderTargetWriteMask	= D3D11_COLOR_WRITE_ENABLE_ALL;
 				desc.RenderTarget[i].SrcBlend				= D3D11_BLEND_SRC_ALPHA;
-				desc.RenderTarget[i].SrcBlendAlpha			= D3D11_BLEND_ONE;
+				desc.RenderTarget[i].SrcBlendAlpha			= D3D11_BLEND_ZERO; //ONE;
 			}
 
 			return desc;

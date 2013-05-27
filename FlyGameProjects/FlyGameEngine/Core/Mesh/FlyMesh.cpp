@@ -51,12 +51,11 @@ void FlyMesh::Render(ViewFrustum& frustum)
 	else
 	{
 		IShader::DRAW_DATA data;
-		
+
 		for(int i = 0; i<(int)this->buffers.size(); i++)
-		{
 			data.buffers.push_back(this->buffers[i]);
-		}
-		
+
+
 		data.worldMatrix = &this->world;
 		data.material = this->material;
 		this->shader->addDrawData(data);

@@ -79,10 +79,7 @@ HRESULT Input::Initialize(HINSTANCE hInstance, HWND hWnd, int screenWidth, int s
 		return E_FAIL;
 	}
 
-	if(FAILED(this->m_pKeyboard->Acquire()))
-	{
-		return E_FAIL;
-	}
+
 	//Keyboard done
 
 	//Mouse
@@ -100,12 +97,17 @@ HRESULT Input::Initialize(HINSTANCE hInstance, HWND hWnd, int screenWidth, int s
 	{
 		return E_FAIL;
 	}
-
+	//Mouse done
+	
 	if(FAILED(this->m_pMouse->Acquire()))
 	{
 		return E_FAIL;
 	}
-	//Mouse done
+
+	if(FAILED(this->m_pKeyboard->Acquire()))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -135,6 +137,7 @@ void Input::ReleaseInput()
 
 HRESULT Input::Frame()
 {
+
 	if(FAILED(ReadKeyboard()))
 	{
 		return E_FAIL;
@@ -173,7 +176,7 @@ HRESULT Input::ReadKeyboard()
 
 HRESULT Input::ReadMouse()
 {
-	HRESULT result;
+	HRESULT result = E_FAIL;
 
 	result = this->m_pMouse->GetDeviceState(sizeof(this->m_mouseState), (LPVOID) &this->m_mouseState);
 

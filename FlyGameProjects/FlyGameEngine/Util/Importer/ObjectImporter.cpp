@@ -152,6 +152,7 @@ bool ParseAnimationFile			(std::wifstream& in, ImportedObjectData* d)
 	int currObject = -1;
 	int currAnimation = -1;
 	int currMaterial = -1;
+	int totMeshCount = -1;
 
 	while(!in.eof())
 	{
@@ -198,25 +199,26 @@ bool ParseAnimationFile			(std::wifstream& in, ImportedObjectData* d)
 				return false;
 			}
 
-			if(frameTime <= 0.0f)
+			if(frameTime < 0.0f)
 				return false;
 
 			d->objects.push_back(ObjectData());
 			currObject = (int)d->objects.size()-1;
 			currFrame++;
+			totMeshCount++;
 
 			d->animations[currAnimation].frames[currFrame].frameNumber = frameNum;
 			d->animations[currAnimation].frames[currFrame].frameTime = frameTime;
 			d->animations[currAnimation].frames[currFrame].objectIndex = currFrame;
 
-			d->objects[currObject].vertex = new std::vector<VERTEX::VertexPNT>(vCount);
-			d->objects[currObject].material = currMaterial;
+			d->objects[totMeshCount].vertex = new std::vector<VERTEX::VertexPNT>(vCount);
+			d->objects[totMeshCount].material = currMaterial;
 		}
 		else if(flag == ObjImpFormat::material)		{ currMaterial = ParseMaterial(in);	}
-		else if(flag == ObjImpFormat::v)			{ result = ParseV(in,d->objects[currFrame]); 	}
-		else if(flag == ObjImpFormat::vt)			{ result = ParseVT(in,d->objects[currFrame]);	}
+		else if(flag == ObjImpFormat::v)			{ result = ParseV(in,d->objects[totMeshCount]); 	}
+		else if(flag == ObjImpFormat::vt)			{ result = ParseVT(in,d->objects[totMeshCount]);	}
 		else if(flag == ObjImpFormat::vn)			
-		{ result = ParseVN(in,d->objects[currFrame]);	}
+		{ result = ParseVN(in,d->objects[totMeshCount]);	}
 		else if(flag == ObjImpFormat::comment)		{ ParseLine(in, true); }
 		
 		if(!result)

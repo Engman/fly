@@ -90,7 +90,7 @@ class FlyEngine_Core	:public FlyEngine
 		bool		FLYCALL		Geometry_Create				(FlyEngineGeometry type, Entity* object);
 		bool		FLYCALL		Geometry_Load				(const wchar_t* loadData, vector<Entity*>* objects);
 		bool		FLYCALL		Geometry_Load				(vector<const wchar_t*> loadData, vector<Entity*>* objects);
-		bool		FLYCALL		Geometry_Load				(const wchar_t* path, vector<Entity*>* object, FlyEngineGeometry special);
+		bool		FLYCALL		Geometry_Load				(const wchar_t* path, vector<Entity*>* object, FlyEngineGeometry special, int renderBoxes, int collisionBoxes);
 		Entity*		FLYCALL		Geometry_Pick				(const vector<Entity*>& obj, bool orto);
 
 
@@ -98,6 +98,11 @@ class FlyEngine_Core	:public FlyEngine
 		bool		FLYCALL		Input_Shutdown				();
 		void		FLYCALL		Input_Activate				();
 		void		FLYCALL		Input_Deactivate			();
+		
+		
+		void		FLYCALL		Audio_Initialize			();
+		void		FLYCALL		Audio_PlaySound				(FlyEngineSounds sound);
+		void		FLYCALL		Audio_Shutdown				();	
 
 		static void  _Interface();
 };

@@ -2,6 +2,7 @@
 #define FLY_PLAYER_H
 
 #include "..\..\FlyGameEngine\Core\Mesh\FlyMesh.h"
+#include "..\..\FlyGameEngine\Core\Mesh\FlyMeshAnimated.h"
 #include "..\..\FlyGameEngine\Core\Entity.h"
 #include "..\..\FlyGameEngine\Util\BoundingVolumes.h"
 
@@ -13,8 +14,12 @@ class FlyPlayer
 		vec3 velocity;
 		vec3 maxVelocity;
 
-		bool justChangedForm;
+		bool smallModel;
 
+		BoundingEllipse boundingEllipse;
+
+		float energy;
+		float maxEnergy;
 
 	public:
 		FlyPlayer();
@@ -23,6 +28,7 @@ class FlyPlayer
 		void Initialize();
 
 		void Render(ViewFrustum& frustum);
+		void Update();		
 
 		vector<Entity*>* GetModel();
 
@@ -30,18 +36,33 @@ class FlyPlayer
 		void SetRotation(vec3 rotation);
 		void SetScale(vec3 scale);
 		void SetVelocity(vec3 velocity);
-		void SetJustChanged(bool changed);
+		void SetEllipseVector(vec3 radius);
+		void SetSmall(bool changed);
 
 		vec3 GetPosition() const;
 		vec3 GetRotation() const;
 		vec3 GetVelocity() const;
 		vec3 GetMaxVelocity() const;
-		bool GetJustChanged() const;
+		bool GetSmall() const;
+		BoundingEllipse GetEllipse() const;
+		float GetEnergy() const;
+		float GetMaxEnergy() const;
 
 		BoundingSphere* GetBoundingSphere();
 		void SetBoundingSphere(BoundingSphere* sphere);
 
+		void UpdateAnimation(int nr);
+		void StopAnimation(int nr);
+	
 		void Release();
+
+		void DeductEnergy(float howMuch);
+
+		//Controls
+		void RollLeft();
+		void RollRight(vec3 forward);
+		void BankLeft();
+		void BankRight();
 };
 
 

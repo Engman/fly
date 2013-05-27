@@ -19,8 +19,8 @@ int MaterialHandler::AddMaterial(ObjectMaterial::OBJECT_MATERIAL_DESC& desc)
 {
 	int k = findExistingMaterial(desc.name);
 
-	if(k != -1)
-		return MaterialHandlerMaterialList[k]->GetID();
+	//if(k != -1)
+	//	return MaterialHandlerMaterialList[k]->GetID();
 
 	SmartPtrStd<ObjectMaterial> m = new ObjectMaterial();
 	if(!m->CreateMaterial(desc))

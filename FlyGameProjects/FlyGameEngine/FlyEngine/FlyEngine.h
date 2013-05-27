@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include "..\Core\BaseBuffer.h"
+#include "..\Core\AudioClass.h"
 
 class FlyMesh;
 class IShader;
@@ -64,6 +65,7 @@ enum FlyEngineGeometry
 	FlyGeometry_Plane,
 	FlyGeometry_Line,
 	FlyGeometry_Terrain,
+	FlyGeometry_AnimatedMesh,
 
 	GEOMETRY_COUNT
 };
@@ -116,6 +118,7 @@ class FlyEngine
 		virtual void		FLYCALL		Gfx_DrawLighting			()																	= 0;
 		virtual void		FLYCALL		Gfx_DrawBlur				()																	= 0;
 		virtual void		FLYCALL		Gfx_DrawFinalPicture		()																	= 0;
+		virtual void		FLYCALL Gfx_DrawFinalPicture(Camera theCamera)=0;
 		/** Resizes the render targets */
 		virtual void		FLYCALL		Gfx_Resize					(int width, int height)												= 0;
 		/** Sets active camera, if parameter is NULL the default cam is set */
@@ -143,7 +146,7 @@ class FlyEngine
 		/** Loads the base terrain 
 		*	Returns true on success
 		*	New Reference */
-		virtual bool		FLYCALL		Geometry_Load				(const wchar_t* path, vector<Entity*>*, FlyEngineGeometry special)	= 0;
+		virtual bool		FLYCALL		Geometry_Load			(const wchar_t* path, vector<Entity*>*, FlyEngineGeometry special, int renderBoxes, int collisionBoxes)	= 0;
 		/** Trys to pick an object in world space from given cordinates, 
 		*	returns pointer to object on success */
 		virtual Entity*		FLYCALL		Geometry_Pick				(const vector<Entity*>& objectToTest, bool orto = false)			= 0;
@@ -155,6 +158,13 @@ class FlyEngine
 		virtual void		FLYCALL		Input_Activate				()																	= 0;
 		/** Deavctivates raw input */
 		virtual void		FLYCALL		Input_Deactivate			()																	= 0;
+		
+		//sound
+		virtual void		FLYCALL Audio_Initialize()=0;
+		virtual void		FLYCALL Audio_PlaySound(FlyEngineSounds sound) =0;
+		virtual void		FLYCALL		Audio_Shutdown()=0;
+		//---------------------
+
 };
 
 

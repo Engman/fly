@@ -22,6 +22,8 @@
     <ClCompile Include="Core\AudioClass.cpp" />
     <ClCompile Include="Core\DrawableTexture.cpp" />
     <ClCompile Include="Core\Light\PointLight.cpp" />
+    <ClCompile Include="Core\Mesh\ParticleMesh.cpp" />
+    <ClCompile Include="Core\Mesh\FlyMeshAnimated.cpp" />
     <ClCompile Include="Core\Mesh\Terrain.cpp" />
     <ClCompile Include="Core\BaseBuffer.cpp" />
     <ClCompile Include="Core\BaseShader.cpp" />
@@ -30,13 +32,15 @@
     <ClCompile Include="Core\DepthStencilState.cpp" />
     <ClCompile Include="Core\Input.cpp" />
     <ClCompile Include="Core\Light\DirectionLight.cpp" />
-    <ClCompile Include="Core\Light\LightHolder.cpp" />
     <ClCompile Include="Core\Mesh\Cube.cpp" />
     <ClCompile Include="Core\Mesh\FullScreenQuad.cpp" />
     <ClCompile Include="Core\Mesh\MaterialHandler.cpp" />
     <ClCompile Include="Core\Mesh\FlyMesh.cpp" />
     <ClCompile Include="Core\Mesh\ObjectMaterial.cpp" />
     <ClCompile Include="Core\Mesh\Plane.cpp" />
+    <ClCompile Include="Core\ParticleCollisionSystem.cpp" />
+    <ClCompile Include="Core\ParticleEngineSystem.cpp" />
+    <ClCompile Include="Core\ParticlePickupSystem.cpp" />
     <ClCompile Include="Core\RasterizerState.cpp" />
     <ClCompile Include="Core\Render\BlurShader.cpp" />
     <ClCompile Include="Core\Render\FinalShader.cpp" />
@@ -48,6 +52,7 @@
     <ClCompile Include="Core\ShaderHandler.cpp" />
     <ClCompile Include="Core\Texture2D.cpp" />
     <ClCompile Include="Core\WindowShell.cpp" />
+    <ClCompile Include="FlyEngine\FlyAudio.cpp" />
     <ClCompile Include="FlyEngine\FlyCore_Imp.cpp" />
     <ClCompile Include="FlyEngine\FlyGfx.cpp" />
     <ClCompile Include="FlyEngine\FlyInput.cpp" />
@@ -72,7 +77,12 @@
     <ClInclude Include="Core\D3DxLink.h" />
     <ClInclude Include="Core\DrawableTexture.h" />
     <ClInclude Include="Core\Light\PointLight.h" />
+    <ClInclude Include="Core\Mesh\ParticleMesh.h" />
+    <ClInclude Include="Core\Mesh\FlyMeshAnimated.h" />
     <ClInclude Include="Core\Mesh\Terrain.h" />
+    <ClInclude Include="Core\ParticleCollisionSystem.h" />
+    <ClInclude Include="Core\ParticleEngineSystem.h" />
+    <ClInclude Include="Core\ParticlePickupSystem.h" />
     <ClInclude Include="Core\Render\BlurShader.h" />
     <ClInclude Include="Core\Render\FinalShader.h" />
     <ClInclude Include="Core\Render\GBufferAnimationShader.h" />
@@ -97,7 +107,6 @@
     <ClInclude Include="Core\Input.h" />
     <ClInclude Include="Core\IShader.h" />
     <ClInclude Include="Core\Light\DirectionLight.h" />
-    <ClInclude Include="Core\Light\LightHolder.h" />
     <ClInclude Include="Core\Mesh\Cube.h" />
     <ClInclude Include="Core\Mesh\FullScreenQuad.h" />
     <ClInclude Include="Core\Mesh\MaterialHandler.h" />

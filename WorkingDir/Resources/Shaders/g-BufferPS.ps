@@ -32,10 +32,10 @@ PS_OUT FPixelShader( PS_IN input )
 	PS_OUT output= ( PS_OUT )0;
 
 	//albedo color
-  
-  
-	output.ColorRGBA  = objTexture[0].Sample(SampleTypeClamp, input.textCoord);
-    output.ColorRGBA  *= diffuse;
+	output.ColorRGBA  	= objTexture[0].Sample(SampleTypeClamp, input.textCoord);
+	output.ColorRGBA  *= diffuse;
+	
+	
 	//normal
 	float3 normal = (input.normal.xyz +1)* 0.5f ;
 	float4 bumpNormal = float4(0,0,0,0); 
@@ -53,17 +53,19 @@ PS_OUT FPixelShader( PS_IN input )
 	spec= clamp(spec, 0,1);
 	float pow = specularPower * 0.00392; // *255
 
-	output.AmbR_diffG_specB_powA = float4( spec.x, 0,0 , specularPower);
+	
 	//output.AmbR_diffG_specB_powA = float4( textSpec.x, 0,0 , pow);
 	
 	if(specularPower == 0 )
 	{
+		output.AmbR_diffG_specB_powA = float4(0.0f, 0.0f, 0.0f, 0.0f);
 		output.NormalRGB_DepthA = float4( 0.0f, 0.0f, 0.0f, 1.0f);
 	}
 	else
 	{
 		float depth = input.position.b ;// input.position.w;
 		output.NormalRGB_DepthA = float4( normal, depth );//input.position.b
+		output.AmbR_diffG_specB_powA = float4( spec.x, 0,0 , specularPower);
 	}
 	//position in world space
 	output.PositionRGB_ = input.positionWorld / input.positionWorld.w;

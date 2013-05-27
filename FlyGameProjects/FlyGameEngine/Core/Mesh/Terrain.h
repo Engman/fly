@@ -14,12 +14,15 @@ class Terrain : public FlyMesh
 		Terrain();
 		~Terrain();
 
-		bool Initialize(OBJECT_DESC& data);
+		bool Initialize(OBJECT_DESC& data, int renderBoxes, int collisionBoxes);
 
 		void Update();
 		void Render(ViewFrustum& frustum);
 
 		vector<vector<D3DXVECTOR3>*> GetCollidedBoxes(BoundingSphere sphere);
+		BoundingBox GetBoundingBox() const;
+
+		void TransformBoxes();
 
 		void Release() override;
 };

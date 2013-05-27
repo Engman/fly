@@ -11,7 +11,7 @@ Terrain::~Terrain()
 	this->octTree.Release();
 }
 
-bool Terrain::Initialize(OBJECT_DESC& data)
+bool Terrain::Initialize(OBJECT_DESC& data, int renderBoxes, int collisionBoxes)
 {
 	this->vertices = data.vertecies;
 
@@ -21,8 +21,7 @@ bool Terrain::Initialize(OBJECT_DESC& data)
 
 	this->shader = data.shader;
 
-
-	this->octTree.Initialize(this->vertices, data.vCount, 1);
+	this->octTree.Initialize(this->vertices, data.vCount, renderBoxes, collisionBoxes);
 	
 	return true;
 }
@@ -36,14 +35,22 @@ void Terrain::Render(ViewFrustum& frustum)
 {
 	if(this->shader)
 	{
+		D3DXMATRIX scale, rotation, translation;
+		D3DXMatrixScaling(&scale, this->scale.x, this->scale.y, this->scale.z);
+		D3DXMatrixRotationYawPitchRoll(&rotation, this->rotation.y, this->rotation.x, this->rotation.z);
+		D3DXMatrixTranslation(&translation, this->translation.x, this->translation.y, this->translation.z);
+
+		D3DXMatrixIdentity(&this->world);
+
+		this->world *= scale;
+		this->world *= rotation;
+		this->world *= translation;
+
 		IShader::DRAW_DATA data;
 		data.worldMatrix = &this->world;
 		data.material = this->material;
 
 		this->octTree.Render(frustum, this->shader, data);
-
-		
-		//this->shader->addDrawData(data);
 	}
 }
 
@@ -57,4 +64,25 @@ void Terrain::Release()
 vector<vector<D3DXVECTOR3>*> Terrain::GetCollidedBoxes(BoundingSphere sphere)
 {
 	return this->octTree.GetCollidedBoxes(sphere);
+}
+
+BoundingBox Terrain::GetBoundingBox() const
+{
+	return this->octTree.GetTopBox();
+}
+
+void Terrain::TransformBoxes()
+{
+	D3DXMATRIX scale, rotation, translation;
+	D3DXMatrixScaling(&scale, this->scale.x, this->scale.y, this->scale.z);
+	D3DXMatrixRotationYawPitchRoll(&rotation, this->rotation.y, this->rotation.x, this->rotation.z);
+	D3DXMatrixTranslation(&translation, this->translation.x, this->translation.y, this->translation.z);
+
+	D3DXMatrixIdentity(&this->world);
+
+	this->world *= scale;
+	this->world *= rotation;
+	this->world *= translation;
+
+	this->octTree.TransformBoxes(this->world);
 }
