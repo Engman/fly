@@ -28,10 +28,8 @@ void SetStdOutToNewConsole()
     setvbuf( stdout, NULL, _IONBF, 0 );
  
     // give the console window a nicer title
- wchar_t str[256];
- 
- wsprintf(str, L"Debug Output");
-
+	wchar_t str[256];
+	wsprintf(str, L"Debug Output");
     SetConsoleTitle(str);
 
     // give the console window a bigger buffer size
@@ -80,7 +78,7 @@ bool FlyGame::Initiate(FlyGameSystemState state)
 {
 #if defined(_DEBUG) || defined(DEBUG)
 	SetStdOutToNewConsole();
-	std::cout << "Starting debug session!";
+	std::cout << "Starting debug session!" << std::endl;
 #endif
 	//We should load an .ini file to determinate initialization values
 

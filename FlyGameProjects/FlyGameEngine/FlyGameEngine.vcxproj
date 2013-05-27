@@ -61,6 +61,7 @@
     </ClCompile>
     <ClCompile Include="Util\Camera.cpp" />
     <ClCompile Include="Util\CollisionLib.cpp" />
+    <ClCompile Include="Util\Importer\FGMImport.cpp" />
     <ClCompile Include="Util\Importer\ObjectImporter.cpp" />
     <ClCompile Include="Util\Importer\ResourceImporter.cpp" />
     <ClCompile Include="Util\OctTree.cpp" />
@@ -117,6 +118,8 @@
     <ClInclude Include="Util\Camera.h" />
     <ClInclude Include="Util\CollisionLib.h" />
     <ClInclude Include="Util\GID.h" />
+    <ClInclude Include="Util\Importer\FGMImport.h" />
+    <ClInclude Include="Util\Importer\FgmImportData.h" />
     <ClInclude Include="Util\misc.h" />
     <ClInclude Include="Util\Importer\ObjectImporter.h" />
     <ClInclude Include="Util\Importer\ResourceImporter.h" />

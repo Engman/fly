@@ -1,10 +1,7 @@
-#ifndef OBJECT_IMPORTER_H
-#define OBJECT_IMPORTER_H
+#ifndef FGM_IMPORTER_H
+#define FGM_IMPORTER_H
 
 #include "FgmImportData.h"
-
-
-
 
 #pragma region FORWARD DECLARATIONS
 
@@ -12,16 +9,13 @@
 	struct ID3D11DeviceContext;
 	class Entity;
 
-
-	
-
 #pragma endregion
 
 
-class ObjectImporter
+class FGMImport
 {
 	public:
-		ObjectImporter() {  }
+		FGMImport() {  }
 		/**
 		*	Imports a object file
 		*/

@@ -8,9 +8,9 @@
 #include "..\..\Core\D3DShell.h"
 
 
+
 #pragma region FROWARD DELERATION
 
-int gCount = 0;
 
 bool ParseAnimationFile			(std::wifstream& in, ImportedObjectData* d);
 bool ParseStandardFile			(std::wifstream& in, ImportedObjectData* d);
@@ -56,88 +56,11 @@ namespace ObjImpFormat
 #pragma endregion
 
 
-bool ImportObject(std::wstring file, ImportedObjectData* rawData)
-{
-	//Get size of the file
-	wifstream fl(file);
-	if(!fl.is_open())
-		return false;
-
-	fl.seekg( 0, ios::end );  
-	size_t len = (size_t)fl.tellg();   
-	fl.seekg(0, ios::beg);
-	fl.close();
-
-	// Convert to a char*
-    size_t origsize = wcslen(file.c_str()) + 1;
-    const size_t newsize = 100;
-    size_t convertedChars = 0;
-    char nstring[newsize];
-    wcstombs_s(&convertedChars, nstring, origsize, file.c_str(), _TRUNCATE);
-   
-
-	size_t first = file.find_last_of('\\') + 1;
-	size_t last = file.find_last_of('.');
-	rawData->name = file.substr(first, last-first);
-
-	char *buff = new char[len];
-	int numread = 0;
-	
-	FILE *stream;
-	if( fopen_s( &stream, nstring, "r+t" ) == 0 )
-	{
-		numread = fread(buff, sizeof( wchar_t ), len, stream );
-		fclose( stream );
-	}
-	else
-	{
-		std::wstring msg = L"Failed to open file: \n";
-		msg.append(file);
-		MessageBox(0, msg.c_str(), L"Import error", 0);
-		return false;
-	}
-
-	int c = 0;
-	bool parsing = true;
-	std::wstring part = L"";
-
-	while (gCount != numread)
-	{
-		while (buff[c] != ' ' && buff[c] != '\n')
-		{
-			part += buff[c++];
-		}
-
-		//if(part == ObjImpFormat::animationCount) 
-		//{ 
-		//	int count = 0;
-		//	if(!ParseInteger(in, count))
-		//		return false;
-		//
-		//	if(count)
-		//	{
-		//		rawData->animations.resize(count);
-		//		if(!ParseAnimationFile(in, rawData))
-		//			return false;
-		//	}
-		//	else		
-		//		if(!ParseStandardFile(in, rawData))
-		//			return false;
-		//}
-		//else { ParseLine(in, true); }
-		
-	}
-
-	delete [] buff;
-
-	return true;
-}
-
-
-
+//TEMP//
+//FGMImport fgmimp;
 bool ObjectImporter::Import		(std::wstring file, ImportedObjectData* rawData)
 {
-	//return ImportObject(file, rawData);
+	//return fgmimp.Import(file, rawData);
 	
 
 	size_t first = file.find_last_of('\\') + 1;
@@ -507,7 +430,7 @@ bool ParseFloat					(std::wifstream& in, float& v)
 	std::wstring buff;
 	in >> buff;
 
-	if(!isdigit(buff[0]) && buff[0] == '-')	return false;
+	if(!isdigit(buff[0]) && buff[0] != '-')	return false;
 	v = (float)_wtof(buff.c_str());
 
 	return true;

@@ -11,7 +11,7 @@ class FlyState_Menu		:public IFlySystemState
 	private:
 		//Menu components
 		vector<Entity*> ui;
-		//Vector with pointers to check collision
+		//Pointers to check collision
 		vector<Entity*> uiBtn;
 
 		//Pointer to current submenu
@@ -22,6 +22,7 @@ class FlyState_Menu		:public IFlySystemState
 		void render();
 		void input();
 		void PickMenu();
+		bool ReadData();
 
 	public:
 		FlyState_Menu();
