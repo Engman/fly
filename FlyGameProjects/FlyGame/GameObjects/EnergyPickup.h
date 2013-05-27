@@ -1,5 +1,5 @@
-#ifndef FLY_PICKUP_H
-#define FLY_PICKUP_H
+#ifndef ENERGYPICKUP_H
+#define ENERGYPICKUP_H
 
 #include "..\..\FlyGameEngine\Core\Mesh\FlyMesh.h"
 #include "..\..\FlyGameEngine\Core\Entity.h"
@@ -7,7 +7,7 @@
 #include "../FlyGame.h"
 #include "../../FlyGameEngine/FlyEngine/FlyEngine.h"
 
-class FlyPickup
+class EnergyPickup
 {
 	private:
 		vector<Entity*> pickupModel;
@@ -15,8 +15,8 @@ class FlyPickup
 		bool taken;
 
 	public:
-		FlyPickup();
-		virtual~FlyPickup();
+		EnergyPickup();
+		virtual~EnergyPickup();
 
 		bool Initialize(FlyGame* entry, wstring modelName, vec3 position, vec3 rotation, int shader);
 

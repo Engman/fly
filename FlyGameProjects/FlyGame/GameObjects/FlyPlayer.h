@@ -37,6 +37,7 @@ class FlyPlayer
 		void SetVelocity(vec3 velocity);
 		void SetEllipseVector(vec3 radius);
 		void SetSmall(bool changed);
+		void SetEnergy(float energy);
 
 		vec3 GetPosition() const;
 		vec3 GetRotation() const;

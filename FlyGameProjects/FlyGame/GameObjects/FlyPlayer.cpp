@@ -104,6 +104,11 @@ void FlyPlayer::SetEllipseVector(vec3 radius)
 	this->boundingEllipse.radiusVector = radius;
 }
 
+void FlyPlayer::SetEnergy(float energy)
+{
+	this->energy = energy;
+}
+
 vec3 FlyPlayer::GetPosition() const
 {
 	return this->playerModel[0]->getPosition();

@@ -17,13 +17,12 @@
 #include "../GameObjects/PauseMenu.h"
 #include "../GameObjects/FlyPickup.h"
 #include "../WindCollision.h"
-
+#include "../GameObjects/EnergyPickup.h"
 
 class FlyState_Level		:public IFlySystemState
 {
 	private:
 		vector<Entity*> levelEntities;
-		vector<Entity*> energyPickups;
 		vector<Entity*> theWorld;
 		vector<Entity*> skyBox;
 		vector<Entity*> dirLights;
@@ -33,6 +32,7 @@ class FlyState_Level		:public IFlySystemState
 
 		FlyPlayer player;
 		FlyPickup pickups[3];
+		vector<EnergyPickup> energy;
 
 		PauseMenu pauseMenu;
 
@@ -45,6 +45,9 @@ class FlyState_Level		:public IFlySystemState
 
 		vec3 worldWind;
 		vec3 localWind;
+		vec3 playerStartPosition;
+
+		float deathTimer;
 
 		ParticleEngineSystem engineParticlesLeft;
 		ParticleEngineSystem engineParticlesRight;

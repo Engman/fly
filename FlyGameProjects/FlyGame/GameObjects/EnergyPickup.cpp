@@ -1,16 +1,16 @@
-#include "FlyPickup.h"
+#include "EnergyPickup.h"
 
-FlyPickup::FlyPickup()
+EnergyPickup::EnergyPickup()
 {
 
 }
 
-FlyPickup::~FlyPickup()
+EnergyPickup::~EnergyPickup()
 {
 
 }
 
-bool FlyPickup::Initialize(FlyGame* entry, wstring modelName, vec3 position, vec3 rotation, int shader)
+bool EnergyPickup::Initialize(FlyGame* entry, wstring modelName, vec3 position, vec3 rotation, int shader)
 {
 	this->taken = false;
 
@@ -30,57 +30,57 @@ bool FlyPickup::Initialize(FlyGame* entry, wstring modelName, vec3 position, vec
 
 	return true;
 }
-void FlyPickup::Render(ViewFrustum& f)
+void EnergyPickup::Render(ViewFrustum& f)
 {
 	this->pickupModel[0]->Render(f);
 }
 
-void FlyPickup::Update()
+void EnergyPickup::Update()
 {
 	
 }
 
-void FlyPickup::SetPickTaken(bool taken)
+void EnergyPickup::SetPickTaken(bool taken)
 {
 	this->taken = taken;
 }
 
-void FlyPickup::SetPosition(vec3 position)
+void EnergyPickup::SetPosition(vec3 position)
 {
 	return this->pickupModel[0]->setPosition(position);
 }
-void FlyPickup::SetRotation(vec3 rotation)
+void EnergyPickup::SetRotation(vec3 rotation)
 {
 	return this->pickupModel[0]->setRotation(rotation);
 }
-void FlyPickup::SetShader(IShader* shader)
+void EnergyPickup::SetShader(IShader* shader)
 {
 	this->pickupModel[0]->setShader(shader);
 }
 
-vec3 FlyPickup::GetPosition() const
+vec3 EnergyPickup::GetPosition() const
 {
 	return this->pickupModel[0]->getPosition();
 }
-vec3 FlyPickup::GetRotation() const
+vec3 EnergyPickup::GetRotation() const
 {
 	return this->pickupModel[0]->getRotation();
 }
-bool FlyPickup::GetTaken() const
+bool EnergyPickup::GetTaken() const
 {
 	return this->taken;
 }
 
-BoundingSphere* FlyPickup::GetBoundingSphere()
+BoundingSphere* EnergyPickup::GetBoundingSphere()
 {
 	return this->pickupModel[0]->getBoundingSphere();
 }
-void FlyPickup::SetBoundingSphere(BoundingSphere* sphere)
+void EnergyPickup::SetBoundingSphere(BoundingSphere* sphere)
 {
 	this->pickupModel[0]->setBoundingSphere(sphere);
 }
 
-void FlyPickup::Release()
+void EnergyPickup::Release()
 {
 	for(unsigned int i = 0; i < this->pickupModel.size(); i++)
 	{
