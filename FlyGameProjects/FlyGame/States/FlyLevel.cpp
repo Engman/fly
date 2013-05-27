@@ -44,7 +44,7 @@ void FlyState_Level::Initiate(FlyGame* instance)
 	this->mainCamera.Render();
 	this->menuCamera.Render();
 	this->entryInstance->GetCoreInstance()->Audio_Initialize();
-	const char* path = "..\\Resources\\Sound\\soundtrac.wma";	
+	const char* path = "..\\Resources\\Sound\\level_background.mp3";	
 	this->entryInstance->GetCoreInstance()->Audio_LoadLevelSound(path);
 	this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_LevelSoundTrack);
 	this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wind);

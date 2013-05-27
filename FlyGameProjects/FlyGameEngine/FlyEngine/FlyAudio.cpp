@@ -13,8 +13,8 @@ void FLYCALL FlyEngine_Core::Audio_LoadMenuSound()
 {
 	vector<const char*> paths;
 	paths.push_back("../../WorkingDir/Resources/Sound/jaguar.wav");	//soundTrack
-	paths.push_back("../../WorkingDir/Resources/Sound/swish.wav");	//hover
-	paths.push_back("../../WorkingDir/Resources/Sound/swish.wav");	//click
+	paths.push_back("../../WorkingDir/Resources/Sound/button_hover.wav");	//hover
+	paths.push_back("../../WorkingDir/Resources/Sound/button_click.wav");	//click
 
 	AudioClass::self()->loadSound(FlySound_Menu, paths);
 }
@@ -22,13 +22,13 @@ void FLYCALL FlyEngine_Core::Audio_LoadLevelSound(const char* soundTrack)
 {
 	vector<const char*> paths;
 	paths.push_back(soundTrack);
-	paths.push_back("../Resources/Sound/jaguar.wav");	//collision
-	paths.push_back("../Resources/Sound/jaguar.wav");	//energyPickup
-	paths.push_back("../Resources/Sound/jaguar.wav");	//cargoPickup
-	paths.push_back("../Resources/Sound/jaguar.wav");	//lowEnergy
-	paths.push_back("../Resources/Sound/jaguar.wav");	//noEnergy
-	paths.push_back("../Resources/Sound/jaguar.wav");	//thrust
-	paths.push_back("../Resources/Sound/swish.wav");	//wind
+	paths.push_back("../Resources/Sound/collision_grinding.wav");	//collision
+	paths.push_back("../Resources/Sound/energy_pickup.wav");	//energyPickup
+	paths.push_back("../Resources/Sound/cargo_pickup.wav");	//cargoPickup
+	paths.push_back("../Resources/Sound/player_near_death.wav");	//lowEnergy
+	paths.push_back("../Resources/Sound/player_death.wav");	//noEnergy
+	paths.push_back("../Resources/Sound/thrusters.wav");	//thrust
+	paths.push_back("../Resources/Sound/wind.wav");	//wind
 	
 
 	AudioClass::self()->loadSound(FlySound_Level, paths);

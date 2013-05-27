@@ -38,7 +38,7 @@ PS_OUT FPixelShader( PS_IN input )
 	
 	
 	//normal
-	float3 normal = normalize(input.normal);
+	float3 normal = input.normal.xyz; //normalize(input.normal);
 	normal = (normal.xyz +1)* 0.5f ;
 	
 	float4 bumpNormal = float4(0,0,0,0); 

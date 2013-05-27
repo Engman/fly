@@ -35,8 +35,10 @@ PS_IN FVertexShader( VS_IN input)
 	output.depth.z = output.position.z; 	//depth in view space
 	output.position = mul(  output.position, mProj );
   
-	output.normal = mul(normalize(input.normal), mWorldInvTrans );
+  
+	output.normal = mul(normalize(input.normal), mWorld); //mWorldInvTrans );
 	output.normal = normalize(output.normal);
+	
 	
 	output.depth.x = output.position.z;
 	output.depth.y = output.position.w;

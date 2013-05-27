@@ -354,10 +354,6 @@ Camera*	FLYCALL	FlyEngine_Core::Gfx_GetDefaultCamera()
 }
 
 
-void FLYCALL FlyEngine_Core::PlaySoundTrack(const wchar_t* path)
-{
-	AudioClass::self()->toggleSoundTrack();
-}
 //################################//
 //########### LOCAL DATA #########//
 //####################################################################//

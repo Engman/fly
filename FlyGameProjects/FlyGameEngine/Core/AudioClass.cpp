@@ -180,7 +180,7 @@ void AudioClass::playLevelSound(FlyLevelSounds sound)
 			if(!playing)
 			{
 				result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_LevelSoundTrack], false,&channel[FlySound_LevelSoundTrack]);
-				result = channel[FlySound_LevelSoundTrack]->setVolume(0.2f);
+				result = channel[FlySound_LevelSoundTrack]->setVolume(0.3f);
 			}
 		break;
 		case FlySound_Collision:
