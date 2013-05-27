@@ -108,7 +108,7 @@ bool FLYCALL FlyEngine_Core::Geometry_Load(vector<const wchar_t*> resourcesToLoa
 	return true;;
 }
 
-bool FLYCALL FlyEngine_Core::Geometry_Load(const wchar_t* path, vector<Entity*>* objects, FlyEngineGeometry special)
+bool FLYCALL FlyEngine_Core::Geometry_Load(const wchar_t* path, vector<Entity*>* objects, FlyEngineGeometry special, int renderBoxes, int collisionBoxes)
 {
 	ImportedObjectData raw;
 	if(!ResourceImporter::ImportObject(path, &raw))
@@ -141,7 +141,7 @@ bool FLYCALL FlyEngine_Core::Geometry_Load(const wchar_t* path, vector<Entity*>*
 			d.boundingSphere = bs;
 
 			Terrain *obj = new Terrain();
-			if(!obj->Initialize(d))
+			if(!obj->Initialize(d, renderBoxes, collisionBoxes))
 				return false;
 			objects->push_back(obj);
 		}

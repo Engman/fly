@@ -10,8 +10,8 @@ ParticleMesh::ParticleMesh()
 	D3DXMatrixIdentity(&this->world);
 }
 ParticleMesh::~ParticleMesh()
-{
-
+{	
+	
 }
 
 void ParticleMesh::Update()

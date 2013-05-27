@@ -17,6 +17,7 @@ ParticlePickupSystem::ParticlePickupSystem(const ParticlePickupSystem& other)
 
 ParticlePickupSystem::~ParticlePickupSystem()
 {
+	
 }
 
 bool ParticlePickupSystem::Initialize()
@@ -55,7 +56,7 @@ bool ParticlePickupSystem::Initialize()
 	materialDesc.ambient = vec4(0.5f, 0.5f, 0.5f, 1.0f);
 	materialDesc.diffuse = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	materialDesc.ambient = vec4(0.1f, 0.8f, 0.2f, 1.0f);
-	materialDesc.specualarPow = 0.0f;
+	materialDesc.specualarPow = 0;
 	materialDesc.device = D3DShell::self()->getDevice();
 	materialDesc.ambientTexture = L"";
 	materialDesc.diffuseTexture = L"..\\Resources\\Textures\\pickup_particle.png";
@@ -128,18 +129,8 @@ bool ParticlePickupSystem::Initialize()
 	return true;
 }
 
-void ParticlePickupSystem::Shutdown()
-{
-	// Release the texture used for the particles.
-
-	return;
-}
-
-
 bool ParticlePickupSystem::Frame(vec3 forward, float deltaTime)
 {
-	bool result;
-
 
 	// Release old particles.
 	KillParticles(forward);
@@ -170,7 +161,6 @@ void ParticlePickupSystem::Render(ViewFrustum f)
 
 void ParticlePickupSystem::EmitParticles(float frameTime, vec3 forward)
 {
-	bool emitParticle;
 	float positionX, positionY, positionZ;
 	vec3 velocity;
 	
@@ -211,7 +201,7 @@ void ParticlePickupSystem::EmitParticles(float frameTime, vec3 forward)
 			this->particleList[this->currentParticleCount].life = 2000.0f;
 			this->currentParticleCount++;
 
-			D3DXMatrixRotationYawPitchRoll(&rotation, D3DX_PI*0.5f, i*0.628f, 0.0f);
+			D3DXMatrixRotationYawPitchRoll(&rotation, (float)D3DX_PI*0.5f, i*0.628f, 0.0f);
 
 			velocityThree = (vec3)*D3DXVec4Transform(&vectorFour, &vec4(-forward, 0.0f), &rotation);
 

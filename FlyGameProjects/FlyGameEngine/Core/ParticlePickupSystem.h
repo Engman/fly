@@ -31,7 +31,6 @@ class ParticlePickupSystem
 		virtual ~ParticlePickupSystem();
 
 		bool Initialize();
-		void Shutdown();
 		bool Frame(vec3 forward, float deltaTime);
 		void Render(ViewFrustum f);
 

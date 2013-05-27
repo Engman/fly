@@ -11,7 +11,7 @@ Terrain::~Terrain()
 	this->octTree.Release();
 }
 
-bool Terrain::Initialize(OBJECT_DESC& data)
+bool Terrain::Initialize(OBJECT_DESC& data, int renderBoxes, int collisionBoxes)
 {
 	this->vertices = data.vertecies;
 
@@ -21,7 +21,7 @@ bool Terrain::Initialize(OBJECT_DESC& data)
 
 	this->shader = data.shader;
 
-	this->octTree.Initialize(this->vertices, data.vCount, 1, 8);
+	this->octTree.Initialize(this->vertices, data.vCount, renderBoxes, collisionBoxes);
 	
 	return true;
 }

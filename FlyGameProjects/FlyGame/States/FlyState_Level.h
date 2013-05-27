@@ -14,22 +14,29 @@
 #include "../../FlyGameEngine/Core/ParticleEngineSystem.h"
 #include "../../FlyGameEngine/Core/ParticleCollisionSystem.h"
 #include "../../FlyGameEngine/Core/ParticlePickupSystem.h"
+#include "../GameObjects/PauseMenu.h"
+#include "../GameObjects/FlyPickup.h"
+#include "../WindCollision.h"
 
 
 class FlyState_Level		:public IFlySystemState
 {
 	private:
 		vector<Entity*> levelEntities;
-		vector<Entity*> levelPickups;
 		vector<Entity*> energyPickups;
 		vector<Entity*> theWorld;
 		vector<Entity*> skyBox;
 		vector<Entity*> dirLights;
-		vector<Entity*> gameMenu;
 		vector<Entity*> cursor;
 		vector<Entity*> UIorthographic; 
 		vector<BaseBuffer*> shadowViews;
+
 		FlyPlayer player;
+		FlyPickup pickups[3];
+
+		PauseMenu pauseMenu;
+
+		WindCollision windCollision;
 
 		Camera mainCamera;
 		Camera menuCamera;
@@ -37,13 +44,14 @@ class FlyState_Level		:public IFlySystemState
 		Timer* mainTimer;
 
 		vec3 worldWind;
+		vec3 localWind;
 
 		ParticleEngineSystem engineParticlesLeft;
 		ParticleEngineSystem engineParticlesRight;
 		ParticleCollisionSystem collisionParticle;
 		ParticlePickupSystem pickupParticle;
 
-		int state;
+		int state; // 0 = MainGame, 1 = PauseMenu
 
 		bool ReadLevel(const wchar_t* fileName);
 

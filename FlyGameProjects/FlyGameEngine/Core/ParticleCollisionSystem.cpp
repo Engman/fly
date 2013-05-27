@@ -55,7 +55,7 @@ bool ParticleCollisionSystem::Initialize()
 	materialDesc.ambient = vec4(0.5f, 0.5f, 0.5f, 1.0f);
 	materialDesc.diffuse = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	materialDesc.ambient = vec4(0.1f, 0.8f, 0.2f, 1.0f);
-	materialDesc.specualarPow = 0.0f;
+	materialDesc.specualarPow = 0;
 	materialDesc.device = D3DShell::self()->getDevice();
 	materialDesc.ambientTexture = L"";
 	materialDesc.diffuseTexture = L"..\\Resources\\Textures\\collision_particle.png";
@@ -138,9 +138,6 @@ void ParticleCollisionSystem::Shutdown()
 
 bool ParticleCollisionSystem::Frame(vec3 forward, float deltaTime)
 {
-	bool result;
-
-
 	// Release old particles.
 	KillParticles(forward);
 

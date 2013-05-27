@@ -36,9 +36,10 @@ FlyGame::FlyGame()
 FlyGame::~FlyGame()
 {
 	lua_close(this->_pData->luaState);
+	this->_pData->level->Release();
 	this->_pData->fly->Core_Shutdown();
 	this->_pData->fly = NULL;
-	this->_pData->level->Release();
+	
 	delete this->_pData;
 }
 

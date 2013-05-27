@@ -40,6 +40,8 @@ class ParticleEngineSystem
 		void SetRotation(vec3 rotation);
 		void SetPosition(vec3 position);
 		void SetParticleShader(IShader* shader);
+
+		void Release();
 	private:
 		
 		void UpdateParticles(float);

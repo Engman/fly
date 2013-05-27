@@ -1,10 +1,10 @@
 #ifndef WINDEMITER_H
 #define WINDEMITER_H
 
-#include "Util/misc.h"
-#include "Util/SmartPtrs.h"
-#include "Util/BoundingVolumes.h"
-#include "Util/CollisionLib.h"
+#include "..\FlyGameEngine\Util\SmartPtrs.h"
+#include "..\FlyGameEngine\Util\BoundingVolumes.h"
+#include "..\FlyGameEngine\Util\CollisionLib.h"
+#include <vector>
 
 
 class WindEmiter
@@ -13,7 +13,7 @@ public:
 	struct WindSphere
 	{
 		BoundingSphere sphere;
-		D3DXVECTOR4 direction; 
+		D3DXVECTOR3 direction; 
 	};
 
 private:

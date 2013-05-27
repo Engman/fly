@@ -6,9 +6,6 @@ FlyPlayer::FlyPlayer()
 	this->maxVelocity = vec3(0.4f, 0.4f, 0.8f);
 	this->maxEnergy = 10000;
 	this->energy = maxEnergy;
-	this->boundingEllipse.radiusVector.x = 2.0f;
-	this->boundingEllipse.radiusVector.y = 0.5f;
-	this->boundingEllipse.radiusVector.z = 2.0f;
 }
 
 FlyPlayer::~FlyPlayer()
@@ -179,6 +176,9 @@ void FlyPlayer::Release()
 void FlyPlayer::DeductEnergy(float howMuch)
 {
 	this->energy -= howMuch;
+
+	if(this->energy > this->maxEnergy)
+		this->energy = this->maxEnergy;
 }
 
 //Controlls

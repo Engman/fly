@@ -147,7 +147,7 @@ class FlyEngine
 		/** Loads the base terrain 
 		*	Returns true on success
 		*	New Reference */
-		virtual bool		FLYCALL		Geometry_Load			(const wchar_t* path, vector<Entity*>*, FlyEngineGeometry special)	= 0;
+		virtual bool		FLYCALL		Geometry_Load			(const wchar_t* path, vector<Entity*>*, FlyEngineGeometry special, int renderBoxes, int collisionBoxes)	= 0;
 		/** Trys to pick an object in world space from given cordinates, returns pointer to object on success */
 		virtual Entity*		FLYCALL		Geometry_Pick			(const vector<Entity*>& objectToTest, int posX, int posY)			= 0;
 		/** Initializes raw input */
