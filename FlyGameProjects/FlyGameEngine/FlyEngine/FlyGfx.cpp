@@ -266,7 +266,7 @@ void FLYCALL FlyEngine_Core::Gfx_EndDeferredSceneOrtho()
 	 float blend[4] = {1.0f,1.0f,1.0f,1.0f};
 
 	 D3DShell::self()->setBlendModeState(FLAGS::BLEND_MODE_AlphaBlend, blend,  0xffffffff);
-	 D3DShell::self()->setDepthStencilState(FLAGS::DEPTH_STENCIL_DisabledDepth,1); 
+	 //D3DShell::self()->setDepthStencilState(FLAGS::DEPTH_STENCIL_DisabledDepth,1); 
 
 	 IShader::PER_FRAME_DATA gBufferDrawData;
 	 gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
@@ -277,7 +277,7 @@ void FLYCALL FlyEngine_Core::Gfx_EndDeferredSceneOrtho()
 
 	 //reset the blend state to normal
 	 D3DShell::self()->getDeviceContext()->OMSetBlendState(0,0,0xffffffff);
-	 D3DShell::self()->setDepthStencilState(FLAGS::DEPTH_STENCIL_EnabledDepth,1);
+	// D3DShell::self()->setDepthStencilState(FLAGS::DEPTH_STENCIL_EnabledDepth,1);
 
 	D3DShell::self()->setRenderTarget();
 	D3DShell::self()->beginScene();
