@@ -51,7 +51,7 @@ bool ParticleSystem::Initialize()
 	ParticleMesh::OBJECT_DESC desc;
 	desc.device = D3DShell::self()->getDevice();
 	desc.deviceContext = D3DShell::self()->getDeviceContext();
-	desc.material_id = 35;
+	desc.material_id = 34;
 	desc.name = L"particles";
 	desc.vCount = 6;
 

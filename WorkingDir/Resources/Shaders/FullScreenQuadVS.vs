@@ -20,9 +20,9 @@ PSIn FVertexShader(VSIn input)
 {
 	PSIn output = (PSIn)0;
 	//fullscreen quad already in view space
-	output.Pos		= input.position; 
-	output.ScreenPos = input.position;
-	output.TextCoord     = input.TextCoord;   
+	output.Pos			= input.position; 
+	output.ScreenPos 	= input.position;
+	output.TextCoord    = input.TextCoord;   
 	
 	return output;
 }

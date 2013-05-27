@@ -22,11 +22,13 @@ class FlyState_Level		:public IFlySystemState
 		vector<Entity*> energyPickups;
 		vector<Entity*> theWorld;
 		vector<Entity*> skyBox;
+		vector<Entity*> water; 
 		vector<Entity*> dirLights;
+		vector<Entity*> pointLights; 
 		vector<Entity*> gameMenu;
 		vector<Entity*> cursor;
 		vector<Entity*> UIorthographic; 
-		vector<BaseBuffer*> shadowViews;
+		vector<LightViewProj*> shadowViews;
 		FlyPlayer player;
 
 		Camera mainCamera;
@@ -38,6 +40,7 @@ class FlyState_Level		:public IFlySystemState
 		ParticleSystem collisionParticle;
 
 		int state;
+		int lastState;
 
 		bool ReadLevel(const wchar_t* fileName);
 

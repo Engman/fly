@@ -7,40 +7,72 @@
 #include <FMod/fmod.hpp>
 #include <vector>
 #include "stdafx.h"
+#include <D3DX11\D3D11.h>
+#include <D3DX11\D3DX11.h>
+#include "..\Util\misc.h"
+#include "..\Util\SmartPtrs.h"
 
-enum FlyEngineSounds
+enum FlySoundState
 {
-	FlySound_Wings,
+	FlySound_Menu, 
+	FlySound_Level,
+};
+
+enum FlyMenuSounds
+{	
+	FlySound_MenuSoundTrack,
+	FlySound_Hover,
+	FlySound_Click,
+
+	SOUNDMENU_COUNT
+};
+
+enum FlyLevelSounds
+{	
+	FlySound_LevelSoundTrack,
+
 	FlySound_Collision,
-	FlySound_LevelMusic,
+	FlySound_EnergyPickup, 
+	FlySound_CargoPickup, 
+	FlySound_LowEnergy, 
+	FlySound_NoEnergy, 
+	FlySound_Thrust, 
+
+	
 	FlySound_Wind,
 
-	SOUND_COUNT
+	SOUNDLEVEL_COUNT
 };
+
+
 
 class AudioClass
 {
+public:
+struct	playerSoundData
+{
+	D3DXVECTOR3 pos; 
+	float vel; 
+};
+
 private:
 	static bool instanceFlag;
 	static AudioClass* single;
-
 	FMOD::System * fmodSystem;
 	FMOD_RESULT result;
-	FMOD::Channel * channel;
 
-	
+	std::vector<FMOD::Channel*> channel;
 	std::vector<FMOD::Sound*> sounds;
-	FMOD::Sound* soundTrack;
-	int maxChannels;
 
-	 float t;
-	 FMOD_VECTOR lastpos;
-	FMOD_VECTOR forward       ;
-	FMOD_VECTOR up             ;
-	FMOD_VECTOR vel; 
+	int maxChannels;
 	AudioClass(void);
 
-	//void D3d_to_fmodVec(D3DXVECTOR3 d3dVec3, FMOD_VECTOR &out);
+	FMOD_VECTOR listenerPos; 
+	void unLoadSounds();
+	bool loadMenuSound(std::vector<const char*> path);
+	bool loadLevelSound(std::vector<const char*> path);
+	void FmodErrorCheck(FMOD_RESULT result);
+
 public:
 	
 	~AudioClass(void);
@@ -49,11 +81,14 @@ public:
 
 	void intitialize();
 	void shutdown();
-	void loadSound();
-	void uppdateSounds();
-	void playSound(FlyEngineSounds sound);
-	void playSoundTrack();
+	bool loadSound(FlySoundState state, std::vector<const char*> path);
 
+
+	void uppdateSounds(playerSoundData soundData);
+	void playLevelSound(FlyLevelSounds sound);
+	void playMenuSound(FlyMenuSounds sound);
+	void toggleSoundTrack();
+	void pauseAllSound();
 
 };
 #endif

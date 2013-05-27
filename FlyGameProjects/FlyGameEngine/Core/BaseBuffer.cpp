@@ -71,7 +71,7 @@ HRESULT BaseBuffer::Initialize(BaseBuffer::BUFFER_INIT_DESC& iDesc)
 			desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		break;
 		case BUFFER_FLAG::USAGE_DYNAMIC_CPU_READ:  
-			desc.Usage = D3D11_USAGE_STAGING;
+			desc.Usage = D3D11_USAGE_DYNAMIC;
 			desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
 		break;
 		case BUFFER_FLAG::USAGE_DYNAMIC_CPU_READ_WRITE:

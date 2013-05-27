@@ -3,6 +3,7 @@
 #include "..\..\FlyGameEngine\FlyEngine\FlyEngine.h"
 #include "..\..\FlyGameEngine\Util\CollisionLib.h"
 #include "..\..\FlyGameEngine\Core\Light\DirectionLight.h"
+#include "..\..\FlyGameEngine\Core\Light\PointLight.h"
 #include "..\..\FlyGameEngine\Util\Proxy.h"
 
 
@@ -16,13 +17,14 @@ FlyState_Level::FlyState_Level()
 }
 FlyState_Level::~FlyState_Level()
 {
-	delete this->mainTimer;
+	//delete this->mainTimer;
 	//this->entryInstance->GetCoreInstance()->Audio_Shutdown();
 }
 
 void FlyState_Level::Initiate(FlyGame* instance)
 {
 	this->state = 0;
+	this->lastState = 0; 
 
 	this->entryInstance = instance;
 
@@ -42,7 +44,11 @@ void FlyState_Level::Initiate(FlyGame* instance)
 	this->mainCamera.Render();
 	this->menuCamera.Render();
 	this->entryInstance->GetCoreInstance()->Audio_Initialize();
-	//this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Collision);
+	const char* path = "..\\Resources\\Sound\\soundtrac.wma";	
+	this->entryInstance->GetCoreInstance()->Audio_LoadLevelSound(path);
+	this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_LevelSoundTrack);
+	this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wind);
+
 	this->engineParticlesLeft.Initialize();
 	this->engineParticlesRight.Initialize();
 	this->collisionParticle.Initialize();
@@ -58,6 +64,14 @@ void FlyState_Level::Frame()
 	{
 		PostQuitMessage(0);
 	}*/
+	
+	
+	if(this->lastState != this->state)
+	{
+		this->entryInstance->GetCoreInstance()->Audio_ToggleSoundTrack(); 
+	}
+
+	this->lastState = this->state;
 
 	if(this->state == 0)
 	{
@@ -65,6 +79,7 @@ void FlyState_Level::Frame()
 
 		this->Update();
 		this->Render();
+		 
 	}
 	else if(this->state == 1)
 	{
@@ -73,6 +88,7 @@ void FlyState_Level::Frame()
 		this->MenuUpdate();
 		this->MenuRender();
 	}
+	
 }
 
 bool FlyState_Level::Update()
@@ -87,7 +103,7 @@ bool FlyState_Level::Update()
 		{
 			this->levelPickups.erase(this->levelPickups.begin()+i);
 			i--;
-			this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wings);
+			this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_CargoPickup);
 		}
 	}
 	//Collision against energy
@@ -98,7 +114,7 @@ bool FlyState_Level::Update()
 			this->energyPickups.erase(this->energyPickups.begin()+i);
 			i--;
 			this->player.DeductEnergy(-1000);
-			this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wings);
+			this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_EnergyPickup);
 		}
 	}
 	
@@ -119,19 +135,42 @@ bool FlyState_Level::Update()
 	
 	for(unsigned int i = 0; i < this->levelPickups.size(); i++)
 	{
-		//if(typeid(this->levelPickups[i]) == typeid(FlyMeshAnimated) )
-		//((FlyMeshAnimated*)this->levelPickups[i])->UpdateAnimation(1); 
+		
+		((FlyMeshAnimated*)this->levelPickups[i])->UpdateAnimation(0); 
 		
 		if(SphereVSSphere(*this->levelPickups[i]->getBoundingSphere(), *this->player.GetBoundingSphere()))
 		{
 			this->levelPickups.erase(this->levelPickups.begin()+i);
 			i--;
 			//play sound
-			this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Collision);
+			this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_CargoPickup);
+		}
+	}
+	for(unsigned int i = 0; i < this->energyPickups.size(); i++)
+	{
+		
+		((FlyMeshAnimated*)this->energyPickups[i])->UpdateAnimation(0); 
+		if(SphereVSSphere(*this->energyPickups[i]->getBoundingSphere(), *this->player.GetBoundingSphere()))
+		{
+			this->energyPickups.erase(this->energyPickups.begin()+i);
+			i--;
+			//play sound
+			this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_EnergyPickup);
 		}
 	}
 	this->player.GetModel()->at(0)->Update();
 	
+	//uppdate the sounds, the wind will sound higher the faster the player is.
+	this->entryInstance->GetCoreInstance()->Audio_Update(this->player.GetModel()->at(0)->getPosition(), this->player.GetVelocity().z/this->player.GetMaxVelocity().z);
+
+	//play a warning sound when the energy is low
+	if(this->player.GetEnergy()<500)
+	{
+		this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_LowEnergy);
+	}
+
+
+
 	return true;
 }
 bool FlyState_Level::UpdatePlayer()
@@ -237,6 +276,8 @@ bool FlyState_Level::UpdatePlayer()
 		this->engineParticlesRight.EmitParticles(16, this->player.GetPosition() - oldPosition);
 		if(this->player.GetVelocity().z < this->player.GetMaxVelocity().z)
 			this->player.SetVelocity(this->player.GetVelocity() + vec3(0.0f, 0.0f, 0.001f));
+		this->player.UpdateAnimation(1);
+		this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Thrust);
 	}
 	if(Input::self()->IsButtonPressed(DIK_S))
 	{
@@ -244,6 +285,7 @@ bool FlyState_Level::UpdatePlayer()
 		this->engineParticlesRight.EmitParticles(16, this->player.GetPosition() - oldPosition);
 		if(this->player.GetVelocity().z > -this->player.GetMaxVelocity().z)
 			this->player.SetVelocity(this->player.GetVelocity() + vec3(0.0f, 0.0f, -0.001f));
+		this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Thrust);
 	}
 
 	this->engineParticlesLeft.Frame(this->player.GetPosition() - oldPosition, this->mainTimer->GetDeltaTime());
@@ -251,8 +293,6 @@ bool FlyState_Level::UpdatePlayer()
 	//Engines end
 
 	this->player.Update();
-
-	//AudioClass::self()->uppdateSounds();
 
 	return true;
 }
@@ -272,6 +312,7 @@ bool FlyState_Level::Render()
 	this->theWorld[0]->Render(f);
 
 	this->skyBox[0]->Render(f);
+	this->water[0]->Render(f);
 
 	this->player.GetModel()->at(0)->setShader(shaders[FlyShader_gBufferDefault]);
 	this->player.Render(f);
@@ -300,20 +341,21 @@ bool FlyState_Level::Render()
 
 	for(unsigned int i = 0; i < this->dirLights.size(); i++)
 	{
-		this->dirLights[i]->Render(f);
+		//this->dirLights[i]->Render(f);
+	}
+	for(unsigned int i = 0; i< this->pointLights.size(); i++)
+	{
+		this->pointLights[i]->Render(f);
 	}
 
 	for(unsigned int i = 0; i <(int) this->shadowViews.size(); i++)
 	{
-		Camera cam;
-
-		LightViewProj* shadow = (LightViewProj*)(shadowViews[0])->Map();
-
-		cam.SetViewMatrix(shadow->lView);
-		cam.SetProjectionMatrix(shadow->lProj);
-		cam.Render();
-		cam.ConstructViewFrustum(f);
-		shadowViews[0]->Unmap();
+		//cull objects from the shadowCamera view
+		Camera ShadowCamera;
+		ShadowCamera.SetViewMatrix(shadowViews[0]->lView);
+		ShadowCamera.SetProjectionMatrix(shadowViews[0]->lProj);
+		ShadowCamera.Render();
+		ShadowCamera.ConstructViewFrustum(f);
 
 		for(unsigned int i = 0; i <(int) this->levelEntities.size(); i++)
 		{	
@@ -327,9 +369,11 @@ bool FlyState_Level::Render()
 		this->player.GetModel()->at(0)->setShader(shaders[FlyShader_Shadow]);
 		this->player.Render(f);
 	}
+
 	this->entryInstance->GetCoreInstance()->Gfx_DrawSkyBox();
 	this->entryInstance->GetCoreInstance()->Gfx_DrawGbuffer();
 	
+	//switch back to player camera view
 	this->menuCamera.ConstructViewFrustum(f);
 	this->entryInstance->GetCoreInstance()->Gfx_SetCamera(&this->menuCamera);
 
@@ -340,7 +384,7 @@ bool FlyState_Level::Render()
 	this->entryInstance->GetCoreInstance()->Gfx_DrawGbufferOrtho();
 	this->entryInstance->GetCoreInstance()->Gfx_SetCamera(&this->mainCamera);
 
-	//this->entryInstance->GetCoreInstance()->Gfx_DrawLighting();
+	this->entryInstance->GetCoreInstance()->Gfx_DrawLighting();
 	this->entryInstance->GetCoreInstance()->Gfx_DrawBlur();
 	this->entryInstance->GetCoreInstance()->Gfx_DrawShadows(&shadowViews);
 	this->entryInstance->GetCoreInstance()->Gfx_DrawFinalPicture(&shadowViews);
@@ -635,7 +679,17 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 	this->skyBox[0]->setShader(shaders[readInt]);
 
 	//read in the water
+	this->entryInstance->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\new_2.fgm", &this->water, FlyGeometry_Water);
+	readVector = D3DXVECTOR3(200,200,1);
+	this->water[0]->setScale(readVector);
+	this->water[0]->setShader(shaders[FlyShader_gBufferBump]);
+	this->water[0]->setPosition(vec3(-100, -150, 100));
+	this->water[0]->setRotation(vec3(90, 0, 0));
+	BoundingSphere* sphereW = new BoundingSphere;
 
+	sphereW->center = this->water[0]->getPosition();
+	sphereW->radius = 200.0f;
+	this->water[0]->setBoundingSphere(sphereW);
 
 
 	////Read rest of objects
@@ -659,7 +713,7 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 		this->levelEntities[i]->setShader(shaders[readInt]);
 
 		
-		sphere->radius = 1.0f;
+		sphere->radius = 200.0f;
 		this->levelEntities[i]->setBoundingSphere(sphere);
 		
 	}
@@ -691,7 +745,7 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 	for(int i = 0; i < nrOfStuff; i++)
 	{
 		file>>readString;
-		this->entryInstance->GetCoreInstance()->Geometry_Load(readString.c_str(), &this->energyPickups);
+		this->entryInstance->GetCoreInstance()->Geometry_Load(readString.c_str(), &this->energyPickups, FlyGeometry_AnimatedMesh);
 		file>>readVector.x;
 		file>>readVector.y;
 		file>>readVector.z;
@@ -758,44 +812,21 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 		file>>readVector.z;
 		rot = readVector;
 
-
 		file>>hasShadow;
 		file>>readInt;
 
-		Camera lightCam;
-		lightCam.SetProjectionMatrix((float)D3DX_PI*0.2f, D3DShell::self()->getAspectRatio(), 1, 1000);
-		lightCam.SetPosition(pos);
-		lightCam.SetRotation(rot.x, rot.y, rot.z);
-		lightCam.Render();
-
 		D3DXMATRIX viewMatrix, projectionMatrix;
 		D3DXMatrixLookAtLH(&viewMatrix, &pos, &D3DXVECTOR3(dirLightProxy.direction.x, dirLightProxy.direction.y, dirLightProxy.direction.z ), &D3DXVECTOR3(0,0,1));
-
 		D3DXMatrixPerspectiveFovLH(&projectionMatrix,(float)D3DX_PI*0.2f, D3DShell::self()->getAspectRatio(), 1, 1000);
 
-		
-		LightViewProj lightViewProj; 
-		lightViewProj.lView = viewMatrix;//lightCam.GetViewMatrix();
-		lightViewProj.lProj = projectionMatrix;//lightCam.GetProjectionMatrix();
-		
-		BaseBuffer* dirLightViewProj = new BaseBuffer();
-		BaseBuffer::BUFFER_INIT_DESC viewProjBufferDesc;
-		viewProjBufferDesc.dc = D3DShell::self()->getDeviceContext();
-		viewProjBufferDesc.device = D3DShell::self()->getDevice();
-		viewProjBufferDesc.elementSize = sizeof(LightViewProj);
-		viewProjBufferDesc.nrOfElements = 1;
-		viewProjBufferDesc.data = &lightViewProj;
-		viewProjBufferDesc.type = BUFFER_FLAG::TYPE_CONSTANT_PS_BUFFER;
-		viewProjBufferDesc.usage = BUFFER_FLAG::USAGE_DYNAMIC_CPU_WRITE_DISCARD;
-
-		if(FAILED(dirLightViewProj->Initialize(viewProjBufferDesc)))
-		{
-
-		}
+		LightViewProj *lightViewProj = new LightViewProj(); 
+		lightViewProj->lView = viewMatrix;
+		lightViewProj->lProj = projectionMatrix;
+	
 		DirectionLight* light = new DirectionLight(Type::LIGHT);
 		DirectionLight::DIRLIGHT_DESC dirLight; 
 		dirLight.data = dirLightProxy; 
-		dirLight.viewProj = lightViewProj;
+		dirLight.viewProj = *lightViewProj;
 		dirLight.shader =  shaders[FlyShader_DirLight];
 	
 		light->Initialize(dirLight);
@@ -804,11 +835,29 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 
 		if(hasShadow)
 		{
-			shadowViews.push_back(dirLightViewProj);
+			shadowViews.push_back(lightViewProj);
 		}
 		
 	}
 
+	PointLight* light = new PointLight(Type::LIGHT);
+	PointLight* light2 = new PointLight(Type::LIGHT);
+	PointLightProxy lightProxy; 
+	lightProxy.ambient = D3DXVECTOR4(0.2f, 0.2f , 0.2f , 1.0f);
+	lightProxy.diffuse = D3DXVECTOR4(1.0f, 0.2f , 0.0f , 1.0f);
+	lightProxy.specular = D3DXVECTOR4(0.2f, 0.2f , 0.2f , 1.0f);
+	lightProxy.posRange = D3DXVECTOR4(0.0f, 0.0f , 0.0f , 50.0f);
+	lightProxy.attenuate = D3DXVECTOR4(0.0f, 0.0f , 0.0f , 0.0f);
+
+	light->Initialize(lightProxy,  shaders[FlyShader_PointLight]);
+	pointLights.push_back(light);
+
+
+	lightProxy.diffuse = D3DXVECTOR4(0.0f, 1.0f , 0.0f , 1.0f);
+	lightProxy.specular = D3DXVECTOR4(0.2f, 0.2f , 0.2f , 1.0f);
+	lightProxy.posRange = D3DXVECTOR4(0.0f, -50.0f , 0.0f , 50.0f);
+	light2->Initialize(lightProxy,  shaders[FlyShader_PointLight]);
+	pointLights.push_back(light2);
 
 	//Read player position
 	vec3 player;
@@ -829,7 +878,7 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 	//Done reading info
 
 	//Set player model and player info
-	this->entryInstance->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\zcharacter_anim.fgm", this->player.GetModel(), FlyGeometry_AnimatedMesh);
+	this->entryInstance->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\character_anim.fgm", this->player.GetModel(), FlyGeometry_AnimatedMesh);
 	readVector = D3DXVECTOR3(1,1,1);
 	this->player.GetModel()->at(0)->setScale(readVector);
 	this->player.GetModel()->at(0)->setShader(shaders[FlyShader_gBufferDefault]);
@@ -844,13 +893,13 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 	sphere1->radius = 2.0f;
 	this->levelPickups[0]->setBoundingSphere(sphere1);
 
-	sphere2->center = this->levelPickups[1]->getPosition();
-	sphere2->radius = 2.0f;
-	this->levelPickups[1]->setBoundingSphere(sphere2);
+	//sphere2->center = this->levelPickups[1]->getPosition();
+	//sphere2->radius = 2.0f;
+	//this->levelPickups[1]->setBoundingSphere(sphere2);
 
-	sphere3->center = this->levelPickups[2]->getPosition();
-	sphere3->radius = 2.0f;
-	this->levelPickups[2]->setBoundingSphere(sphere3);
+	//sphere3->center = this->levelPickups[2]->getPosition();
+	//sphere3->radius = 2.0f;
+	//this->levelPickups[2]->setBoundingSphere(sphere3);
 
 	//Set player bounding info
 	BoundingSphere* playerSphere = new BoundingSphere;
@@ -1018,8 +1067,7 @@ vec3 FlyState_Level::SlideCollision(vec3 oldPosition, vec3 velocity, int iterati
  
 			if(stuckD <= 1.0f)
 			{	
-				//this->entryInstance->GetCoreInstance()->PlaySound(L"path");
-
+			
 				if(this->player.GetSmall())
 				{
 					oldPosition.x *= this->player.GetEllipse().radiusVector.x;
@@ -1048,8 +1096,6 @@ vec3 FlyState_Level::SlideCollision(vec3 oldPosition, vec3 velocity, int iterati
 				D3DXVECTOR3 collisionParticle = *D3DXVec3Transform(&tempVectorFourCol, &polyIPoint, &world);
 				this->collisionParticle.SetPosition(vec3(collisionParticle.x*this->player.GetEllipse().radiusVector.x, collisionParticle.y*this->player.GetEllipse().radiusVector.y, collisionParticle.z*this->player.GetEllipse().radiusVector.z));
 				this->collisionParticle.EmitParticles(this->mainTimer->GetDeltaTime()*1000.0f, vec3(normalizedVelocity));
-
-				this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wings);
 
 				return safeLocation + pNormal*0.1f;
 			}
@@ -1183,8 +1229,7 @@ vec3 FlyState_Level::SlideCollision(vec3 oldPosition, vec3 velocity, int iterati
 				this->collisionParticle.SetPosition(vec3(collisionParticle.x*this->player.GetEllipse().radiusVector.x, collisionParticle.y*this->player.GetEllipse().radiusVector.y, collisionParticle.z*this->player.GetEllipse().radiusVector.z));
 				this->collisionParticle.EmitParticles(this->mainTimer->GetDeltaTime()*1000.0f, vec3(normalizedVelocity));
 				
-				this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wings);
-
+		
 				return safeLocation + pNormal*0.1f;
 			}
 
@@ -1217,7 +1262,6 @@ vec3 FlyState_Level::SlideCollision(vec3 oldPosition, vec3 velocity, int iterati
 	}
 
 	
-	this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wings);
 	D3DXVECTOR3 newPosition;
 
 	if(nearestDistance >= D3DXVec3Length(&this->player.GetVelocity())*0.01f)

@@ -34,14 +34,44 @@ void LightShader::draw(PER_FRAME_DATA& frameData)
 	int vertexC = 0;
 
 	D3DShell::self()->setDefferedSRV();
+	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_NoCullNoMs);
 
 	this->shader->Render(); // set vertex and pixel shader
 	
 	int count = (int)this->drawData.size();
 	for( int i = 0; i< count;i++)
 	{
+		if(this->drawData[i].worldMatrix)
+		{
+
 		
-		//this->matrixBuffer->setBuffer();
+		cBufferMatrix* cb = (cBufferMatrix*)this->matrixBuffer->Map();
+		if(cb)
+		{
+			D3DXMATRIX world, translate; 
+			D3DXMatrixIdentity(&world);
+			D3DXMatrixTranslation(&translate, 50, 0, 0);
+			cb->world = *this->drawData[i].worldMatrix;
+			cb->view = frameData.view;
+			cb->projection = frameData.projection;
+
+			Matrix temp;
+			float det = D3DXMatrixDeterminant(this->drawData[i].worldMatrix);
+			if(det)
+			{
+				D3DXMatrixInverse(&temp, &det, &world); //this->drawData[i].worldMatrix);
+				//D3DXMatrixTranspose(&temp, &temp);
+				cb->worldInvTranspose = temp;
+			}
+
+			D3DXMatrixTranspose(&cb->world, &cb->world);
+			D3DXMatrixTranspose(&cb->view,&cb->view);
+			D3DXMatrixTranspose(&cb->projection,&cb->projection);
+
+			this->matrixBuffer->Unmap();
+		}
+		}
+		this->matrixBuffer->setBuffer();
 
 		
 		//frameData.lights->setBuffer(1);

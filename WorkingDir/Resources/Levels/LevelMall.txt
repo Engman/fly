@@ -1,0 +1,103 @@
+enum FlyEngineShaders
+{
+	FlyShader_gBufferDefault,
+	FlyShader_gBufferNoDepth,
+	FlyShader_gBufferBump,		-NEW!
+	FlyShader_gBufferAnimated,
+	FlyShader_Final,
+	FlyShader_DirLight,
+	FlyShader_PointLight, 		-to be added
+	FlyShader_Shadow,
+	FlyShader_BlurHorizont,
+	FlyShader_BlurVertical,
+
+
+	SHADER_COUNT
+};
+
+
+
+LevelTest
+
+3 + antal obj i världen
+först miljön
+sen sky box
+sen vattten planet
+ 
+filnamn | vec3 position | vec3 rotation | vec3 scale | shader 
+
+tex 
+------------------------
+
+..\\Resources\\Models\\spire.fgm 0.0 0.0 0.0 0.0 0.0 0.0 1 1 1 0
+
+
+
+..\\Resources\\Models\\skydome.fgm 10.0 10.0 10.0 0.0 0.0 0.0 1 1 1 1
+ 
+
+..\\Resources\\Models\\waterPlane.fgm 10.0 10.0 10.0 0.0 0.0 0.0 1 1 1 2
+
+
+..\\Resources\\Models\\object.fgm 10.0 10.0 10.0 0.0 0.0 0.0 1 1 1 1
+
+
+..\\Resources\\Models\\object2.fgm 10.0 10.0 10.0 0.0 0.0 0.0 1 1 1 1
+
+--------------------------
+
+
+3 - antal pickups
+
+..\\Resources\\Models\\cargo.fgm 0.0 40.0 0.0 0.0 0.0 0.0 1 1 1 3
+ 
+..\\Resources\\Models\\cargo.fgm 40.0 10.0 10.0 0.0 0.0 0.0 1 1 1 3
+ 
+..\\Resources\\Models\\cargo.fgm -40.0 10.0 5.0 0.0 0.0 0.0 1 1 1 3
+
+--------------------------
+
+
+1 - antal energi obj
+
+..\\Resources\\Models\\energy.fgm -40.0 10.0 5.0 0.0 0.0 0.0 1 1 1 3
+
+---------------------------
+
+2 - antal dierction lights
+
+0.2 0.2 0.2 1 	- ambient
+
+0.0 1.0 0.0 1 	- diffuse
+0 0 1 1 
+	- specular
+0 -1 0		-direction (jag normaliserar den i koden, vet inte om maya ger normaliserat eller inte)
+0 100 0
+	 	-position
+1 		-bool ifCast Shadow
+5 		-dirlight shader
+ 
+0.2 0.2 0.2 1 
+0.0 0.0 1.0 1
+0 0 1 1 
+1 3 1 
+0 50 -100
+0
+5
+
+------------------------
+
+1- antal point lights
+
+0.2 0.2 0.2 1 	- ambient
+
+0.0 1.0 0.0 1 	- diffuse
+0 0 1 1 
+	- specular
+10 0 50 100	- vec3 pos, float range
+10 10 10 0 	- vec3 attenuate , 0
+6		- ska lägga in en pointlight shader på plats 6
+
+0 10 -30	-spelarens start pos
+0 0 0		-spelarens start rot
+- kanske ska vi ha scale på spelaren också 

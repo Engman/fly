@@ -48,9 +48,11 @@ FlyEngine_Core::FlyEngine_Core()
 
 	this->gbufferShader			= new GBufferShader();
 	this->gBufferNoDepthShader	= new GBufferShader();
+	this->gbufferBumpShader		= new GBufferShader();
 	this->gBufferAnimationShader = new GBufferAnimationShader();
 	this->finalShader			= new FinalShader();
 	this->finalColorShader		= new FinalShader();
+	this->pointLightShader		= new LightShader();
 	this->dirLightShader		= new LightShader();
 	this->shadowMapShader		= new ShadowMapShader();
 	this->blurHorizontShader	= new BlurShader();
@@ -136,10 +138,12 @@ bool FLYCALL FlyEngine_Core::Core_Initialize(FLY_ENGINE_INIT_DESC& desc)
 	if(!this->_InitWin(desc))			return false;
 	if(!this->_InitGfx(desc))			return false;
 
-	if(!this->_InitGBufferShader())			return false;
+	if(!this->_InitGBufferShader())		return false;
+	if(!this->_InitBumpShader())		return false;
 	if(!this->_InitAnimationShader())	return false;
 	if(!this->_InitFinalShader())		return false;
 	if(!this->_InitDirLightShader())	return false;
+	if(!this->_InitPointLightShader())	return false; 
 	if(!this->_InitShadowMapShader())	return false;
 	if(!this->_InitBlurShaders())		return false;
 	
@@ -162,9 +166,11 @@ void FLYCALL FlyEngine_Core::Core_Shutdown()
 
 	this->gbufferShader.Destroy();
 	this->gBufferNoDepthShader.Destroy();
+	this->gbufferBumpShader.Destroy();
 	this->gBufferAnimationShader.Destroy();			
 	this->finalShader.Destroy();			
-	this->dirLightShader.Destroy();			
+	this->dirLightShader.Destroy();		
+	this->pointLightShader.Destroy();
 	this->shadowMapShader.Destroy();
 	this->blurHorizontShader.Destroy();
 	this->blurVerticalShader.Destroy();

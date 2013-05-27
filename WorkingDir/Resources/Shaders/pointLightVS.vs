@@ -9,25 +9,46 @@ cbuffer CB_CAMERA
   float4x4 mWorldInvTrans;
 };
 
-struct VSIn
+struct VS_IN
 {
-	float4 position		: POSITION;
-	float2 TextCoord  	: TEXCOORD; 
+  float4 position 	: POSITION;
+  //float4 normal 	: NORMAL;
+  //float2 textCoord 	: TEXCOORD;
 };
 
-struct PSIn
+struct PS_IN
 {
-	float4 position			: SV_Position;
-	float2 TextCoord  	: TEXCOORD; 
+  float4 position 		: SV_POSITION;
+  float4 ScreenPos 		: TEXCOORD;
+  //float2 textCoord 		: TEXCOORD;
 };
 
 
 //-----------------------------------------------------------------------------------------
 // VertexShader: VSScene
 //-----------------------------------------------------------------------------------------
-PSIn FVertexShader(VSIn input)
+PS_IN FVertexShader(VS_IN input)
 {
-	PSIn output = (PSIn)0;
+	PS_IN output;
+  
+	output.position.w = 1.0f;
+	float4 positionWorld = mul( input.position, mWorld );
+
+	
+	output.position = mul(  positionWorld, mView );
+	output.position = mul(  output.position, mProj );
+	
+	float4 pos = output.position; 
+	output.ScreenPos = pos;  
+	//output.textCoord = input.textCoord;
+	
+	
+	//output.ScreenPos = output.position; 
+	//output.ScreenPos = float4(output.position.r/1200, output.position.g/600, output.position.b/(1/1000), 1);
+	return output;
+
+
+	/*PSIn output = (PSIn)0;
 
 	output.position		= input.position; 
  
@@ -62,6 +83,6 @@ PSIn FVertexShader(VSIn input)
   //output.TextCoord.xy += (0.5 * output.TextCoord.w); 
    
    
-	return output;
+	return output;*/
 
 }

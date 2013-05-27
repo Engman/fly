@@ -12,11 +12,12 @@ cbuffer MaterialData
 
 struct PS_IN
 {
-  float4 position 			: SV_POSITION;
-  float4 positionWorld 		: POSITION;
-  float4 normal 			: NORMAL;
-  float4 depth				: DEPTH; 
-  float2 textCoord 			: TEXCOORD;
+  float4 position 				: SV_POSITION;
+  float4 positionWorld 			: POSITION;
+  float4 normal 		  		: NORMAL;
+  float4 Tangent	    		: TANGENT;
+  float4 Binormal     			: BINORMAL;
+  float2 textCoord 				: TEXCOORD;
 };
 
 struct PS_OUT
@@ -38,17 +39,20 @@ PS_OUT FPixelShader( PS_IN input )
 	
 	
 	//normal
-	float3 normal = normalize(input.normal);
-	normal = (normal.xyz +1)* 0.5f ;
-	
-	float4 bumpNormal = float4(0,0,0,0); 
-	bumpNormal = objTexture[1].Sample(SampleTypeClamp, input.textCoord)* 2.0f -1;
-	bumpNormal.w = 0;
+	float3 normal = (input.normal.xyz +1)* 0.5f ;
+	float3 bumpNormal = float3(0,0,0); 
+	bumpNormal = objTexture[1].Sample(SampleTypeClamp, input.textCoord).xyz * 2.0f -1;
+	bumpNormal *= 10; //waveHeight
 	//normal += bumpNormal.xyz;
 	//saturate( normal);
 	//normalize(normal);
 	
 	
+	float4 dullColor = float4(0.3f, 0.3f, 0.5f, 1.0f);
+	output.ColorRGBA = dullColor; 
+	
+	//float3x3 TBN = float3x3(input.Tangent.xyz, input.Binormal.xyz, input.normal.xyz);
+	//bumpNormal = normalize(mul(bumpNormal, TBN));
 
 	//specular
 	float4 textSpec = objTexture[2].Sample(SampleTypeClamp, input.textCoord);
@@ -66,8 +70,8 @@ PS_OUT FPixelShader( PS_IN input )
 	}
 	else
 	{
-		float depth =  input.depth.x / input.depth.y;
-		output.NormalRGB_DepthA = float4( normal, depth );//input.position.b
+		float depth = input.position.b ;// input.position.w;
+		output.NormalRGB_DepthA = float4( bumpNormal, depth );//input.position.b
 		output.AmbR_diffG_specB_powA = float4( spec.x, 0,0 , specularPower);
 	}
 	//position in world space

@@ -21,12 +21,13 @@ SamplerState SampleTypeClamp : register(s0);
 // Input and Output Structures
 //-----------------------------------------------------------------------------------------
 
-struct PSIn
+struct PS_IN
 {
-	float4 Pos		: SV_Position;
-	float2 TextCoord  : TEXCOORD; 
-
+  float4 position 			: SV_POSITION;
+  float4 ScreenPos 			: TEXCOORD;
+  //float2 TextCoord 			: TEXCOORD;
 };
+
 struct PSOut
 {
 	float4 LightMap : SV_TARGET0;
@@ -54,11 +55,11 @@ struct PSOut
 	//distance = radius => newIntensity = 0
 	//distance = 0 => newIntensity = intensity
 	//position.w holds the range 
-	float newIntensity	= ((pointLight.Position.w - distance) /pointLight.Position.w) * intensity * pointLight.Attenuate.w;
-	float4 color		= pointLight.Diffuse;	
+	float newIntensity	= ((pointLight.Position.w - distance) /pointLight.Position.w) * intensity * 10; 
+	float4 color		= pointLight.Ambient;	
 		
-	//if(newIntensity>0.0)
-	//{
+	if(newIntensity>0.0)
+	{
 		float3 reflection	= reflect(-lightToPixel, normal.xyz);
 
 		float s		= max(dot(normalize(reflection), normalize(cameraPos)),0.0); 
@@ -66,40 +67,138 @@ struct PSOut
 		//spec+= textSpec;
 		normalize(spec);
 
-		newIntensity += spec ; //add specular light	
+		//newIntensity += spec ; //add specular light	
+		color = pointLight.Diffuse; 
 		color = color * newIntensity;
-	//}
+	}
 	return color;
 }
   
-PSOut FPixelShader(PSIn input)
+
+ //Phong Shader
+float4 Phong(float3 Position, float3 N, float SpecularIntensity, float SpecularPower)
+{
+	//Calculate Light Vector
+	float3 L = pointLight.Position.xyz - Position.xyz;
+	
+	//Calculate Linear Attenuation
+	float Attenuation = saturate(1.0f - max(.01f, length(L)) / (pointLight.Position.w / 2 ));
+	float intensity		= dot(normalize(L), normalize(N.xyz));
+	float newIntensity	= ((pointLight.Position.w - length(L)) /pointLight.Position.w) * intensity;
+	
+	//Normalize Light Vector
+	L = normalize(L);
+	
+	//Calculate Reflection vector
+	float3 R = normalize(reflect( - L, N));
+
+	//Calculate Eye vector
+	float3 E = normalize(cameraPos -	Position.xyz);
+	
+	//Calculate N.L
+	float NL = dot(N, L);
+	
+	//Calculate Diffuse 
+	float3 Diffuse = NL * pointLight.Diffuse.xyz;
+	
+	//Calculate Specular
+	SpecularIntensity = 0.6; 
+	SpecularPower = 0.8;
+	float Specular = SpecularIntensity * pow(saturate(dot(R, E)), SpecularPower);
+	
+
+	//Calculate Final Product
+	float LightIntensity = 1.0;
+	return  LightIntensity* newIntensity *float4(Diffuse.rgb, 1);
+	//return Attenuation * LightIntensity * float4(Diffuse.rgb, Specular);
+}
+
+  
+  
+  
+PSOut FPixelShader(PS_IN input)
 {	
-	//albedo RGBA, normalRGB_depthA, specular, worldPosition
+
+	PSOut output= ( PSOut )0;
+	float2 textPos;
+	
+	
+	input.ScreenPos.xy /=  input.ScreenPos.w;
+	float2 GBufferTextureSize = float2(1200,600);
+	
+	float2 UV = 0.5f * (float2(input.ScreenPos.x,- input.ScreenPos.y) + 1) - float2(1.0f / GBufferTextureSize.xy);
+	
+	//sample albedo color
+	float4 color = gBufferText[0].Sample( SampleTypeClamp, UV);
+	
+	//normal already in world space
+	float3 normal  = gBufferText[1].Sample( SampleTypeClamp, UV).xyz;
+	normal = 2.0f* normal - 1;
+	normal = normalize(normal);
+	//normal = mul(normal, mInvView);
+	
+	float depth = gBufferText[1].Sample( SampleTypeClamp, UV).a;
+	
+	// projected positions
+	float4 position = float4(0,0,0,1);
+	
+	position.x = input.ScreenPos.x;
+	position.y = input.ScreenPos.y;
+	position.z = depth;
+	
+	
+	//pos in world space
+	position = mul(position,mInvViewProj);
+	position /= position.w;
+	
+	//specular intensity
+	float intens= gBufferText[2].Sample( SampleTypeClamp, UV).r;
+	
+	//specular power
+	float pow = gBufferText[2].Sample( SampleTypeClamp, UV).w;
+	pow*= 255;
+	
+	float4 LightColor = float4(0,0,0,0);
+	if(intens != 0) 
+	{
+		LightColor =  Phong(position, normal, intens, pow);
+		//LightColor = LightFactor(pointLight, position, normal, intens );
+		LightColor.w = 1;
+	}
+	
+	output.LightMap = LightColor;
+	
+	return output;
+	
+	
+	
+
+	/*albedo RGBA, normalRGB_depthA, specular, worldPosition
 	PSOut output= ( PSOut )0;
 	
 	//sample albedo color
-	float4 color = gBufferText[0].Sample( SampleTypeClamp, input.TextCoord);
+	float4 color = gBufferText[0].Sample( SampleTypeClamp, input.textCoord);
 	
-	float3 normal  = gBufferText[1].Sample( SampleTypeClamp, input.TextCoord).xyz;
+	float3 normal  = gBufferText[1].Sample( SampleTypeClamp, input.textCoord).xyz;
 	normal = mul((2*normal -1),(float3x3)mInvView);
 	
-	float depth = gBufferText[1].Sample( SampleTypeClamp, input.TextCoord).w;
+	float depth = gBufferText[1].Sample( SampleTypeClamp, input.textCoord).w;
 
 	//pos in homogenus clipspace
 	float4 position = 1.0f;
-	position.x = input.TextCoord.x * 2.0f - 1.0f;
-	position.y = -(input.TextCoord.x * 2.0f - 1.0f);
+	position.x = input.textCoord.x * 2.0f - 1.0f;
+	position.y = -(input.textCoord.x * 2.0f - 1.0f);
 	position.z = depth;
 	
-	position.xyz = gBufferText[3].Sample( SampleTypeClamp, input.TextCoord).xyz;
+	position.xyz = gBufferText[3].Sample( SampleTypeClamp, input.textCoord).xyz;
 	
 	//specular intensity
-	float textSpec= gBufferText[2].Sample( SampleTypeClamp, input.TextCoord).r;
+	float textSpec= gBufferText[2].Sample( SampleTypeClamp, input.textCoord).r;
 	
 	
 	//specular power
 	float pow;
-	pow = gBufferText[2].Sample( SampleTypeClamp, input.TextCoord).w;
+	pow = gBufferText[2].Sample( SampleTypeClamp, input.textCoord).w;
 	
 	
 	//pos in world space
@@ -113,8 +212,16 @@ PSOut FPixelShader(PSIn input)
 	float4 lightColor; 
 	
 	lightColor = LightFactor(pointLight, position, normal, textSpec );
-	output.LightMap = lightColor * color; //*textSpec;
+	output.LightMap = lightColor;// * color; //*textSpec;
 	output.LightMap.w = 1; //set alpha 
+	
+	
+	if(intens != 0) 
+	{
+		LightColor = Phong( position.xyz, normal, intens, pow);
+		LightColor.w = 1;
+	}
+	
 	
 	//output.LightMap = pointLight.Diffuse; 
 	//output.LightMap = color;
@@ -125,7 +232,7 @@ PSOut FPixelShader(PSIn input)
 	//output.LightMap = clamp((finalLight.Diffuse*0.3) + (color*0.7), 0,1);
 	
 	//-----------------------------
-	/**
+	
 	float3 lightToPixel = -dirLight.Direction; //vector from the light source to the pixle
 	
 	float intensity		= dot(normalize(lightToPixel), normalize(normal.xyz));
@@ -136,11 +243,12 @@ PSOut FPixelShader(PSIn input)
 		lightColor+=dirLight.Diffuse * intensity;
 	}
 	output.LightMap 		= lightColor * 0.5 + color * 0.5; 	
-	*/
+
 	//--------------------------------------------
 	
 	//output.LightMap = LightColor; 
 	
 	
 	return output;
+	*/
 }

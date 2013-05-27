@@ -1,31 +1,31 @@
 
 LevelTest
 
-2
-
+5
 ..\\Resources\\Models\\spire.fgm 0.0 0.0 0.0 0.0 0.0 0.0 0
 
 
 
-..\\Resources\\Models\\AAskydome.fgm 10.0 10.0 10.0 0.0 0.0 0.0 0
+..\\Resources\\Models\\skydome.fgm 10.0 10.0 10.0 0.0 0.0 0.0 1
  
+..\\Resources\\Models\\terrain_mountainFive.fgm 50.0 -50.0 10.0 0.0 0.0 0.0 0
 
-
-3 
-
-..\\Resources\\Models\\untitled.fgm 0.0 40.0 0.0 0.0 0.0 0.0 0
- 
 ..\\Resources\\Models\\untitled.fgm 40.0 10.0 10.0 0.0 0.0 0.0 0
  
 ..\\Resources\\Models\\untitled.fgm -40.0 10.0 5.0 0.0 0.0 0.0 0
+
+1
+..\\Resources\\Models\\cargo.fgm 0.0 40.0 0.0 0.0 0.0 0.0 0 
  
-0
+1
+..\\Resources\\Models\\energy.fgm 0.0 10.0 5.0 0.0 0.0 0.0 0
+
 
 d 2
 
 0.2 0.2 0.2 1
 
-0.0 1.0 0.0 1 
+0.9 0.8 0.8 1 
 
 0 0 1 1 
 
@@ -36,8 +36,7 @@ d 2
 
 1 
 
-4
-
+5
  
 0.2 0.2 0.2 1 
 0.0 0.0 1.0 1
@@ -46,7 +45,7 @@ d 2
 0 50 -100
 0 0 0 
 0
-4
+5
 
 
 0 10 -30

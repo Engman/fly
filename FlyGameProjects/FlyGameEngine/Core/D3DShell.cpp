@@ -440,8 +440,8 @@ bool D3DShell::init(D3D_INIT_DESC& desc)
 	ZeroMemory( &rtbd, sizeof(rtbd) );
 
 	rtbd.BlendEnable			 = true;
-	rtbd.SrcBlend				 = D3D11_BLEND_SRC_COLOR;
-	rtbd.DestBlend				 = D3D11_BLEND_BLEND_FACTOR;
+	rtbd.SrcBlend				 = D3D11_BLEND_ONE; //SRC_COLOR;
+	rtbd.DestBlend				 = D3D11_BLEND_ONE; //BLEND_FACTOR;
 	rtbd.BlendOp				 = D3D11_BLEND_OP_ADD;
 	rtbd.SrcBlendAlpha			 = D3D11_BLEND_ONE;
 	rtbd.DestBlendAlpha			 = D3D11_BLEND_ZERO;
@@ -807,7 +807,7 @@ void D3DShell::setLightSRV()
 	srv[0] = this->_prDatPtr->g_buffTextures[0].getColorSRV();	
 	srv[1] = this->_prDatPtr->lightTexture.getColorSRV();		
 	srv[2] = this->_prDatPtr->shadowTexture.getDepthSRV();//	
-	srv[3] = this->_prDatPtr->g_bufferDepthTexture.getDepthSRV();  //	g_buffTextures[1].getColorSRV();	
+	srv[3] = this->_prDatPtr->g_buffTextures[1].getColorSRV();	//g_bufferDepthTexture.getDepthSRV();  //	
 	srv[4] = this->_prDatPtr->blurTexture.getColorSRV();			
 	D3DShell::self()->getDeviceContext()->PSSetShaderResources(0,nrOfsrv,srv);
 }
