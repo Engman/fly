@@ -173,6 +173,7 @@
     <ClCompile Include="States\FlyLevel.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="States\FlyMenu.cpp" />
+    <ClCompile Include="WindEmiter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FlyGame.h" />
@@ -182,6 +183,7 @@
     <ClInclude Include="GameObjects\FlyPlayer.h" />
     <ClInclude Include="States\FlyState_Menu.h" />
     <ClInclude Include="States\IFlySystemState.h" />
+    <ClInclude Include="WindEmiter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

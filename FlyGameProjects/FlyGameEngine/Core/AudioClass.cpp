@@ -129,7 +129,7 @@ bool AudioClass::loadLevelSound(std::vector<const char*> path)
 	//----------Wind sound-------//
 	result = fmodSystem->createSound(path[FlySound_Wind], FMOD_DEFAULT, 0, & sounds[FlySound_Wind]);
 	result = sounds[FlySound_Wind]->set3DMinMaxDistance(0.5f * DISTANCEFACTOR, 5000.0f * DISTANCEFACTOR);
-	sounds[FlySound_Wind]->setMode(FMOD_LOOP_NORMAL);
+	result = sounds[FlySound_Wind]->setMode(FMOD_LOOP_NORMAL);
 	
 	/*FMOD_VECTOR pos = { -10.0f * DISTANCEFACTOR, 0.0f, 0.0f };
 	FMOD_VECTOR vel = {  0.0f, 0.0f, 0.0f };*/

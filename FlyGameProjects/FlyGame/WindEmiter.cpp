@@ -3,53 +3,30 @@
 static std::vector<WindEmiter*> WindHolder;
 
 
-WindEmiter::WindEmiter()
-{
-	WindHolder.push_back(this);
-}
-WindEmiter::~WindEmiter()
-{
 
-}
-
-bool WindEmiter::initialize(char* scriptFile, ViewFrustum frustum)
+bool WindEmiter::initialize(char* scriptFile, ViewFrustum frustum, D3DXVECTOR3 pos)
 {
 	this->scriptFile = scriptFile;
 	this->viewFrustum = frustum;
-	return true;
+	this->position = pos; 
+	WindHolder.push_back(this);
+	//int rv = luaL_loadfile(luaState, scriptFile);
+	int rv = luaL_loadfile(luaState, "test.lua");
+	rv = lua_pcall(luaState, 0, 0, 0);
 
-
-	////load external lib
-	//openlualibs(luaState);
-
-	////loading luaScriptFile
-	//int rv = 0;
-	//rv = luaL_dofile(luaState, scriptFile);
-	//if(rv != 0)
-	//{
-	//	PrintLuaError();
-	//	return false;
-	//}
-	//return true;
-}
-
-bool WindEmiter::Update()
-{
 	return true;
 }
 
-void WindEmiter::checkCollideSphere(BoundingSphere playerSphere)
+bool WindEmiter::Update(BoundingSphere playerSphere, D3DXVECTOR3 vel)
 {
-	for(int i=0; i<(int)this->windSpheres->size(); i++)
-	{
-		//if the player collide with a windSphere 
-		//add it to 
-		if(SphereVSSphere(this->windSpheres->at(i).sphere, playerSphere))
-		{
-			this->collidedSpheres->push_back(&this->windSpheres->at(i));
-		}
-	}
+	callLua_uppdateWindSpheres();
+	return true;
 }
 
 
-
+void WindEmiter::callLua_uppdateWindSpheres()
+{
+	//function uppdateWindSpheres(spheres)
+	lua_getglobal(luaState, "uppdateWindSpheres");
+	lua_pushlightuserdata(luaState, (void*)&windSpheres);
+}
