@@ -261,7 +261,7 @@ bool ParseAnimationFile			(std::string& in, ImportedObjectData* d)
 				if(!ParseInteger(in, frameNum))	return false;
 				if(frameNum < 0)				return false;
 				if(!ParseFloat(in, frameTime))	return false;
-				if(frameTime <= 0.0f)			return false;
+				if(frameTime < 0.0f)			return false;
 
 				d->objects.push_back(ObjectData());
 				currObject = (int)d->objects.size()-1;
@@ -291,6 +291,7 @@ bool ParseStandardFile			(std::string& in, ImportedObjectData* d)
 	std::string flag;
 	bool result = true;
 	int safteyCounter = iChar;
+	int safteyMax = (int)(fileSize + ((int)fileSize*0.5f));
 
 	while(iChar != fileSize && safteyCounter < fileSize)
 	{
@@ -304,7 +305,6 @@ bool ParseStandardFile			(std::string& in, ImportedObjectData* d)
 				if(!ParseInteger(in, count))	return false;
 				if(!count)						return false;
 				
-
 				//No animations, then only one mesh is valid
 				d->objects.resize(1);
 				d->objects[0].vertex = new std::vector<VERTEX::VertexPNT>(count);

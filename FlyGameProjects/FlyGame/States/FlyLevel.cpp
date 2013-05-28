@@ -24,6 +24,8 @@ bool FlyState_Level::Initiate(FlyGame* instance)
 {
 	this->state = 0;
 	this->lastState = 0; 
+	this->controlScheme = CONTROL_Debug;
+	//this->controlScheme = CONTROL_Casual;
 
 	this->entryInstance = instance;
 
@@ -31,7 +33,7 @@ bool FlyState_Level::Initiate(FlyGame* instance)
 		return false;
 
 
-	if(!this->ReadLevel(L"..\\Resources\\Levels\\canyon.fgl"))
+	if(!this->ReadLevel(L"..\\Resources\\Levels\\ocean.fgl"))
 		return false;
 
 	//Input activation
@@ -47,13 +49,6 @@ bool FlyState_Level::Initiate(FlyGame* instance)
 	this->mainCamera.SetOrthogonalMatrix(1200.0f, 600.0f, 0.1f, 10.0f);
 	this->mainCamera.Render();
 	this->menuCamera.Render();
-
-	//Audio initialization
-	this->entryInstance->GetCoreInstance()->Audio_Initialize();
-	const char* path = "..\\Resources\\Sound\\level_background.mp3";	
-	this->entryInstance->GetCoreInstance()->Audio_LoadLevelSound(path);
-	this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_LevelSoundTrack);
-	this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wind);
 
 
 	//Particle effects
@@ -72,6 +67,13 @@ bool FlyState_Level::Initiate(FlyGame* instance)
 
 	//Wind collision with lua
 	this->windCollision.Initialize(this->entryInstance->GetLuaState());
+
+	//Audio initialization
+	this->entryInstance->GetCoreInstance()->Audio_Initialize();
+	const char* path = "..\\Resources\\Sound\\level_background.mp3";	
+	this->entryInstance->GetCoreInstance()->Audio_LoadLevelSound(path);
+	this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_LevelSoundTrack);
+	this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wind);
 
 	return true;
 }
@@ -113,27 +115,35 @@ bool FlyState_Level::Update()
 	//Collision against pickups
 	for(unsigned int i = 0; i < 3; i++)
 	{
-		if(!this->pickups[i].GetTaken() && SphereVSSphere(*this->pickups[i].GetBoundingSphere(), *this->player.GetBoundingSphere()))
+		if(!this->pickups[i].GetTaken())
 		{
-			this->pickupParticle.SetPosition(this->pickups[i].GetPosition());
-			this->pickupParticle.EmitParticles(this->mainTimer->GetDeltaTime()*1000.0f,vec3(0.0f, 0.0f, 1.0f));
-			this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_CargoPickup);
-			this->pickups[i].SetPickTaken(true);
+			this->pickups[i].Update();
+			if(SphereVSSphere(*this->pickups[i].GetBoundingSphere(), *this->player.GetBoundingSphere()))
+			{
+				this->pickupParticle.SetPosition(this->pickups[i].GetPosition());
+				this->pickupParticle.EmitParticles(this->mainTimer->GetDeltaTime()*1000.0f,vec3(0.0f, 0.0f, 1.0f));
+				this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_CargoPickup);
+				this->pickups[i].SetPickTaken(true);
 
-			//Save data to file
+				//Save data to file
+			}
 		}
 
 	}
 	//Collision against energy
 	for(unsigned int i = 0; i < this->energy.size(); i++)
 	{
-		if(!this->energy[i].GetTaken() && SphereVSSphere(*this->energy[i].GetBoundingSphere(), *this->player.GetBoundingSphere()))
+		if(!this->energy[i].GetTaken() )
 		{
-			this->pickupParticle.SetPosition(this->energy[i].GetPosition());
-			this->pickupParticle.EmitParticles(this->mainTimer->GetDeltaTime()*1000.0f,vec3(0.0f, 0.0f, 1.0f));
-			this->energy[i].SetPickTaken(true);
-			this->player.DeductEnergy(-1000);
-			this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_EnergyPickup);
+			this->energy[i].Update();
+			if(SphereVSSphere(*this->energy[i].GetBoundingSphere(), *this->player.GetBoundingSphere()))
+			{
+				this->pickupParticle.SetPosition(this->energy[i].GetPosition());
+				this->pickupParticle.EmitParticles(this->mainTimer->GetDeltaTime()*1000.0f,vec3(0.0f, 0.0f, 1.0f));
+				this->energy[i].SetPickTaken(true);
+				this->player.DeductEnergy(-1000);
+				this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_EnergyPickup);
+			}
 		}
 	}
 	
@@ -155,18 +165,7 @@ bool FlyState_Level::Update()
 	
 	//this->entryInstance->GetCoreInstance()->Audio_PlaySound(); volume needs to be calculated from current velocity this->player.GetVelocity().z/this->player.GetMaxVelocity().z;	
 
-		}
-	}
-	for(unsigned int i = 0; i < this->energyPickups.size(); i++)
-	{
-		
-		((FlyMeshAnimated*)this->energyPickups[i])->UpdateAnimation(0); 
-		if(SphereVSSphere(*this->energyPickups[i]->getBoundingSphere(), *this->player.GetBoundingSphere()))
-		{
-			this->energyPickups.erase(this->energyPickups.begin()+i);
-			i--;
-			//play sound
-			this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_EnergyPickup);
+	
 	this->player.GetModel()->at(0)->Update();
 	
 	this->UIorthographic[0]->setScale(vec3((this->player.GetEnergy()/this->player.GetMaxEnergy())*20.0f,1.0f,1.0f));
@@ -453,7 +452,7 @@ bool FlyState_Level::Render()
 
 	for(unsigned int i = 0; i < this->dirLights.size(); i++)
 	{
-		//this->dirLights[i]->Render(f);
+		this->dirLights[i]->Render(f);
 	}
 	for(unsigned int i = 0; i< this->pointLights.size(); i++)
 	{
@@ -477,26 +476,10 @@ bool FlyState_Level::Render()
 
 		this->theWorld[0]->setShader(shaders[FlyShader_Shadow]);
 		this->theWorld[0]->Render(f);
-	}
-
-	for(unsigned int i = 0; i < this->dirLights.size(); i++)
-	{
-		this->dirLights[i]->Render(f);
-	}
-	for(unsigned int i = 0; i < this->shadowViews.size(); i++)
-	{
-		for(unsigned int i = 0; i < this->levelEntities.size(); i++)
-		{	
-			this->levelEntities[i]->setShader(shaders[FlyShader_Shadow]);
-			this->levelEntities[i]->Render(f);
-		}
-
-		this->theWorld[0]->setShader(shaders[FlyShader_Shadow]);
-		this->theWorld[0]->Render(f);
-
 		this->player.GetModel()->at(0)->setShader(shaders[FlyShader_Shadow]);
 		this->player.Render(f);
 	}
+
 
 	this->entryInstance->GetCoreInstance()->Gfx_DrawSkyBox();
 	this->entryInstance->GetCoreInstance()->Gfx_DrawGbuffer();
@@ -563,37 +546,7 @@ bool FlyState_Level::MenuUpdate()
 	return true;
 }
 
-	this->entryInstance->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\new_2.fgm", &this->water, FlyGeometry_Water);
-	readVector = D3DXVECTOR3(200,200,1);
-	this->water[0]->setScale(readVector);
-	this->water[0]->setShader(shaders[FlyShader_gBufferBump]);
-	this->water[0]->setPosition(vec3(-100, -150, 100));
-	this->water[0]->setRotation(vec3(90, 0, 0));
-	BoundingSphere* sphereW = new BoundingSphere;
-
-	sphereW->center = this->water[0]->getPosition();
-	sphereW->radius = 200.0f;
-	this->water[0]->setBoundingSphere(sphereW);
-	PointLight* light = new PointLight(Type::LIGHT);
-	PointLight* light2 = new PointLight(Type::LIGHT);
-	PointLightProxy lightProxy; 
-	lightProxy.ambient = D3DXVECTOR4(0.2f, 0.2f , 0.2f , 1.0f);
-	lightProxy.diffuse = D3DXVECTOR4(1.0f, 0.2f , 0.0f , 1.0f);
-	lightProxy.specular = D3DXVECTOR4(0.2f, 0.2f , 0.2f , 1.0f);
-	lightProxy.posRange = D3DXVECTOR4(0.0f, 0.0f , 0.0f , 50.0f);
-	lightProxy.attenuate = D3DXVECTOR4(0.0f, 0.0f , 0.0f , 0.0f);
-
-	light->Initialize(lightProxy,  shaders[FlyShader_PointLight]);
-	pointLights.push_back(light);
-
-
-	lightProxy.diffuse = D3DXVECTOR4(0.0f, 1.0f , 0.0f , 1.0f);
-	lightProxy.specular = D3DXVECTOR4(0.2f, 0.2f , 0.2f , 1.0f);
-	lightProxy.posRange = D3DXVECTOR4(0.0f, -50.0f , 0.0f , 50.0f);
-	light2->Initialize(lightProxy,  shaders[FlyShader_PointLight]);
-	pointLights.push_back(light2);
-
-
+	
 vec3 FlyState_Level::SlideCollision(vec3 oldPosition, vec3 velocity, int iterations, vec3 safeLocation)
 {
 	float maxSpeed = 0.3f;
@@ -756,7 +709,7 @@ vec3 FlyState_Level::SlideCollision(vec3 oldPosition, vec3 velocity, int iterati
 					this->collisionParticle.SetPosition(vec3(collisionParticle.x*this->player.GetEllipse().radiusVector.x, collisionParticle.y*this->player.GetEllipse().radiusVector.y, collisionParticle.z*this->player.GetEllipse().radiusVector.z));
 					this->collisionParticle.EmitParticles(this->mainTimer->GetDeltaTime()*1000.0f, vec3(normalizedVelocity));
 
-					this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wings);
+					this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Collision);
 
 					this->player.DeductEnergy(10);
 
@@ -893,7 +846,7 @@ vec3 FlyState_Level::SlideCollision(vec3 oldPosition, vec3 velocity, int iterati
 				this->collisionParticle.SetPosition(vec3(collisionParticle.x*this->player.GetEllipse().radiusVector.x, collisionParticle.y*this->player.GetEllipse().radiusVector.y, collisionParticle.z*this->player.GetEllipse().radiusVector.z));
 				this->collisionParticle.EmitParticles(this->mainTimer->GetDeltaTime()*1000.0f, vec3(normalizedVelocity));
 
-				this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wings);
+				this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Collision);
 
 				this->player.DeductEnergy(20);
 
@@ -928,7 +881,7 @@ vec3 FlyState_Level::SlideCollision(vec3 oldPosition, vec3 velocity, int iterati
 		return oldPosition + V;
 	}
 
-	this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wings);
+	this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Collision);
 	D3DXVECTOR3 newPosition;
 
 	if(nearestDistance >= D3DXVec3Length(&this->player.GetVelocity())*0.01f)

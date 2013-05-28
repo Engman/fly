@@ -42,8 +42,10 @@ class Entity abstract
 
 	public:
 		Entity									(int _type)
-			:type(_type), name(L"Entity")
-		{}
+			:type(_type), name(L"Entity"), translation(0.0f, 0.0f, 0.0f), scale(1.0f, 1.0f, 1.0f), rotation(0.0f, 0.0f, 0.0f)
+		{
+			D3DXMatrixIdentity(&world);
+		}
 		Entity									(const Entity& origObj)
 		{
 			this->world				= origObj.world;

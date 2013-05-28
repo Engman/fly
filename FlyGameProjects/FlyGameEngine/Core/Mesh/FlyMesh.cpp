@@ -6,6 +6,8 @@ FlyMesh::FlyMesh()
 {
 	D3DXMatrixIdentity(&this->world);
 	this->rotation	= vec3(0.0f, 0.0f, 0.0f);
+	this->scale = vec3(1.0f, 1.0f, 1.0f);
+	this->translation = vec3(0.0f, 0.0f, 0.0f);
 	D3DXMatrixIdentity(&this->world);
 }
 FlyMesh::~FlyMesh()

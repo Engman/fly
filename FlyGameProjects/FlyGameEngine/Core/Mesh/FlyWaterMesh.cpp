@@ -5,7 +5,6 @@ FlyWaterMesh::FlyWaterMesh()
 	:Entity(Type::OBJECT)
 {
 	D3DXMatrixIdentity(&this->world);
-	D3DXMatrixIdentity(&this->transformation);
 	this->rotation	= vec3(0.0f, 0.0f, 0.0f);
 	D3DXMatrixIdentity(&this->world);
 }

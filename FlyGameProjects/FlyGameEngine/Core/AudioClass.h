@@ -71,7 +71,7 @@ private:
 	void unLoadSounds();
 	bool loadMenuSound(std::vector<const char*> path);
 	bool loadLevelSound(std::vector<const char*> path);
-	void FmodErrorCheck(FMOD_RESULT result);
+	bool FmodErrorCheck(FMOD_RESULT result);
 
 public:
 	

@@ -10,6 +10,7 @@
 #include "..\..\FlyGameEngine\Core\Entity.h"
 #include "..\GameObjects\FlyPlayer.h"
 #include "..\..\FlyGameEngine\Core\Light\DirectionLight.h"
+#include "..\..\FlyGameEngine\Core\Light\PointLight.h"
 #include "..\..\FlyGameEngine\Util\Proxy.h"
 #include "../../FlyGameEngine/Core/ParticleEngineSystem.h"
 #include "../../FlyGameEngine/Core/ParticleCollisionSystem.h"

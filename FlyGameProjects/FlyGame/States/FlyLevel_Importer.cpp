@@ -103,9 +103,12 @@ bool FlyState_Level::_ImportTerrain(wifstream& file, vector<IShader*>& shaders)
 	wstring dummy = L"";
 	if(!this->entryInstance->GetCoreInstance()->Geometry_Load(ReadString(file, dummy).c_str(), &this->theWorld, FlyGeometry_Terrain, 1, 5))
 		return false;
-	this->theWorld[0]->setPosition(ReadVector3(file));
-	this->theWorld[0]->setRotation(ReadVector3(file));	
-	this->theWorld[0]->setScale(ReadVector3(file));
+	//this->theWorld[0]->setPosition(ReadVector3(file));
+	//this->theWorld[0]->setRotation(ReadVector3(file));	
+	//this->theWorld[0]->setScale(ReadVector3(file));
+	ReadVector3(file);
+	ReadVector3(file);	
+	ReadVector3(file);
 	this->theWorld[0]->setShader(shaders[ReadInt(file)]);
 
 	return true;
@@ -116,17 +119,25 @@ bool FlyState_Level::_ImportSkybox(wifstream& file, vector<IShader*>& shaders)
 	if(!this->entryInstance->GetCoreInstance()->Geometry_Load(ReadString(file, dummy).c_str(), &this->skyBox))
 		return false;
 	this->skyBox[0]->setShader(shaders[ReadInt(file)]);
+	this->skyBox[0]->setScale(vec3(20 , 20 ,20));
 
 	return true;
 }
 bool FlyState_Level::_ImportWater(wifstream& file, vector<IShader*>& shaders)	
 {
 	wstring dummy = L"";
-	ReadString(file, dummy);
+	
+	if(!this->entryInstance->GetCoreInstance()->Geometry_Load(ReadString(file, dummy).c_str(), &this->water, FlyGeometry_Water, 1, 3))
+		return false;
+
+	//this->water[0]->setPosition(ReadVector3(file));
+	//this->water[0]->setRotation(ReadVector3(file));
+	//this->water[0]->setScale(ReadVector3(file));
 	ReadVector3(file);
+	ReadVector3(file);	
 	ReadVector3(file);
-	ReadVector3(file);
-	ReadInt(file);
+
+	this->water[0]->setShader(shaders[ReadInt(file)]);
 
 	return true;
 }
@@ -136,10 +147,13 @@ bool FlyState_Level::_ImportStatic(wifstream& file, vector<IShader*>& shaders)
 	if(this->entryInstance->GetCoreInstance()->Geometry_Load(ReadString(file, dummy).c_str(), &this->levelEntities, FlyGeometry_Terrain, 1, 3))
 	{
 		int k = (int)this->levelEntities.size() - 1;
-		this->levelEntities[k]->setPosition(ReadVector3(file));
-		this->levelEntities[k]->setRotation(ReadVector3(file));
-		this->levelEntities[k]->setScale(ReadVector3(file));
-		this->levelEntities[k]->setShader(shaders[ReadInt(file)]);
+		//this->levelEntities[k]->setPosition(ReadVector3(file));
+		//this->levelEntities[k]->setRotation(ReadVector3(file));
+		//this->levelEntities[k]->setScale(ReadVector3(file));
+		ReadVector3(file);
+		ReadVector3(file);	
+		ReadVector3(file);
+		this->levelEntities[k]->setShader(shaders[FlyShader_gBufferDefault]);
 		dynamic_cast<Terrain*>(this->levelEntities[k])->TransformBoxes();
 	}
 	else
@@ -159,12 +173,12 @@ bool FlyState_Level::_ImportPickups(wifstream& file, vector<IShader*>& shaders)
 
 	for(int i = 0; i < nrOfStuff; i++)
 	{
-		ReadString(file, fgmPath);
+		//ReadString(file, fgmPath);
+		fgmPath = L"..\\Resources\\Models\\cargo.fgm";
 		vec3 p = ReadVector3(file);
 		vec3 r = ReadVector3(file);
 		vec3 s = ReadVector3(file);
-		int sh = ReadInt(file);
-		if(!this->pickups[i].Initialize(this->entryInstance, fgmPath, p, r, s, sh))
+		if(!this->pickups[i].Initialize(this->entryInstance, fgmPath, p, r, s, FlyShader_gBufferDefault))
 			return false;
 	}
 	return true;
@@ -175,14 +189,13 @@ bool FlyState_Level::_ImportEnergy(wifstream& file, vector<IShader*>& shaders)
 	wstring readString = L"";
 	for(int i = 0; i < nrOfStuff; i++)
 	{
-		ReadString(file, readString);
+		readString = L"..\\Resources\\Models\\energy.fgm";
 
 		this->energy.push_back(EnergyPickup());
 		vec3 p = ReadVector3(file);
 		vec3 r = ReadVector3(file);
 		vec3 s = ReadVector3(file);
-		int sh = ReadInt(file);
-		if(!this->energy[i].Initialize(this->entryInstance, readString, p, r, s, sh))
+		if(!this->energy[i].Initialize(this->entryInstance, readString, p, r, s, FlyShader_gBufferDefault))
 			return false;
 	}
 
@@ -217,27 +230,14 @@ bool FlyState_Level::_ImportLights(wifstream& file, vector<IShader*>& shaders)
 
 		
   
-		LightViewProj lightViewProj; 
-		lightViewProj.lView = viewMatrix;//lightCam.GetViewMatrix();
-		lightViewProj.lProj = projectionMatrix;//lightCam.GetProjectionMatrix();
+		LightViewProj *lightViewProj = new LightViewProj(); 
+		lightViewProj->lView = viewMatrix;//lightCam.GetViewMatrix();
+		lightViewProj->lProj = projectionMatrix;//lightCam.GetProjectionMatrix();
   
-		BaseBuffer* dirLightViewProj = new BaseBuffer();
-		BaseBuffer::BUFFER_INIT_DESC viewProjBufferDesc;
-		viewProjBufferDesc.dc = D3DShell::self()->getDeviceContext();
-		viewProjBufferDesc.device = D3DShell::self()->getDevice();
-		viewProjBufferDesc.elementSize = sizeof(LightViewProj);
-		viewProjBufferDesc.nrOfElements = 1;
-		viewProjBufferDesc.data = &lightViewProj;
-		viewProjBufferDesc.type = BUFFER_FLAG::TYPE_CONSTANT_PS_BUFFER;
-		viewProjBufferDesc.usage = BUFFER_FLAG::USAGE_DYNAMIC_CPU_WRITE_DISCARD;
-
-		if(FAILED(dirLightViewProj->Initialize(viewProjBufferDesc)))
-			return false;
-		
 		DirectionLight* light = new DirectionLight(Type::LIGHT);
 		DirectionLight::DIRLIGHT_DESC dirLight; 
 		dirLight.data = dirLightProxy; 
-		dirLight.viewProj = lightViewProj;
+		dirLight.viewProj = *lightViewProj;
 		dirLight.shader =  shaders[FlyShader_DirLight];
  
 		light->Initialize(dirLight);
@@ -248,13 +248,24 @@ bool FlyState_Level::_ImportLights(wifstream& file, vector<IShader*>& shaders)
 		{
 			this->lightCamera.SetProjectionMatrix(projectionMatrix);
 			this->lightCamera.SetViewMatrix(viewMatrix); 
-			shadowViews.push_back(dirLightViewProj);
+			shadowViews.push_back(lightViewProj);
 		}
   
 	}
 
 	// Pointlights
 	nrOfStuff = ReadInt(file);
+	for (int i = 0; i < nrOfStuff; i++)
+	{
+		PointLight* light = new PointLight(Type::LIGHT);
+		PointLightProxy lightProxy; 
+		lightProxy.ambient		= ReadVector4(file);
+		lightProxy.diffuse		= ReadVector4(file);
+		lightProxy.specular		= ReadVector4(file);
+		lightProxy.posRange		= ReadVector4(file);
+		light->Initialize(lightProxy,  shaders[ReadInt(file)]);
+		pointLights.push_back(light);
+	}
 
 	return true;
 }
@@ -320,5 +331,6 @@ wstring& FlyState_Level::ReadString(wifstream& in, wstring& outStr)
 	in >> outStr;
 	return outStr;
 }
+
 
 

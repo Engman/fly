@@ -171,25 +171,21 @@ void FlyState_Level::_InputDebug()
 
 	if(Input::self()->IsButtonPressed(DIK_W))
 	{
-		this->mainCamera.RelativeForward(0.2f);
-		//this->player.UpdateAnimation(1);
-		//this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wings);
+		this->mainCamera.RelativeForward(1.2f);
 	}
 	if(Input::self()->IsButtonPressed(DIK_S))
 	{
-		this->mainCamera.RelativeForward(-0.2f);
-		//this->player.StopAnimation(1);
+		this->mainCamera.RelativeForward(-1.2f);
 	}
 	if(Input::self()->IsButtonPressed(DIK_A))
 	{
-		this->mainCamera.RelativeRight(-0.2f);
+		this->mainCamera.RelativeRight(-1.2f);
 		//this->player.UpdateAnimation(2);
 		//this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wings);
 	}
 	if(Input::self()->IsButtonPressed(DIK_D))
 	{
-		this->mainCamera.RelativeRight(0.2f);
-		//this->player.StopAnimation(2);
+		this->mainCamera.RelativeRight(1.2f);
 	}
 	if(mouseY < 0)
 	{

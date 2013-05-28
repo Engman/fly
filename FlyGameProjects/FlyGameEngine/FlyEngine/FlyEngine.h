@@ -115,13 +115,14 @@ class FlyEngine
 		/** End deferred scene */
 		virtual void		FLYCALL		Gfx_EndDeferredScene		()																	= 0;
 		/** End deferred scene with ortho */
-		virtual void		FLYCALL		Gfx_EndDeferredSceneOrtho		()																	= 0;
+		virtual void		FLYCALL		Gfx_EndDeferredSceneOrtho	()																	= 0;
 		virtual void		FLYCALL		Gfx_DrawSkyBox				()																	= 0;
 		virtual void		FLYCALL		Gfx_DrawGbuffer				()																	= 0;
-		virtual void		FLYCALL		Gfx_DrawShadows				(vector<LightViewProj*> *shadowViews)	=0;
+		virtual void		FLYCALL		Gfx_DrawGbufferOrtho		()																	= 0;
+		virtual void		FLYCALL		Gfx_DrawShadows				(vector<LightViewProj*> *shadowViews)								= 0;
 		virtual void		FLYCALL		Gfx_DrawLighting			()																	= 0;
 		virtual void		FLYCALL		Gfx_DrawBlur				()																	= 0;
-		virtual void		FLYCALL 	Gfx_DrawFinalPicture(vector<LightViewProj*> *shadowViews)=0;
+		virtual void		FLYCALL 	Gfx_DrawFinalPicture		(vector<LightViewProj*> *shadowViews)=0;
 
 		/** Resizes the render targets */
 		virtual void		FLYCALL		Gfx_Resize					(int width, int height)												= 0;
@@ -149,7 +150,7 @@ class FlyEngine
 		/** Loads the base terrain 
 		*	Returns true on success
 		*	New Reference */
-		virtual bool		FLYCALL		Geometry_Load			(const wchar_t* path, vector<Entity*>*, FlyEngineGeometry special, int renderBoxes, int collisionBoxes)	= 0;
+		virtual bool		FLYCALL		Geometry_Load				(const wchar_t* path, vector<Entity*>*, FlyEngineGeometry special, int renderBoxes, int collisionBoxes)	= 0;
 		/** Trys to pick an object in world space from given cordinates, 
 		*	returns pointer to object on success */
 		virtual Entity*		FLYCALL		Geometry_Pick				(const vector<Entity*>& objectToTest, bool orto = false)			= 0;
@@ -163,15 +164,15 @@ class FlyEngine
 		virtual void		FLYCALL		Input_Deactivate			()																	= 0;
 		
 		//sound
-		virtual void		FLYCALL		Audio_Initialize			()				= 0;
-		virtual void		FLYCALL		Audio_LoadMenuSound			()				= 0;
-		virtual void		FLYCALL		Audio_LoadLevelSound			(const char* soundTrack)	= 0;
-		virtual void		FLYCALL		Audio_ToggleSoundTrack			()				= 0; 
+		virtual void		FLYCALL		Audio_Initialize			()																	= 0;
+		virtual void		FLYCALL		Audio_LoadMenuSound			()																	= 0;
+		virtual void		FLYCALL		Audio_LoadLevelSound		(const char* soundTrack)											= 0;
+		virtual void		FLYCALL		Audio_ToggleSoundTrack		()																	= 0; 
 
-		virtual void		FLYCALL		Audio_PlaySound				(FlyLevelSounds sound)		= 0;
-		virtual void		FLYCALL		Audio_PlayMenuSound			(FlyMenuSounds sound) 		= 0;		
-		virtual void		FLYCALL		Audio_Shutdown				()				= 0;
-		virtual void		FLYCALL		Audio_Update				(D3DXVECTOR3 pos, float speed)	= 0; 
+		virtual void		FLYCALL		Audio_PlaySound				(FlyLevelSounds sound)												= 0;
+		virtual void		FLYCALL		Audio_PlayMenuSound			(FlyMenuSounds sound) 												= 0;		
+		virtual void		FLYCALL		Audio_Shutdown				()																	= 0;
+		virtual void		FLYCALL		Audio_Update				(D3DXVECTOR3 pos, float speed)										= 0; 
 
 		//---------------------
 

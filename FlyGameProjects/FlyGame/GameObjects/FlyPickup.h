@@ -21,7 +21,7 @@ class FlyPickup
 		bool Initialize(FlyGame* entry, wstring modelName, vec3 position, vec3 rotation, vec3 scale, int shader);
 
 		void Render(ViewFrustum& frustum);
-		void Update();		
+		void Update();	
 
 		void SetPosition(vec3 position);
 		void SetRotation(vec3 rotation);

@@ -132,8 +132,7 @@ void FLYCALL FlyEngine_Core::Gfx_DrawLighting()
 	cameraBuffer->Unmap();
 	lightDrawData.camForLight = this->cameraBuffer; 
 
-	//this->dirLightShader->draw(lightDrawData);
-
+	this->dirLightShader->draw(lightDrawData);
 	this->pointLightShader->draw(lightDrawData);
 
 	//reset the blend state to normal
@@ -186,9 +185,18 @@ void FLYCALL FlyEngine_Core::Gfx_DrawFinalPicture(vector<LightViewProj*> *shadow
 	
 	D3DXMATRIX lightViewProj;
 
-	
-	D3DXMATRIX lView = shadowViews->at(0)->lView;
-	D3DXMATRIX lProj = shadowViews->at(0)->lProj; 
+	D3DXMATRIX lView;
+	D3DXMATRIX lProj;
+	if((*shadowViews).size())
+	{
+		lView = shadowViews->at(0)->lView;
+		lProj = shadowViews->at(0)->lProj; 
+	}
+	else
+	{
+		D3DXMatrixIdentity(&lView);
+		D3DXMatrixIdentity(&lProj);
+	}
 	
 
 	D3DXMATRIX lViewProj = lView * lProj;
@@ -199,7 +207,7 @@ void FLYCALL FlyEngine_Core::Gfx_DrawFinalPicture(vector<LightViewProj*> *shadow
 	camView->mInvViewProj = invCameraViewProj;
 	camView->mInvView	  = lViewProj; 
 	camView->cameraPos	= this->activeCamera->GetPosition();
-	camView->padd		=600;
+	camView->padd		= 600;
 	cameraBuffer->Unmap();
 
 	finalPictureDrawData.camForLight = cameraBuffer;

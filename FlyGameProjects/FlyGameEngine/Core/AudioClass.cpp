@@ -1,5 +1,13 @@
 #include "AudioClass.h"
 
+#if defined (_DEBUG) || defined (DEBUG)
+#include <iostream>
+#define C_PRINT(STR)\
+		std::cout << STR
+#else
+#define C_PRINT
+#endif
+
 const int   INTERFACE_UPDATETIME = 50;      // 50ms update for interface
 const float DISTANCEFACTOR = 1.0f;          // Units per meter.  I.e feet would = 3.28.  centimeters would = 100.
 bool AudioClass::instanceFlag = false;
@@ -37,7 +45,7 @@ void AudioClass::intitialize()
 	result = fmodSystem->init(maxChannels, FMOD_INIT_3D_RIGHTHANDED,0);
 	result = fmodSystem->set3DSettings(1.0f, 1.0f, 1.0f);
 
-
+	channel.resize(10);
 }
 bool AudioClass::loadSound(FlySoundState state, std::vector<const char*> path)
 {
@@ -68,13 +76,16 @@ bool AudioClass::loadMenuSound(std::vector<const char*> path)
 	sounds.resize(SOUNDMENU_COUNT);
 
 	//stream the big sound files 
-	result = fmodSystem->createStream(path[FlySound_MenuSoundTrack], FMOD_DEFAULT, 0 ,& sounds[FlySound_MenuSoundTrack]);
+	if ( !FmodErrorCheck( fmodSystem->createStream(path[FlySound_MenuSoundTrack], FMOD_DEFAULT, 0 ,& sounds[FlySound_MenuSoundTrack]) ) )
+		return false;
 	sounds[FlySound_MenuSoundTrack]->setMode(FMOD_LOOP_NORMAL);
 
-	result = fmodSystem->createSound(path[FlySound_Hover], FMOD_DEFAULT, 0, & sounds[FlySound_Hover]);
+	if ( !FmodErrorCheck( fmodSystem->createSound(path[FlySound_Hover], FMOD_DEFAULT, 0, & sounds[FlySound_Hover]) ) )
+		return false;
 	sounds[FlySound_Hover]->setMode(FMOD_LOOP_NORMAL);
 
-	result = fmodSystem->createSound(path[FlySound_Click], FMOD_DEFAULT, 0, & sounds[FlySound_Click]);
+	if ( !FmodErrorCheck( fmodSystem->createSound(path[FlySound_Click], FMOD_DEFAULT, 0, & sounds[FlySound_Click]) ) )
+		return false;
 	sounds[FlySound_Click]->setMode(FMOD_LOOP_NORMAL);
 
 	return true; 
@@ -91,39 +102,48 @@ bool AudioClass::loadLevelSound(std::vector<const char*> path)
 	sounds.resize(SOUNDLEVEL_COUNT);
 
 	//stream the big sound files 
-	result = fmodSystem->createStream(path[FlySound_LevelSoundTrack], FMOD_DEFAULT, 0 ,& sounds[FlySound_LevelSoundTrack]);
+	if ( !FmodErrorCheck( fmodSystem->createStream(path[FlySound_LevelSoundTrack], FMOD_DEFAULT, 0 ,& sounds[FlySound_LevelSoundTrack]) ) )
+		return false;
 	sounds[FlySound_LevelSoundTrack]->setMode(FMOD_LOOP_NORMAL);
 	
 
 	//------Collision sound--------//
-	result = fmodSystem->createSound(path[FlySound_Collision], FMOD_DEFAULT, 0, & sounds[FlySound_Collision]);
+	if ( !FmodErrorCheck( fmodSystem->createSound(path[FlySound_Collision], FMOD_DEFAULT, 0, & sounds[FlySound_Collision]) ) )
+		return false;
 	sounds[FlySound_Collision]->setMode(FMOD_LOOP_NORMAL);
 
 	
 	//----EnergyPickup sound-------//
-	result = fmodSystem->createSound(path[FlySound_EnergyPickup], FMOD_DEFAULT, 0, & sounds[FlySound_EnergyPickup]);
+	if ( !FmodErrorCheck( fmodSystem->createSound(path[FlySound_EnergyPickup], FMOD_DEFAULT, 0, & sounds[FlySound_EnergyPickup]) ) )
+		return false;
 	sounds[FlySound_EnergyPickup]->setMode(FMOD_LOOP_OFF);
 
 	
 	//----CargoPickup sound-------//
-	result = fmodSystem->createSound(path[FlySound_CargoPickup], FMOD_DEFAULT, 0, & sounds[FlySound_CargoPickup]);
+	if ( !FmodErrorCheck( fmodSystem->createSound(path[FlySound_CargoPickup], FMOD_DEFAULT, 0, & sounds[FlySound_CargoPickup]) ) )
+		return false;
 	sounds[FlySound_CargoPickup]->setMode(FMOD_LOOP_OFF);
 
 	//------LowEnergy sound-------//
-	result = fmodSystem->createSound(path[FlySound_LowEnergy], FMOD_DEFAULT, 0, & sounds[FlySound_LowEnergy]);
+	if ( !FmodErrorCheck( fmodSystem->createSound(path[FlySound_LowEnergy], FMOD_DEFAULT, 0, & sounds[FlySound_LowEnergy]) ) )
+		return false;
 	sounds[FlySound_LowEnergy]->setMode(FMOD_LOOP_OFF);
 
 	//------NoEnergy sound-------//
-	result = fmodSystem->createSound(path[FlySound_NoEnergy], FMOD_DEFAULT, 0, & sounds[FlySound_NoEnergy]);
+	if ( !FmodErrorCheck( fmodSystem->createSound(path[FlySound_NoEnergy], FMOD_DEFAULT, 0, & sounds[FlySound_NoEnergy]) ) )
+		return false;
 	sounds[FlySound_NoEnergy]->setMode(FMOD_LOOP_OFF);
 
 	//--------Thrust sound-------//
-	result = fmodSystem->createSound(path[FlySound_Thrust], FMOD_DEFAULT, 0, & sounds[FlySound_Thrust]);
+	if ( !FmodErrorCheck( fmodSystem->createSound(path[FlySound_Thrust], FMOD_DEFAULT, 0, & sounds[FlySound_Thrust]) ) )
+		return false;
 	sounds[FlySound_Thrust]->setMode(FMOD_LOOP_OFF);
 	
 	//----------Wind sound-------//
-	result = fmodSystem->createSound(path[FlySound_Wind], FMOD_DEFAULT, 0, & sounds[FlySound_Wind]);
-	result = sounds[FlySound_Wind]->set3DMinMaxDistance(0.5f * DISTANCEFACTOR, 5000.0f * DISTANCEFACTOR);
+	if ( !FmodErrorCheck( fmodSystem->createSound(path[FlySound_Wind], FMOD_DEFAULT, 0, & sounds[FlySound_Wind]) ) )
+		return false;
+	if ( !FmodErrorCheck( sounds[FlySound_Wind]->set3DMinMaxDistance(0.5f * DISTANCEFACTOR, 5000.0f * DISTANCEFACTOR) ) )
+		return false;
 	sounds[FlySound_Wind]->setMode(FMOD_LOOP_NORMAL);
 	
 	/*FMOD_VECTOR pos = { -10.0f * DISTANCEFACTOR, 0.0f, 0.0f };
@@ -165,6 +185,9 @@ void AudioClass::uppdateSounds(playerSoundData soundData)
 }
 void AudioClass::playLevelSound(FlyLevelSounds sound)
 {	
+	if(this->sounds.size() < SOUNDLEVEL_COUNT)
+		return;
+
 	bool playing; 
 	switch(sound)
 	{
@@ -237,6 +260,9 @@ void AudioClass::playLevelSound(FlyLevelSounds sound)
 }
 void AudioClass::playMenuSound(FlyMenuSounds sound)
 {	
+	if(this->channel.size() < SOUNDLEVEL_COUNT)
+		return;
+
 	bool playing; 
 	switch(sound)
 	{
@@ -285,12 +311,12 @@ void AudioClass::toggleSoundTrack()
 	channel[FlySound_Wind]->setPaused(!paused);
 }
 
-void AudioClass::FmodErrorCheck(FMOD_RESULT result)	// this is an error handling function
+bool AudioClass::FmodErrorCheck(FMOD_RESULT result)	// this is an error handling function
 {						// for FMOD errors
 	if (result != FMOD_OK)
 	{
-		MessageBox(0, L"Error in Fmod", L"Error", MB_OK);
-		//printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
-		//exit(-1);
+		C_PRINT("Sound failed");
+		return false;
 	}
+	return true;
 }

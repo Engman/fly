@@ -1,4 +1,5 @@
 #include "EnergyPickup.h"
+#include "..\..\FlyGameEngine\Core\Mesh\FlyMeshAnimated.h"
 
 EnergyPickup::EnergyPickup()
 {
@@ -21,7 +22,8 @@ bool EnergyPickup::Initialize(FlyGame* entry, wstring modelName, vec3 position, 
 	sphere->center = position;
 	sphere->radius = 2.0f;
 	
-	entry->GetCoreInstance()->Geometry_Load(modelName.c_str(), &this->pickupModel);
+	if(!entry->GetCoreInstance()->Geometry_Load(modelName.c_str(), &this->pickupModel, FlyGeometry_AnimatedMesh, 1, 3))
+		return false;
 	this->pickupModel[0]->setScale(vec3(1.0f, 1.0f, 1.0f));
 	this->pickupModel[0]->setPosition(vec3(position));
 	this->pickupModel[0]->setRotation(vec3(rotation));
@@ -38,7 +40,8 @@ void EnergyPickup::Render(ViewFrustum& f)
 
 void EnergyPickup::Update()
 {
-	
+	if(this->pickupModel.size() > 0)
+		((FlyMeshAnimated*)this->pickupModel[0])->UpdateAnimation(0); 
 }
 
 void EnergyPickup::SetPickTaken(bool taken)
