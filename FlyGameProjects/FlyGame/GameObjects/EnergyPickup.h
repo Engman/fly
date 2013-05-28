@@ -18,18 +18,20 @@ class EnergyPickup
 		EnergyPickup();
 		virtual~EnergyPickup();
 
-		bool Initialize(FlyGame* entry, wstring modelName, vec3 position, vec3 rotation, int shader);
+		bool Initialize(FlyGame* entry, wstring modelName, vec3 position, vec3 rotation, vec3 scale, int shader);
 
 		void Render(ViewFrustum& frustum);
 		void Update();		
 
 		void SetPosition(vec3 position);
 		void SetRotation(vec3 rotation);
+		void SetScale(vec3 rotation);
 		void SetPickTaken(bool taken);
 		void SetShader(IShader* shader);
 
 		vec3 GetPosition() const;
 		vec3 GetRotation() const;
+		vec3 GetScale() const;
 		bool GetTaken() const;
 
 		BoundingSphere* GetBoundingSphere();

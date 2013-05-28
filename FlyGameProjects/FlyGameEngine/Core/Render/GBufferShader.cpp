@@ -15,7 +15,7 @@ void GBufferShader::draw(PER_FRAME_DATA& frameData)
 	int vertexC = 0;
 	
 	FLAGS::STATE_SAMPLING samp[1] =  { FLAGS::SAMPLER_Linear };
-	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_BackCullNoMS);
+	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_NoCullNoMs); //BackCullNoMS);
 	D3DShell::self()->setSamplerState(samp, FLAGS::PS, 0, 1);
 
 	this->shader->Render();
@@ -71,8 +71,12 @@ void GBufferShader::draw(PER_FRAME_DATA& frameData)
 			frameData.dc->PSSetShaderResources(0, 4, temp);
 		}
 
-		BaseBuffer* mat= drawData[i].material->GetBuffer();
-		mat->setBuffer();
+		BaseBuffer* mat = 0;
+		if(drawData[i].material)
+		{
+			mat = drawData[i].material->GetBuffer();
+			mat->setBuffer();
+		}
 		this->shader->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		
 		if(indexC)

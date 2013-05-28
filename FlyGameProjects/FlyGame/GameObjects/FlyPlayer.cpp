@@ -25,7 +25,7 @@ void FlyPlayer::Render(ViewFrustum& frustum)
 
 void FlyPlayer::Update()
 {
-	vector<D3DXVECTOR3>* vertexList = dynamic_cast<FlyMeshAnimated*>(this->playerModel[0])->GetTriangles();
+	vector<D3DXVECTOR3>* vertexList = ((FlyMeshAnimated*)(this->playerModel[0]))->GetTriangles();
 	BoundingBox box;
 	box.minPoint = vec3(0.0f, 0.0f, 0.0f);
 	box.maxPoint = vec3(0.0f, 0.0f, 0.0f);
@@ -89,6 +89,11 @@ void FlyPlayer::SetRotation(vec3 rotation)
 	this->playerModel[0]->setRotation(rotation);
 }
 
+void FlyPlayer::SetScale(vec3 scale)
+{
+	this->playerModel[0]->setScale(scale);
+}
+
 void FlyPlayer::SetVelocity(vec3 velocity)
 {
 	this->velocity = velocity;
@@ -102,11 +107,6 @@ void FlyPlayer::SetSmall(bool changed)
 void FlyPlayer::SetEllipseVector(vec3 radius)
 {
 	this->boundingEllipse.radiusVector = radius;
-}
-
-void FlyPlayer::SetEnergy(float energy)
-{
-	this->energy = energy;
 }
 
 vec3 FlyPlayer::GetPosition() const

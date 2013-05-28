@@ -70,8 +70,3 @@ float Timer::GetFPS()
 {
 	return this->fps;
 }
-
-float Timer::GetTime()
-{
-	return (this->startTime/this->ticksPerFrame);
-}

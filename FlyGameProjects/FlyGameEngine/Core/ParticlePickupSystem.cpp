@@ -175,35 +175,11 @@ void ParticlePickupSystem::EmitParticles(float frameTime, vec3 forward)
 
 		for(int i = 0; i < 10; i++)
 		{
-			
 			D3DXMATRIX rotation;
 			D3DXMatrixRotationYawPitchRoll(&rotation, i*0.628f, 0.0f, 0.0f);
 			vec4 vectorFour;
 
 			vec3 velocityThree = *D3DXVec4Transform(&vectorFour, &vec4(-forward, 0.0f), &rotation);
-
-	
-			// Now insert it into the particle array in the correct depth order.
-			this->particleList[this->currentParticleCount].model->setPosition(vec3(positionX, positionY, positionZ));
-			this->particleList[this->currentParticleCount].velocity = velocityThree;
-			this->particleList[this->currentParticleCount].active = true;
-			this->particleList[this->currentParticleCount].life = 2000.0f;
-			this->currentParticleCount++;
-
-			D3DXMatrixRotationYawPitchRoll(&rotation, 0.0, i*0.628f, 0.0f);
-
-			velocityThree = (vec3)*D3DXVec4Transform(&vectorFour, &vec4(-forward, 0.0f), &rotation);
-
-			// Now insert it into the particle array in the correct depth order.
-			this->particleList[this->currentParticleCount].model->setPosition(vec3(positionX, positionY, positionZ));
-			this->particleList[this->currentParticleCount].velocity = velocityThree;
-			this->particleList[this->currentParticleCount].active = true;
-			this->particleList[this->currentParticleCount].life = 2000.0f;
-			this->currentParticleCount++;
-
-			D3DXMatrixRotationYawPitchRoll(&rotation, (float)D3DX_PI*0.5f, i*0.628f, 0.0f);
-
-			velocityThree = (vec3)*D3DXVec4Transform(&vectorFour, &vec4(-forward, 0.0f), &rotation);
 
 			// Now insert it into the particle array in the correct depth order.
 			this->particleList[this->currentParticleCount].model->setPosition(vec3(positionX, positionY, positionZ));

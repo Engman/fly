@@ -35,9 +35,12 @@ public:
 	virtual ~DirectionLight();
 
 	void Initialize(DIRLIGHT_DESC lightData);
-	BaseBuffer* getLight();
 	void Render(ViewFrustum& frustum);
+	
+	
+	
 	bool castShadow();
 	BaseBuffer* getLightViewProj();
+	BaseBuffer* getLight();
 };
 #endif

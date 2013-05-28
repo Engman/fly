@@ -9,3 +9,5 @@ C:\Users\Dennis\Desktop\skola\DV1411 - Litet Spelprojekt\FlyGame\WorkingDir\Bin\
 C:\Users\Dennis\Desktop\skola\DV1411 - Litet Spelprojekt\FlyGame\FlyGameProjects\FlyWindEditor\obj\Debug\FlyWindEditor.csprojResolveAssemblyReference.cache
 C:\Users\Dennis\Desktop\skola\DV1411 - Litet Spelprojekt\FlyGame\FlyGameProjects\FlyWindEditor\obj\Debug\FlyWindEditor.exe
 C:\Users\Dennis\Desktop\skola\DV1411 - Litet Spelprojekt\FlyGame\FlyGameProjects\FlyWindEditor\obj\Debug\FlyWindEditor.pdb
+C:\Users\Hemma\Dropbox\DV1407\FlyDennis\fly\WorkingDir\Bin\FlyWindEditor.exe.config
+C:\Users\Hemma\Dropbox\DV1407\FlyDennis\fly\FlyGameProjects\FlyWindEditor\obj\Debug\FlyWindEditor.pdb

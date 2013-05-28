@@ -74,7 +74,7 @@ class Lukas
 
 				if(((DirectionLight*)dirLight[i])->castShadow())
 				{
-					shadowViews.push_back(((DirectionLight*)dirLight[i])->getLightViewProj());
+					//shadowViews.push_back(((DirectionLight*)dirLight[i])->getLightViewProj());
 				}
 			}
 
@@ -193,7 +193,7 @@ int WINAPI WinMain( HINSTANCE hInst, HINSTANCE prevInst, PSTR cmdLine, int cmdSh
 
 	Lukas::dirLight.push_back(&light2);
 
-	Lukas::shadowViews.push_back(light2.getLightViewProj()); 
+	//Lukas::shadowViews.push_back(light2.getLightViewProj()); 
 
 	Lukas::fly->Core_Run();
 	Lukas::fly->Core_Shutdown();

@@ -139,11 +139,11 @@ struct PtrRefCount
 				{
 					//Call child specific
 					Destroy();
-
+					this->_rc = new PtrRefCount();
 				}
 			}
-			
-			this->_rc = new PtrRefCount();
+			else
+				this->_rc = new PtrRefCount();
 		
 			this->_ptr = p;
 			this->_rc->Add();
@@ -179,45 +179,45 @@ struct PtrRefCount
 #pragma endregion
 
 
-	template<typename T>
-T* SmartPtrStd<T>::Get()
-{
-	return this->_ptr;
-}
-	template<typename T>
-bool SmartPtrStd<T>::Add(T* p)
-{
-	if(this->_ptr)
-		return false;
-
-	if(!this->_rc)
-		this->_rc = new PtrRefCount();
-
-	this->_ptr = p;
-	this->_rc->Add();
-
-	return true;
-}
-	template<typename T>
-void SmartPtrStd<T>::Swap(T* p)
-{
-	if (this->_ptr != p)
+		template<typename T>
+	T* SmartPtrStd<T>::Get()
+	{
+		return this->_ptr;
+	}
+		template<typename T>
+	bool SmartPtrStd<T>::Add(T* p)
 	{
 		if(this->_ptr)
-			delete this->_ptr();
+			return false;
+
 		if(!this->_rc)
 			this->_rc = new PtrRefCount();
-		this->_rc->Reset();
 
 		this->_ptr = p;
 		this->_rc->Add();
+
+		return true;
 	}
-}
-	template<typename T>
-bool SmartPtrStd<T>::IsValid()
-{
-	return (this->_ptr != NULL) ?	true : false;
-}
+		template<typename T>
+	void SmartPtrStd<T>::Swap(T* p)
+	{
+		if (this->_ptr != p)
+		{
+			if(this->_ptr)
+				delete this->_ptr();
+			if(!this->_rc)
+				this->_rc = new PtrRefCount();
+			this->_rc->Reset();
+
+			this->_ptr = p;
+			this->_rc->Add();
+		}
+	}
+		template<typename T>
+	bool SmartPtrStd<T>::IsValid()
+	{
+		return (this->_ptr != NULL) ?	true : false;
+	}
 
 		template<typename T>
 	void SmartPtrStd<T>::Destroy()

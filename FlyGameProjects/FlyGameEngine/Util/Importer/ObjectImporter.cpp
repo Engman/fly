@@ -11,6 +11,7 @@
 
 #pragma region FROWARD DELERATION
 
+
 bool ParseAnimationFile			(std::wifstream& in, ImportedObjectData* d);
 bool ParseStandardFile			(std::wifstream& in, ImportedObjectData* d);
 
@@ -55,13 +56,17 @@ namespace ObjImpFormat
 #pragma endregion
 
 
-
-bool ObjectImporter::Import(std::wstring file, ImportedObjectData* rawData)
+//TEMP//
+//FGMImport fgmimp;
+bool ObjectImporter::Import		(std::wstring file, ImportedObjectData* rawData)
 {
+	//return fgmimp.Import(file, rawData);
+	
+
 	size_t first = file.find_last_of('\\') + 1;
 	size_t last = file.find_last_of('.');
 	rawData->name = file.substr(first, last-first);
-	
+
 
 	std::wifstream in (file);
 	if(!in.is_open())
@@ -102,6 +107,7 @@ bool ObjectImporter::Import(std::wstring file, ImportedObjectData* rawData)
 		}
 
 		in.close();
+		in.clear();
 	}
 
 	return true;
@@ -426,7 +432,7 @@ bool ParseFloat					(std::wifstream& in, float& v)
 	std::wstring buff;
 	in >> buff;
 
-	if(!isdigit(buff[0]) && buff[0] == '-')	return false;
+	if(!isdigit(buff[0]) && buff[0] != '-')	return false;
 	v = (float)_wtof(buff.c_str());
 
 	return true;
@@ -472,3 +478,5 @@ std::wstring ParseLine			(std::wifstream& in, bool trash)
 
 	return text;
 }
+
+

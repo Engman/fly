@@ -46,27 +46,31 @@ FlyEngine_Core::FlyEngine_Core()
 	D3DShell::self();
 	WindowShell::self();
 
-	this->gbufferShader			= new GBufferShader();
-	this->gBufferNoDepthShader	= new GBufferShader();
-	this->gBufferAnimationShader = new GBufferAnimationShader();
-	this->finalShader			= new FinalShader();
-	this->finalColorShader		= new FinalShader();
-	this->dirLightShader		= new LightShader();
-	this->shadowMapShader		= new ShadowMapShader();
-	this->blurHorizontShader	= new BlurShader();
-	this->blurVerticalShader	= new BlurShader();
-
-	this->cameraBuffer			= new BaseBuffer();
-	this->fsq					= new FullScreenQuad();
-	this->defaultCam			= new Camera();
-	this->activeCamera			= NULL;
-	this->deferredRenderFunc	= 0;
-	this->deferredUpdateFunc	= 0;
-	this->forwardRenderFunc		= 0;
-	this->forwardUpdateFunc		= 0;
-	this->splash				= 0;
-	this->orthographicCamera	= 0;
+	this->gbufferShader				= new GBufferShader();
+	this->gBufferNoDepthShader		= new GBufferShader();
+	this->gbufferBumpShader		= new GBufferShader();
+	this->gBufferAnimationShader	= new GBufferAnimationShader();
+	this->finalShader				= new FinalShader();
+	this->finalColorShader			= new FinalShader();
+	this->pointLightShader		= new LightShader();
+	this->dirLightShader			= new LightShader();
+	this->shadowMapShader			= new ShadowMapShader();
+	this->blurHorizontShader		= new BlurShader();
+	this->blurVerticalShader		= new BlurShader();
+	
+	this->cameraBuffer				= new BaseBuffer();
+	this->fsq						= new FullScreenQuad();
+	this->defaultCam				= new Camera();
+	this->activeCamera				= 0;
+	this->deferredRenderFunc		= 0;
+	this->deferredUpdateFunc		= 0;
+	this->forwardRenderFunc			= 0;
+	this->forwardUpdateFunc			= 0;
+	this->splash					= 0;
+	this->orthographicCamera		= 0;
 }
+FlyEngine_Core::~FlyEngine_Core()
+{}
 
 
 
@@ -132,22 +136,24 @@ bool FLYCALL FlyEngine_Core::Core_Initialize(FLY_ENGINE_INIT_DESC& desc)
 	this->forwardRenderFunc		= desc.forwardRenderFunc;
 	this->forwardUpdateFunc		= desc.forwardUpdateFunc;
 	this->splash				= desc.showSplash;
-
+	
 	if(!this->_InitWin(desc))			return false;
 	if(!this->_InitGfx(desc))			return false;
-
-	if(!this->_InitGBufferShader())			return false;
+	
+	if(!this->_InitGBufferShader())		return false;
+	if(!this->_InitBumpShader())		return false;
 	if(!this->_InitAnimationShader())	return false;
 	if(!this->_InitFinalShader())		return false;
 	if(!this->_InitDirLightShader())	return false;
+	if(!this->_InitPointLightShader())	return false; 
 	if(!this->_InitShadowMapShader())	return false;
 	if(!this->_InitBlurShaders())		return false;
 	
 	if(!this->_InitCameraBuffer())		return false;
-
+	
 	if(!this->fsq->Initialize(D3DShell::self()->getDevice(), this->finalShader))
 		return false;
-
+	
 	this->_InitCam();
 
 	return true;
@@ -162,9 +168,11 @@ void FLYCALL FlyEngine_Core::Core_Shutdown()
 
 	this->gbufferShader.Destroy();
 	this->gBufferNoDepthShader.Destroy();
+	this->gbufferBumpShader.Destroy();
 	this->gBufferAnimationShader.Destroy();			
 	this->finalShader.Destroy();			
-	this->dirLightShader.Destroy();			
+	this->dirLightShader.Destroy();		
+	this->pointLightShader.Destroy();
 	this->shadowMapShader.Destroy();
 	this->blurHorizontShader.Destroy();
 	this->blurVerticalShader.Destroy();
@@ -197,9 +205,18 @@ bool FLYCALL FlyEngine_Core::Core_Message()
 	return true;
 }
 
+void FLYCALL FlyEngine_Core::Core_Dimensions(int& width, int& height)
+{
+	width = (int)D3DShell::self()->getWidth();
+	height = (int)D3DShell::self()->getHeight();
+}
+
+
+
 LRESULT CALLBACK FlyEngineCoreWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	static int cc = 0;
+
+	bool activating = false;
 	switch (message)
 	{
 		case WM_DESTROY:
@@ -207,7 +224,20 @@ LRESULT CALLBACK FlyEngineCoreWndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 		break;
 		
 		case WM_INPUT:
-			//Input::self()->proccessRawDeviceData(lParam);
+			
+		break;
+
+
+		case WM_ACTIVATE:
+			activating = (LOWORD(wParam) != WA_INACTIVE) && (HIWORD(wParam) == 0);
+			if(activating)
+			{
+				Input::self()->SetCoopExclusive();
+			}
+			else
+			{
+				//Input::self()->SetCoopExclusive();
+			}
 		break;
 
 		case WM_LBUTTONDOWN:

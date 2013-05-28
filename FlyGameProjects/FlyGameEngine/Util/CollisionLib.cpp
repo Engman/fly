@@ -98,17 +98,50 @@ float RayVSSphereLength(D3DXVECTOR3& rayDirection, D3DXVECTOR3& rayOrigin, D3DXV
 	float l2 = D3DXVec3Dot(&l, &l);
 	float h = D3DXVec3Dot(&l, &rayDirection);
 	float r2 = radius*radius;
-
 	if(h >= 0.0f)
 	{
 		float m2 = l2 - h*h;
 		if(m2 <= r2)
-		{
-			return h - sqrtf(m2);
-		}
+			return h - sqrtf(fabsf(m2));
 	}
 
 	return -1.0f;
+}
+bool RayVSTriangle(D3DXVECTOR3& rayOrigin, D3DXVECTOR3& rayDirection, D3DXVECTOR3 triangle[3])
+{
+	D3DXVECTOR3 e1 = triangle[1] - triangle[0];
+	D3DXVECTOR3 e2 = triangle[2] - triangle[0];
+	D3DXVECTOR3 q;	D3DXVec3Cross(&q, &rayDirection, &e2);
+	float epsilon = 0.000000000000001f;
+	float a = D3DXVec3Dot(&e1, &q); // Determinant
+
+	if(a > -epsilon && a < epsilon)
+	{
+		return false;
+	}
+
+	float f = 1/a; // Value to be multiplied into the matrix
+
+	D3DXVECTOR3 s = rayOrigin - triangle[0];
+
+	float u = f * D3DXVec3Dot(&s, &q);
+
+	if(u < 0.0f)
+	{
+		return false;
+	}
+
+	D3DXVECTOR3 h;
+	D3DXVec3Cross(&h, &s, &e1);
+	
+	float v = f * D3DXVec3Dot(&h, &rayDirection);
+
+	if(v < 0.0f || (u + v) > 1.0f )
+	{
+		return false;
+	}
+
+	return true;
 }
 
 bool BoxVSBox(BoundingBox& box1, BoundingBox& box2)

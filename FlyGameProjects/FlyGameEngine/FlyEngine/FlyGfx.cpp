@@ -63,6 +63,8 @@ void FLYCALL FlyEngine_Core::Gfx_DrawGbuffer()
 	gBufferDrawData.projection = this->activeCamera->GetProjectionMatrix();
 	
 	this->gbufferShader->draw(gBufferDrawData);
+
+	this->gbufferBumpShader->draw(gBufferDrawData);
 }
 void FLYCALL FlyEngine_Core::Gfx_DrawGbufferOrtho()
 {
@@ -82,20 +84,17 @@ void FLYCALL FlyEngine_Core::Gfx_DrawGbufferOrtho()
 	D3DShell::self()->getDeviceContext()->OMSetBlendState(0,0,0xffffffff);
 	D3DShell::self()->setDepthStencilState(FLAGS::DEPTH_STENCIL_EnabledDepth,1);
 }
-void FLYCALL FlyEngine_Core::Gfx_DrawShadows(Camera theCamera)
+void FLYCALL FlyEngine_Core::Gfx_DrawShadows(vector<LightViewProj*> *shadowViews)
 {
 	IShader::PER_FRAME_DATA shadowsDrawData;
 	shadowsDrawData.dc = D3DShell::self()->getDeviceContext(); 
 
-	for(int i= 0; i<1; i++)
+	for(int i= 0; i<(int)shadowViews->size(); i++)
 	{
 		D3DShell::self()->BeginShadowRenderTarget(i);
 
-
-		shadowsDrawData.view = theCamera.GetViewMatrix(); 
-		shadowsDrawData.projection = theCamera.GetProjectionMatrix(); 
-
-
+		shadowsDrawData.view = shadowViews->at(0)->lView; 
+		shadowsDrawData.projection = shadowViews->at(0)->lProj; 
 		
 		this->shadowMapShader->draw(shadowsDrawData);
 	}
@@ -104,6 +103,7 @@ void FLYCALL FlyEngine_Core::Gfx_DrawLighting()
 {
 	//set light render target and give it the albedo, normal and specular textures
 	D3DShell::self()->BeginLightRenderTarget();
+
 	float blend[4] = {0.75f,0.75f,0.75f,1.0f};
 
 	D3DShell::self()->setBlendModeState(FLAGS::BLEND_MODE_Custom, blend,  0xffffffff);
@@ -133,6 +133,7 @@ void FLYCALL FlyEngine_Core::Gfx_DrawLighting()
 	lightDrawData.camForLight = this->cameraBuffer; 
 
 	this->dirLightShader->draw(lightDrawData);
+	this->pointLightShader->draw(lightDrawData);
 
 	//reset the blend state to normal
 	D3DShell::self()->getDeviceContext()->OMSetBlendState(0,0,0xffffffff);
@@ -165,9 +166,10 @@ void FLYCALL FlyEngine_Core::Gfx_DrawBlur()
 	this->blurVerticalShader->draw(blurDrawData);
 }
 
-void FLYCALL FlyEngine_Core::Gfx_DrawFinalPicture(Camera theCamera)
+void FLYCALL FlyEngine_Core::Gfx_DrawFinalPicture(vector<LightViewProj*> *shadowViews)
 {
 	D3DShell::self()->setRenderTarget();
+
 	D3DShell::self()->beginScene();
 
 	IShader::PER_FRAME_DATA finalPictureDrawData;
@@ -183,9 +185,18 @@ void FLYCALL FlyEngine_Core::Gfx_DrawFinalPicture(Camera theCamera)
 	
 	D3DXMATRIX lightViewProj;
 
-	
-	D3DXMATRIX lView = theCamera.GetViewMatrix();
-	D3DXMATRIX lProj = theCamera.GetProjectionMatrix(); 
+	D3DXMATRIX lView;
+	D3DXMATRIX lProj;
+	if((*shadowViews).size())
+	{
+		lView = shadowViews->at(0)->lView;
+		lProj = shadowViews->at(0)->lProj; 
+	}
+	else
+	{
+		D3DXMatrixIdentity(&lView);
+		D3DXMatrixIdentity(&lProj);
+	}
 	
 
 	D3DXMATRIX lViewProj = lView * lProj;
@@ -196,7 +207,7 @@ void FLYCALL FlyEngine_Core::Gfx_DrawFinalPicture(Camera theCamera)
 	camView->mInvViewProj = invCameraViewProj;
 	camView->mInvView	  = lViewProj; 
 	camView->cameraPos	= this->activeCamera->GetPosition();
-	camView->padd		=600;
+	camView->padd		= 600;
 	cameraBuffer->Unmap();
 
 	finalPictureDrawData.camForLight = cameraBuffer;
@@ -207,6 +218,7 @@ void FLYCALL FlyEngine_Core::Gfx_DrawFinalPicture(Camera theCamera)
 
 	D3DShell::self()->releaseSRV();
 	D3DShell::self()->endScene();
+
 }
 
 
@@ -218,7 +230,6 @@ void FLYCALL FlyEngine_Core::Gfx_EndDeferredScene()
 	gBufferDrawData.projection = this->activeCamera->GetProjectionMatrix();
 	
 	this->gbufferShader->draw(gBufferDrawData);
-
 
 	D3DShell::self()->setRenderTarget();
 	D3DShell::self()->beginScene();
@@ -234,21 +245,21 @@ void FLYCALL FlyEngine_Core::Gfx_EndDeferredScene()
 
 void FLYCALL FlyEngine_Core::Gfx_EndDeferredSceneOrtho()
 {
-	float blend[4] = {1.0f,1.0f,1.0f,1.0f};
 
-	D3DShell::self()->setBlendModeState(FLAGS::BLEND_MODE_AlphaBlend, blend,  0xffffffff);
-	D3DShell::self()->setDepthStencilState(FLAGS::DEPTH_STENCIL_DisabledDepth,1); 
+	 float blend[4] = {1.0f,1.0f,1.0f,1.0f};
 
-	IShader::PER_FRAME_DATA gBufferDrawData;
-	gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
-	gBufferDrawData.view = this->activeCamera->GetViewMatrix();
-	gBufferDrawData.projection = this->activeCamera->GetOrthogonalMatrix();
-	
-	this->gbufferShader->draw(gBufferDrawData);
+	 D3DShell::self()->setBlendModeState(FLAGS::BLEND_MODE_AlphaBlend, blend,  0xffffffff);
 
-	//reset the blend state to normal
-	D3DShell::self()->getDeviceContext()->OMSetBlendState(0,0,0xffffffff);
-	D3DShell::self()->setDepthStencilState(FLAGS::DEPTH_STENCIL_EnabledDepth,1);
+
+	 IShader::PER_FRAME_DATA gBufferDrawData;
+	 gBufferDrawData.dc = D3DShell::self()->getDeviceContext();
+	 gBufferDrawData.view = this->activeCamera->GetViewMatrix();
+	 gBufferDrawData.projection = this->activeCamera->GetOrthogonalMatrix();
+ 
+	 this->gbufferShader->draw(gBufferDrawData);
+
+	 //reset the blend state to normal
+	 D3DShell::self()->getDeviceContext()->OMSetBlendState(0,0,0xffffffff);
 
 	D3DShell::self()->setRenderTarget();
 	D3DShell::self()->beginScene();
@@ -291,7 +302,9 @@ IShader* FLYCALL FlyEngine_Core::Gfx_GetShader(FlyEngineShaders shader)
 		case  FlyShader_gBufferNoDepth:
 			return this->gBufferNoDepthShader; 
 		break;
-				
+		case FlyShader_gBufferBump:
+			return this->gbufferBumpShader;
+		break;
 		case FlyShader_gBufferAnimated:
 			return this->gBufferAnimationShader;
 		break;
@@ -302,6 +315,9 @@ IShader* FLYCALL FlyEngine_Core::Gfx_GetShader(FlyEngineShaders shader)
 
 		case FlyShader_DirLight:
 			return this->dirLightShader;
+		break;
+		case  FlyShader_PointLight:
+			return this->pointLightShader;
 		break;
 
 		case FlyShader_Shadow:
@@ -324,9 +340,11 @@ void FLYCALL FlyEngine_Core::Gfx_GetShader(vector<IShader*>& shaders)
 {
 	shaders.push_back(this->gbufferShader);
 	shaders.push_back(this->gBufferNoDepthShader);
+	shaders.push_back(this->gbufferBumpShader);
 	shaders.push_back(this->gBufferAnimationShader);
 	shaders.push_back(this->finalShader);
 	shaders.push_back(this->dirLightShader);
+	shaders.push_back(this->pointLightShader);
 	shaders.push_back(this->shadowMapShader);
 	shaders.push_back(this->blurHorizontShader);
 	shaders.push_back(this->blurVerticalShader);
@@ -343,10 +361,6 @@ Camera*	FLYCALL	FlyEngine_Core::Gfx_GetDefaultCamera()
 }
 
 
-void FLYCALL FlyEngine_Core::PlaySoundTrack(const wchar_t* path)
-{
-	AudioClass::self()->playSoundTrack();
-}
 //################################//
 //########### LOCAL DATA #########//
 //####################################################################//
@@ -385,6 +399,23 @@ bool FlyEngine_Core::_InitGBufferShader()
 		return false;
 
 	if(!this->gBufferNoDepthShader->init(gBufferDesc))	
+		return false;
+
+	return true;
+}
+bool FlyEngine_Core::_InitBumpShader()
+{
+	BaseShader::BASE_SHADER_DESC gBufferBumpDesc;
+
+	gBufferBumpDesc.dc = D3DShell::self()->getDeviceContext();
+	gBufferBumpDesc.device = D3DShell::self()->getDevice();
+	gBufferBumpDesc.VSFilename = L"../Resources/Shaders/g-bufferBumpVS.vs";
+	gBufferBumpDesc.PSFilename = L"../Resources/Shaders/g-BufferBumpPS.ps";
+	gBufferBumpDesc.shaderVersion = D3DShell::self()->getSuportedShaderVersion();
+	gBufferBumpDesc.polygonLayout = VERTEX::VertexPNTBT_InputElementDesc;
+	gBufferBumpDesc.nrOfElements = 5;
+
+	if(!this->gbufferBumpShader->init(gBufferBumpDesc))	
 		return false;
 
 	return true;
@@ -442,6 +473,23 @@ bool FlyEngine_Core::_InitDirLightShader()
 	lightShaderDesc.nrOfElements = 2;
 
 	if(!this->dirLightShader->init(lightShaderDesc))	
+		return false;
+
+	return true;
+}
+bool FlyEngine_Core::_InitPointLightShader()
+{
+	BaseShader::BASE_SHADER_DESC lightShaderDesc;
+
+	lightShaderDesc.dc = D3DShell::self()->getDeviceContext();
+	lightShaderDesc.device = D3DShell::self()->getDevice();
+	lightShaderDesc.VSFilename = L"../Resources/Shaders/pointLightVS.vs";
+	lightShaderDesc.PSFilename = L"../Resources/Shaders/pointLightPS.ps";
+	lightShaderDesc.shaderVersion = D3DShell::self()->getSuportedShaderVersion();
+	lightShaderDesc.polygonLayout = VERTEX::VertexP_InputElementDesc;
+	lightShaderDesc.nrOfElements = 1;
+
+	if(!this->pointLightShader->init(lightShaderDesc))	
 		return false;
 
 	return true;

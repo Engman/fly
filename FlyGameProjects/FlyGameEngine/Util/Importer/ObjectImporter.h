@@ -1,11 +1,10 @@
 #ifndef OBJECT_IMPORTER_H
 #define OBJECT_IMPORTER_H
 
-#include <string>
-#include <vector>
+#include "FgmImportData.h"
 
-#include "..\vertex.h"
-#include "..\SmartPtrs.h"
+
+
 
 #pragma region FORWARD DECLARATIONS
 
@@ -14,32 +13,7 @@
 	class Entity;
 
 
-	struct ObjectData
-	{
-		int material;
-		SmartPtrStd<std::vector<VERTEX::VertexPNT>> vertex;
-	};
-	struct FrameData
-	{
-		int objectIndex;
-		int frameNumber;
-		float frameTime;
-	};
-	struct AnimationData
-	{
-		int id;
-		std::vector<FrameData> frames;
-	};
-	/** Wraps imported data */
-	struct ImportedObjectData
-	{
-		/** The name of the object collection */
-		std::wstring					name;
-		/** Contains n loaded objects */
-		std::vector<ObjectData>			objects;
-		/** Contains animation information */
-		std::vector<AnimationData>		animations;
-};
+	
 
 #pragma endregion
 

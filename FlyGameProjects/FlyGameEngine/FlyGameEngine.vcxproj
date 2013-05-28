@@ -22,8 +22,10 @@
     <ClCompile Include="Core\AudioClass.cpp" />
     <ClCompile Include="Core\DrawableTexture.cpp" />
     <ClCompile Include="Core\Light\PointLight.cpp" />
+    <ClCompile Include="Core\Mesh\FlyWaterMesh.cpp" />
     <ClCompile Include="Core\Mesh\ParticleMesh.cpp" />
     <ClCompile Include="Core\Mesh\FlyMeshAnimated.cpp" />
+    <ClCompile Include="Core\Mesh\Sphere.cpp" />
     <ClCompile Include="Core\Mesh\Terrain.cpp" />
     <ClCompile Include="Core\BaseBuffer.cpp" />
     <ClCompile Include="Core\BaseShader.cpp" />
@@ -65,6 +67,8 @@
     </ClCompile>
     <ClCompile Include="Util\Camera.cpp" />
     <ClCompile Include="Util\CollisionLib.cpp" />
+    <ClCompile Include="Util\GID.cpp" />
+    <ClCompile Include="Util\Importer\FGMImport.cpp" />
     <ClCompile Include="Util\Importer\ObjectImporter.cpp" />
     <ClCompile Include="Util\Importer\ResourceImporter.cpp" />
     <ClCompile Include="Util\OctTree.cpp" />
@@ -75,8 +79,10 @@
     <ClInclude Include="Core\D3DxLink.h" />
     <ClInclude Include="Core\DrawableTexture.h" />
     <ClInclude Include="Core\Light\PointLight.h" />
+    <ClInclude Include="Core\Mesh\FlyWaterMesh.h" />
     <ClInclude Include="Core\Mesh\ParticleMesh.h" />
     <ClInclude Include="Core\Mesh\FlyMeshAnimated.h" />
+    <ClInclude Include="Core\Mesh\Sphere.h" />
     <ClInclude Include="Core\Mesh\Terrain.h" />
     <ClInclude Include="Core\ParticleCollisionSystem.h" />
     <ClInclude Include="Core\ParticleEngineSystem.h" />
@@ -125,6 +131,8 @@
     <ClInclude Include="Util\Camera.h" />
     <ClInclude Include="Util\CollisionLib.h" />
     <ClInclude Include="Util\GID.h" />
+    <ClInclude Include="Util\Importer\FGMImport.h" />
+    <ClInclude Include="Util\Importer\FgmImportData.h" />
     <ClInclude Include="Util\misc.h" />
     <ClInclude Include="Util\Importer\ObjectImporter.h" />
     <ClInclude Include="Util\Importer\ResourceImporter.h" />

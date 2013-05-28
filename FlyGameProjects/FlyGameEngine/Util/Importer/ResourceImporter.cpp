@@ -1,10 +1,18 @@
 #include "ResourceImporter.h"
 #include "ObjectImporter.h"
+#include "FGMImport.h"
 #include "..\..\Core\Entity.h"
+
+#if defined(_DEBUG) || defined(DEBUG)
+#include <ctime>
+#include <iostream>
+#include <string>
+#endif
 
 #pragma region IMPORTERS
 
 	static ObjectImporter objectImporter = ObjectImporter();
+	static FGMImport fgmImporter = FGMImport();
 
 #pragma endregion
 
@@ -30,7 +38,19 @@ wstring getDir(const wchar_t* path)
 
 bool ResourceImporter::ImportObject(const wchar_t* filename, ImportedObjectData* object)
 {
-	return objectImporter.Import(getDir(filename), object);
+#if defined(_DEBUG) || defined(DEBUG)
+	time_t start = clock();
+	if(!fgmImporter.Import(getDir(filename), object))
+		return false;
+	else
+	{
+		time_t tot = clock() - start;
+		std::wcout << tot << L" ms to load " << object->name.c_str() << std::endl;
+	}
+	return true;
+#else
+	return fgmImporter.Import(getDir(filename), object);
+#endif
 }
 bool ResourceImporter::ImportObject(std::vector<const wchar_t*>& filenames, vector<ImportedObjectData>* objData)
 {
@@ -44,8 +64,22 @@ bool ResourceImporter::ImportObject(std::vector<const wchar_t*>& filenames, vect
 	for (int i = 0; i < (int)filenames.size(); i++)
 	{
 
-		if(!objectImporter.Import(getDir(filenames[i]), &(*objData)[i]))
-			return false;
+		//if(!objectImporter.Import(getDir(filenames[i]), &(*objData)[i]))
+		//	return false;
+
+		#if defined(_DEBUG) || defined(DEBUG)
+			time_t start = clock();
+			if(!fgmImporter.Import(getDir(filenames[i]), &(*objData)[i]))
+				return false;
+			else
+			{
+				time_t tot = clock() - start;
+				std::wcout << tot << L" ms to load " << (*objData)[i].name.c_str() << std::endl;
+			}
+			return true;
+		#else
+			return fgmImporter.Import(getDir(filename), object);
+		#endif
 	}
 
 	return true;

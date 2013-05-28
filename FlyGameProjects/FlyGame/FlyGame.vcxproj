@@ -172,9 +172,12 @@
     <ClCompile Include="GameObjects\FlyPickup.cpp" />
     <ClCompile Include="GameObjects\FlyPlayer.cpp" />
     <ClCompile Include="GameObjects\PauseMenu.cpp" />
-    <ClCompile Include="States\FlyEditor.cpp" />
-    <ClCompile Include="States\FlyLevel.cpp" />
+    <ClCompile Include="States\FlyLevel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="States\FlyLevel_Importer.cpp" />
+    <ClCompile Include="States\FlyLevel_Input.cpp" />
     <ClCompile Include="States\FlyMenu.cpp" />
     <ClCompile Include="WindCollision.cpp" />
     <ClCompile Include="WindEmiter.cpp" />
@@ -184,8 +187,9 @@
     <ClInclude Include="GameObjects\EnergyPickup.h" />
     <ClInclude Include="GameObjects\FlyPickup.h" />
     <ClInclude Include="GameObjects\PauseMenu.h" />
-    <ClInclude Include="States\FlyState_Editor.h" />
-    <ClInclude Include="States\FlyState_Level.h" />
+    <ClInclude Include="States\FlyState_Level.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="GameObjects\FlyPlayer.h" />
     <ClInclude Include="States\FlyState_Menu.h" />
     <ClInclude Include="States\IFlySystemState.h" />

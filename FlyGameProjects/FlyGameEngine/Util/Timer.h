@@ -27,7 +27,6 @@ class Timer
 		/** Returns time between two frames in seconds */
 		float GetDeltaTime();
 		float GetFPS();
-		float GetTime();
 };
 
 #endif
