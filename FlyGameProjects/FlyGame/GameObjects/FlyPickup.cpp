@@ -10,7 +10,7 @@ FlyPickup::~FlyPickup()
 
 }
 
-bool FlyPickup::Initialize(FlyGame* entry, wstring modelName, vec3 position, vec3 rotation, int shader)
+bool FlyPickup::Initialize(FlyGame* entry, wstring modelName, vec3 position, vec3 rotation, vec3 scale, int shader)
 {
 	this->taken = false;
 
@@ -25,6 +25,7 @@ bool FlyPickup::Initialize(FlyGame* entry, wstring modelName, vec3 position, vec
 	this->pickupModel[0]->setScale(vec3(1.0f, 1.0f, 1.0f));
 	this->pickupModel[0]->setPosition(vec3(position));
 	this->pickupModel[0]->setRotation(vec3(rotation));
+	this->pickupModel[0]->setScale(vec3(scale));
 	this->pickupModel[0]->setShader(shaders[shader]);
 	this->pickupModel[0]->setBoundingSphere(sphere);
 
@@ -40,18 +41,22 @@ void FlyPickup::Update()
 	
 }
 
-void FlyPickup::SetPickTaken()
+void FlyPickup::SetPickTaken(bool taken)
 {
-	this->taken = true;
+	this->taken = taken;
 }
 
 void FlyPickup::SetPosition(vec3 position)
 {
-	return this->pickupModel[0]->setPosition(position);
+	this->pickupModel[0]->setPosition(position);
 }
 void FlyPickup::SetRotation(vec3 rotation)
 {
-	return this->pickupModel[0]->setRotation(rotation);
+	this->pickupModel[0]->setRotation(rotation);
+}
+void FlyPickup::SetScale(vec3 scale)
+{
+	this->pickupModel[0]->setScale(scale);
 }
 void FlyPickup::SetShader(IShader* shader)
 {
@@ -65,6 +70,10 @@ vec3 FlyPickup::GetPosition() const
 vec3 FlyPickup::GetRotation() const
 {
 	return this->pickupModel[0]->getRotation();
+}
+vec3 FlyPickup::GetScale() const
+{
+	return this->pickupModel[0]->getScale();
 }
 bool FlyPickup::GetTaken() const
 {

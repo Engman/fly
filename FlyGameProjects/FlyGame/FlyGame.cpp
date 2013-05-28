@@ -66,20 +66,19 @@ FlyGame::FlyGame()
 }
 FlyGame::~FlyGame()
 {
-	if(this->_pData->fly)
-		this->_pData->fly->Core_Shutdown();
-	if(this->_pData->level.IsValid())
-		this->_pData->level->Release();
-	if(this->_pData->mainMenu.IsValid())
-		this->_pData->mainMenu->Release();
-	delete this->_pData;
 	lua_close(this->_pData->luaState);
-	this->_pData->level->Release();
-	this->_pData->fly->Core_Shutdown();
+	this->_pData->luaState = NULL;
+
+	if(this->_pData->fly)					this->_pData->fly->Core_Shutdown();
 	this->_pData->fly = NULL;
 	
-	if(this->_pData->mainMenu.IsValid())
-		this->_pData->mainMenu->Release();
+	if(this->_pData->level.IsValid())		this->_pData->level->Release();
+	if(this->_pData->mainMenu.IsValid())	this->_pData->mainMenu->Release();
+	this->_pData->state = NULL;
+
+
+	delete this->_pData;
+	
 }
 bool FlyGame::Initiate(FlyGameSystemState state)		  
 {
@@ -114,8 +113,11 @@ bool FlyGame::Initiate(FlyGameSystemState state)
 	if(!this->_pData->fly->Core_Initialize(cd))
 		return false;
 
+	time_t start = clock();
 	if(!this->_pData->state->Initiate(this))
 		return false;
+	std::cout << "State loaded on " << clock()-start << "ms\n";
+
 	return true;
 }
 void FlyGame::Run()							  
@@ -129,6 +131,7 @@ void FlyGame::Run()
 	if(!this->_pData->state)
 		return;
 
+	cout << "Starting game..\n";
 	MSG msg;
 	while (this->_pData->state)
 	{

@@ -209,7 +209,8 @@ void FLYCALL FlyEngine_Core::Core_Dimensions(int& width, int& height)
 
 LRESULT CALLBACK FlyEngineCoreWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	static int cc = 0;
+
+	bool activating = false;
 	switch (message)
 	{
 		case WM_DESTROY:
@@ -217,7 +218,20 @@ LRESULT CALLBACK FlyEngineCoreWndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 		break;
 		
 		case WM_INPUT:
-			//Input::self()->proccessRawDeviceData(lParam);
+			
+		break;
+
+
+		case WM_ACTIVATE:
+			activating = (LOWORD(wParam) != WA_INACTIVE) && (HIWORD(wParam) == 0);
+			if(activating)
+			{
+				Input::self()->SetCoopExclusive();
+			}
+			else
+			{
+				//Input::self()->SetCoopExclusive();
+			}
 		break;
 
 		case WM_LBUTTONDOWN:

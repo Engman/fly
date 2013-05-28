@@ -17,13 +17,13 @@
 #include "../GameObjects/PauseMenu.h"
 #include "../GameObjects/FlyPickup.h"
 #include "../WindCollision.h"
+#include "..\GameObjects\EnergyPickup.h"
 
 
 class FlyState_Level		:public IFlySystemState
 {
 	private:
 		vector<Entity*> levelEntities;
-		vector<Entity*> energyPickups;
 		vector<Entity*> theWorld;
 		vector<Entity*> skyBox;
 		vector<Entity*> dirLights;
@@ -33,6 +33,7 @@ class FlyState_Level		:public IFlySystemState
 
 		FlyPlayer player;
 		FlyPickup pickups[3];
+		vector<EnergyPickup> energy;
 
 		PauseMenu pauseMenu;
 
@@ -45,23 +46,23 @@ class FlyState_Level		:public IFlySystemState
 
 		vec3 worldWind;
 		vec3 localWind;
+		vec3 playerStartPosition;
+
+		float deathTimer;
 
 		ParticleEngineSystem engineParticlesLeft;
 		ParticleEngineSystem engineParticlesRight;
 		ParticleCollisionSystem collisionParticle;
 		ParticlePickupSystem pickupParticle;
 
-		int state; // 0 = MainGame, 1 = PauseMenu
+		int state;							// 0 = MainGame, 1 = PauseMenu
+		InuptControlScheme controlScheme;	//See IFlySystemState.h
 
-		bool ReadLevel(const wchar_t* fileName);
 
-		//void ReadEntity(Entity* entity, wifstream& in);
-		vec4 ReadVector4(wifstream& in);
-		vec3 ReadVector3(wifstream& in);
-		int ReadInt(wifstream& in);
-
+	private:
 		vec3 SlideCollision(vec3 oldPosition, vec3 velocity, int iterations, vec3 safeLocation);
 
+		bool ReadLevel(const wchar_t* fileName);
 
 		bool Update();
 		bool UpdatePlayer();
@@ -70,8 +71,30 @@ class FlyState_Level		:public IFlySystemState
 		bool MenuRender();
 		bool MenuUpdate();
 
-		void Input();
+		/* Main input function to update */
+		void _Input();
+		/* Help function for casual contro scheme */
+		void _InputCasual();
+		/* Help function for advance contro scheme */
+		void _InputAdvance();
+		/* Debug input function */
+		void _InputDebug();
+
 		
+		bool _ImportTerrain(wifstream& file, vector<IShader*>& shaders);
+		bool _ImportSkybox(wifstream& file, vector<IShader*>& shaders);
+		bool _ImportWater(wifstream& file, vector<IShader*>& shaders);
+		bool _ImportStatic(wifstream& file, vector<IShader*>& shaders);
+		bool _ImportPickups(wifstream& file, vector<IShader*>& shaders);
+		bool _ImportEnergy(wifstream& file, vector<IShader*>& shaders);
+		bool _ImportLights(wifstream& file, vector<IShader*>& shaders);
+		bool _ImportPlayer(wifstream& file, vector<IShader*>& shaders);
+
+		vec4 ReadVector4(wifstream& in);
+		vec3 ReadVector3(wifstream& in);
+		int ReadInt(wifstream& in);
+		wstring& ReadString(wifstream& in, wstring& outStr);
+
 	public:
 		FlyState_Level();
 		virtual~FlyState_Level();

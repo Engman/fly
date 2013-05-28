@@ -114,11 +114,11 @@ class FlyEngine
 		virtual void		FLYCALL		Gfx_EndDeferredSceneOrtho	()																	= 0;
 		virtual void		FLYCALL		Gfx_DrawSkyBox				()																	= 0;
 		virtual void		FLYCALL		Gfx_DrawGbuffer				()																	= 0;
+		virtual void		FLYCALL		Gfx_DrawGbufferOrtho		()																	= 0;
 		virtual void		FLYCALL		Gfx_DrawShadows				(vector<BaseBuffer*> *shadowViews)									= 0;
 		virtual void		FLYCALL		Gfx_DrawLighting			()																	= 0;
 		virtual void		FLYCALL		Gfx_DrawBlur				()																	= 0;
 		virtual void		FLYCALL		Gfx_DrawFinalPicture		()																	= 0;
-		virtual void		FLYCALL Gfx_DrawFinalPicture(Camera theCamera)=0;
 		/** Resizes the render targets */
 		virtual void		FLYCALL		Gfx_Resize					(int width, int height)												= 0;
 		/** Sets active camera, if parameter is NULL the default cam is set */
@@ -132,7 +132,6 @@ class FlyEngine
 
 		virtual Camera*		FLYCALL		Gfx_GetDefaultCamera		()																	= 0;
 		
-		virtual void		FLYCALL		Audio_PlaySound				(const wchar_t* path)												= 0;
 		/** Creates a new 3D object 
 		*	New Reference */
 		virtual bool		FLYCALL		Geometry_Create				(FlyEngineGeometry type, Entity* object)							= 0;
@@ -160,9 +159,9 @@ class FlyEngine
 		virtual void		FLYCALL		Input_Deactivate			()																	= 0;
 		
 		//sound
-		virtual void		FLYCALL Audio_Initialize()=0;
-		virtual void		FLYCALL Audio_PlaySound(FlyEngineSounds sound) =0;
-		virtual void		FLYCALL		Audio_Shutdown()=0;
+		virtual void		FLYCALL		Audio_Initialize			()																	=0;
+		virtual void		FLYCALL		Audio_PlaySound				(FlyEngineSounds sound)												=0;
+		virtual void		FLYCALL		Audio_Shutdown				()																	=0;
 		//---------------------
 
 };

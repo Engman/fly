@@ -16,9 +16,9 @@ bool Terrain::Initialize(OBJECT_DESC& data, int renderBoxes, int collisionBoxes)
 	this->vertices = data.vertecies;
 
 	this->material = MaterialHandler::GetMaterial(data.material_id);
-	if(!this->material)
-		DisplayText("A material could not be found", "Warning!");
-
+	//if(!this->material)
+	//	DisplayText("A material could not be found", "Warning!");
+	
 	this->shader = data.shader;
 
 	this->octTree.Initialize(this->vertices, data.vCount, renderBoxes, collisionBoxes);

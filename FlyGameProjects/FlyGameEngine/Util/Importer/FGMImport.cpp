@@ -290,7 +290,9 @@ bool ParseStandardFile			(std::string& in, ImportedObjectData* d)
 {
 	std::string flag;
 	bool result = true;
-	while(iChar != fileSize)
+	int safteyCounter = iChar;
+
+	while(iChar != fileSize && safteyCounter < fileSize)
 	{
 		read(in, flag);
 
@@ -316,6 +318,7 @@ bool ParseStandardFile			(std::string& in, ImportedObjectData* d)
 			if(!result)
 				return result;
 		}
+		safteyCounter++;
 	}
 
 	return result;
@@ -331,6 +334,7 @@ int ParseMaterial				(std::string& in)
 	md.name = toW(ParseLine(in, buff).c_str(), wdummy);
 
 	bool done = false;
+	int safteyCounter = iChar;
 
 	do
 	{
@@ -357,8 +361,8 @@ int ParseMaterial				(std::string& in)
 				return MaterialHandler::AddMaterial(md);
 			}
 		}
-	
-	} while (iChar != fileSize && !done);
+		safteyCounter++;
+	} while (iChar < fileSize && !done && safteyCounter < fileSize);
 
 	return -1;
 }	

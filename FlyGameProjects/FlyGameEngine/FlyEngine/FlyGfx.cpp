@@ -82,7 +82,7 @@ void FLYCALL FlyEngine_Core::Gfx_DrawGbufferOrtho()
 	D3DShell::self()->getDeviceContext()->OMSetBlendState(0,0,0xffffffff);
 	D3DShell::self()->setDepthStencilState(FLAGS::DEPTH_STENCIL_EnabledDepth,1);
 }
-void FLYCALL FlyEngine_Core::Gfx_DrawShadows(Camera theCamera)
+void FLYCALL FlyEngine_Core::Gfx_DrawShadows(vector<BaseBuffer*>* shadowViews)
 {
 	IShader::PER_FRAME_DATA shadowsDrawData;
 	shadowsDrawData.dc = D3DShell::self()->getDeviceContext(); 
@@ -91,11 +91,7 @@ void FLYCALL FlyEngine_Core::Gfx_DrawShadows(Camera theCamera)
 	{
 		D3DShell::self()->BeginShadowRenderTarget(i);
 
-
-		shadowsDrawData.view = theCamera.GetViewMatrix(); 
-		shadowsDrawData.projection = theCamera.GetProjectionMatrix(); 
-
-
+		
 		
 		this->shadowMapShader->draw(shadowsDrawData);
 	}
@@ -165,48 +161,9 @@ void FLYCALL FlyEngine_Core::Gfx_DrawBlur()
 	this->blurVerticalShader->draw(blurDrawData);
 }
 
-void FLYCALL FlyEngine_Core::Gfx_DrawFinalPicture(Camera theCamera)
+void FLYCALL FlyEngine_Core::Gfx_DrawFinalPicture()
 {
-	D3DShell::self()->setRenderTarget();
-	D3DShell::self()->beginScene();
-
-	IShader::PER_FRAME_DATA finalPictureDrawData;
-	finalPictureDrawData.dc = D3DShell::self()->getDeviceContext();
-	finalPictureDrawData.view = this->activeCamera->GetViewMatrix();
-	finalPictureDrawData.projection = this->activeCamera->GetProjectionMatrix();
-
-
-	D3DXMATRIX invCameraViewProj; 
-	invCameraViewProj =  finalPictureDrawData.view *  finalPictureDrawData.projection;
-	float det = D3DXMatrixDeterminant(&invCameraViewProj);
-	D3DXMatrixInverse(&invCameraViewProj, &det, &invCameraViewProj);
 	
-	D3DXMATRIX lightViewProj;
-
-	
-	D3DXMATRIX lView = theCamera.GetViewMatrix();
-	D3DXMATRIX lProj = theCamera.GetProjectionMatrix(); 
-	
-
-	D3DXMATRIX lViewProj = lView * lProj;
-	D3DXMatrixTranspose(&lViewProj, &lViewProj);
-	D3DXMatrixTranspose(&invCameraViewProj, &invCameraViewProj);
-
-	CameraView* camView = (CameraView*)cameraBuffer->Map();
-	camView->mInvViewProj = invCameraViewProj;
-	camView->mInvView	  = lViewProj; 
-	camView->cameraPos	= this->activeCamera->GetPosition();
-	camView->padd		=600;
-	cameraBuffer->Unmap();
-
-	finalPictureDrawData.camForLight = cameraBuffer;
-
-	this->fsq->SetShader(this->finalShader);
-	this->fsq->Render();
-	this->finalShader->draw(finalPictureDrawData);
-
-	D3DShell::self()->releaseSRV();
-	D3DShell::self()->endScene();
 }
 
 
@@ -342,7 +299,7 @@ Camera*	FLYCALL	FlyEngine_Core::Gfx_GetDefaultCamera()
 	return this->defaultCam;
 }
 
-void FLYCALL FlyEngine_Core::PlaySoundTrack(const wchar_t* path)
+
 //################################//
 //########### LOCAL DATA #########//
 //####################################################################//

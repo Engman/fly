@@ -35,9 +35,7 @@ FlyState_Menu::FlyState_Menu()
 FlyState_Menu::~FlyState_Menu()
 {
 	for (int i = 0; i < (int)this->ui.size(); i++)
-	{
 		delete this->ui[i];
-	}
 }
 
 void Read_V_VT_VN(Entity* obj, wifstream& in)
@@ -88,11 +86,6 @@ void FlyState_Menu::update()
 	{
 		this->ui[i]->Update();
 	}
-	//if(this->highlightBtn)
-	//{
-	//	this->highlightBtn->Update();
-	//}
-
 
 	input();
 }

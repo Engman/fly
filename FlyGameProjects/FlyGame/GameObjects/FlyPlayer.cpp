@@ -25,7 +25,7 @@ void FlyPlayer::Render(ViewFrustum& frustum)
 
 void FlyPlayer::Update()
 {
-	vector<D3DXVECTOR3>* vertexList = dynamic_cast<FlyMeshAnimated*>(this->playerModel[0])->GetTriangles();
+	vector<D3DXVECTOR3>* vertexList = ((FlyMeshAnimated*)(this->playerModel[0]))->GetTriangles();
 	BoundingBox box;
 	box.minPoint = vec3(0.0f, 0.0f, 0.0f);
 	box.maxPoint = vec3(0.0f, 0.0f, 0.0f);

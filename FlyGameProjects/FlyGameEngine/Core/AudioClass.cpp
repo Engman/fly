@@ -76,7 +76,7 @@ void AudioClass::loadSound()
 }
 void AudioClass::shutdown()
 {
-	for(int i=0; i<SOUND_COUNT; i++)
+	for(size_t i=0; i<this->sounds.size(); i++)
 	{
 		sounds[i]->release(); 
 	}
@@ -109,20 +109,20 @@ void AudioClass::playSound(FlyEngineSounds sound)
 
 	switch( sound)
 	{
-		case FlyEngineSounds::FlySound_Wings:
+		case FlySound_Wings:
 			result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_Wings], false,&channel);
 			result = channel->setVolume(0.8f);
 		break;
 
-		case FlyEngineSounds::FlySound_Collision:
+		case FlySound_Collision:
 			result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_Collision], false,&channel);
 			result = channel->setVolume(0.8f);
 		break;
-		case FlyEngineSounds::FlySound_LevelMusic:
+		case FlySound_LevelMusic:
 			result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_LevelMusic], false,&channel);
 			result = channel->setVolume(0.8f);
 		break;
-		case FlyEngineSounds::FlySound_Wind:
+		case FlySound_Wind:
 			result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_Wind], false,&channel);
 			result = channel->setVolume(0.8f);
 		break;

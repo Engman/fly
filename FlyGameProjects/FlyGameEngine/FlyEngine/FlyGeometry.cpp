@@ -203,7 +203,6 @@ bool FLYCALL FlyEngine_Core::Geometry_Load(const wchar_t* path, vector<Entity*>*
 		d.deviceContext = D3DShell::self()->getDeviceContext();
 		d.material_id = raw.objects[0].material;
 		d.name = raw.name;
-		d.filename = raw.name;
 		d.shader = 0;
 		d.vCount = (int)raw.objects[0].vertex->size();
 		d.vertecies = vert;

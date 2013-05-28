@@ -5,7 +5,6 @@ ParticleMesh::ParticleMesh()
 	:Entity(Type::OBJECT)
 {
 	D3DXMatrixIdentity(&this->world);
-	D3DXMatrixIdentity(&this->transformation);
 	this->rotation	= vec3(0.0f, 0.0f, 0.0f);
 	D3DXMatrixIdentity(&this->world);
 }
@@ -103,8 +102,8 @@ bool ParticleMesh::Initialize(OBJECT_DESC& data)
 	}
 
 	this->material = MaterialHandler::GetMaterial(data.material_id);
-	if(!this->material)
-		DisplayText("A material could not be found", "Warning!");
+	//if(!this->material)
+	//	DisplayText("A material could not be found", "Warning!");
 
 	SmartPtrStd<BaseBuffer> b = new BaseBuffer();
 	BaseBuffer::BUFFER_INIT_DESC desc;

@@ -57,7 +57,6 @@
     <ClCompile Include="FlyEngine\FlyGfx.cpp" />
     <ClCompile Include="FlyEngine\FlyInput.cpp" />
     <ClCompile Include="FlyEngine\FlyGeometry.cpp" />
-    <ClCompile Include="FlyEngine\FlySound.cpp" />
     <ClCompile Include="Main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -66,6 +65,7 @@
     </ClCompile>
     <ClCompile Include="Util\Camera.cpp" />
     <ClCompile Include="Util\CollisionLib.cpp" />
+    <ClCompile Include="Util\GID.cpp" />
     <ClCompile Include="Util\Importer\FGMImport.cpp" />
     <ClCompile Include="Util\Importer\ObjectImporter.cpp" />
     <ClCompile Include="Util\Importer\ResourceImporter.cpp" />
