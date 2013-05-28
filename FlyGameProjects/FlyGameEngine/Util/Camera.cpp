@@ -123,6 +123,12 @@ void Camera::SetRotation(float x, float y, float z)
 	this->rotationY = y;
 	this->rotationZ = z;
 }
+void Camera::SetRotation(D3DXVECTOR3 v)
+{
+	this->rotationX = v.x;
+	this->rotationY = v.y;
+	this->rotationZ = v.z;
+}
 void Camera::SetRotationX(float x)
 {
 	this->rotationX = x;
@@ -251,6 +257,12 @@ D3DXMATRIX Camera::GetViewMatrix() const
 {
 	return this->viewMatrix;
 }
+D3DXMATRIX Camera::GetWorldMatrix() const
+{
+	D3DXMATRIX inv;
+	D3DXMatrixInverse(&inv, 0, &this->viewMatrix);
+	return inv;
+}
 D3DXMATRIX Camera::GetProjectionMatrix() const
 {
 	return this->projectionMatrix;
@@ -297,6 +309,16 @@ D3DXVECTOR3 Camera::GetParallelRight() const
 	D3DXVec3Cross(&returnedValue, &up, &GetForward());
 
 	return returnedValue;
+}
+
+
+float Camera::GetFarZ() const
+{
+	return this->projFar;
+}
+float Camera::GetNearZ() const
+{
+	return this->projNear;
 }
 
 

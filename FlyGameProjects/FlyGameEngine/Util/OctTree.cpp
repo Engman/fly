@@ -41,7 +41,7 @@ void OctTree::NewChild(Node* parent, D3DXVECTOR3 minPoint, D3DXVECTOR3 maxPoint,
 
 	if(collisionIterations > 0)
 	{
-		parent->children = new Node[4];
+		parent->children = new Node[8];
 
 		D3DXVECTOR3 middle = D3DXVECTOR3(maxPoint.x*0.5f + minPoint.x*0.5f, maxPoint.y, maxPoint.z*0.5f + minPoint.z*0.5f);
 
@@ -49,6 +49,11 @@ void OctTree::NewChild(Node* parent, D3DXVECTOR3 minPoint, D3DXVECTOR3 maxPoint,
 		NewChild(&parent->children[1], D3DXVECTOR3(middle.x, minPoint.y, minPoint.z), D3DXVECTOR3(maxPoint.x, maxPoint.y, middle.z), renderIterations - 1, collisionIterations - 1);
 		NewChild(&parent->children[2], D3DXVECTOR3(middle.x, minPoint.y, middle.z), D3DXVECTOR3(maxPoint.x, maxPoint.y, maxPoint.z), renderIterations - 1, collisionIterations - 1);
 		NewChild(&parent->children[3], D3DXVECTOR3(minPoint.x, minPoint.y, middle.z), D3DXVECTOR3(middle.x, maxPoint.y, maxPoint.z), renderIterations - 1, collisionIterations - 1);
+
+		NewChild(&parent->children[4], D3DXVECTOR3(minPoint.x, middle.y, minPoint.z), D3DXVECTOR3(middle.x, maxPoint.y, middle.z), renderIterations - 1, collisionIterations - 1);
+		NewChild(&parent->children[5], D3DXVECTOR3(middle.x, middle.y, minPoint.z), D3DXVECTOR3(maxPoint.x, maxPoint.y, middle.z), renderIterations - 1, collisionIterations - 1);
+		NewChild(&parent->children[6], middle, maxPoint, renderIterations - 1, collisionIterations - 1);														   
+		NewChild(&parent->children[7], D3DXVECTOR3(minPoint.x, middle.y, middle.z), D3DXVECTOR3(middle.x, maxPoint.y, maxPoint.z), renderIterations - 1, collisionIterations - 1);
 	}
 	else
 	{
@@ -74,6 +79,10 @@ void OctTree::PutVerticesInBox(Node* parent, int index, int renderIterations, in
 			PutVerticesInBox(&parent->children[1], index, renderIterations - 1, collisionIterations - 1);
 			PutVerticesInBox(&parent->children[2], index, renderIterations - 1, collisionIterations - 1);
 			PutVerticesInBox(&parent->children[3], index, renderIterations - 1, collisionIterations - 1);
+			PutVerticesInBox(&parent->children[4], index, renderIterations - 1, collisionIterations - 1);
+			PutVerticesInBox(&parent->children[5], index, renderIterations - 1, collisionIterations - 1);
+			PutVerticesInBox(&parent->children[6], index, renderIterations - 1, collisionIterations - 1);
+			PutVerticesInBox(&parent->children[7], index, renderIterations - 1, collisionIterations - 1);
 		}
 		if(renderIterations == 0)
 		{
@@ -99,6 +108,10 @@ void OctTree::InitNodeBuffers(Node* parent, int renderIterations)
 		InitNodeBuffers(&parent->children[1], renderIterations - 1);
 		InitNodeBuffers(&parent->children[2], renderIterations - 1);
 		InitNodeBuffers(&parent->children[3], renderIterations - 1);
+		InitNodeBuffers(&parent->children[4], renderIterations - 1);
+		InitNodeBuffers(&parent->children[5], renderIterations - 1);
+		InitNodeBuffers(&parent->children[6], renderIterations - 1);
+		InitNodeBuffers(&parent->children[7], renderIterations - 1);
 	}
 	else
 	{
@@ -220,6 +233,10 @@ vector<BaseBuffer*> OctTree::RenderNode(ID3D11DeviceContext* dc, Node* parent, V
 			RenderNode(dc, &parent->children[1], frustum, shader, data);
 			RenderNode(dc, &parent->children[2], frustum, shader, data);
 			RenderNode(dc, &parent->children[3], frustum, shader, data);
+			RenderNode(dc, &parent->children[4], frustum, shader, data);
+			RenderNode(dc, &parent->children[5], frustum, shader, data);
+			RenderNode(dc, &parent->children[6], frustum, shader, data);
+			RenderNode(dc, &parent->children[7], frustum, shader, data);
 		}
 	}
 
@@ -245,6 +262,11 @@ void OctTree::ReleaseChild(Node* parent)
 		ReleaseChild(&parent->children[1]);
 		ReleaseChild(&parent->children[2]);
 		ReleaseChild(&parent->children[3]);
+		ReleaseChild(&parent->children[4]);
+		ReleaseChild(&parent->children[5]);
+		ReleaseChild(&parent->children[6]);
+		ReleaseChild(&parent->children[7]);
+
 
 		delete[]parent->children;
 		parent->children = 0;
@@ -324,8 +346,81 @@ vector<vector<D3DXVECTOR3>*> OctTree::GetCollidedBoxNode(Node* parent, BoundingS
 				}
 			}
 
+			tempPointerList = GetCollidedBoxNode(&parent->children[4], sphere);
+			if(tempPointerList.size() > 0)
+			{
+				for(unsigned int i = 0; i < tempPointerList.size(); i++)
+				{
+					tempList = tempPointerList.at(i);
+					if(tempList && tempList->size() != 0)
+						vertexList.push_back(tempList);
+				}
+			}
+			
+			tempPointerList = GetCollidedBoxNode(&parent->children[5], sphere);
+			if(tempPointerList.size() > 0)
+			{
+				for(unsigned int i = 0; i < tempPointerList.size(); i++)
+				{
+					tempList = tempPointerList[i];
+					if(tempList && tempList->size() != 0)
+						vertexList.push_back(tempList);
+				}
+			}
+
+			tempPointerList = GetCollidedBoxNode(&parent->children[6], sphere);
+			if(tempPointerList.size() > 0)
+			{
+				for(unsigned int i = 0; i < tempPointerList.size(); i++)
+				{
+					tempList = tempPointerList[i];
+					if(tempList && tempList->size() != 0)
+						vertexList.push_back(tempList);
+				}
+			}
+
+			tempPointerList = GetCollidedBoxNode(&parent->children[7], sphere);
+			if(tempPointerList.size() > 0)
+			{
+				for(unsigned int i = 0; i < tempPointerList.size(); i++)
+				{
+					tempList = tempPointerList[i];
+					if(tempList && tempList->size() != 0)
+						vertexList.push_back(tempList);
+				}
+			}
+
 		}
 	}
 
 	return vertexList;
+}
+
+BoundingBox OctTree::GetTopBox() const
+{
+	return this->head->box;
+}
+
+void OctTree::TransformBoxes(Matrix transform)
+{
+	TransformChildBox(this->head, transform);
+}
+
+void OctTree::TransformChildBox(Node* parent, Matrix transform)
+{
+	vec4 vectorFour;
+	parent->box.minPoint = (vec3)*D3DXVec3Transform(&vectorFour, &parent->box.minPoint, &transform);
+	parent->box.maxPoint = (vec3)*D3DXVec3Transform(&vectorFour, &parent->box.maxPoint, &transform);
+
+	if(parent->children != NULL)
+	{
+		TransformChildBox(&parent->children[0], transform);
+		TransformChildBox(&parent->children[1], transform);
+		TransformChildBox(&parent->children[2], transform);
+		TransformChildBox(&parent->children[3], transform);
+		TransformChildBox(&parent->children[4], transform);
+		TransformChildBox(&parent->children[5], transform);
+		TransformChildBox(&parent->children[6], transform);
+		TransformChildBox(&parent->children[7], transform);
+	}
 }

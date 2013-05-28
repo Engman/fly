@@ -34,6 +34,7 @@ class FlyPlayer
 
 		void SetPosition(vec3 position);
 		void SetRotation(vec3 rotation);
+		void SetScale(vec3 scale);
 		void SetVelocity(vec3 velocity);
 		void SetEllipseVector(vec3 radius);
 		void SetSmall(bool changed);
@@ -45,6 +46,7 @@ class FlyPlayer
 		bool GetSmall() const;
 		BoundingEllipse GetEllipse() const;
 		float GetEnergy() const;
+		float GetMaxEnergy() const;
 
 		BoundingSphere* GetBoundingSphere();
 		void SetBoundingSphere(BoundingSphere* sphere);

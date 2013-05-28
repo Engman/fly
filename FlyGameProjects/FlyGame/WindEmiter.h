@@ -1,11 +1,13 @@
 #ifndef WINDEMITER_H
 #define WINDEMITER_H
 
+
 #include "../FlyGameEngine/Util/misc.h"
 #include "../FlyGameEngine/Util/SmartPtrs.h"
 #include "../FlyGameEngine/Util/BoundingVolumes.h"
 #include "../FlyGameEngine/Util/CollisionLib.h"
 #include <vector>
+
 
 extern "C"
 {
@@ -20,7 +22,6 @@ public:
 	{
 		BoundingSphere sphere;
 		D3DXVECTOR3 direction; 
-		WindSphere() { };
 	};
 
 private:
@@ -31,7 +32,7 @@ private:
 	D3DXVECTOR3 position; 
 	SmartPtrStd<std::vector<WindSphere>> windSpheres;
 	int spherePerSec; 
-	int 
+
 
 	char* scriptFile;
 	void callLua_uppdateWindSpheres();

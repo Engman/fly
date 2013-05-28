@@ -6,19 +6,50 @@
 
 #include "..\FlyGameEngine\FlyEngine\FlyEngine.h"
 #include "States\IFlySystemState.h"
-#include "States\FlyState_Editor.h"
 #include "States\FlyState_Level.h"
 #include "States\FlyState_Menu.h"
 #include "..\FlyGameEngine\Util\SmartPtrs.h"
 
 
-static FlyGame* FlyGameInstance = NULL;
+#if defined(_DEBUG) || defined(DEBUG)
+#include <fcntl.h>
+#include <io.h>
+#include <iostream>
+void SetStdOutToNewConsole()
+{
+    // allocate a console for this app
+    AllocConsole();
+
+    // redirect unbuffered STDOUT to the console
+    HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+    int fileDescriptor = _open_osfhandle((intptr_t)consoleHandle, _O_TEXT);
+    FILE *fp = _fdopen( fileDescriptor, "w" );
+    *stdout = *fp;
+    setvbuf( stdout, NULL, _IONBF, 0 );
+ 
+    // give the console window a nicer title
+	wchar_t str[256];
+	wsprintf(str, L"Debug Output");
+    SetConsoleTitle(str);
+
+    // give the console window a bigger buffer size
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    if ( GetConsoleScreenBufferInfo(consoleHandle, &csbi) )
+    {
+        COORD bufferSize;
+        bufferSize.X = csbi.dwSize.X;
+        bufferSize.Y = 50;
+        SetConsoleScreenBufferSize(consoleHandle, bufferSize);
+    }
+}
+#endif
+
+
 
 struct FlyGame::_DATA_
 {
-	SmartPtrStd<IFlySystemState> editor;
 	SmartPtrStd<IFlySystemState> level;
-	SmartPtrStd<IFlySystemState> menu;
+	SmartPtrStd<IFlySystemState> mainMenu;
 	FlyEngine* fly;
 	IFlySystemState* state;
 	lua_State* luaState;
@@ -36,14 +67,25 @@ FlyGame::FlyGame()
 FlyGame::~FlyGame()
 {
 	lua_close(this->_pData->luaState);
-	this->_pData->fly->Core_Shutdown();
-	this->_pData->fly = NULL;
-	this->_pData->level->Release();
-	delete this->_pData;
-}
+	this->_pData->luaState = NULL;
 
+	if(this->_pData->fly)					this->_pData->fly->Core_Shutdown();
+	this->_pData->fly = NULL;
+	
+	if(this->_pData->level.IsValid())		this->_pData->level->Release();
+	if(this->_pData->mainMenu.IsValid())	this->_pData->mainMenu->Release();
+	this->_pData->state = NULL;
+
+
+	delete this->_pData;
+	
+}
 bool FlyGame::Initiate(FlyGameSystemState state)		  
 {
+#if defined(_DEBUG) || defined(DEBUG)
+	SetStdOutToNewConsole();
+	std::cout << "Starting debug session!" << std::endl;
+#endif
 	//We should load an .ini file to determinate initialization values
 
 	FLY_ENGINE_INIT_DESC cd;
@@ -59,13 +101,8 @@ bool FlyGame::Initiate(FlyGameSystemState state)
 		break;
 
 		case Menu:
-			this->_pData->menu = new FlyState_Menu();
-			this->_pData->state = this->_pData->menu;
-		break;
-
-		case Editor:
-			this->_pData->editor = new FlyState_Editor();
-			this->_pData->state = this->_pData->editor;
+			this->_pData->mainMenu = new FlyState_Menu();
+			this->_pData->state = this->_pData->mainMenu;
 		break;
 	}
 
@@ -75,7 +112,12 @@ bool FlyGame::Initiate(FlyGameSystemState state)
 	this->_pData->fly = FlyEngineCreate();
 	if(!this->_pData->fly->Core_Initialize(cd))
 		return false;
-	this->_pData->state->Initiate(this);
+
+	time_t start = clock();
+	if(!this->_pData->state->Initiate(this))
+		return false;
+	std::cout << "State loaded on " << clock()-start << "ms\n";
+
 	return true;
 }
 void FlyGame::Run()							  
@@ -89,41 +131,25 @@ void FlyGame::Run()
 	if(!this->_pData->state)
 		return;
 
+	cout << "Starting game..\n";
+	MSG msg;
 	while (this->_pData->state)
 	{
-		if(!this->_pData->fly->Core_Message())
-		{
-			break;
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{ 
+			if (msg.message == WM_QUIT)
+			{
+				break;
+			}
+			DispatchMessage(&msg);
 		}
-
-		this->_pData->state->Frame();
+		else
+		{
+			this->_pData->state->Frame();
+		}
 	}
 }
-void FlyGame::Update()						  
-{
 
-}
-void FlyGame::Render()						  
-{
-
-}
-
-
-
-FlyGame* FlyGame::self()					  
-{
-	if(!FlyGameInstance)
-		FlyGameInstance = new FlyGame();
-
-	return FlyGameInstance;
-}
-void FlyGame::Destroy()						  
-{
-	FlyGameInstance->_pData->fly->Core_Shutdown();
-	FlyGameInstance->_pData->fly = NULL;
-	delete FlyGameInstance;
-	FlyGameInstance = NULL;
-}
 
 
 FlyEngine* FlyGame::GetCoreInstance() const

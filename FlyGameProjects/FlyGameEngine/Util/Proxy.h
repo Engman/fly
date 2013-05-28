@@ -12,9 +12,12 @@ struct SpotLightProxy
 	D3DXVECTOR4 specular;
 	D3DXVECTOR4 posRange;	//Vector4(Vector3 position, float range)
 	D3DXVECTOR4 dirRad;		//Vector4(Vector3 direction, float spotRadius)
-	D3DXVECTOR4 attenuate;	//Vector4(Vector3 attenuate, 0.0f)
 
-	SpotLightProxy()	{ ZeroMemory(this, sizeof(this)); }
+	SpotLightProxy()
+		:ambient(0.0f, 0.0f, 0.0f, 0.0f), diffuse(0.0f, 0.0f, 0.0f, 0.0f), 
+		specular(0.0f, 0.0f, 0.0f, 0.0f), posRange(0.0f, 0.0f, 0.0f, 0.0f),
+		dirRad(0.0f, 0.0f, 0.0f, 0.0f)
+	{  }
 };
 /** Describes how the point light is used on gpu */
 struct PointLightProxy
@@ -23,9 +26,11 @@ struct PointLightProxy
 	D3DXVECTOR4 diffuse;
 	D3DXVECTOR4 specular;
 	D3DXVECTOR4 posRange;	//Vcetor4(Vector3 position, float range)
-	D3DXVECTOR4 attenuate;	//Vector4(Vector3 Attenuate, 0.0f)
 
-	PointLightProxy()	{ ZeroMemory(this, sizeof(this)); }
+	PointLightProxy()	
+		:ambient(0.0f, 0.0f, 0.0f, 0.0f), diffuse(0.0f, 0.0f, 0.0f, 0.0f), 
+		specular(0.0f, 0.0f, 0.0f, 0.0f), posRange(0.0f, 0.0f, 0.0f, 0.0f)
+	{  }
 };
 /** Describes how the directional light is used on gpu */
 struct DirectionalLightProxy
@@ -35,7 +40,10 @@ struct DirectionalLightProxy
 	D3DXVECTOR4 specular;
 	D3DXVECTOR4 direction;	//Vector4(Vector3 direction, 0.0f)
 
-	DirectionalLightProxy()	{ ZeroMemory(this, sizeof(this)); }
+	DirectionalLightProxy()	
+		:ambient(0.0f, 0.0f, 0.0f, 0.0f), diffuse(0.0f, 0.0f, 0.0f, 0.0f), 
+		specular(0.0f, 0.0f, 0.0f, 0.0f), direction(0.0f, 0.0f, 0.0f, 0.0f)
+	{ }
 };
 
 /** Describes how the matrix cbuffer is structured on the gpu */

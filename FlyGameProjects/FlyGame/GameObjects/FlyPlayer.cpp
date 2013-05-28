@@ -3,12 +3,9 @@
 FlyPlayer::FlyPlayer()
 {
 	this->velocity = vec3(0.0f, 0.0f, 0.0f);
-	this->maxVelocity = vec3(0.2f, 0.2f, 0.2f);
+	this->maxVelocity = vec3(0.4f, 0.4f, 0.8f);
 	this->maxEnergy = 10000;
 	this->energy = maxEnergy;
-	this->boundingEllipse.radiusVector.x = 2.0f;
-	this->boundingEllipse.radiusVector.y = 0.5f;
-	this->boundingEllipse.radiusVector.z = 2.0f;
 }
 
 FlyPlayer::~FlyPlayer()
@@ -28,7 +25,7 @@ void FlyPlayer::Render(ViewFrustum& frustum)
 
 void FlyPlayer::Update()
 {
-	vector<D3DXVECTOR3>* vertexList = dynamic_cast<FlyMeshAnimated*>(this->playerModel[0])->GetTriangles();
+	vector<D3DXVECTOR3>* vertexList = ((FlyMeshAnimated*)(this->playerModel[0]))->GetTriangles();
 	BoundingBox box;
 	box.minPoint = vec3(0.0f, 0.0f, 0.0f);
 	box.maxPoint = vec3(0.0f, 0.0f, 0.0f);
@@ -71,7 +68,7 @@ void FlyPlayer::Update()
 		}
 	}
 
-	this->boundingEllipse.radiusVector = (box.maxPoint - box.minPoint)*0.5f;
+	this->boundingEllipse.radiusVector = (box.maxPoint - box.minPoint)*0.5f+vec3(0.1f, 0.0f, 0.1f);
 	this->boundingEllipse.center = this->GetPosition();
 
 	this->boundingEllipse.center = this->GetPosition();
@@ -90,6 +87,11 @@ void FlyPlayer::SetPosition(vec3 position)
 void FlyPlayer::SetRotation(vec3 rotation)
 {
 	this->playerModel[0]->setRotation(rotation);
+}
+
+void FlyPlayer::SetScale(vec3 scale)
+{
+	this->playerModel[0]->setScale(scale);
 }
 
 void FlyPlayer::SetVelocity(vec3 velocity)
@@ -147,6 +149,11 @@ BoundingSphere* FlyPlayer::GetBoundingSphere()
 	return this->playerModel[0]->getBoundingSphere();
 }
 
+float FlyPlayer::GetMaxEnergy() const
+{
+	return this->maxEnergy;
+}
+
 void FlyPlayer::SetBoundingSphere(BoundingSphere* sphere)
 {
 	this->playerModel[0]->setBoundingSphere(sphere);
@@ -174,6 +181,9 @@ void FlyPlayer::Release()
 void FlyPlayer::DeductEnergy(float howMuch)
 {
 	this->energy -= howMuch;
+
+	if(this->energy > this->maxEnergy)
+		this->energy = this->maxEnergy;
 }
 
 //Controlls

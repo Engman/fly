@@ -9,6 +9,16 @@
 
 FlyLevelEditor_impl *gEditorInstance = 0;
 bool selectedDrag = false;
+int lastMouseX = 0;
+int lastMouseY = 0;
+bool gFlyMode = false;
+float gSpeed = 0.01f;
+bool gRotateCamera = false;
+
+bool gKeyW = false;
+bool gKeyA = false;
+bool gKeyS = false;
+bool gKeyD = false;
 
 
 FlyLevelEditor* FLYCALL GetEditorInstance()
@@ -24,7 +34,7 @@ FlyLevelEditor* FLYCALL GetEditorInstance()
 FlyLevelEditor_impl::FlyLevelEditor_impl()
 {
 	this->core = FlyEngineCreate();
-	this->selected = 0;
+	this->selected = NULL;
 }
 FlyLevelEditor_impl::~FlyLevelEditor_impl()
 {
@@ -54,13 +64,6 @@ bool FLYCALL FlyLevelEditor_impl::Initiate(HWND parent, int width, int height)
 	
 	if(!this->core->Core_Initialize(d)) return false;
 
-	this->core->Input_Initialize();
-	this->core->Input_Activate();
-
-	Input::self()->subscribeMouseBtnDown(this, &FlyLevelEditor_impl::KeyDownEvent);
-	Input::self()->subscribeMouseBtnUp(this, &FlyLevelEditor_impl::KeyReleaseEvent);
-	Input::self()->subscribeMouseMove(this, &FlyLevelEditor_impl::MouseMoveEvent);
-	Input::self()->subscribeMouseScroll(this, &FlyLevelEditor_impl::MouseScrollEvent);
 
 	CameraObject *topCam = new CameraObject();
 	topCam->camera = new Camera();
@@ -86,15 +89,29 @@ void FLYCALL FlyLevelEditor_impl::Frame()
 	if(!gEditorInstance)	return;
 	
 	this->core->Gfx_Update();
+
+			 if(gKeyW)	this->core->Gfx_GetCamera()->RelativeForward(gSpeed);
+		else if(gKeyS)	this->core->Gfx_GetCamera()->RelativeForward(-gSpeed);
+		else if(gKeyA)	this->core->Gfx_GetCamera()->RelativeRight(-gSpeed);
+		else if(gKeyD)	this->core->Gfx_GetCamera()->RelativeRight(gSpeed);
+
 	this->core->Gfx_BeginDeferredScene();
 	
 	ViewFrustum f;
 	this->core->Gfx_GetCamera()->ConstructViewFrustum(f);
 
+	if(this->theWorld.size() > 0)
+		this->theWorld[0]->Render(f);
+
 	for (int i = 0; i < (int)this->mesh.size(); i++)
 	{
 		this->mesh[i]->Update();
 		this->mesh[i]->Render(f);
+	}
+	for (int i = 0; i < (int)this->levelPickups.size(); i++)
+	{
+		this->levelPickups[i]->Update();
+		this->levelPickups[i]->Render(f);
 	}
 
 	for (int i = 0; i < (int)this->lights.size(); i++)
@@ -170,68 +187,290 @@ void FLYCALL FlyLevelEditor_impl::GetCameras(std::map<std::wstring, int>* outCam
 		}
 	}
 }
-void FLYCALL FlyLevelEditor_impl::GetSelected (std::wstring& name, int& id)
+bool FLYCALL FlyLevelEditor_impl::GetSelected (std::wstring& name, int& id, float& rx, float& ry, float& rz, float& sx, float& sy, float& sz)
 {
-	if(this->selected->getID() == -1)
-		MessageBox(0, L"Negativ one", L"", 0);
-	else
-		MessageBox(0, L"none", L"", 0);
+	if(!this->selected)
+		return false;
 
+	name = this->selected->getName();
+	id = this->selected->getID();
+	vec3 rot = this->selected->getRotation();
+	vec3 scale = this->selected->getScale();
+
+	rx = rot.x;
+	ry = rot.y;
+	rz = rot.z;
+	
+	sx = scale.x;
+	sy = scale.y;
+	sz = scale.z;
+
+	return true;
+}
+void FLYCALL FlyLevelEditor_impl::SetRotation(float x, float y, float z)
+{
 	if(this->selected)
+		this->selected->setRotation(vec3(x, y, z));
+}
+void FLYCALL FlyLevelEditor_impl::SetScale(float x, float y, float z)
+{
+	if(this->selected)
+		this->selected->setScale(vec3(x, y, z));
+}
+bool FLYCALL FlyLevelEditor_impl::SetName(const std::wstring& name)
+{
+	for (int i = 0; i < (int)this->mesh.size(); i++)
 	{
-		name = this->selected->getName();
-		id = this->selected->getID();
+		if(this->mesh[i]->getName() == name)
+			return false;
 	}
-	else
-	{
-		name = L"";
-		id = -1;
-	}
+
+	this->selected->setName(name);
+	return true;
+}
+void FLYCALL FlyLevelEditor_impl::SetFlyMode(bool flyMode)
+{
+	gFlyMode = flyMode;
+}
+void FLYCALL FlyLevelEditor_impl::GetSpeed(float& speed)
+{
+	speed = gSpeed;
+}
+void FLYCALL FlyLevelEditor_impl::SetSpeed(float speed)
+{
+	gSpeed = speed;
+}
+bool FLYCALL FlyLevelEditor_impl::LoadTerrain(std::wstring& path)
+{
+
+	return true;
 }
 
 
-
-
-void FlyLevelEditor_impl::MouseScrollEvent(int &delta)
+bool FLYCALL FlyLevelEditor_impl::LoadLevel(const std::wstring& path, std::map<std::wstring, int>* meshEntity, std::map<std::wstring, int>* lights, std::map<std::wstring, int>* pickups)
 {
-	Camera* cam = this->core->Gfx_GetCamera();
-	if(delta == 1)
-		cam->RelativeForward(3.5f);
-	else
-		cam->RelativeForward(-3.5f);
-}
-void FlyLevelEditor_impl::KeyDownEvent(Input::MouseBtnData& data)
-{
-	if(data.MousePos_clientX >= 0 && data.MousePos_clientX < D3DShell::self()->getWidth() &&
-				data.MousePos_clientY >= 0 && data.MousePos_clientY < D3DShell::self()->getHeight())
+	wifstream file(path);
+	vec3 readVector;
+	int readInt = 0;
+	wstring readString = L"";
+	int nrOfStuff = 0;
+
+	vector<IShader*> shaders;
+	this->core->Gfx_GetShader(shaders);
+
+	if(!file.is_open())
 	{
-		if (data.key == Input::KeyCodes::M_LeftBtn)
+		return false;
+	}
+
+	file>>readString;
+	file>>nrOfStuff;
+
+	//First to load is always terrain
+	file>>readString;
+	this->core->Geometry_Load(readString.c_str(), &this->theWorld, FlyGeometry_Terrain);
+	file>>readVector.x;
+	file>>readVector.y;
+	file>>readVector.z;
+	this->theWorld[0]->setPosition(readVector);
+	file>>readVector.x;
+	file>>readVector.y;
+	file>>readVector.z;
+	this->theWorld[0]->setRotation(readVector);
+	file>>readInt;		
+						
+	this->theWorld[0]->setShader(shaders[readInt]);
+
+	//Read rest of objects
+	for(int i = 0; i < nrOfStuff-1; i++)
+	{
+		file>>readString;
+		this->core->Geometry_Load(readString.c_str(), &this->mesh);
+		file>>readVector.x;
+		file>>readVector.y;
+		file>>readVector.z;
+		this->mesh[i]->setPosition(readVector);
+		file>>readVector.x;
+		file>>readVector.y;
+		file>>readVector.z;
+		this->mesh[i]->setRotation(readVector);
+		file>>readInt;
+
+		this->mesh[i]->setShader(shaders[readInt]);
+
+		(*meshEntity)[this->mesh[i]->getName()] = this->mesh[i]->getID();
+	}
+
+	file>>nrOfStuff;
+
+	//Pick-ups
+	for(int i = 0; i < nrOfStuff; i++)
+	{
+		file>>readString;
+		this->core->Geometry_Load(readString.c_str(), &this->levelPickups);
+		file>>readVector.x;
+		file>>readVector.y;
+		file>>readVector.z;
+		this->levelPickups[i]->setPosition(readVector);
+		file>>readVector.x;
+		file>>readVector.y;
+		file>>readVector.z;
+		this->levelPickups[i]->setRotation(readVector);
+		file>>readInt;
+
+		this->levelPickups[i]->setShader(shaders[readInt]);
+		(*pickups)[this->levelPickups[i]->getName()] = this->levelPickups[i]->getID();
+	}
+
+
+	//Read player position
+	//vec3 player;
+	
+	//file>>player.x;
+	//file>>player.y;
+	//file>>player.z;
+	//this->mainCamera.SetPosition(player);
+	//file>>player.x;
+	//file>>player.y;
+	//file>>player.z;
+	//this->mainCamera.SetRotation(player.x, player.y, player.z);
+	//this->mainCamera.SetProjectionMatrix((float)D3DX_PI*0.2f, 1200.0f/600.0f, 8.0f, 400.0f);
+	//this->core->Gfx_SetCamera(&this->mainCamera);
+	
+	file.close();
+	return true;
+}
+bool FLYCALL FlyLevelEditor_impl::SaveLevel(const std::wstring& path, const std::wstring& levelName)
+{
+	wofstream out;
+	out.open(path);
+
+	if(!out.is_open())
+		return false;
+
+	out << levelName << "\n";
+
+	
+
+	//Save meshes
+	out << (int)this->mesh.size() << " ";
+	for (int i = 0; i < (int)this->mesh.size(); i++)
+	{
+		vec3 p = this->mesh[i]->getPosition();
+		vec3 s = this->mesh[i]->getScale();
+		vec3 r = this->mesh[i]->getRotation();
+		out << "..\\Resources\\Models\\" << this->mesh[i]->getName() 
+			<< " " << p.x << " " << p.y << " " << p.z
+			<< " " << r.x << " " << r.y << " " << r.z
+			<< " " << s.x << " " << s.y << " " << s.z
+			<< " " << this->mesh[i]->getShader()->getType();
+	}
+
+	//Save pickups
+	out << (int)this->levelPickups.size();
+	for (int i = 0; i < (int)this->levelPickups.size(); i++)
+	{
+		vec3 p = this->levelPickups[i]->getPosition();
+		vec3 s = this->levelPickups[i]->getScale();
+		vec3 r = this->levelPickups[i]->getRotation();
+		out << "..\\Resources\\Models\\" << this->levelPickups[i]->getName() 
+			<< " " << p.x << " " << p.y << " " << p.z
+			<< " " << r.x << " " << r.y << " " << r.z
+			<< " " << s.x << " " << s.y << " " << s.z
+			<< " " << this->levelPickups[i]->getShader()->getType();
+	}
+
+	return true;
+}
+
+
+void FLYCALL FlyLevelEditor_impl::OnKeyEvent(int key, bool released, bool ctrl, bool shift, bool alt)
+{
+	if(key == -1)
+		return;
+
+	if(gFlyMode)
+	{
+		if(released)
 		{
-			//if (!this->selected)
-			//{
-			if(!selectedDrag)
-				this->selected = this->core->Geometry_Pick(this->mesh, data.MousePos_clientX, data.MousePos_clientY);
-			//}
-			if (this->selected)
-			{
-				selectedDrag = true;
-			}
+				 if(key == KEY_W)	gKeyW = false;
+			else if(key == KEY_S)	gKeyS = false;
+			else if(key == KEY_A)	gKeyA = false;
+			else if(key == KEY_D)	gKeyD = false;
 		}
+		else
+		{
+				 if(key == KEY_W)	gKeyW = true;
+			else if(key == KEY_S)	gKeyS = true;
+			else if(key == KEY_A)	gKeyA = true;
+			else if(key == KEY_D)	gKeyD = true;
+		}
+
 	}
 }
-void FlyLevelEditor_impl::KeyReleaseEvent(Input::MouseBtnData& data)
+void FLYCALL FlyLevelEditor_impl::OnMouseBtnEvent(int key, bool released, bool ctrl, bool shift, bool alt)
 {
-	if (data.key == Input::KeyCodes::M_LeftBtn)
+	if(key == KEY_MOUSE_LBTN)
 	{
-		if(this->selected && selectedDrag)
+		if(!released)
+		{
+			if(alt)
+			{
+				gRotateCamera = true;
+			}
+			else if (!alt && !shift && ! ctrl)
+			{
+				if(!selectedDrag)
+					this->selected = this->core->Geometry_Pick(this->mesh, lastMouseX, lastMouseY);
+				
+				if (this->selected)
+					selectedDrag = true;
+			}
+			
+		}
+		else
 		{
 			selectedDrag = false;
+			gRotateCamera = false;
+		}
+	}
+	else if (key == KEY_MOUSE_RBTN)
+	{
+		if(released)
+		{
+
+		}
+		else
+		{
+
+		}
+	}
+	else if (key == KEY_MOUSE_MBTN)
+	{
+		if(released)
+		{
+
+		}
+		else
+		{
+
 		}
 	}
 }
-void FlyLevelEditor_impl::MouseMoveEvent(Input::MouseMoveData& data)
+void FLYCALL FlyLevelEditor_impl::OnMouseMoveEvent(int cx, int cy, int rx, int ry, bool ctrl, bool shift, bool alt)
 {
-	if(selectedDrag && this->selected)
+	if(gRotateCamera)
+	{
+		this->core->Gfx_GetCamera()->RelativeYaw((float)rx);
+		this->core->Gfx_GetCamera()->RelativePitch((float)ry);
+	}
+	else if(gFlyMode)
+	{
+		this->core->Gfx_GetCamera()->RelativeYaw((float)rx);
+		this->core->Gfx_GetCamera()->RelativePitch((float)ry);
+		return;
+	}
+	else if(selectedDrag && this->selected)
 	{
 		Camera* cam = this->core->Gfx_GetCamera();
 		vec3 currentPos		= this->selected->getPosition();
@@ -239,23 +478,41 @@ void FlyLevelEditor_impl::MouseMoveEvent(Input::MouseMoveData& data)
 		vec3 currentRight	= cam->GetRight();
 		//vec3 currentFront	= this->selected->getFront();
 
-		if(data.relativeX < 0)
+		if(rx < 0)
 		{
 			currentPos -= currentRight;
 		}
-		if(data.relativeX > 0)
+		else if(rx > 0)
 		{ 
 			currentPos += currentRight;
 		}
-		if(data.relativeY < 0)
+		if(ry < 0)
 		{
 			currentPos += currentUp;
 		}
-		if(data.relativeY > 0)
+		else if(ry > 0)
 		{
 			currentPos -= currentUp;
 		}
+
 		this->selected->setPosition(currentPos);
 	}
+	lastMouseX = cx;
+	lastMouseY = cy;
 }
+void FLYCALL FlyLevelEditor_impl::OnMouseScrollEvent(int delta, bool ctrl, bool shift, bool alt)
+{
+	if(!gFlyMode)
+	{
+		Camera* cam = this->core->Gfx_GetCamera();
+		if(delta > 0)
+			cam->RelativeForward(6.5f);
+		else
+			cam->RelativeForward(-6.5f);
+	}
+}
+
+
+
+
 

@@ -62,6 +62,8 @@ class OctTree
 
 		void InitNodeBuffers(Node* parent, int renderIterations);
 
+		void TransformChildBox(Node* parent, Matrix transform);
+
 	public:
 		OctTree();
 		virtual ~OctTree();
@@ -70,10 +72,13 @@ class OctTree
 		void Initialize(SmartPtrStd<std::vector<VERTEX::VertexPNT>> vertexList, int vertexCount, int renderIterations, int collisionIterations);
 		void Release();
 
+		void TransformBoxes(Matrix transform);
+
 		/** The returned value contains a list of buffer structures which are prepared to be rendered*/
 		vector<BaseBuffer*> Render(ViewFrustum frustum, IShader* shader, IShader::DRAW_DATA data);
 
 		vector<vector<D3DXVECTOR3>*> GetCollidedBoxes(BoundingSphere sphere);
+		BoundingBox GetTopBox() const;
 };
 
 #endif

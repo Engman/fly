@@ -40,6 +40,7 @@ class Camera
 
 		/**Angles are set in degrees*/
 		void SetRotation(float x, float y, float z);
+		void SetRotation(D3DXVECTOR3 v);
 		void SetRotationX(float x);
 		void SetRotationY(float y);
 		void SetRotationZ(float z);
@@ -60,6 +61,7 @@ class Camera
 		void UpdatePosition();
 
 		D3DXMATRIX	GetViewMatrix() const;
+		D3DXMATRIX	GetWorldMatrix() const;
 		D3DXMATRIX	GetProjectionMatrix() const;
 		D3DXMATRIX	GetOrthogonalMatrix() const;
 		D3DXVECTOR3	GetForward() const;
@@ -68,6 +70,9 @@ class Camera
 		/**Use these two functions to get vectors that are parallel to the X and Z-axes (useful for ground movement*/
 		D3DXVECTOR3	GetParallelForward() const;
 		D3DXVECTOR3 GetParallelRight() const;
+
+		float GetFarZ() const;
+		float GetNearZ() const;
 
 		 void ConstructViewFrustum(ViewFrustum& frustum);
 };

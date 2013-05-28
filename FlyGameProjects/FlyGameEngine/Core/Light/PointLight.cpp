@@ -9,7 +9,7 @@ PointLight::~PointLight()
 
 }
 
-void PointLight::Initialize(PointLightProxy data, IShader* shader)
+bool PointLight::Initialize(PointLightProxy data, IShader* shader)
 {
 	this->pointLight = data;
 
@@ -25,15 +25,13 @@ void PointLight::Initialize(PointLightProxy data, IShader* shader)
 	dirLightDesc.usage = BUFFER_FLAG::USAGE_DYNAMIC_CPU_WRITE_DISCARD;
 
 	if(FAILED(pointLightData->Initialize(dirLightDesc)))
-	{
-		//return false;
-	}
+		return false;
+	
 	
 	PointLightProxy* pLightBuffer = (PointLightProxy*) pointLightData->Map();
 	pLightBuffer->ambient =	data.ambient;
 	pLightBuffer->diffuse =	data.diffuse;
 	pLightBuffer->specular =	data.specular;
-	pLightBuffer->attenuate = data.attenuate;
 	pLightBuffer->posRange = data.posRange;
 	pointLightData->Unmap();
 

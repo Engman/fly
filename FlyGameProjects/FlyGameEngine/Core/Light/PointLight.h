@@ -21,7 +21,7 @@ public:
 	PointLight(int type);
 	~PointLight();
 
-	void Initialize(PointLightProxy data, IShader* shader);
+	bool Initialize(PointLightProxy data, IShader* shader);
 	void Render(ViewFrustum& frustum);
 
 

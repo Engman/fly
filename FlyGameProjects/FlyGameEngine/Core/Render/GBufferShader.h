@@ -10,6 +10,7 @@ class GBufferShader : public IShader
 
 		GBufferShader();
 		void draw(PER_FRAME_DATA& frameData);
+		int getType() const;
 
 	private:
 		

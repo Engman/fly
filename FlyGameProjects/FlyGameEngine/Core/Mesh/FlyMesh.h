@@ -35,12 +35,15 @@ class FlyMesh		:public Entity
 			IShader*						shader;
 			/** Name (Optional) */
 			std::wstring					name;
+			/** Filename */
+			std::wstring					filename;
 			/** The bounding spehere to the object (optional) */
 			SmartPtrStd<BoundingSphere>		boundingSphere;
 			OBJECT_DESC()
-				:device(0), deviceContext(0), vertecies(0), vCount(0), material_id(-1), shader(0), name(L""), boundingSphere(0)
+				:device(0), deviceContext(0), vertecies(0), vCount(0), material_id(-1), shader(0), name(L""), filename(L""), boundingSphere(0)
 			{}
 		};
+
 	private:
 		SmartPtrStd<std::vector<vec3>> vertexList;
 
@@ -56,7 +59,7 @@ class FlyMesh		:public Entity
 		/** Builds a FlyMesh than is ready for rendering */
 		virtual bool Initialize(OBJECT_DESC& data);
 
-		virtual void Release() override { }
+		virtual void Release() override {  }
 
 		/** Get triangles for mesh */
 		virtual vector<vec3>* GetTriangles();

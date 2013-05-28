@@ -31,7 +31,7 @@ bool Timer::Initialize()
 	
 	QueryPerformanceCounter((LARGE_INTEGER*)&this->startTime);
 
-	this->ticksPerFrame = (INT64)(this->ticksPerMs*1000)/60;
+	this->ticksPerFrame = (INT64)(this->ticksPerMs*1000)/30;
 
 	this->fps = 0.0f;
 

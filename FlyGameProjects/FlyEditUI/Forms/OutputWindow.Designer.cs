@@ -40,17 +40,18 @@
 			this.OutputWin.Location = new System.Drawing.Point(0, 0);
 			this.OutputWin.Name = "OutputWin";
 			this.OutputWin.ReadOnly = true;
-			this.OutputWin.Size = new System.Drawing.Size(337, 182);
+			this.OutputWin.Size = new System.Drawing.Size(261, 182);
 			this.OutputWin.TabIndex = 0;
 			this.OutputWin.Text = "";
 			this.OutputWin.MouseEnter += new System.EventHandler(this.MouseEnterOutputLable);
 			// 
 			// ClearBtn
 			// 
+			this.ClearBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.ClearBtn.BackColor = System.Drawing.Color.Black;
 			this.ClearBtn.Font = new System.Drawing.Font("MS Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.ClearBtn.ForeColor = System.Drawing.Color.Green;
-			this.ClearBtn.Location = new System.Drawing.Point(279, 12);
+			this.ClearBtn.Location = new System.Drawing.Point(209, 12);
 			this.ClearBtn.Name = "ClearBtn";
 			this.ClearBtn.Size = new System.Drawing.Size(46, 21);
 			this.ClearBtn.TabIndex = 1;
@@ -63,7 +64,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(337, 182);
+			this.ClientSize = new System.Drawing.Size(261, 182);
 			this.ControlBox = false;
 			this.Controls.Add(this.ClearBtn);
 			this.Controls.Add(this.OutputWin);

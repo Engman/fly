@@ -5,8 +5,9 @@ FlyMesh::FlyMesh()
 	:Entity(Type::OBJECT)
 {
 	D3DXMatrixIdentity(&this->world);
-	D3DXMatrixIdentity(&this->transformation);
 	this->rotation	= vec3(0.0f, 0.0f, 0.0f);
+	this->scale = vec3(1.0f, 1.0f, 1.0f);
+	this->translation = vec3(0.0f, 0.0f, 0.0f);
 	D3DXMatrixIdentity(&this->world);
 }
 FlyMesh::~FlyMesh()
@@ -16,7 +17,21 @@ FlyMesh::~FlyMesh()
 
 void FlyMesh::Update()
 {
-	this->boundingSphere->center = this->getPosition();
+	if(this->boundingSphere.IsValid())
+		this->boundingSphere->center = this->translation;
+
+	D3DXMATRIX rotation;
+	D3DXMATRIX scaling;
+	D3DXMATRIX translation;
+	D3DXMatrixIdentity(&this->world);
+
+	D3DXMatrixScaling(&scaling, this->scale.x, this->scale.y, this->scale.z);
+	D3DXMatrixRotationYawPitchRoll(&rotation, this->rotation.y, this->rotation.x, this->rotation.z);
+	D3DXMatrixTranslation(&translation, this->translation.x, this->translation.y, this->translation.z);
+
+	this->world *= scaling;
+	this->world *= rotation;
+	this->world *= translation;
 }
 void FlyMesh::Render(ViewFrustum& frustum)
 {
@@ -24,17 +39,6 @@ void FlyMesh::Render(ViewFrustum& frustum)
 	{
 		if(this->shader && FrustumVSSphere(frustum, *this->boundingSphere))
 		{
-			D3DXMATRIX scale, rotation, translation;
-			D3DXMatrixScaling(&scale, this->scale.x, this->scale.y, this->scale.z);
-			D3DXMatrixRotationYawPitchRoll(&rotation, this->rotation.y, this->rotation.x, this->rotation.z);
-			D3DXMatrixTranslation(&translation, this->translation.x, this->translation.y, this->translation.z);
-
-			D3DXMatrixIdentity(&this->world);
-
-			this->world *= scale;
-			this->world *= rotation;
-			this->world *= translation;
-
 			IShader::DRAW_DATA data;
 		
 			for(int i = 0; i<(int)this->buffers.size(); i++)
@@ -48,17 +52,6 @@ void FlyMesh::Render(ViewFrustum& frustum)
 	}
 	else
 	{
-		D3DXMATRIX scale, rotation, translation;
-		D3DXMatrixScaling(&scale, this->scale.x, this->scale.y, this->scale.z);
-		D3DXMatrixRotationYawPitchRoll(&rotation, this->rotation.y, this->rotation.x, this->rotation.z);
-		D3DXMatrixTranslation(&translation, this->translation.x, this->translation.y, this->translation.z);
-
-		D3DXMatrixIdentity(&this->world);
-
-		this->world *= scale;
-		this->world *= rotation;
-		this->world *= translation;
-
 		IShader::DRAW_DATA data;
 
 		for(int i = 0; i<(int)this->buffers.size(); i++)
@@ -105,8 +98,8 @@ bool FlyMesh::Initialize(OBJECT_DESC& data)
 	}
 
 	this->material = MaterialHandler::GetMaterial(data.material_id);
-	if(!this->material)
-		DisplayText("A material could not be found", "Warning!");
+	//if(!this->material)
+	//	DisplayText("A material could not be found", "Warning!");
 
 	SmartPtrStd<BaseBuffer> b = new BaseBuffer();
 	BaseBuffer::BUFFER_INIT_DESC desc;
