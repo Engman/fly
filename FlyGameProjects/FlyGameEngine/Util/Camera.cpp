@@ -257,6 +257,12 @@ D3DXMATRIX Camera::GetViewMatrix() const
 {
 	return this->viewMatrix;
 }
+D3DXMATRIX Camera::GetWorldMatrix() const
+{
+	D3DXMATRIX inv;
+	D3DXMatrixInverse(&inv, 0, &this->viewMatrix);
+	return inv;
+}
 D3DXMATRIX Camera::GetProjectionMatrix() const
 {
 	return this->projectionMatrix;

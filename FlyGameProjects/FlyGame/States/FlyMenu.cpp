@@ -149,108 +149,71 @@ void FlyState_Menu::input()
 
 void FlyState_Menu::PickMenu()
 {
-	vector<vec3> *triMouse = ((FlyMesh*)this->ui[MENU_UI_MouseBtn])->GetTriangles();
-	vector<vec3> *triBtn = 0;
-	vec3 dummy;
-	for (int i = 0; i < (int)this->uiBtn.size(); i++)
+	int mx, my;
+	int w, h;
+	Camera* cam = this->entryInstance->GetCoreInstance()->Gfx_GetCamera();
+	Input::self()->GetMouseLocation(mx, my);
+	this->entryInstance->GetCoreInstance()->Core_Dimensions(w, h);
+	vec3 picRayOrig;
+	vec3 picRayDir;
+	Matrix proj = this->entryInstance->GetCoreInstance()->Gfx_GetCamera()->GetOrthogonalMatrix();
+	
+	 // Compute the vector of the pick ray in screen space
+	vec3 v;
+	v.x = ( ( ( 2.0f * mx ) / w ) - 1 ) / proj._11;
+	v.y = -( ( ( 2.0f * my ) / h ) - 1 ) / proj._22;
+	v.z = 1.0f;
+
+	// Get the inverse view matrix
+	const D3DXMATRIX matView = cam->GetViewMatrix();
+	const D3DXMATRIX matWorld = cam->GetWorldMatrix();
+	D3DXMATRIX mWorldView = matWorld * matView;
+	D3DXMATRIX m;
+	D3DXMatrixInverse( &m, NULL, &mWorldView );
+	
+	// Transform the screen space pick ray into 3D space
+	picRayDir.x = v.x * m._11 + v.y * m._21 + v.z * m._31;
+	picRayDir.y = v.x * m._12 + v.y * m._22 + v.z * m._32;
+	picRayDir.z = v.x * m._13 + v.y * m._23 + v.z * m._33;
+	picRayOrig.x = m._41;
+	picRayOrig.y = m._42;
+	picRayOrig.z = m._43;
+
+	for(int i = 0; i < (int)this->uiBtn.size(); i++)
 	{
-		triBtn = ((FlyMesh*)this->uiBtn[i])->GetTriangles();
+		// Now get the inverse of the translated world matrix.
+		//D3DXMatrixInverse(&iw, NULL, &(uiBtn[i]->getWorld()));
 	
-		
-		for (int k = 0; k < (int)triMouse->size(); k+=3)
+		// Now transform the ray origin and the ray direction from view space to world space.
+		//D3DXVec3TransformCoord(&rayOrigin, &origin, &iw);
+		//D3DXVec3TransformNormal(&rayDirection, &direction, &iw);
+	
+		// Normalize the ray direction.
+		//D3DXVec3Normalize(&rayDirection, &rayDirection);
+	
+		FlyMesh* temp = (FlyMesh*)uiBtn[i];
+		vector<vec3> *tris = temp->GetTriangles();
+		if(tris)
 		{
-			vec3 tri1 [3] = //Mouse tri
+			for (int i = 0; i < (int)tris->size(); i+=3)
 			{
-				*D3DXVec3TransformCoord(&dummy, &(*triMouse)[k], &this->ui[MENU_UI_MouseBtn]->getWorld()),
-				*D3DXVec3TransformCoord(&dummy, &(*triMouse)[k+1], &this->ui[MENU_UI_MouseBtn]->getWorld()),
-				*D3DXVec3TransformCoord(&dummy, &(*triMouse)[k+2], &this->ui[MENU_UI_MouseBtn]->getWorld())
-			};
-			vec3 tri2 [3] = //Mouse tri
-			{
-				*D3DXVec3TransformCoord(&dummy, &(*triBtn)[k], &this->uiBtn[i]->getWorld()),
-				*D3DXVec3TransformCoord(&dummy, &(*triBtn)[k+1], &this->uiBtn[i]->getWorld()),
-				*D3DXVec3TransformCoord(&dummy, &(*triBtn)[k+2], &this->uiBtn[i]->getWorld())
-			};
+				vec3 tri[3] = 
+				{
+					(*tris)[i],
+					(*tris)[i + 1],
+					(*tris)[i + 2]
+				};
 	
-			if(TriangleVSTriangle(tri1, tri2))
-			{
-				this->highlightBtn = uiBtn[i];
-				return;
+				if(RayVSTriangle(picRayOrig, picRayDir, tri))
+				{
+					this->highlightBtn = uiBtn[i];
+					return;
+				}
+				else
+					this->highlightBtn = 0;
 			}
-			else
-				this->highlightBtn = 0;
 		}
 	}
-
-
-	
-
-
-	//int _x = 0;
-	//int _y = 0;
-	//Input::self()->GetMouseLocation(_x, _y);
-	//
-	//Entity* retVal = 0;
-	//float pointX, pointY;
-	//Camera *cam = this->entryInstance->GetCoreInstance()->Gfx_GetCamera();
-	//D3DXMATRIX iw;
-	//D3DXMATRIX iv = cam->GetViewMatrix();
-	//D3DXMATRIX p = cam->GetOrthogonalMatrix();
-	//D3DXVECTOR3 origin = cam->GetPosition();
-	//D3DXVECTOR3 direction, rayOrigin, rayDirection;
-	//
-	//TriangleVSTriangle(
-	//// Move the mouse cursor coordinates into the -1 to +1 range.
-	//pointX = ((2.0f * (float)_x) / (float)D3DShell::self()->getWidth()) - 1.0f;
-	//pointY = -(((2.0f * (float)_y) / (float)D3DShell::self()->getHeight()) - 1.0f);
-	//	
-	//// Adjust the points using the projection matrix to account for the aspect ratio of the viewport.
-	//pointX = pointX / p._11;
-	//pointY = pointY / p._22;	
-	//
-	//// Get the inverse of the view matrix.
-	//D3DXMatrixInverse(&iv, NULL, &iv);
-	//// Calculate the direction of the picking ray in view space.
-	//direction.x = (pointX * iv._11) + (pointY * iv._21) + iv._31;
-	//direction.y = (pointX * iv._12) + (pointY * iv._22) + iv._32;
-	//direction.z = (pointX * iv._13) + (pointY * iv._23) + iv._33;
-	//
-	//
-	//for(int i = 0; i < (int)this->uiBtn.size(); i++)
-	//{
-	//	// Now get the inverse of the translated world matrix.
-	//	D3DXMatrixInverse(&iw, NULL, &(uiBtn[i]->getWorld()));
-	//
-	//	// Now transform the ray origin and the ray direction from view space to world space.
-	//	D3DXVec3TransformCoord(&rayOrigin, &origin, &iw);
-	//	D3DXVec3TransformNormal(&rayDirection, &direction, &iw);
-	//
-	//	// Normalize the ray direction.
-	//	D3DXVec3Normalize(&rayDirection, &rayDirection);
-	//
-	//	FlyMesh* temp = (FlyMesh*)uiBtn[i];
-	//	vector<vec3> *tris = temp->GetTriangles();
-	//	if(tris)
-	//	{
-	//		for (int i = 0; i < (int)tris->size(); i+=3)
-	//		{
-	//			vec3 tri[3] = 
-	//			{
-	//				(*tris)[i],
-	//				(*tris)[i + 1],
-	//				(*tris)[i + 2]
-	//			};
-	//
-	//			if(RayVSTriangle(rayOrigin, rayDirection, tri))
-	//			{
-	//				this->highlightBtn = uiBtn[i];
-	//				return;
-	//			}
-	//			else
-	//				this->highlightBtn = 0;
-	//		}
-	//	}
-	//}
 }
 
 

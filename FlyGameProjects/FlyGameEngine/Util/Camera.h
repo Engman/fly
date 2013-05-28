@@ -61,6 +61,7 @@ class Camera
 		void UpdatePosition();
 
 		D3DXMATRIX	GetViewMatrix() const;
+		D3DXMATRIX	GetWorldMatrix() const;
 		D3DXMATRIX	GetProjectionMatrix() const;
 		D3DXMATRIX	GetOrthogonalMatrix() const;
 		D3DXVECTOR3	GetForward() const;

@@ -470,7 +470,7 @@ bool FlyState_Level::Render()
 	this->entryInstance->GetCoreInstance()->Gfx_DrawLighting();
 	this->entryInstance->GetCoreInstance()->Gfx_DrawBlur();
 	//this->entryInstance->GetCoreInstance()->Gfx_DrawShadows(this->lightCamera);
-	this->entryInstance->GetCoreInstance()->Gfx_DrawFinalPicture(this->lightCamera);
+	//this->entryInstance->GetCoreInstance()->Gfx_DrawFinalPicture(this->lightCamera);
 
 
 	return true;
