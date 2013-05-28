@@ -7,19 +7,24 @@
 #include "..\..\Util\Proxy.h"
 #include "..\D3DShell.h"
 #include "..\Entity.h"
-#include "..\Mesh\Cube.h"
+#include "..\Mesh\Sphere.h"
+
 
 class PointLight : public Entity
 {
 private:
 	PointLightProxy pointLight; 
-	SmartPtrStd<BaseBuffer> light; 
+	SmartPtrStd<BaseBuffer> pointLightData; 
+	Sphere lightSphere; 
 
 public:
 	PointLight(int type);
 	~PointLight();
 
-	void Initialize(PointLightProxy data);
+	void Initialize(PointLightProxy data, IShader* shader);
+	void Render(ViewFrustum& frustum);
+
+
 	BaseBuffer* getLight();
 
 };

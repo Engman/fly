@@ -15,6 +15,7 @@ struct PS_IN
   float4 position 			: SV_POSITION;
   float4 positionWorld 		: POSITION;
   float4 normal 			: NORMAL;
+  float4 depth				: DEPTH; 
   float2 textCoord 			: TEXCOORD;
 };
 
@@ -37,7 +38,9 @@ PS_OUT FPixelShader( PS_IN input )
 	
 	
 	//normal
-	float3 normal = (input.normal.xyz +1)* 0.5f ;
+	float3 normal = input.normal.xyz; //normalize(input.normal);
+	normal = (normal.xyz +1)* 0.5f ;
+	
 	float4 bumpNormal = float4(0,0,0,0); 
 	bumpNormal = objTexture[1].Sample(SampleTypeClamp, input.textCoord)* 2.0f -1;
 	bumpNormal.w = 0;
@@ -63,7 +66,7 @@ PS_OUT FPixelShader( PS_IN input )
 	}
 	else
 	{
-		float depth = input.position.b ;// input.position.w;
+		float depth =  input.depth.x / input.depth.y;
 		output.NormalRGB_DepthA = float4( normal, depth );//input.position.b
 		output.AmbR_diffG_specB_powA = float4( spec.x, 0,0 , specularPower);
 	}

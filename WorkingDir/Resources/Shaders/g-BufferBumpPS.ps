@@ -1,0 +1,92 @@
+//albedo RGBA, normalRGB_depthA, specular  //add glow leater
+Texture2D objTexture[4] 		: register(t0);		
+SamplerState SampleTypeClamp 	: register(s0);
+
+cbuffer MaterialData
+{
+	float4 ambient;
+	float4 diffuse;
+	float4 specular;
+	int specularPower;
+};
+
+struct PS_IN
+{
+  float4 position 				: SV_POSITION;
+  float4 positionWorld 			: POSITION;
+  float4 normal 		  		: NORMAL;
+  float4 Tangent	    		: TANGENT;
+  float4 Binormal     			: BINORMAL;
+  float2 textCoord 				: TEXCOORD;
+};
+
+struct PS_OUT
+{
+  float4 ColorRGBA 				: SV_TARGET0;
+  float4 NormalRGB_DepthA 		: SV_TARGET1;
+  float4 AmbR_diffG_specB_powA 	: SV_TARGET2;
+  float4 PositionRGB_ 			: SV_TARGET3;
+  float4 GlowRGB_ 				: SV_TARGET4; 
+};
+
+PS_OUT FPixelShader( PS_IN input ) 
+{
+	PS_OUT output= ( PS_OUT )0;
+
+	//albedo color
+	output.ColorRGBA  	= objTexture[0].Sample(SampleTypeClamp, input.textCoord);
+	output.ColorRGBA  *= diffuse;
+	
+	
+	//normal
+	float3 normal = (input.normal.xyz +1)* 0.5f ;
+	float3 bumpNormal = float3(0,0,0); 
+	bumpNormal = objTexture[1].Sample(SampleTypeClamp, input.textCoord).xyz * 2.0f -1;
+	bumpNormal *= 10; //waveHeight
+	//normal += bumpNormal.xyz;
+	//saturate( normal);
+	//normalize(normal);
+	
+	
+	float4 dullColor = float4(0.3f, 0.3f, 0.5f, 1.0f);
+	output.ColorRGBA = dullColor; 
+	
+	//float3x3 TBN = float3x3(input.Tangent.xyz, input.Binormal.xyz, input.normal.xyz);
+	//bumpNormal = normalize(mul(bumpNormal, TBN));
+
+	//specular
+	float4 textSpec = objTexture[2].Sample(SampleTypeClamp, input.textCoord);
+	float4 spec = specular + textSpec;
+	spec= clamp(spec, 0,1);
+	float pow = specularPower * 0.00392; // *255
+
+	
+	//output.AmbR_diffG_specB_powA = float4( textSpec.x, 0,0 , pow);
+	
+	if(specularPower == 0 )
+	{
+		output.AmbR_diffG_specB_powA = float4(0.0f, 0.0f, 0.0f, 0.0f);
+		output.NormalRGB_DepthA = float4( 0.0f, 0.0f, 0.0f, 1.0f);
+	}
+	else
+	{
+		float depth = input.position.b ;// input.position.w;
+		output.NormalRGB_DepthA = float4( bumpNormal, depth );//input.position.b
+		output.AmbR_diffG_specB_powA = float4( spec.x, 0,0 , specularPower);
+	}
+	//position in world space
+	output.PositionRGB_ = input.positionWorld / input.positionWorld.w;
+  
+	//if the glow texture is black 
+	float4 glowText = objTexture[3].Sample(SampleTypeClamp, input.textCoord); 
+	if( (glowText.r < 0.001f) && (glowText.g < 0.001f) && (glowText.b < 0.001f))
+	{
+		output.GlowRGB_ = float4(0.0f, 0.0f, 0.0f, 1.0f);
+		
+	}
+    else
+    {
+        output.GlowRGB_ = objTexture[0].Sample(SampleTypeClamp, input.textCoord);
+    }
+  return output;
+}

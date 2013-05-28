@@ -53,13 +53,19 @@ float4 FPixelShader(PSIn input) :  SV_Target
 {	
 	float4 finalColor;
 	
-	float4 color = colorSRV.Sample( SampleTypeClamp, input.TextCoord); 
+	input.ScreenPos.xy /=  input.ScreenPos.w;
+	float2 GBufferTextureSize = float2(1200,600);
 	
-	float4 glowColor =  BluredSRV.Sample( SampleTypeClamp, input.TextCoord);
+	float2 UV = 0.5f * (float2(input.ScreenPos.x,- input.ScreenPos.y) + 1) - float2(1.0f / GBufferTextureSize.xy);
+	
+	
+	float4 color = colorSRV.Sample( SampleTypeClamp, UV ); //input.TextCoord); 
+	
+	float4 glowColor =  BluredSRV.Sample( SampleTypeClamp,UV); // input.TextCoord);
   
-	float4 lighting = LightSRV.Sample( SampleTypeClamp, input.TextCoord);
+	float4 lighting = LightSRV.Sample( SampleTypeClamp,UV); // , input.TextCoord);
  
-	float depth = DephtSRV.Sample( SampleTypeClamp, input.TextCoord).r;
+	float depth = DephtSRV.Sample( SampleTypeClamp,UV).a; // , input.TextCoord).a;
 	
 	float4 position = float4(0,0,0,1);
 	
@@ -84,12 +90,13 @@ float4 FPixelShader(PSIn input) :  SV_Target
 		float scale = depth;
 		shadow = ShadowFactor( depthLightVP, lightSamp, scale);
 		finalColor = saturate(color*0.5 + lighting*0.5)*(shadow+0.1);
-		
+		//finalColor = lighting;
 		return finalColor;
 	}
 	
-	//shadow = (ShadowSRV.Sample(SampleTypeClamp, input.TextCoord).r + 0.001 < depthLightVP) ? 0.0f : 1.0f;
-	finalColor = color;
+	//shadow = ShadowSRV.Sample(SampleTypeClamp, input.TextCoord).r; // + 0.001 < depthLightVP) ? 0.0f : 1.0f;
+	//shadow= pow(shadow,200);
+	//color = float4(shadow, shadow, shadow, 1);
 	
 	finalColor = color; 
 	

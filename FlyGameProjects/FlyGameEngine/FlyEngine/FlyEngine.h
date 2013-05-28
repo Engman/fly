@@ -8,6 +8,7 @@
 #include <vector>
 #include "..\Core\BaseBuffer.h"
 #include "..\Core\AudioClass.h"
+#include "..\Util\Proxy.h"
 
 class FlyMesh;
 class IShader;
@@ -65,6 +66,7 @@ enum FlyEngineGeometry
 	FlyGeometry_Plane,
 	FlyGeometry_Line,
 	FlyGeometry_Terrain,
+	FlyGeometry_Water,
 	FlyGeometry_AnimatedMesh,
 
 	GEOMETRY_COUNT
@@ -74,9 +76,11 @@ enum FlyEngineShaders
 {
 	FlyShader_gBufferDefault,
 	FlyShader_gBufferNoDepth,
+	FlyShader_gBufferBump,
 	FlyShader_gBufferAnimated,
 	FlyShader_Final,
 	FlyShader_DirLight,
+	FlyShader_PointLight,
 	FlyShader_Shadow,
 	FlyShader_BlurHorizont,
 	FlyShader_BlurVertical,
@@ -111,14 +115,14 @@ class FlyEngine
 		/** End deferred scene */
 		virtual void		FLYCALL		Gfx_EndDeferredScene		()																	= 0;
 		/** End deferred scene with ortho */
-		virtual void		FLYCALL		Gfx_EndDeferredSceneOrtho	()																	= 0;
+		virtual void		FLYCALL		Gfx_EndDeferredSceneOrtho		()																	= 0;
 		virtual void		FLYCALL		Gfx_DrawSkyBox				()																	= 0;
 		virtual void		FLYCALL		Gfx_DrawGbuffer				()																	= 0;
-		virtual void		FLYCALL		Gfx_DrawGbufferOrtho		()																	= 0;
-		virtual void		FLYCALL		Gfx_DrawShadows				(vector<BaseBuffer*> *shadowViews)									= 0;
+		virtual void		FLYCALL		Gfx_DrawShadows				(vector<LightViewProj*> *shadowViews)	=0;
 		virtual void		FLYCALL		Gfx_DrawLighting			()																	= 0;
 		virtual void		FLYCALL		Gfx_DrawBlur				()																	= 0;
-		virtual void		FLYCALL		Gfx_DrawFinalPicture		()																	= 0;
+		virtual void		FLYCALL 	Gfx_DrawFinalPicture(vector<LightViewProj*> *shadowViews)=0;
+
 		/** Resizes the render targets */
 		virtual void		FLYCALL		Gfx_Resize					(int width, int height)												= 0;
 		/** Sets active camera, if parameter is NULL the default cam is set */
@@ -159,9 +163,16 @@ class FlyEngine
 		virtual void		FLYCALL		Input_Deactivate			()																	= 0;
 		
 		//sound
-		virtual void		FLYCALL		Audio_Initialize			()																	=0;
-		virtual void		FLYCALL		Audio_PlaySound				(FlyEngineSounds sound)												=0;
-		virtual void		FLYCALL		Audio_Shutdown				()																	=0;
+		virtual void		FLYCALL		Audio_Initialize			()				= 0;
+		virtual void		FLYCALL		Audio_LoadMenuSound			()				= 0;
+		virtual void		FLYCALL		Audio_LoadLevelSound			(const char* soundTrack)	= 0;
+		virtual void		FLYCALL		Audio_ToggleSoundTrack			()				= 0; 
+
+		virtual void		FLYCALL		Audio_PlaySound				(FlyLevelSounds sound)		= 0;
+		virtual void		FLYCALL		Audio_PlayMenuSound			(FlyMenuSounds sound) 		= 0;		
+		virtual void		FLYCALL		Audio_Shutdown				()				= 0;
+		virtual void		FLYCALL		Audio_Update				(D3DXVECTOR3 pos, float speed)	= 0; 
+
 		//---------------------
 
 };

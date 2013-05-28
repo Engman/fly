@@ -25,10 +25,12 @@ class FlyEngine_Core	:public FlyEngine
 
 		SmartPtrStd<IShader>					gbufferShader;
 		SmartPtrStd<IShader>					gBufferNoDepthShader;
+		SmartPtrStd<IShader>					gbufferBumpShader; 
 		SmartPtrStd<IShader>					gBufferAnimationShader;
 		SmartPtrStd<IShader>					finalShader; 
 		SmartPtrStd<IShader>					finalColorShader; 
 		SmartPtrStd<IShader>					dirLightShader;
+		SmartPtrStd<IShader>					pointLightShader; 
 		SmartPtrStd<IShader>					shadowMapShader;
 		SmartPtrStd<IShader>					blurHorizontShader;
 		SmartPtrStd<IShader>					blurVerticalShader;
@@ -45,8 +47,10 @@ class FlyEngine_Core	:public FlyEngine
 
 	private:
 		bool		_InitGBufferShader						();
+		bool		_InitBumpShader							();
 		bool		_InitFinalShader						();
 		bool		_InitDirLightShader						();
+		bool		_InitPointLightShader					();
 		bool		_InitShadowMapShader					();
 		bool		_InitBlurShaders						();
 		bool		_InitAnimationShader					();
@@ -71,10 +75,10 @@ class FlyEngine_Core	:public FlyEngine
 		void		FLYCALL		Gfx_DrawSkyBox				();
 		void		FLYCALL		Gfx_DrawGbuffer				();
 		void		FLYCALL		Gfx_DrawGbufferOrtho		();
-		void		FLYCALL		Gfx_DrawShadows				(vector<BaseBuffer*>* shadowViews);
+		void		FLYCALL		Gfx_DrawShadows				(vector<LightViewProj*>* shadowViews);
 		void		FLYCALL		Gfx_DrawLighting			();
 		void		FLYCALL		Gfx_DrawBlur				();
-		void		FLYCALL		Gfx_DrawFinalPicture		();
+		void		FLYCALL		Gfx_DrawFinalPicture		(vector<LightViewProj*> *shadowViews);
 		void		FLYCALL		Gfx_EndDeferredScene		();
 		void		FLYCALL		Gfx_EndDeferredSceneOrtho	();
 		void		FLYCALL		Gfx_Resize					(int width, int height);
@@ -102,8 +106,13 @@ class FlyEngine_Core	:public FlyEngine
 		
 		
 		void		FLYCALL		Audio_Initialize			();
-		void		FLYCALL		Audio_PlaySound				(FlyEngineSounds sound);
+		void		FLYCALL		Audio_LoadMenuSound			();
+		void		FLYCALL		Audio_LoadLevelSound			(const char* soundTrack);
+		void		FLYCALL		Audio_ToggleSoundTrack			(); 
+		void		FLYCALL		Audio_PlaySound				(FlyLevelSounds sound);
+		void		FLYCALL		Audio_PlayMenuSound			(FlyMenuSounds sound);
 		void		FLYCALL		Audio_Shutdown				();	
+		void		FLYCALL		Audio_Update				(D3DXVECTOR3 pos, float speed);
 
 		static void  _Interface();
 };

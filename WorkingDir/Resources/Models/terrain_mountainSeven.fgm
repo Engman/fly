@@ -1,12 +1,12 @@
 ac 0 
 vc 1869
-m lambert1
-a 0.500000 0.500000 0.500000 1.000000
-d 1.000000 1.000000 1.000000 1.000000
+m lambert65
+a 0.000000 0.000000 0.000000 1.000000
+d 0.500000 0.500000 0.500000 1.000000
 s 0.500000 0.000000 0.000000 1.000000
 sp 10
 ta 
-td ..\Resources\Textures\default.jpg
+td ..\Resources\Textures\dark_matte_blue.jpg
 ts 
 tg 
 tn 

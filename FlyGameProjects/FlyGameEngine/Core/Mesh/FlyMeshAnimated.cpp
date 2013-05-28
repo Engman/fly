@@ -41,7 +41,7 @@ void FlyMeshAnimated::UpdateAnimation(int nr)
 		this->time.at(nr) = 0.0f;
 		this->currFrame.at(nr) ++; 
 
-		if(this->currFrame.at(nr)>=(int) this->frameData->at(nr).size())
+		if(this->currFrame.at(nr)>=(int) this->frameData->at(nr).size()-1)
 		{
 			this->currFrame.at(nr) = 1; 
 		}
@@ -64,7 +64,7 @@ void FlyMeshAnimated::StopAnimation(int nr)
 }
 void FlyMeshAnimated::Render(ViewFrustum& frustum)
 {
-	if(animationCount==2)
+	if(animationCount<3)
 	{
 		MorphAmination2();
 	}
@@ -85,11 +85,11 @@ void FlyMeshAnimated::Render(ViewFrustum& frustum)
 			this->world *= translation;
 
 			IShader::DRAW_DATA data;
-		
-			//for(int i = 0; i<(int)this->buffers.size(); i++)
-			//	data.buffers.push_back(this->buffers[i]);
 			
-			data.buffers.push_back(this->buffers[0]);
+			for(int i = 0; i<(int)this->buffers.size(); i++)
+			{
+				data.buffers.push_back(this->buffers[i]);
+			}
 
 			data.worldMatrix = &this->world;
 			data.material = this->material;
@@ -180,13 +180,8 @@ bool FlyMeshAnimated::Initialize(ANIM_OBJECT_DESC& data)
 	}
 	this->buffers.push_back(b);
 
-	/*for( int i=0; i<(int)(*data.vertecies).size(); i++)
-	{	
-		this->buffers.push_back(b);
-	}*/
 
 	keyFramesVertices = new vector<vector<VERTEX::VertexPNT>>; 
-	//keyFramesVertices = data.vertecies;
 
 	for(int i= 0; i<(int)data.vertecies->size(); i++)
 	{
@@ -209,8 +204,6 @@ bool FlyMeshAnimated::Initialize(ANIM_OBJECT_DESC& data)
 			lastTime = (*data.frames).at(i).at(k).frameTime; 
 			tempFrame.push_back(fd);
 		}
-		
-
 
 		(*frameData).push_back(tempFrame);
 	}
@@ -325,15 +318,16 @@ void FlyMeshAnimated::MorphAmination2()
 		}
 
 	}
-
+	int framen = frameNr[0];
+	frameNr[0]++;
 	for(int i=0; i<this->vertexCount; i++)
 	{
-		D3DXVECTOR4 position	= keyFramesVertices->at(frameNr[1]-1).at(i).position;
-		D3DXVECTOR4 normal		= keyFramesVertices->at(frameNr[1]-1).at(i).normal;
-		D3DXVECTOR2 texture		= keyFramesVertices->at(frameNr[1]-1).at(i).texcoord; 
+		D3DXVECTOR4 position	= keyFramesVertices->at(frameNr[0]-1).at(i).position;
+		D3DXVECTOR4 normal		= keyFramesVertices->at(frameNr[0]-1).at(i).normal;
+		D3DXVECTOR2 texture		= keyFramesVertices->at(frameNr[0]-1).at(i).texcoord; 
 
-		position	+= (keyFramesVertices->at(frameNr[1]).at(i).position - keyFramesVertices->at(frameNr[1]-1).at(i).position) * weights[1];
-		normal		+= (keyFramesVertices->at(frameNr[1]).at(i).normal	- keyFramesVertices->at(frameNr[1]-1).at(i).normal) * weights[1];
+		position	+= (keyFramesVertices->at(frameNr[0]).at(i).position - keyFramesVertices->at(frameNr[0]-1).at(i).position) * weights[0];
+		normal		+= (keyFramesVertices->at(frameNr[0]).at(i).normal	- keyFramesVertices->at(frameNr[0]-1).at(i).normal) * weights[0];
 		
 
 		morphedMesh[i].position = position;

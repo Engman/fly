@@ -26,10 +26,12 @@ class FlyState_Level		:public IFlySystemState
 		vector<Entity*> levelEntities;
 		vector<Entity*> theWorld;
 		vector<Entity*> skyBox;
+		vector<Entity*> water; 
 		vector<Entity*> dirLights;
+		vector<Entity*> pointLights; 
 		vector<Entity*> cursor;
 		vector<Entity*> UIorthographic; 
-		vector<BaseBuffer*> shadowViews;
+		vector<LightViewProj*> shadowViews;
 
 		FlyPlayer player;
 		FlyPickup pickups[3];
@@ -49,6 +51,7 @@ class FlyState_Level		:public IFlySystemState
 		vec3 playerStartPosition;
 
 		float deathTimer;
+		int lastState;
 
 		ParticleEngineSystem engineParticlesLeft;
 		ParticleEngineSystem engineParticlesRight;

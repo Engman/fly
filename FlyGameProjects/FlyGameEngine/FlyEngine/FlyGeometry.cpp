@@ -4,6 +4,7 @@
 #include "..\Core\D3DShell.h"
 #include "..\Core\WindowShell.h"
 #include "..\Core\Mesh\Terrain.h"
+#include "..\Core\\Mesh\FlyWaterMesh.h"
 #include "..\Core\Mesh\FlyMeshAnimated.h"
 #include "..\Util\Importer\ObjectImporter.h"
 #include "..\Util\Importer\ResourceImporter.h"
@@ -145,6 +146,38 @@ bool FLYCALL FlyEngine_Core::Geometry_Load(const wchar_t* path, vector<Entity*>*
 
 			Terrain *obj = new Terrain();
 			if(!obj->Initialize(d, renderBoxes, collisionBoxes))
+				return false;
+			objects->push_back(obj);
+		}
+	}
+	else if(special == FlyGeometry_Water)
+	{
+		for (int i = 0; i < (int)raw.objects.size(); i++)
+		{
+			BoundingBox bb;
+			bb.minPoint = vec3((*raw.objects[i].vertex)[0].position.x, (*raw.objects[i].vertex)[0].position.y, (*raw.objects[i].vertex)[0].position.z);
+			bb.maxPoint = bb.minPoint;
+			for (int k = 0; k < (int)raw.objects[i].vertex->size(); k++)
+			{
+				GetMinMax(bb, (*raw.objects[i].vertex)[k].position);
+			}
+			BoundingSphere* bs = new BoundingSphere();
+			bs->radius = D3DXVec3Length(&(bb.maxPoint - bb.minPoint)) * 0.5f;
+			bs->center = (bb.maxPoint + bb.minPoint) * 0.5f;
+
+
+			FlyWaterMesh::OBJECT_DESC d;
+			d.device = D3DShell::self()->getDevice();
+			d.deviceContext = D3DShell::self()->getDeviceContext();
+			d.material_id = raw.objects[i].material;
+			d.name = raw.name;
+			d.shader = 0;
+			d.vCount = (int)raw.objects[i].vertex->size();
+			d.vertecies = raw.objects[i].vertex;
+			d.boundingSphere = bs;
+
+			FlyWaterMesh *obj = new FlyWaterMesh();
+			if(!obj->Initialize(d))
 				return false;
 			objects->push_back(obj);
 		}
