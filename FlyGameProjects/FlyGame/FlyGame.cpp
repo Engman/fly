@@ -113,11 +113,15 @@ bool FlyGame::Initiate(FlyGameSystemState state)
 	if(!this->_pData->fly->Core_Initialize(cd))
 		return false;
 
+#if defined(_DEBUG) || defined(DEBUG)
 	time_t start = clock();
 	if(!this->_pData->state->Initiate(this))
 		return false;
 	std::cout << "State loaded on " << clock()-start << "ms\n";
-
+#else
+	if(!this->_pData->state->Initiate(this))
+		return false;
+#endif
 	return true;
 }
 void FlyGame::Run()							  
@@ -131,7 +135,9 @@ void FlyGame::Run()
 	if(!this->_pData->state)
 		return;
 
+#if defined(_DEBUG) || defined(DEBUG)
 	cout << "Starting game..\n";
+#endif
 	MSG msg;
 	while (this->_pData->state)
 	{

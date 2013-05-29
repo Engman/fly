@@ -24,19 +24,21 @@ bool FlyState_Level::Initiate(FlyGame* instance)
 {
 	this->state = 0;
 	this->lastState = 0; 
-	this->controlScheme = CONTROL_Debug;
 	//this->controlScheme = CONTROL_Casual;
+	this->controlScheme = CONTROL_Debug;
 
 	this->entryInstance = instance;
 
+	//Input activation
 	if(!this->entryInstance->GetCoreInstance()->Input_Initialize())
 		return false;
 
-
-	if(!this->ReadLevel(L"..\\Resources\\Levels\\ocean.fgl"))
+	//Read level data
+	if(!this->ReadLevel(L"..\\Resources\\Levels\\canyon.fgl"))
+	//if(!this->ReadLevel(L"..\\Resources\\Levels\\ocean.fgl"))
 		return false;
 
-	//Input activation
+	
 
 	//Timer activation
 	this->mainTimer = new Timer();

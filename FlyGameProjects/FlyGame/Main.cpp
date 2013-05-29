@@ -21,8 +21,10 @@ int WINAPI WinMain( HINSTANCE hInst, HINSTANCE prevInst, PSTR cmdLine, int cmdSh
 
 	
 	delete fg;
+
+#if defined(_DEBUG) || defined(DEBUG)
 	std::vector<int> mem = GID::getAllocList();
-	
+#endif
 	return cmdShow;
 
 }

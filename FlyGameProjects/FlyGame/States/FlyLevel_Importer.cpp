@@ -92,6 +92,7 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 	this->UIorthographic[0]->setShader(shaders[FlyShader_gBufferDefault]);
 	this->UIorthographic[0]->setScale(vec3((this->player.GetEnergy()/10000.0f)*20.0f,2.0f,1.0f));
 	this->UIorthographic[0]->setPosition(vec3(0.0f, -250.0f, 0.0f));
+	this->UIorthographic[0]->setBoundingSphere(0);
 
 	return true;
 }
@@ -118,8 +119,8 @@ bool FlyState_Level::_ImportSkybox(wifstream& file, vector<IShader*>& shaders)
 	wstring dummy = L"";
 	if(!this->entryInstance->GetCoreInstance()->Geometry_Load(ReadString(file, dummy).c_str(), &this->skyBox))
 		return false;
+	
 	this->skyBox[0]->setShader(shaders[ReadInt(file)]);
-	this->skyBox[0]->setScale(vec3(20 , 20 ,20));
 
 	return true;
 }
@@ -224,11 +225,12 @@ bool FlyState_Level::_ImportLights(wifstream& file, vector<IShader*>& shaders)
 		int count = ReadInt(file);
 
 		D3DXMATRIX viewMatrix, projectionMatrix;
-		D3DXMatrixLookAtLH(&viewMatrix, &pos, &D3DXVECTOR3(dirLightProxy.direction.x, dirLightProxy.direction.y, dirLightProxy.direction.z ), &D3DXVECTOR3(0,0,1));
+		D3DXMatrixLookAtLH(&viewMatrix, &pos, &D3DXVECTOR3(dirLightProxy.direction.x, dirLightProxy.direction.y, dirLightProxy.direction.z ), &D3DXVECTOR3(0.0, 1.0, 0.0));
 
 		D3DXMatrixPerspectiveFovLH(&projectionMatrix,(float)D3DX_PI*0.2f, D3DShell::self()->getAspectRatio(), 1, 10000);
+		//int w, h;this->entryInstance->GetCoreInstance()->Core_Dimensions(w, h);
+		//D3DXMatrixOrthoLH(&projectionMatrix, (float)w, (float)h, 0.1, 10000);
 
-		
   
 		LightViewProj *lightViewProj = new LightViewProj(); 
 		lightViewProj->lView = viewMatrix;//lightCam.GetViewMatrix();
@@ -273,8 +275,7 @@ bool FlyState_Level::_ImportPlayer(wifstream& file, vector<IShader*>& shaders)
 {
 	if(!this->entryInstance->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\character.fgm", this->player.GetModel()))
 		return false;
-
-
+	
 	this->player.GetModel()->at(0)->setPosition(ReadVector3(file));
 	this->player.GetModel()->at(0)->setRotation(ReadVector3(file));
 	this->player.GetModel()->at(0)->setScale(ReadVector3(file));

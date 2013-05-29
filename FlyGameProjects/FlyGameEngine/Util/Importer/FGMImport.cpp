@@ -12,8 +12,8 @@
 
 #pragma region FROWARD DELERATION
 
-int fileSize = 0;
-int iChar = 0;
+size_t fileSize = 0;
+size_t iChar = 0;
 
 bool ParseAnimationFile			(std::string& in, ImportedObjectData* d);
 bool ParseStandardFile			(std::string& in, ImportedObjectData* d);
@@ -293,7 +293,7 @@ bool ParseStandardFile			(std::string& in, ImportedObjectData* d)
 	int safteyCounter = iChar;
 	int safteyMax = (int)(fileSize + ((int)fileSize*0.5f));
 
-	while(iChar != fileSize && safteyCounter < fileSize)
+	while(iChar != fileSize && safteyCounter < (int)fileSize)
 	{
 		read(in, flag);
 
@@ -362,7 +362,7 @@ int ParseMaterial				(std::string& in)
 			}
 		}
 		safteyCounter++;
-	} while (iChar < fileSize && !done && safteyCounter < fileSize);
+	} while (iChar < fileSize && !done && safteyCounter < (int)fileSize);
 
 	return -1;
 }	

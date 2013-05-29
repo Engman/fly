@@ -1,131 +1,141 @@
-canyon
+testCanyon
 111
-..\Resources\Models\terrain_terrain.fgm 0.0 -5.01040902274 -0.0 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\skydome.fgm 1
-..\Resources\Models\water_pPlane2.fgm 481.910718883 -1.41482398087 -139.368306791 0.0 -0.0 0.0 1.0 1.0 1.0 2
-..\Resources\Models\Canyon_section2_pillar_polySurface34.fgm -486.445810321 -11.7287476149 209.650788102 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\Canyon_section2_pillar_polySurface35.fgm 568.163425077 -5.18600137707 -118.015557994 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\Canyon_section2_pillar_polySurface36.fgm 1630.05077008 -434.913697611 -129.349084486 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\Canyon_section2_pillar_polySurface37.fgm 1803.95455938 -432.359036629 -122.063808598 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\Canyon_section2_pillar_polySurface38.fgm 2149.21265835 -11.7287476149 252.495963065 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\Canyon_section2_pillar_polySurface39.fgm 1518.54199743 -11.7287476149 -508.380636832 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\pPyramid1.fgm 1063.25807447 509.972280354 -366.058564114 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\pPyramid2.fgm 1063.25807447 509.972280354 140.407543563 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\pPyramid3.fgm 1712.82396996 -208.126034686 301.646770486 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\pPyramid4.fgm 1631.23643235 -206.549067946 110.497893896 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\pPyramid5.fgm 1753.72096385 -171.797819091 25.775340547 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\pPyramid6.fgm 1639.12441637 -192.215041323 -167.941151267 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\pPyramid7.fgm 1794.56278992 -187.358818672 -232.089800649 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\pPyramid8.fgm 1733.9867643 -192.713262415 -368.913463816 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\pPyramid9.fgm 1721.43794907 -163.56373404 -76.7733425835 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\pSolid1.fgm 1736.41537354 166.620568413 -18.6992304236 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\pTorus1.fgm 1179.94049165 176.96427643 -769.506387951 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\pTorus2.fgm 1881.64772257 491.608353282 570.588334091 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface2.fgm 2116.96114576 37.7757726276 -346.784286917 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface6.fgm 1767.00802585 97.6314162091 13.9893713996 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface27.fgm -2514.63654843 168.98361407 320.467908055 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface41.fgm 1595.91210445 -295.8246176 13.7007609555 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface163.fgm 1216.88330703 37.7757726276 346.838672447 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface164.fgm -262.937403395 37.7757726276 -284.649627254 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface165.fgm 130.860404937 37.7757726276 72.4917854414 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface182.fgm 1734.67841073 97.6314162091 -17.4711680493 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface184.fgm 1734.67841073 97.6314162091 -17.4711680493 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface186.fgm 1734.67841073 97.6314162091 -17.4711680493 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface187.fgm 1734.67841073 97.6314162091 -17.4711680493 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface188.fgm 2115.98646739 72.2536243374 -320.918897321 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface216.fgm 2115.98646739 92.1033050135 -320.918897321 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface217.fgm 2115.98646739 113.139560148 -320.918897321 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface218.fgm 2115.98646739 133.279695097 -320.918897321 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface219.fgm -2506.302603 168.98361407 -458.398090984 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface220.fgm 149.370613704 104.766408121 -434.130356945 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface221.fgm 136.608304151 104.584244476 -433.45860657 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface222.fgm 125.401448377 103.657997733 -429.464986642 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface223.fgm 116.96569669 103.657997733 -425.884304712 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface224.fgm 111.4525211 99.2591731788 -417.13599397 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface225.fgm 111.4525211 95.1199004783 -402.016640982 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface274.fgm 1823.54120389 -342.17913524 -347.345416394 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface172.fgm 371.497049088 44.6857136031 74.5375408105 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface173.fgm 134.389377425 44.6857136031 -329.805965601 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface174.fgm -136.832451401 52.1306705656 11.6325143206 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface176.fgm 1154.93345307 475.750360924 -366.013592126 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface177.fgm 1154.93345307 475.750360924 140.486017911 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface178.fgm 364.731243421 40.1149506956 93.6887893833 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface179.fgm 139.701730513 40.1149506956 -307.564511128 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface180.fgm -126.147565302 40.1149506956 32.0182815228 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface189.fgm -1672.36856134 42.4233741044 -121.906738784 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface190.fgm 3182.83782265 142.647964696 -652.578837142 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface191.fgm 3182.83782265 142.647964696 -652.578837142 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface192.fgm 3182.83782265 142.647964696 -652.578837142 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface193.fgm 3182.83782265 142.647964696 -652.578837142 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface194.fgm 3182.83782265 142.647964696 -652.578837142 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface195.fgm 3182.83782265 142.647964696 -652.578837142 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface206.fgm 3182.83782265 142.647964696 -652.578837142 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface207.fgm 3182.83782265 142.647964696 -652.578837142 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface208.fgm 3182.83782265 142.647964696 -652.578837142 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface209.fgm 3182.83782265 142.647964696 -652.578837142 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface210.fgm 3182.83782265 142.647964696 -652.578837142 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface211.fgm 3182.83782265 142.647964696 -652.578837142 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface212.fgm 3182.83782265 142.647964696 -652.578837142 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface213.fgm 3182.83782265 142.647964696 -652.578837142 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface214.fgm 3182.83782265 142.647964696 -652.578837142 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface215.fgm 3182.83782265 142.647964696 -652.578837142 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface226.fgm 0.0 -5.01040902274 -0.0 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface228.fgm 0.0 -5.01040902274 -0.0 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface229.fgm 0.0 0.0 -0.0 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface230.fgm 1788.18780518 52.166867733 -53.4388275146 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface231.fgm 0.0 0.0 -0.0 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface232.fgm 0.0 0.0 -0.0 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface233.fgm 0.0 0.0 -0.0 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface234.fgm 0.0 0.0 -0.0 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface235.fgm 0.0 0.0 -0.0 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface236.fgm 0.0 0.0 -0.0 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface237.fgm 0.0 0.0 -0.0 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface238.fgm 536.694943434 -10.892917045 23.9269588402 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface239.fgm -2112.75747633 47.4007298531 -88.4983115973 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface240.fgm -2127.22023165 8.73880307199 -46.0530205956 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface241.fgm -2147.28220463 41.3082059411 -116.173289012 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface242.fgm -2085.96647665 47.4027723599 11.4126204695 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface243.fgm -2064.66681182 8.54794642871 48.0025490337 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface244.fgm -2142.94782253 40.9903654473 15.4026263067 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface245.fgm -1999.72720577 47.4046298396 30.0912203976 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface246.fgm -1952.4873775 8.33921664926 20.7267639584 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface247.fgm -2029.68571542 41.2816954041 80.0283495256 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface248.fgm -1931.42101021 47.6174374239 -30.084332212 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface249.fgm -1910.11234874 8.25927052932 -57.0148975903 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface250.fgm -1906.40988461 41.2248368201 13.113970981 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface251.fgm -1951.51889286 47.2861896749 -125.560640751 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface252.fgm -1982.1376945 8.97815123017 -162.173546315 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface253.fgm -1895.55647434 42.1665946638 -119.195780994 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface254.fgm -2047.65446973 47.3676700779 -156.122381965 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface255.fgm -2095.11959851 8.26048642162 -148.152239203 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface256.fgm -2013.16134503 40.9722063602 -205.025687855 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface257.fgm -1949.35208569 2.00300976814 -15.2146446395 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface258.fgm -1949.35208569 2.00300976814 -15.2146446395 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface262.fgm -1952.58819113 2.00300976814 -116.941739623 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface263.fgm -1952.58819113 2.00300976814 -116.941739623 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface267.fgm -1556.13927395 0.0 -225.651031494 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface268.fgm -1556.13927395 0.0 -225.651031494 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface269.fgm -1556.13927395 0.0 -225.651031494 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface270.fgm -1556.13927395 0.0 -225.651031494 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface271.fgm -1556.13927395 0.0 -225.651031494 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface272.fgm -1556.13927395 0.0 -225.651031494 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\polySurface273.fgm 0.0 0.0 -0.0 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\stretched_rings_polySurface4.fgm -727.48674185 357.234337801 -140.836686684 0.0 -0.0 0.0 1.0 1.0 1.0 0
+..\Resources\Models\terrain_terrain.fgm 16.9490966797 171.84928894 -67.8244018555 0.0 -0.0 0.0 1.0 1.0 1.0 0
+..\Resources\Models\skybox.fgm 1
+..\Resources\Models\water_pPlane2.fgm 481.910400391 -1.41482400894 -139.368286133 0.0 -0.0 0.0 1.0 1.0 1.0 2
+..\Resources\Models\Canyon_section2_pillar_polySurface34.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Canyon_section2_pillar_polySurface35.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Canyon_section2_pillar_polySurface36.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Canyon_section2_pillar_polySurface37.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Canyon_section2_pillar_polySurface38.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Canyon_section2_pillar_polySurface39.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\pPyramid1.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\pPyramid2.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\pPyramid3.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\pPyramid4.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\pPyramid5.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\pPyramid6.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\pPyramid7.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\pPyramid8.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\pPyramid9.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\pSolid1.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\pTorus1.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\pTorus2.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface2.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface6.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface27.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface41.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface163.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface164.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface165.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface182.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface184.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface186.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface187.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface188.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface216.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface217.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface218.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface219.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface220.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface221.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface222.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface223.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface224.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface225.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface274.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface172.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface173.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface174.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface176.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface177.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface178.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface179.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface180.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface189.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface190.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface191.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface192.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface193.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface194.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface195.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface206.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface207.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface208.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface209.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface210.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface211.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface212.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface213.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface214.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface215.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface226.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface228.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface229.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface230.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface231.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface232.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface233.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface234.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface235.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface236.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface237.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface238.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface239.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface240.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface241.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface242.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface243.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface244.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface245.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface246.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface247.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface248.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface249.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface250.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface251.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface252.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface253.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface254.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface255.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface256.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface257.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface258.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface262.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface263.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface267.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface268.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface269.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface270.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface271.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface272.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\polySurface273.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\stretched_rings_polySurface4.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
 3
-..\Resources\Models\cargo.fgm 2146.51730308 527.143756281 303.396058765 0.0 -0.0 0.0 1.0 1.0 1.0 3
-..\Resources\Models\cargo.fgm 2189.0923504 527.143756281 323.631725961 0.0 -0.0 0.0 1.0 1.0 1.0 3
-..\Resources\Models\cargo.fgm 2188.82377004 527.143756281 274.219012539 0.0 -0.0 0.0 1.0 1.0 1.0 3
+2146.51730308 527.143756281 303.396058765 0.0 -0.0 0.0 1.0 1.0 1.0
+2189.0923504 527.143756281 323.631725961 0.0 -0.0 0.0 1.0 1.0 1.0
+2188.82377004 527.143756281 274.219012539 0.0 -0.0 0.0 1.0 1.0 1.0
 3
-..\Resources\Models\energy.fgm 1584.05645035 527.143756281 -539.928814283 0.0 -0.0 0.0 1.0 1.0 1.0 3
-..\Resources\Models\energy.fgm 1564.01740366 527.143756281 -485.92209649 0.0 -0.0 0.0 1.0 1.0 1.0 3
-..\Resources\Models\energy.fgm 1637.78752389 527.143756281 -504.128516464 0.0 -0.0 0.0 1.0 1.0 1.0 3
+1584.05645035 527.143756281 -539.928814283 0.0 -0.0 0.0 1.0 1.0 1.0
+1564.01740366 527.143756281 -485.92209649 0.0 -0.0 0.0 1.0 1.0 1.0
+1637.78752389 527.143756281 -504.128516464 0.0 -0.0 0.0 1.0 1.0 1.0
 1
 0.2 0.2 0.2 1
-0.8 0.5 0.5 1
+0.4 0.1 0.1 1
 0.9 0.8 0.8 1
-0.0 -1.0 0.0
-0.0 10000.0 0.0 
+0.0 -1.0016369445 0.49635413247
+0.0 1000.0 0.0
 1
 5
-0
-0.17893912 30.143756281 0.666385458 0.0 -0.0 0.0 1.0 1.0 1.0
+2
+0.2 0.2 0.2 1
+1.0 0.333333313465 0.962135016918 1.0
+0.9 0.8 0.8 1
+1615.58244586 -290.653408008 -12.7638341027 200
+6
+0.2 0.2 0.2 1
+0.0 0.0832002162933 1.0 1.0
+0.9 0.8 0.8 1
+1740.32878338 219.230739741 22.2045444482 200
+6
+2462.78025712 451.346651306 -137.449023135 0.0 -0.0 0.0 1.0 1.0 1.0

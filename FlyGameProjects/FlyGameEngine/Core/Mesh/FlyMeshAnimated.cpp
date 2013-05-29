@@ -6,8 +6,9 @@ FlyMeshAnimated::FlyMeshAnimated()
 	:Entity(Type::OBJECT)
 {
 	D3DXMatrixIdentity(&this->world);
-	this->rotation	= vec3(0.0f, 0.0f, 0.0f);
-	D3DXMatrixIdentity(&this->world);
+	this->rotation		= vec3(0.0f, 0.0f, 0.0f);
+	this->scale			= vec3(1.0f, 1.0f, 1.0f);
+	this->translation	= vec3(0.0f, 0.0f, 0.0f);
 }
 FlyMeshAnimated::~FlyMeshAnimated()
 {
@@ -223,7 +224,7 @@ bool FlyMeshAnimated::Initialize(ANIM_OBJECT_DESC& data)
 		this->currFrame.push_back(0); 
 	}
 	this->vertexCount = data.vCount; 
-	this->animationCount = (*data.frames).size();
+	this->animationCount = (int)(*data.frames).size();
 
 	triangleList = new vector<vec3>; 
 	triangleList->resize(vertexCount);
@@ -249,7 +250,7 @@ void FlyMeshAnimated::MorphAmination()
 	{
 		int frame = this->currFrame.at(i);
 		frameNr[i] = frameData->at(i).at(frame).frameNumber + frameCount;
-		frameCount += frameData->at(i).size();
+		frameCount += (int)frameData->at(i).size();
 
 		if(this->frameData->at(i).at(this->currFrame.at(i)).frameTime!=0)
 		{
@@ -306,7 +307,7 @@ void FlyMeshAnimated::MorphAmination2()
 	{
 		int frame = this->currFrame.at(i);
 		frameNr[i] = frameData->at(i).at(frame).frameNumber + frameCount;
-		frameCount += frameData->at(i).size();
+		frameCount += (int)frameData->at(i).size();
 
 		if(this->frameData->at(i).at(this->currFrame.at(i)).frameTime!=0)
 		{

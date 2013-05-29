@@ -198,7 +198,7 @@ void AudioClass::playLevelSound(FlyLevelSounds sound)
 			if(!playing)
 			{
 				result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_LevelSoundTrack], false,&channel[FlySound_LevelSoundTrack]);
-				result = channel[FlySound_LevelSoundTrack]->setVolume(0.3f);
+				result = channel[FlySound_LevelSoundTrack]->setVolume(0.4f);
 			}
 		break;
 		case FlySound_Collision:
@@ -243,7 +243,7 @@ void AudioClass::playLevelSound(FlyLevelSounds sound)
 			if(!playing)
 			{
 				result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_Thrust], false,&channel[FlySound_Thrust]);
-				result = channel[FlySound_Thrust]->setVolume(0.8f);
+				result = channel[FlySound_Thrust]->setVolume(0.35f);
 			}
 			
 		break;
@@ -252,7 +252,7 @@ void AudioClass::playLevelSound(FlyLevelSounds sound)
 			if(!playing)
 			{
 				result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_Wind], false,&channel[FlySound_Wind]);
-				result = channel[FlySound_Wind]->setVolume(0.8f);
+				result = channel[FlySound_Wind]->setVolume(0.3f);
 			}	
 		break;
 	}

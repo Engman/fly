@@ -215,8 +215,7 @@ void FLYCALL FlyEngine_Core::Core_Dimensions(int& width, int& height)
 
 LRESULT CALLBACK FlyEngineCoreWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-
-	bool activating = false;
+	//bool activating = false;
 	switch (message)
 	{
 		case WM_DESTROY:
@@ -227,33 +226,32 @@ LRESULT CALLBACK FlyEngineCoreWndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 			
 		break;
 
-
 		case WM_ACTIVATE:
-			activating = (LOWORD(wParam) != WA_INACTIVE) && (HIWORD(wParam) == 0);
-			if(activating)
-			{
-				Input::self()->SetCoopExclusive();
-			}
-			else
-			{
-				//Input::self()->SetCoopExclusive();
-			}
+			//activating = (LOWORD(wParam) != WA_INACTIVE) && (HIWORD(wParam) == 0);
+			//if(activating)
+			//{
+			//	Input::self()->SetCoopExclusive();
+			//}
+			//else
+			//{
+			//	//Input::self()->SetCoopExclusive();
+			//}
 		break;
 
 		case WM_LBUTTONDOWN:
 		case WM_MBUTTONDOWN:
 		case WM_RBUTTONDOWN:
-			PostMessage(WindowShell::self()->getParent(), message, wParam, lParam);
+
 		break;
 
 		case WM_LBUTTONUP:
 		case WM_MBUTTONUP:
 		case WM_RBUTTONUP:
-			PostMessage(WindowShell::self()->getParent(), message, wParam, lParam);
+
 		break;
 
 		case WM_MOUSEMOVE:
-			PostMessage(WindowShell::self()->getParent(), message, wParam, lParam);
+
 		break;
 		case 0x020A: // WM_MOUSEWHEEL, GET_WHEEL_DELTA_WPARAM(wparam);
 		break;

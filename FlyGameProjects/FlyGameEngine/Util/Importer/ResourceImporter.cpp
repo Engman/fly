@@ -78,7 +78,7 @@ bool ResourceImporter::ImportObject(std::vector<const wchar_t*>& filenames, vect
 			}
 			return true;
 		#else
-			return fgmImporter.Import(getDir(filename), object);
+			return fgmImporter.Import(getDir(filenames[i]), &(*objData)[i]);
 		#endif
 	}
 

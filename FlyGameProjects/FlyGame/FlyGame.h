@@ -2,7 +2,11 @@
 #define FLY_GAME_H
 
 
+#if defined(_DEBUG) || defined(DEBUG)
 #pragma comment(lib, "FlyGameEngineDx86.lib")
+#else
+#pragma comment(lib, "FlyGameEnginex86.lib")
+#endif
 #pragma comment(lib, "lua52.lib")
 
 #include <Windows.h>

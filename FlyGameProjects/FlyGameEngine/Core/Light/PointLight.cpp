@@ -39,6 +39,7 @@ bool PointLight::Initialize(PointLightProxy data, IShader* shader)
 	D3DXMatrixTranslation(&translate, data.posRange.x, data.posRange.y, data.posRange.z);
 	lightSphere.Initiate(data.posRange.w, 10,10, D3DShell::self()->getDevice(), shader, translate);
 	
+	return true;
 }
 void PointLight::Render(ViewFrustum& frustum)
 {
