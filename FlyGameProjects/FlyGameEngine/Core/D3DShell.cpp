@@ -439,6 +439,7 @@ bool D3DShell::init(D3D_INIT_DESC& desc)
 	D3D11_RENDER_TARGET_BLEND_DESC rtbd;
 	ZeroMemory( &rtbd, sizeof(rtbd) );
 
+	//custom blend state
 	rtbd.BlendEnable			 = true;
 	rtbd.SrcBlend				 = D3D11_BLEND_ONE; //SRC_COLOR;
 	rtbd.DestBlend				 = D3D11_BLEND_ONE; //BLEND_FACTOR;
@@ -449,13 +450,32 @@ bool D3DShell::init(D3D_INIT_DESC& desc)
 	rtbd.RenderTargetWriteMask	 = D3D11_COLOR_WRITE_ENABLE_ALL;
 
 	blendDesc.AlphaToCoverageEnable = false;
+	blendDesc.IndependentBlendEnable = true; 
 	blendDesc.RenderTarget[0] = rtbd;
+
+
+
+	D3D11_DEPTH_STENCIL_DESC ds;
+	ZeroMemory(&ds, sizeof(D3D11_DEPTH_STENCIL_DESC));
+
+	ds.DepthEnable                          = true;
+	ds.DepthFunc                            = D3D11_COMPARISON_LESS_EQUAL;
+	ds.DepthWriteMask                       = D3D11_DEPTH_WRITE_MASK_ZERO;
+	ds.StencilEnable                        = false;
+	ds.StencilReadMask                      = D3D11_DEFAULT_STENCIL_READ_MASK;
+	ds.StencilWriteMask						= D3D11_DEFAULT_STENCIL_WRITE_MASK;
+	ds.FrontFace.StencilDepthFailOp			= D3D11_STENCIL_OP_KEEP;
+	ds.FrontFace.StencilFailOp				= D3D11_STENCIL_OP_KEEP;
+	ds.FrontFace.StencilPassOp				= D3D11_STENCIL_OP_REPLACE;
+	ds.FrontFace.StencilFunc				= D3D11_COMPARISON_ALWAYS;
+	ds.BackFace                             = ds.FrontFace;
+
 
 	if(!this->_prDatPtr->blendModeState.init(this->_prDatPtr->d3dDevice, &blendDesc))
 		return false;
 	if(!this->_prDatPtr->rasterizerState.init(this->_prDatPtr->d3dDevice))	  
 		return false;
-	if(!this->_prDatPtr->depthStencilState.init(this->_prDatPtr->d3dDevice)) 
+	if(!this->_prDatPtr->depthStencilState.init(this->_prDatPtr->d3dDevice, &ds)) 
 		return false;
 	if(!this->_prDatPtr->samplerState.init(this->_prDatPtr->d3dDevice))  
 		return false;
@@ -467,7 +487,7 @@ bool D3DShell::init(D3D_INIT_DESC& desc)
 	}
 	this->_prDatPtr->g_bufferDepthTexture.init(desc.width, desc.height, false, DXGI_FORMAT_R32_TYPELESS, true);
 
-	this->_prDatPtr->lightTexture.init(desc.width, desc.height, true, DXGI_FORMAT_R16G16B16A16_UNORM, false );
+	this->_prDatPtr->lightTexture.init(desc.width, desc.height, true, DXGI_FORMAT_R16G16B16A16_UNORM, true );
 	this->_prDatPtr->shadowTexture.init(desc.width, desc.height, false, DXGI_FORMAT_R32_TYPELESS, true);
 	this->_prDatPtr->blurTexture.init(desc.width, desc.height, true, DXGI_FORMAT_R16G16B16A16_UNORM, false );
 	this->_prDatPtr->blurTempTexture.init(desc.width, desc.height, true, DXGI_FORMAT_R16G16B16A16_UNORM, false );
@@ -795,9 +815,9 @@ void D3DShell::BeginLightRenderTarget()
 
 	this->getDeviceContext()->ClearRenderTargetView(rtv[0], clearColor);
 	
-	//this->getDeviceContext()->ClearDepthStencilView(this->_prDatPtr->deffDepthStencil[0], D3D11_CLEAR_DEPTH, 1.0, 0);
+	//this->getDeviceContext()->ClearDepthStencilView(this->_prDatPtr->lightTexture.getDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0, 0);
 
-	this->getDeviceContext()->OMSetRenderTargets(1, rtv, NULL);
+	this->getDeviceContext()->OMSetRenderTargets(1, rtv,  NULL); //this->_prDatPtr->g_bufferDepthTexture.getDepthStencilView());
 }
 
 void D3DShell::setLightSRV()
@@ -807,7 +827,7 @@ void D3DShell::setLightSRV()
 	srv[0] = this->_prDatPtr->g_buffTextures[0].getColorSRV();	
 	srv[1] = this->_prDatPtr->lightTexture.getColorSRV();		
 	srv[2] = this->_prDatPtr->shadowTexture.getDepthSRV();//	
-	srv[3] = this->_prDatPtr->g_buffTextures[1].getColorSRV();	//g_bufferDepthTexture.getDepthSRV();  //	
+	srv[3] = this->_prDatPtr->g_bufferDepthTexture.getDepthSRV();  //g_buffTextures[1].getColorSRV();	//	
 	srv[4] = this->_prDatPtr->blurTexture.getColorSRV();			
 	D3DShell::self()->getDeviceContext()->PSSetShaderResources(0,nrOfsrv,srv);
 }

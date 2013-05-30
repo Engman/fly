@@ -25,12 +25,14 @@ class FlyEngine_Core	:public FlyEngine
 
 		SmartPtrStd<IShader>					gbufferShader;
 		SmartPtrStd<IShader>					gBufferNoDepthShader;
+		SmartPtrStd<IShader>					gbufferNoCullShader;
 		SmartPtrStd<IShader>					gbufferBumpShader; 
 		SmartPtrStd<IShader>					gBufferAnimationShader;
 		SmartPtrStd<IShader>					finalShader; 
 		SmartPtrStd<IShader>					finalColorShader; 
 		SmartPtrStd<IShader>					dirLightShader;
-		SmartPtrStd<IShader>					pointLightShader; 
+		SmartPtrStd<IShader>					pointLightFrontShader; 
+		SmartPtrStd<IShader>					pointLightBackShader; 
 		SmartPtrStd<IShader>					shadowMapShader;
 		SmartPtrStd<IShader>					blurHorizontShader;
 		SmartPtrStd<IShader>					blurVerticalShader;

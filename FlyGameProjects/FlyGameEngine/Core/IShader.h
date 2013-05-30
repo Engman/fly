@@ -8,6 +8,7 @@
 #include "..\Util\Proxy.h"
 #include "..\Util\SmartPtrs.h"
 #include "Mesh\ObjectMaterial.h"
+#include "ShaderFlagStates.h"
 
 /** Inherit to create shaders */
 class IShader

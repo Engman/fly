@@ -1,20 +1,12 @@
 #ifndef WINDEMITER_H
 #define WINDEMITER_H
 
-
-#include "../FlyGameEngine/Util/misc.h"
-#include "../FlyGameEngine/Util/SmartPtrs.h"
-#include "../FlyGameEngine/Util/BoundingVolumes.h"
-#include "../FlyGameEngine/Util/CollisionLib.h"
+#include "..\FlyGameEngine\Util\SmartPtrs.h"
+#include "..\FlyGameEngine\Util\BoundingVolumes.h"
+#include "..\FlyGameEngine\Util\CollisionLib.h"
 #include <vector>
 
 
-extern "C"
-{
-#include <Lua/lua.h>
-#include <Lua/lualib.h>
-#include <Lua/lauxlib.h>
-}
 class WindEmiter
 {
 public: 
@@ -27,22 +19,20 @@ public:
 private:
 
 	
-	lua_State* luaState;
+
 	ViewFrustum viewFrustum;
-	D3DXVECTOR3 position; 
 	SmartPtrStd<std::vector<WindSphere>> windSpheres;
-	int spherePerSec; 
-
-
 	char* scriptFile;
-	void callLua_uppdateWindSpheres();
+	SmartPtrStd<std::vector<WindSphere*>> collidedSpheres;
+
+	void checkCollideSphere(BoundingSphere playerSphere);
 
 public:
 	WindEmiter();
 	~WindEmiter();
 
-	bool initialize(char* scriptFile, ViewFrustum frustum, D3DXVECTOR3 pos);
-	bool Update(BoundingSphere playerSphere, D3DXVECTOR3 vel);
+	bool initialize(char* scriptFile, ViewFrustum frustum);
+	bool Update();
 
 
 };

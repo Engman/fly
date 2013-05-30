@@ -44,7 +44,7 @@ class FlyState_Level		:public IFlySystemState
 
 		Camera mainCamera;
 		Camera menuCamera;
-		Camera lightCamera;
+		//Camera lightCamera;
 		Timer* mainTimer;
 
 		vec3 worldWind;

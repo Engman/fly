@@ -38,12 +38,12 @@ PS_OUT FPixelShader( PS_IN input )
 	
 	
 	//normal
-	float3 normal = input.normal.xyz; //normalize(input.normal);
+	float3 normal = input.normal.xyz;
 	normal = (normal.xyz +1)* 0.5f ;
 	
-	float4 bumpNormal = float4(0,0,0,0); 
-	bumpNormal = objTexture[1].Sample(SampleTypeClamp, input.textCoord)* 2.0f -1;
-	bumpNormal.w = 0;
+	//float4 bumpNormal = float4(0,0,0,0); 
+	//bumpNormal = objTexture[1].Sample(SampleTypeClamp, input.textCoord)* 2.0f -1;
+	//bumpNormal.w = 0;
 	//normal += bumpNormal.xyz;
 	//saturate( normal);
 	//normalize(normal);
@@ -55,9 +55,6 @@ PS_OUT FPixelShader( PS_IN input )
 	float4 spec = specular + textSpec;
 	spec= clamp(spec, 0,1);
 	float pow = specularPower * 0.00392; // *255
-
-	
-	//output.AmbR_diffG_specB_powA = float4( textSpec.x, 0,0 , pow);
 	
 	if(specularPower == 0 )
 	{
@@ -67,7 +64,7 @@ PS_OUT FPixelShader( PS_IN input )
 	else
 	{
 		float depth =  input.depth.x / input.depth.y;
-		output.NormalRGB_DepthA = float4( normal, depth );//input.position.b
+		output.NormalRGB_DepthA = float4( normal, depth );
 		output.AmbR_diffG_specB_powA = float4( spec.x, 0,0 , specularPower);
 	}
 	//position in world space
@@ -77,8 +74,7 @@ PS_OUT FPixelShader( PS_IN input )
 	float4 glowText = objTexture[3].Sample(SampleTypeClamp, input.textCoord); 
 	if( (glowText.r < 0.001f) && (glowText.g < 0.001f) && (glowText.b < 0.001f))
 	{
-		output.GlowRGB_ = float4(0.0f, 0.0f, 0.0f, 1.0f);
-		
+		output.GlowRGB_ = float4(0.0f, 0.0f, 0.0f, 1.0f);	
 	}
     else
     {

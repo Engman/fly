@@ -110,11 +110,15 @@ void BaseShader::Render()
 {
 	this->_data->dc->IASetInputLayout(this->_data->pLayout);
 
-	this->_data->dc->VSSetShader(this->_data->pVertexShader, NULL, 0);
-	this->_data->dc->PSSetShader(this->_data->pPixelShader, NULL, 0);
-	this->_data->dc->GSSetShader(this->_data->pGeometryShader, NULL, 0);
-	this->_data->dc->HSSetShader(this->_data->pHullShader, NULL, 0);
-	this->_data->dc->DSSetShader(this->_data->pDomainShader, NULL, 0);
+	if(this->_data->pVertexShader)
+		this->_data->dc->VSSetShader(this->_data->pVertexShader, NULL, 0);
+		this->_data->dc->PSSetShader(this->_data->pPixelShader, NULL, 0);
+	if(this->_data->pGeometryShader)
+		this->_data->dc->GSSetShader(this->_data->pGeometryShader, NULL, 0);
+	if(this->_data->pHullShader)
+		this->_data->dc->HSSetShader(this->_data->pHullShader, NULL, 0);
+	if(this->_data->pDomainShader)
+		this->_data->dc->DSSetShader(this->_data->pDomainShader, NULL, 0);
 }
 
 ID3D11VertexShader*		BaseShader::GetVertexShader()

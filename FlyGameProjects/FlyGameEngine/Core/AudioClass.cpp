@@ -110,7 +110,7 @@ bool AudioClass::loadLevelSound(std::vector<const char*> path)
 	//------Collision sound--------//
 	if ( !FmodErrorCheck( fmodSystem->createSound(path[FlySound_Collision], FMOD_DEFAULT, 0, & sounds[FlySound_Collision]) ) )
 		return false;
-	sounds[FlySound_Collision]->setMode(FMOD_LOOP_NORMAL);
+	sounds[FlySound_Collision]->setMode(FMOD_LOOP_OFF);
 
 	
 	//----EnergyPickup sound-------//

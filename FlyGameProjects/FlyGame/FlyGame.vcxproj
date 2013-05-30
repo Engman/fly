@@ -179,10 +179,7 @@
     <ClCompile Include="States\FlyLevel_Importer.cpp" />
     <ClCompile Include="States\FlyLevel_Input.cpp" />
     <ClCompile Include="States\FlyMenu.cpp" />
-<<<<<<< HEAD
-=======
     <ClCompile Include="WindCollision.cpp" />
->>>>>>> 53260462a31bac3d943cbea0860af286de2f9b1d
     <ClCompile Include="WindEmiter.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -196,10 +193,7 @@
     <ClInclude Include="GameObjects\FlyPlayer.h" />
     <ClInclude Include="States\FlyState_Menu.h" />
     <ClInclude Include="States\IFlySystemState.h" />
-<<<<<<< HEAD
-=======
     <ClInclude Include="WindCollision.h" />
->>>>>>> 53260462a31bac3d943cbea0860af286de2f9b1d
     <ClInclude Include="WindEmiter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

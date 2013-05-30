@@ -20,8 +20,8 @@ void FlyState_Level::_Input()
 
 	if(Input::self()->IsButtonPressed(DIK_ESCAPE))
 	{
-		//this->state = 1;
-		PostQuitMessage(0);
+		this->state = 1;
+		//PostQuitMessage(0);
 	}
 }
 
@@ -179,9 +179,7 @@ void FlyState_Level::_InputDebug()
 	}
 	if(Input::self()->IsButtonPressed(DIK_A))
 	{
-		this->mainCamera.RelativeRight(-1.2f);
-		//this->player.UpdateAnimation(2);
-		//this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Wings);
+
 	}
 	if(Input::self()->IsButtonPressed(DIK_D))
 	{

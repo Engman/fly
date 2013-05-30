@@ -50,6 +50,7 @@ private:
 	void InitBuffers(ID3D11Device *device);
 	IShader*				m_shader;
 	D3DXMATRIX world;
+	float radie; 
 
 public:
 	Sphere();
@@ -58,6 +59,7 @@ public:
 	void CreateSphere(float radius, UINT sliceCount, UINT stackCount, MeshData& meshData);
 	Sphere::MeshData GetSphere();
 	void Render(BaseBuffer* light, D3DXMATRIX world);
+	float getRadie();
 };
 #endif
 

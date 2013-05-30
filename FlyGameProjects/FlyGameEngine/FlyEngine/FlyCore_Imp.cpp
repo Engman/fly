@@ -48,12 +48,14 @@ FlyEngine_Core::FlyEngine_Core()
 
 	this->gbufferShader				= new GBufferShader();
 	this->gBufferNoDepthShader		= new GBufferShader();
-	this->gbufferBumpShader		= new GBufferShader();
+	this->gbufferNoCullShader		= new GBufferShader();
+	this->gbufferBumpShader			= new GBufferShader();
 	this->gBufferAnimationShader	= new GBufferAnimationShader();
 	this->finalShader				= new FinalShader();
 	this->finalColorShader			= new FinalShader();
-	this->pointLightShader		= new LightShader();
 	this->dirLightShader			= new LightShader();
+	this->pointLightFrontShader		= new LightShader();
+	this->pointLightBackShader		= new LightShader();
 	this->shadowMapShader			= new ShadowMapShader();
 	this->blurHorizontShader		= new BlurShader();
 	this->blurVerticalShader		= new BlurShader();
@@ -168,11 +170,13 @@ void FLYCALL FlyEngine_Core::Core_Shutdown()
 
 	this->gbufferShader.Destroy();
 	this->gBufferNoDepthShader.Destroy();
+	this->gbufferNoCullShader.Destroy();
 	this->gbufferBumpShader.Destroy();
 	this->gBufferAnimationShader.Destroy();			
 	this->finalShader.Destroy();			
 	this->dirLightShader.Destroy();		
-	this->pointLightShader.Destroy();
+	this->pointLightFrontShader.Destroy();
+	this->pointLightBackShader.Destroy();
 	this->shadowMapShader.Destroy();
 	this->blurHorizontShader.Destroy();
 	this->blurVerticalShader.Destroy();
@@ -212,55 +216,53 @@ void FLYCALL FlyEngine_Core::Core_Dimensions(int& width, int& height)
 }
 
 
-
 LRESULT CALLBACK FlyEngineCoreWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-
-	bool activating = false;
+	//bool activating = false;
 	switch (message)
 	{
-		case WM_DESTROY:
-			PostQuitMessage(0);
-		break;
-		
-		case WM_INPUT:
-			
+	case WM_DESTROY:
+		PostQuitMessage(0);
 		break;
 
+	case WM_INPUT:
 
-		case WM_ACTIVATE:
-			activating = (LOWORD(wParam) != WA_INACTIVE) && (HIWORD(wParam) == 0);
-			if(activating)
-			{
-				Input::self()->SetCoopExclusive();
-			}
-			else
-			{
-				//Input::self()->SetCoopExclusive();
-			}
 		break;
 
-		case WM_LBUTTONDOWN:
-		case WM_MBUTTONDOWN:
-		case WM_RBUTTONDOWN:
-			PostMessage(WindowShell::self()->getParent(), message, wParam, lParam);
+	case WM_ACTIVATE:
+		//activating = (LOWORD(wParam) != WA_INACTIVE) && (HIWORD(wParam) == 0);
+		//if(activating)
+		//{
+		// Input::self()->SetCoopExclusive();
+		//}
+		//else
+		//{
+		// //Input::self()->SetCoopExclusive();
+		//}
 		break;
 
-		case WM_LBUTTONUP:
-		case WM_MBUTTONUP:
-		case WM_RBUTTONUP:
-			PostMessage(WindowShell::self()->getParent(), message, wParam, lParam);
+	case WM_LBUTTONDOWN:
+	case WM_MBUTTONDOWN:
+	case WM_RBUTTONDOWN:
+
 		break;
 
-		case WM_MOUSEMOVE:
-			PostMessage(WindowShell::self()->getParent(), message, wParam, lParam);
+	case WM_LBUTTONUP:
+	case WM_MBUTTONUP:
+	case WM_RBUTTONUP:
+
 		break;
-		case 0x020A: // WM_MOUSEWHEEL, GET_WHEEL_DELTA_WPARAM(wparam);
+
+	case WM_MOUSEMOVE:
+
+		break;
+	case 0x020A: // WM_MOUSEWHEEL, GET_WHEEL_DELTA_WPARAM(wparam);
 		break;
 	}
-	
+
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
+
 
 
 

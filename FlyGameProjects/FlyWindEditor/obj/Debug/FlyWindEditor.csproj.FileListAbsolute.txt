@@ -9,3 +9,11 @@ C:\Users\Dennis\Desktop\skola\DV1411 - Litet Spelprojekt\FlyGame\WorkingDir\Bin\
 C:\Users\Dennis\Desktop\skola\DV1411 - Litet Spelprojekt\FlyGame\FlyGameProjects\FlyWindEditor\obj\Debug\FlyWindEditor.csprojResolveAssemblyReference.cache
 C:\Users\Dennis\Desktop\skola\DV1411 - Litet Spelprojekt\FlyGame\FlyGameProjects\FlyWindEditor\obj\Debug\FlyWindEditor.exe
 C:\Users\Dennis\Desktop\skola\DV1411 - Litet Spelprojekt\FlyGame\FlyGameProjects\FlyWindEditor\obj\Debug\FlyWindEditor.pdb
+C:\Users\Linda\Desktop\flyGame\fly\WorkingDir\Bin\FlyWindEditor.exe.config
+C:\Users\Linda\Desktop\flyGame\fly\FlyGameProjects\FlyWindEditor\obj\Debug\FlyWindEditor.pdb
+C:\Users\Linda\Desktop\flyGame\fly\FlyGameProjects\FlyWindEditor\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Linda\Desktop\flyGame\fly\FlyGameProjects\FlyWindEditor\obj\Debug\FlyWindEditor.FlyWind.resources
+C:\Users\Linda\Desktop\flyGame\fly\FlyGameProjects\FlyWindEditor\obj\Debug\FlyWindEditor.LuaEdit.resources
+C:\Users\Linda\Desktop\flyGame\fly\FlyGameProjects\FlyWindEditor\obj\Debug\FlyWindEditor.Properties.Resources.resources
+C:\Users\Linda\Desktop\flyGame\fly\FlyGameProjects\FlyWindEditor\obj\Debug\GenerateResource.read.1.tlog
+C:\Users\Linda\Desktop\flyGame\fly\FlyGameProjects\FlyWindEditor\obj\Debug\GenerateResource.write.1.tlog
