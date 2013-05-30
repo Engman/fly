@@ -12,6 +12,7 @@
 
 bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 {
+
 	wifstream file(fileName);
 	if(!file.is_open())	
 		return false;
@@ -84,8 +85,6 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 	//Cursor
 	this->entryInstance->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\mouse_cursor.fgm", &this->cursor);
 	this->cursor[0]->setShader(shaders[FlyShader_gBufferDefault]);
-	this->cursor[0]->setScale(vec3(1,1,1));
-	this->cursor[0]->setPosition(vec3(0.0f, 0.0f, 0.0f));
 	
 	//UI
 	this->entryInstance->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\energyBar.fgm", &this->UIorthographic);

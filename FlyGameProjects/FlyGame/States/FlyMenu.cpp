@@ -63,11 +63,18 @@ bool FlyState_Menu::Initiate(FlyGame* instance)
 		return false;
 	this->entryInstance = instance;
 	
-	if(!entryInstance->GetCoreInstance()->Input_Initialize())
-		return false;
+	//if(!entryInstance->GetCoreInstance()->Input_Initialize())
+	//	return false;
+
+	int w,h;
+	this->entryInstance->GetCoreInstance()->Core_Dimensions(w, h);
+	this->mainMenuCam.SetOrthogonalMatrix((float)w, (float)h, 0.1f, 10.0f);
+	this->mainMenuCam.Render();
+	this->mainMenuCam.SetPosition(0.0f, 0.0f, -5.0f);
 	
 	if(!ReadData())
 		return false;
+
 
 	return true;
 }
@@ -80,6 +87,8 @@ void FlyState_Menu::Release()
 {  }
 void FlyState_Menu::update()
 {
+	this->entryInstance->GetCoreInstance()->Gfx_SetCamera(&this->mainMenuCam, true);
+
 	this->entryInstance->GetCoreInstance()->Gfx_Update();
 
 	for (int i = 0; i < (int)this->ui.size(); i++)
@@ -94,26 +103,18 @@ void FlyState_Menu::render()
 	this->entryInstance->GetCoreInstance()->Gfx_BeginDeferredScene();
 
 	ViewFrustum f;
-	this->entryInstance->GetCoreInstance()->Gfx_GetCamera()->SetPositionZ(-2.0f);
-	this->entryInstance->GetCoreInstance()->Gfx_GetCamera()->ConstructViewFrustum(f);
+	this->mainMenuCam.ConstructViewFrustum(f);
 
 	this->ui[MENU_UI_Background]->Render(f);
 	this->ui[MENU_UI_LevelPanel]->Render(f);
+
+	if(this->highlightBtn != -1)
+		this->ui[this->highlightBtn]->Render(f);
+
+	if(this->subMenu)
+		this->subMenu->Render(f);
+
 	this->ui[MENU_UI_MouseBtn]->Render(f);
-	//if(this->highlightBtn)
-	//{
-	//	this->highlightBtn->Render(f);
-	//
-	//}
-	for (int i = 0; i < (int)this->uiBtn.size(); i++)
-	{
-		if(this->uiBtn[i] != this->highlightBtn)
-			this->uiBtn[i]->Render(f);
-	}
-	//for (int i = 0; i < (int)ui.size(); i++)
-	//{
-	//	ui[i]->Render(f);
-	//}
 
 	this->entryInstance->GetCoreInstance()->Gfx_EndDeferredSceneOrtho();
 }
@@ -128,6 +129,55 @@ void FlyState_Menu::input()
 
 	if(Input::self()->IsButtonPressed(DIK_ESCAPE))
 		PostQuitMessage(0);
+
+	if(Input::self()->IsMouseButtonPressed(0) && this->highlightBtn != -1)
+	{
+		switch (this->highlightBtn)
+		{
+			case MENU_UI_ButtonLv1:
+				this->subMenu = this->ui[MENU_UI_LevelInfo1];
+			break;
+			case MENU_UI_ButtonLv2:
+				this->subMenu = this->ui[MENU_UI_LevelInfo2];
+			break;
+			case MENU_UI_ButtonLv3:
+				this->subMenu = this->ui[MENU_UI_LevelInfo3];
+			break;
+			case MENU_UI_ButtonStart:
+			{
+				if(!this->subMenu)
+					return;
+
+				int id = this->subMenu->getID();
+				if(id == this->ui[MENU_UI_LevelInfo1]->getID())
+				{
+					this->entryInstance->setLevelPath(L"..\\Resources\\Levels\\canyon.fgl");
+					this->entryInstance->setState(Level_1);
+				}
+				else if(id == this->ui[MENU_UI_LevelInfo2]->getID())
+				{
+					this->entryInstance->setLevelPath(L"..\\Resources\\Levels\\ocean.fgl");
+					this->entryInstance->setState(Level_2);
+				}
+				else if(id == this->ui[MENU_UI_LevelInfo3]->getID())
+				{
+					this->entryInstance->setLevelPath(L"..\\Resources\\Levels\\city.fgl");
+					this->entryInstance->setState(Level_3);
+				}
+			}
+			break;
+			case MENU_UI_ButtonQuit:
+				PostQuitMessage(0);
+			break;
+			default:
+				this->subMenu = 0;
+			break;
+		}
+	}
+	else if(Input::self()->IsMouseButtonPressed(0))
+	{
+		this->subMenu = 0;
+	}
 
 	
 	FlyMesh* m = (FlyMesh*)this->ui[MENU_UI_MouseBtn];
@@ -144,73 +194,77 @@ void FlyState_Menu::input()
 	mPos.y = (float)-(y - D3DShell::self()->getHeight()/2) - (hh);
 	mPos.z = m->getPosition().z;
 	m->setPosition(mPos);
+
 }
 
 
 void FlyState_Menu::PickMenu()
 {
-	int mx, my;
-	int w, h;
-	Camera* cam = this->entryInstance->GetCoreInstance()->Gfx_GetCamera();
-	Input::self()->GetMouseLocation(mx, my);
-	this->entryInstance->GetCoreInstance()->Core_Dimensions(w, h);
-	vec3 picRayOrig;
-	vec3 picRayDir;
-	Matrix proj = this->entryInstance->GetCoreInstance()->Gfx_GetCamera()->GetOrthogonalMatrix();
-	
-	 // Compute the vector of the pick ray in screen space
+	int mx = 0;
+	int my = 0;
+	int w = -1;
+	int h = -1;
 	vec3 v;
-	v.x = ( ( ( 2.0f * mx ) / w ) - 1 ) / proj._11;
-	v.y = -( ( ( 2.0f * my ) / h ) - 1 ) / proj._22;
+	vec3 rayOrigin;
+	vec3 rayDir;
+
+	this->entryInstance->GetCoreInstance()->Core_Dimensions(w, h);
+	Input::self()->GetMouseLocation(mx, my);
+	Matrix P = this->mainMenuCam.GetOrthogonalMatrix();
+	Matrix V = this->mainMenuCam.GetViewMatrix();
+
+	// Compute picking ray in view space.
+	v.x = (+2.0f * mx / w - 1.0f) / P._11;
+	v.y = (-2.0f * my / h + 1.0f) / P._22;
 	v.z = 1.0f;
 
-	// Get the inverse view matrix
-	const D3DXMATRIX matView = cam->GetViewMatrix();
-	const D3DXMATRIX matWorld = cam->GetWorldMatrix();
-	D3DXMATRIX mWorldView = matWorld * matView;
-	D3DXMATRIX m;
-	D3DXMatrixInverse( &m, NULL, &mWorldView );
+	Matrix invView;
+	D3DXMatrixInverse(&invView, 0, &V);
+	rayDir.x	= (v.x * invView._11) + (v.y * invView._21) + (v.z * invView._31);
+	rayDir.y	= (v.x * invView._12) + (v.y * invView._22) + (v.z * invView._32);
+	rayDir.z	= (v.x * invView._13) + (v.y * invView._23) + (v.z * invView._33);
+	rayOrigin.x = invView._41;
+	rayOrigin.y = invView._42;
+	rayOrigin.z = invView._43;
 	
-	// Transform the screen space pick ray into 3D space
-	picRayDir.x = v.x * m._11 + v.y * m._21 + v.z * m._31;
-	picRayDir.y = v.x * m._12 + v.y * m._22 + v.z * m._32;
-	picRayDir.z = v.x * m._13 + v.y * m._23 + v.z * m._33;
-	picRayOrig.x = m._41;
-	picRayOrig.y = m._42;
-	picRayOrig.z = m._43;
 
-	for(int i = 0; i < (int)this->uiBtn.size(); i++)
+	for(int i = MENU_UI_ButtonLv1; i <= MENU_UI_ButtonQuit; i++)
 	{
-		// Now get the inverse of the translated world matrix.
-		//D3DXMatrixInverse(&iw, NULL, &(uiBtn[i]->getWorld()));
-	
-		// Now transform the ray origin and the ray direction from view space to world space.
-		//D3DXVec3TransformCoord(&rayOrigin, &origin, &iw);
-		//D3DXVec3TransformNormal(&rayDirection, &direction, &iw);
-	
-		// Normalize the ray direction.
-		//D3DXVec3Normalize(&rayDirection, &rayDirection);
-	
-		FlyMesh* temp = (FlyMesh*)uiBtn[i];
+		if(i == MENU_UI_ButtonStart && !this->subMenu)
+			continue;
+
+
+		// Use inverse of matrix
+		D3DXMATRIX matInverse;
+		D3DXMatrixInverse(&matInverse, NULL, &this->ui[i]->getWorld());
+
+		// Transform ray origin and direction by inv matrix
+		D3DXVECTOR3 rayObjOrigin,rayObjDirection;
+		
+		D3DXVec3TransformCoord(&rayObjOrigin, &rayOrigin,&matInverse);
+		D3DXVec3TransformNormal(&rayObjDirection, &rayDir,&matInverse);
+		D3DXVec3Normalize(&rayObjDirection, &rayObjDirection);
+
+		FlyMesh* temp = (FlyMesh*)ui[i];
 		vector<vec3> *tris = temp->GetTriangles();
 		if(tris)
 		{
-			for (int i = 0; i < (int)tris->size(); i+=3)
+			for (int k = 0; k < (int)tris->size(); k+=3)
 			{
 				vec3 tri[3] = 
 				{
-					(*tris)[i],
-					(*tris)[i + 1],
-					(*tris)[i + 2]
+					(*tris)[k],
+					(*tris)[k + 1],
+					(*tris)[k + 2]
 				};
 	
-				if(RayVSTriangle(picRayOrig, picRayDir, tri))
+				if(RayVSTriangle(rayObjDirection, rayObjOrigin, tri))
 				{
-					this->highlightBtn = uiBtn[i];
+					this->highlightBtn = i;
 					return;
 				}
 				else
-					this->highlightBtn = 0;
+					this->highlightBtn = -1;
 			}
 		}
 	}
@@ -222,10 +276,6 @@ bool FlyState_Menu::ReadData()
 	wifstream in("..\\Resources\\Menu\\mainMenuLayout.fgl");
 	if(!in.is_open())
 		return false;
-
-	this->entryInstance->GetCoreInstance()->Gfx_GetDefaultCamera()->SetOrthogonalMatrix(D3DShell::self()->getWidth(), D3DShell::self()->getHeight(), 0.1f, 10.0f);
-	this->entryInstance->GetCoreInstance()->Gfx_GetDefaultCamera()->SetPosition(vec3(0.0f, 0.0f, -5.0f));
-	this->entryInstance->GetCoreInstance()->Gfx_GetDefaultCamera()->Render();
 	
 	FlyMesh::OBJECT_DESC d;
 	wstring inData = L"";
@@ -270,16 +320,18 @@ bool FlyState_Menu::ReadData()
 		}
 	} while(!in.eof());
 
+	std::vector<vec3>* t = ((FlyMesh*)this->uiBtn[MENU_UI_Background])->GetTriangles();
+
 	//Get position offset
 	this->ui[MENU_UI_Background]->Update();
 	Matrix w = this->ui[MENU_UI_Background]->getWorld();
-	Matrix v = this->entryInstance->GetCoreInstance()->Gfx_GetCamera()->GetViewMatrix();
+	Matrix v = this->mainMenuCam.GetViewMatrix();
 	Matrix wv = w*v;
 	vec3 u = (*((FlyMesh*)this->ui[MENU_UI_Background])->GetTriangles())[0];
 	vec4 pnew4;
 	D3DXVec3Transform(&pnew4, &u, &wv);
 	vec3 p = vec3(pnew4.x, pnew4.y, 0.0f);
-
+	
 	for (int i = 2; i < (int)ui.size(); i++)
 	{
 		vec3 px = vec3(fabsf(this->ui[i]->getPosition().x - u.x), 0.0f, 0.0f);

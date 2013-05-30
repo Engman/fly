@@ -134,6 +134,10 @@ class Entity abstract
 		{
 			return &this->buffers;
 		}
+		const ObjectMaterial* getMaterial		()
+		{
+			return this->material;
+		}
 
 		void			setPosition				(vec3 _position)
 		{

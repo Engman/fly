@@ -2,6 +2,7 @@
 #define FLY_MENU_H
 
 #include "IFlySystemState.h"
+#include "..\..\FlyGameEngine\Util\Camera.h"
 #include "..\..\FlyGameEngine\Core\Mesh\FlyMesh.h"
 
 
@@ -15,8 +16,9 @@ class FlyState_Menu		:public IFlySystemState
 		vector<Entity*> uiBtn;
 
 		//Pointer to current submenu
-		Entity *subMenu;
-		Entity *highlightBtn;
+		Entity	*subMenu;
+		int		highlightBtn;
+		Camera	mainMenuCam;
 
 		void update();
 		void render();

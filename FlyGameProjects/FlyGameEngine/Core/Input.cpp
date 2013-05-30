@@ -1,14 +1,13 @@
 #include "Input.h"
 
-bool Input::instanceFlag = false;
+bool initialized = false;
 Input* Input::single = NULL;
 
 Input* Input::self()
 {
-	if(!instanceFlag)
+	if(!single)
     {
         single = new Input();
-        instanceFlag = true;
         return single;
     }
     else
@@ -39,6 +38,9 @@ Input::~Input()
 
 HRESULT Input::Initialize(HINSTANCE hInstance, HWND hWnd, int screenWidth, int screenHeight)
 {
+	if(initialized)
+		return S_OK;
+
 	if(this->hWnd)
 		return S_OK;
 
@@ -109,7 +111,16 @@ HRESULT Input::Initialize(HINSTANCE hInstance, HWND hWnd, int screenWidth, int s
 		return E_FAIL;
 	}
 
+
+	initialized = true;
+
 	return S_OK;
+}
+bool Input::isInitialized() const
+{
+	if(!initialized)
+		return false;
+	return true;
 }
 
 void Input::ReleaseInput()
@@ -137,6 +148,8 @@ void Input::ReleaseInput()
 
 HRESULT Input::Frame()
 {
+	if(!initialized)
+		return E_FAIL;
 
 	if(FAILED(ReadKeyboard()))
 	{

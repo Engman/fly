@@ -1,4 +1,5 @@
 #include "FlyGame.h"
+#include "GameObjects\Cutscene.h"
 
 #ifndef FLY_CORE_DLL
 #define FLY_CORE_DLL
@@ -42,6 +43,9 @@ void SetStdOutToNewConsole()
         SetConsoleScreenBufferSize(consoleHandle, bufferSize);
     }
 }
+
+#else
+void SetStdOutToNewConsole(){}
 #endif
 
 
@@ -53,16 +57,33 @@ struct FlyGame::_DATA_
 	FlyEngine* fly;
 	IFlySystemState* state;
 	lua_State* luaState;
+	bool stateChanged;
+	HANDLE loadingThread;
+	FlyGameSystemState enumState;
+
+	wstring levelPath;
+
+	
 };
+FlyCutsceneType currentCut = FlyCutsceneType_Intro;
 
 
+DWORD WINAPI FlyGame::playCutscene(LPVOID lpParameter)
+{
+	if(!FlyCutscene::RunCutscene(currentCut, (FlyEngine*)lpParameter))
+		return E_FAIL;
+
+	return 1;
+}
 
 FlyGame::FlyGame()
 {
 	this->_pData = new _DATA_();
 	this->_pData->fly = 0;
 	this->_pData->state = 0;
-
+	this->_pData->levelPath = L"";
+	this->_pData->stateChanged = false;
+	this->_pData->enumState = Menu;
 }
 FlyGame::~FlyGame()
 {
@@ -80,12 +101,11 @@ FlyGame::~FlyGame()
 	delete this->_pData;
 	
 }
-bool FlyGame::Initiate(FlyGameSystemState state)		  
+bool FlyGame::Initiate()		  
 {
-#if defined(_DEBUG) || defined(DEBUG)
+
 	SetStdOutToNewConsole();
-	std::cout << "Starting debug session!" << std::endl;
-#endif
+
 	//We should load an .ini file to determinate initialization values
 
 	FLY_ENGINE_INIT_DESC cd;
@@ -93,18 +113,10 @@ bool FlyGame::Initiate(FlyGameSystemState state)
 	cd.winHeight		= 600;
 	cd.fullscreen		= false;
 
-	switch (state)
-	{
-		case Level:
-			this->_pData->level = new FlyState_Level();
-			this->_pData->state = this->_pData->level;
-		break;
 
-		case Menu:
-			this->_pData->mainMenu = new FlyState_Menu();
-			this->_pData->state = this->_pData->mainMenu;
-		break;
-	}
+	this->_pData->mainMenu = new FlyState_Menu();
+	this->_pData->state = this->_pData->mainMenu;
+
 
 	this->_pData->luaState = luaL_newstate();
 	luaL_openlibs(this->_pData->luaState);
@@ -112,6 +124,20 @@ bool FlyGame::Initiate(FlyGameSystemState state)
 	this->_pData->fly = FlyEngineCreate();
 	if(!this->_pData->fly->Core_Initialize(cd))
 		return false;
+
+	if(!this->_pData->fly->Input_Initialize())
+		return false;
+
+	this->_pData->fly->Audio_Initialize();
+
+	//SECURITY_ATTRIBUTES attr;
+	//attr.nLength = sizeof(SECURITY_ATTRIBUTES);
+	//attr.lpSecurityDescriptor = THREAD_SUSPEND_RESUME;
+
+	this->_pData->loadingThread	= CreateThread(NULL , 4*255, FlyGame::playCutscene, (void*)this->_pData->fly, CREATE_SUSPENDED, NULL);
+	DWORD test = ResumeThread(this->_pData->loadingThread);
+	/** Fix resource importers to handle multiple loads, to actualy win some time */
+	
 
 #if defined(_DEBUG) || defined(DEBUG)
 	time_t start = clock();
@@ -122,6 +148,10 @@ bool FlyGame::Initiate(FlyGameSystemState state)
 	if(!this->_pData->state->Initiate(this))
 		return false;
 #endif
+
+	WaitForSingleObject(this->_pData->loadingThread, INFINITE);
+	TerminateThread(this->_pData->loadingThread, 0);
+
 	return true;
 }
 void FlyGame::Run()							  
@@ -135,9 +165,7 @@ void FlyGame::Run()
 	if(!this->_pData->state)
 		return;
 
-#if defined(_DEBUG) || defined(DEBUG)
-	cout << "Starting game..\n";
-#endif
+
 	MSG msg;
 	while (this->_pData->state)
 	{
@@ -152,6 +180,10 @@ void FlyGame::Run()
 		else
 		{
 			this->_pData->state->Frame();
+
+			if(this->_pData->stateChanged)
+				handleStateChange();
+
 		}
 	}
 }
@@ -166,4 +198,74 @@ FlyEngine* FlyGame::GetCoreInstance() const
 lua_State* FlyGame::GetLuaState() const
 {
 	return this->_pData->luaState;
+}
+
+
+void FlyGame::setLevelPath(wchar_t* level)
+{
+	this->_pData->levelPath = level;
+}
+void FlyGame::setState(IFlySystemState* _state)
+{
+	this->_pData->state = _state;
+	this->_pData->stateChanged = true;
+}
+void FlyGame::setState(FlyGameSystemState _state)
+{
+	switch (_state)
+	{
+		case Level_1:
+		case Level_2:
+		case Level_3:
+			this->_pData->level = new FlyState_Level();
+			this->_pData->state = this->_pData->level;
+		break;
+
+		case Menu:
+			this->_pData->mainMenu = new FlyState_Menu();
+			this->_pData->state = this->_pData->mainMenu;
+		break;
+	}
+	this->_pData->enumState = _state;
+	this->_pData->stateChanged = true;
+}
+void FlyGame::handleStateChange()
+{
+	this->_pData->stateChanged = false;
+
+	if(this->_pData->state)
+	{
+		switch (this->_pData->enumState)
+		{
+			case Level_1:
+				currentCut = FlyCutsceneType_Level1;
+			break;
+
+			case Level_2:
+				currentCut = FlyCutsceneType_Level2;
+			break;
+
+			case Level_3:
+				currentCut = FlyCutsceneType_Level3;
+			break;
+		}
+		
+		this->_pData->loadingThread	= CreateThread(NULL , 4*255, FlyGame::playCutscene, (void*)this->_pData->fly, CREATE_SUSPENDED, NULL);
+		ResumeThread(this->_pData->loadingThread);
+
+		if(!this->_pData->state->Initiate(this))
+			this->_pData->state = 0;
+
+		WaitForSingleObject(this->_pData->loadingThread, INFINITE);
+		TerminateThread(this->_pData->loadingThread, 0);
+	}
+}
+FlyGameSystemState FlyGame::getCurrState() const
+{
+	return this->_pData->enumState;
+}
+
+const wchar_t* FlyGame::getLevel()
+{
+	return this->_pData->levelPath.c_str();
 }

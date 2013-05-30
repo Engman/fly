@@ -172,6 +172,10 @@ void Camera::SetOrthogonalMatrix(float width, float height, float nearPlane, flo
 {
 	D3DXMatrixOrthoLH(&this->orthogonalMatrix, width, height, nearPlane, farPlane);
 }
+void Camera::SetOrthogonalMatrix(D3DXMATRIX projection)
+{
+	this->orthogonalMatrix = projection;
+}
 
 void Camera::Render()
 {

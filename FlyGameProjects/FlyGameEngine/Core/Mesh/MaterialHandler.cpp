@@ -17,15 +17,22 @@ int findExistingMaterial(std::wstring name)
 
 int MaterialHandler::AddMaterial(ObjectMaterial::OBJECT_MATERIAL_DESC& desc)
 {
-	int k = findExistingMaterial(desc.name);
+	static bool bussy = false;
 
+	while (bussy);
+
+	bussy = true;
+
+	int k = findExistingMaterial(desc.name);
 	//if(k != -1)
 	//	return MaterialHandlerMaterialList[k]->GetID();
 
 	SmartPtrStd<ObjectMaterial> m = new ObjectMaterial();
 	if(!m->CreateMaterial(desc))
+	{
+		bussy = false;
 		return -1;
-
+	}
 	bool done = false;
 	int insertIndex = 0;
 	MaterialHandlerMaterialList.resize(MaterialHandlerMaterialList.size()+1);
@@ -49,7 +56,24 @@ int MaterialHandler::AddMaterial(ObjectMaterial::OBJECT_MATERIAL_DESC& desc)
 
 	MaterialHandlerMaterialList[insertIndex] = m;
 
+	bussy = false;
+
 	return MaterialHandlerMaterialList[insertIndex]->GetID();
+}
+
+bool MaterialHandler::RemoveMaterial(int GID)
+{
+
+	for (int i = 0; i < (int)MaterialHandlerMaterialList.size(); i++)
+	{
+		if(MaterialHandlerMaterialList[i]->GetID() == GID)
+		{
+			MaterialHandlerMaterialList.erase(MaterialHandlerMaterialList.begin() + i);
+			return true;
+		}
+	}
+
+	return false;
 }
 
 ObjectMaterial* MaterialHandler::GetMaterial(int GID)

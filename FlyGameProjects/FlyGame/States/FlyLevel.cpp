@@ -30,12 +30,11 @@ bool FlyState_Level::Initiate(FlyGame* instance)
 	this->entryInstance = instance;
 
 	//Input activation
-	if(!this->entryInstance->GetCoreInstance()->Input_Initialize())
-		return false;
+	//if(!this->entryInstance->GetCoreInstance()->Input_Initialize())
+	//	return false;
 
 	//Read level data
-	if(!this->ReadLevel(L"..\\Resources\\Levels\\canyon.fgl"))
-	//if(!this->ReadLevel(L"..\\Resources\\Levels\\ocean.fgl"))
+	if(!this->ReadLevel(this->entryInstance->getLevel()))
 		return false;
 
 	
@@ -71,7 +70,7 @@ bool FlyState_Level::Initiate(FlyGame* instance)
 	this->windCollision.Initialize(this->entryInstance->GetLuaState());
 
 	//Audio initialization
-	this->entryInstance->GetCoreInstance()->Audio_Initialize();
+	//this->entryInstance->GetCoreInstance()->Audio_Initialize();
 	const char* path = "..\\Resources\\Sound\\level_background.mp3";	
 	this->entryInstance->GetCoreInstance()->Audio_LoadLevelSound(path);
 	this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_LevelSoundTrack);
@@ -508,7 +507,6 @@ bool FlyState_Level::Render()
 
 bool FlyState_Level::MenuRender()
 {
-	this->entryInstance->GetCoreInstance()->Gfx_SetCamera(&this->menuCamera);
 
 	this->entryInstance->GetCoreInstance()->Gfx_Update();
 			

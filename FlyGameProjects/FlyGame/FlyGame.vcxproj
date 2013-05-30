@@ -168,6 +168,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="FlyGame.cpp" />
+    <ClCompile Include="GameObjects\Cutscene.cpp" />
     <ClCompile Include="GameObjects\EnergyPickup.cpp" />
     <ClCompile Include="GameObjects\FlyPickup.cpp" />
     <ClCompile Include="GameObjects\FlyPlayer.cpp" />
@@ -184,6 +185,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FlyGame.h" />
+    <ClInclude Include="GameObjects\Cutscene.h" />
     <ClInclude Include="GameObjects\EnergyPickup.h" />
     <ClInclude Include="GameObjects\FlyPickup.h" />
     <ClInclude Include="GameObjects\PauseMenu.h" />

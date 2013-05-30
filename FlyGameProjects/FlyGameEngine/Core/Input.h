@@ -11,7 +11,6 @@
 class Input
 {
 	private:
-		static bool instanceFlag;
 		static Input* single;
 
 		HRESULT ReadKeyboard();
@@ -42,6 +41,7 @@ class Input
 		static Input* self();
 
 		HRESULT Initialize(HINSTANCE hInstance, HWND hWnd, int screenWidth, int screenHeight);
+		bool isInitialized() const;
 		void ReleaseInput();
 		HRESULT Frame();
 

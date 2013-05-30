@@ -17,6 +17,10 @@ class MaterialHandler
 		*	If it fails it returnes -1*/
 		static int AddMaterial(ObjectMaterial::OBJECT_MATERIAL_DESC& material);
 
+		/** Removes a matarial given an id.
+		*	return true on success */
+		static bool RemoveMaterial(int GID);
+
 		/** Returns the specific material or NULL if fail */
 		static ObjectMaterial* GetMaterial(int GID);
 		/** Returns the specific material or NULL if fail 
