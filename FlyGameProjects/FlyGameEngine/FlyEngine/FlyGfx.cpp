@@ -283,9 +283,8 @@ void FLYCALL FlyEngine_Core::Gfx_EndDeferredSceneOrtho()
 	this->fsq->SetShader(this->finalColorShader);
 	this->fsq->Render();
 
-	gBufferDrawData.camForLight = new BaseBuffer(); //finalBuffer;//
+	gBufferDrawData.camForLight = 0;
 	this->finalColorShader->draw(gBufferDrawData);
-	delete gBufferDrawData.camForLight; 
 
 	D3DShell::self()->releaseSRV();
 	D3DShell::self()->endScene();

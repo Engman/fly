@@ -40,6 +40,7 @@ bool PointLight::Initialize(PointLightProxy data, IShader* shader)
 	lightSphere.Initiate(data.posRange.w, 10,10, D3DShell::self()->getDevice(), shader, translate);
 	this->setPosition(vec3(data.posRange.x, data.posRange.y, data.posRange.z));
 	
+	return true;
 }
 void PointLight::Render(ViewFrustum& frustum)
 {

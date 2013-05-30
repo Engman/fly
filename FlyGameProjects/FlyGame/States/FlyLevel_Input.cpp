@@ -13,14 +13,21 @@ void FlyState_Level::_Input()
 		case CONTROL_Advance:
 			_InputAdvance();
 		break;
+#if defined(_DEBUG) || defined(DEBUG)
 		case CONTROL_Debug:
 			_InputDebug();
 		break;
+#endif
 	}
 
 	if(Input::self()->IsButtonPressed(DIK_ESCAPE))
 	{
-		this->state = 1;
+
+		if(this->state == 0)
+			this->state = 1;
+		else if(this->state == 1)
+			this->state = 0;
+
 		//PostQuitMessage(0);
 	}
 }
@@ -171,19 +178,36 @@ void FlyState_Level::_InputDebug()
 
 	if(Input::self()->IsButtonPressed(DIK_W))
 	{
-		this->mainCamera.RelativeForward(1.2f);
+		this->mainCamera.RelativeForward(15.2f);
+		this->player.SetVelocity(vec3(0.0, 0.0f, 0.0f));	
 	}
 	if(Input::self()->IsButtonPressed(DIK_S))
 	{
-		this->mainCamera.RelativeForward(-1.2f);
+		this->mainCamera.RelativeForward(-15.5f);
+		this->player.SetVelocity(vec3(0.0, 0.0f, 0.0f));	
 	}
 	if(Input::self()->IsButtonPressed(DIK_A))
 	{
-
+		this->mainCamera.RelativeRight(-15.2f);
+		this->player.SetVelocity(vec3(0.0, 0.0f, 0.0f));	
 	}
 	if(Input::self()->IsButtonPressed(DIK_D))
 	{
-		this->mainCamera.RelativeRight(1.2f);
+		this->mainCamera.RelativeRight(15.2f);
+		this->player.SetVelocity(vec3(0.0, 0.0f, 0.0f));
+
+	}
+	if(Input::self()->IsButtonPressed(DIK_SPACE))
+	{
+		this->mainCamera.RelativeUp(20.2f);
+		this->player.SetVelocity(vec3(0.0, 0.0f, 0.0f));
+
+	}
+	if(Input::self()->IsButtonPressed(DIK_LCONTROL))
+	{
+		this->mainCamera.RelativeUp(-5.2f);
+		this->player.SetVelocity(vec3(0.0, 0.0f, 0.0f));
+
 	}
 	if(mouseY < 0)
 	{

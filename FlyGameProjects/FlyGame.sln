@@ -1,5 +1,5 @@
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlyGameEngine", "FlyGameEngine\FlyGameEngine.vcxproj", "{EFDF4530-ECD5-4F9D-B472-B511005713E0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlyEdit++CLI", "FlyEdit++CLI\FlyEdit++CLI.vcxproj", "{E36D10E9-371A-4B95-AB74-D22F8CC61F79}"
@@ -48,10 +48,10 @@ Global
 		{EFDF4530-ECD5-4F9D-B472-B511005713E0}.Debug|x64.Build.0 = Debug|x64
 		{EFDF4530-ECD5-4F9D-B472-B511005713E0}.Release|Any CPU.ActiveCfg = Release|Win32
 		{EFDF4530-ECD5-4F9D-B472-B511005713E0}.Release|Any CPU.Build.0 = Release|Win32
-		{EFDF4530-ECD5-4F9D-B472-B511005713E0}.Release|Mixed Platforms.ActiveCfg = Release|x64
-		{EFDF4530-ECD5-4F9D-B472-B511005713E0}.Release|Mixed Platforms.Build.0 = Release|x64
-		{EFDF4530-ECD5-4F9D-B472-B511005713E0}.Release|Win32.ActiveCfg = Release|x64
-		{EFDF4530-ECD5-4F9D-B472-B511005713E0}.Release|Win32.Build.0 = Release|x64
+		{EFDF4530-ECD5-4F9D-B472-B511005713E0}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{EFDF4530-ECD5-4F9D-B472-B511005713E0}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{EFDF4530-ECD5-4F9D-B472-B511005713E0}.Release|Win32.ActiveCfg = Release|Win32
+		{EFDF4530-ECD5-4F9D-B472-B511005713E0}.Release|Win32.Build.0 = Release|Win32
 		{EFDF4530-ECD5-4F9D-B472-B511005713E0}.Release|x64.ActiveCfg = Release|x64
 		{EFDF4530-ECD5-4F9D-B472-B511005713E0}.Release|x64.Build.0 = Release|x64
 		{E36D10E9-371A-4B95-AB74-D22F8CC61F79}.Debug|Any CPU.ActiveCfg = Debug|Win32

@@ -154,7 +154,7 @@ void Sphere::InitBuffers(ID3D11Device *device)
 	bufferDesc.device = D3DShell::self()->getDevice();
 	bufferDesc.elementSize = sizeof(VERTEX::VertexP);
 	bufferDesc.data = &vertices[0];
-	bufferDesc.nrOfElements = sphereObj.Indices.size();
+	bufferDesc.nrOfElements = (int)sphereObj.Indices.size();
 	bufferDesc.type = BUFFER_FLAG::TYPE_VERTEX_BUFFER;
 	bufferDesc.usage = BUFFER_FLAG::USAGE_DEFAULT;
 

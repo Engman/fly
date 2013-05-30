@@ -1,9 +1,11 @@
 #pragma once
 #ifndef AUDIOCLASS_H
 #define AUDIOCLASS_H
-
+#if defined(_WIN64)
+#pragma comment(lib, "../../Dependencies/Lib/FMod/fmodex64_vc.lib")
+#else
 #pragma comment(lib, "../../Dependencies/Lib/FMod/fmodex_vc.lib")
-
+#endif
 #include <FMod/fmod.hpp>
 #include <vector>
 #include "stdafx.h"

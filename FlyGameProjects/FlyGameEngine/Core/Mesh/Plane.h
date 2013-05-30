@@ -27,7 +27,7 @@ private:
 public:
 	Plane();
 	~Plane();
-	void			Initialize(D3DXMATRIX world,  float height, float widht, ID3D11Device* g_Device, ID3D11DeviceContext* g_DeviceContext, IShader* shader);
+	void			Initialize(D3DXMATRIX world,  float height, float width, ID3D11Device* g_Device, ID3D11DeviceContext* g_DeviceContext, IShader* shader);
 	
 	void            Update(); 
 	void			setWorld(D3DXMATRIX world);

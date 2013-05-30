@@ -22,12 +22,14 @@ bool PauseMenu::Initialize(FlyGame* entry, float windowHeight, float windowWidth
 	sphere->center = vec3(0.0f, 0.0f, -1.0f);
 	sphere->radius = 2000.0f;
 	
-	entry->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\pauseMenu.fgm", &this->models);
+	if(!entry->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\pauseMenu.fgm", &this->models))
+		return false;
 	this->models[0]->setScale(vec3(this->windowWidth*0.5f, this->windowHeight*0.5f, 1.0f));
 	this->models[0]->setPosition(vec3(0.0f, 0.0f, 0.0f));
 	this->models[0]->setShader(shaders[FlyShader_gBufferDefault]);
 	this->models[0]->setBoundingSphere(sphere);
-	entry->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\pauseMenuHover1.fgm", &this->models);
+	if(!entry->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\pauseMenuHover1.fgm", &this->models))
+		return false;
 	this->models[1]->setScale(vec3(this->windowWidth*0.5f, this->windowHeight*0.5f, 1.0f));
 	this->models[1]->setPosition(vec3(0.0f, 0.0f, 0.0f));
 	this->models[1]->setShader(shaders[FlyShader_gBufferDefault]);
@@ -54,7 +56,7 @@ bool PauseMenu::Initialize(FlyGame* entry, float windowHeight, float windowWidth
 	this->models[5]->setShader(shaders[FlyShader_gBufferDefault]);
 	this->models[5]->setBoundingSphere(sphere);
 
-	for(int i =0; i<6; i++)
+	for(int i =0; i<(int)this->models.size(); i++)
 	{
 		models.at(i)->Update();
 	}

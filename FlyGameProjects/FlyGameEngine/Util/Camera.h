@@ -52,6 +52,7 @@ class Camera
 		void SetProjectionMatrix(float fieldOfView, float aspectRatio, float nearPlane, float farPlane);
 		void SetProjectionMatrix(D3DXMATRIX projection);
 		void SetOrthogonalMatrix(float width, float height, float nearPlane, float farPlane);
+		void SetOrthogonalMatrix(D3DXMATRIX projection);
 
 		D3DXVECTOR3 GetPosition() const;
 		D3DXVECTOR3 GetRotation() const;
