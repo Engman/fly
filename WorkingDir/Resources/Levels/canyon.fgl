@@ -1,8 +1,8 @@
 testCanyon
 111
-..\Resources\Models\terrain_terrain.fgm 16.9490966797 171.84928894 -67.8244018555 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\skySphere.fgm 1
-..\Resources\Models\water_pPlane2.fgm 481.910400391 -1.41482400894 -139.368286133 0.0 -0.0 0.0 1.0 1.0 1.0 2
+..\Resources\Models\terrain_terrain.fgm
+..\Resources\Models\skySphere.fgm
+..\Resources\Models\water_pPlane2.fgm 481.910400391 -1.41482400894 -139.368286133 0.0 -0.0 0.0 1.0 1.0 1.0
 ..\Resources\Models\Canyon_section2_pillar_polySurface34.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
 ..\Resources\Models\Canyon_section2_pillar_polySurface35.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
 ..\Resources\Models\Canyon_section2_pillar_polySurface36.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
@@ -127,16 +127,13 @@ testCanyon
 0.0 -1.0016369445 0.49635413247
 0.0 1000.0 0.0
 1
-5
 2
 0.2 0.2 0.2 1
 1.0 0.333333313465 0.962135016918 1.0
 0.9 0.8 0.8 1
 1615.58244586 -290.653408008 -12.7638341027 200
-6
 0.2 0.2 0.2 1
 0.0 0.0832002162933 1.0 1.0
 0.9 0.8 0.8 1
 1740.32878338 219.230739741 22.2045444482 200
-6
 2462.78025712 451.346651306 -137.449023135 0.0 -0.0 0.0 1.0 1.0 1.0

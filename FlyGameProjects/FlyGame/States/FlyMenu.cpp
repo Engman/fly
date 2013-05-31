@@ -10,6 +10,7 @@
 
 
 
+
 enum MenuLayout
 {
 	MENU_UI_Background,
@@ -241,12 +242,21 @@ void FlyState_Menu::PickMenu()
 	v.y = -( ( ( +2.0f * my ) / h ) - 1.0f ) / P._22;
 	v.z = 1.0f;
 
+	int lastBtn = this->highlightBtn;
+
 	for(int i = MENU_UI_ButtonLv1; i <= MENU_UI_ButtonQuit; i++)
 	{
 		if(i == MENU_UI_ButtonStart && !this->subMenu)
 			continue;
 
 		Matrix WV = this->ui[i]->getWorld() * V;
+
+
+		Matrix invW;
+		vec3 pInW;
+		D3DXMatrixInverse(&invW, 0, &this->ui[i]->getWorld());
+		D3DXVec3TransformCoord(&pInW, &v, &invW);
+
 
 		//Do ray triangle intersect
 		FlyMesh* temp = (FlyMesh*)ui[i];
@@ -261,13 +271,12 @@ void FlyState_Menu::PickMenu()
 					(*tris)[k + 1],
 					(*tris)[k + 2]
 				};
-				D3DXVec3TransformCoord(&tri[0], &tri[0], &WV);
-				D3DXVec3TransformCoord(&tri[1], &tri[1], &WV);
-				D3DXVec3TransformCoord(&tri[2], &tri[2], &WV);
 
-				if(RayVSTriangle(v, vec3(0.0f, 0.0f, 1.0f), tri))
-				//if(RayVSTriangle(rayOrigin, rayDir, tri))
+				if(RayVSTriangle(pInW, vec3(0.0f, 0.0f, 1.0f), tri))
 				{
+					if(lastBtn == -1)
+						this->entryInstance->GetCoreInstance()->Audio_PlayMenuSound(FlySound_MenuHover);
+
 					this->highlightBtn = i;
 					return;
 				}
