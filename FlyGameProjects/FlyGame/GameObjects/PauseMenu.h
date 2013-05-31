@@ -14,6 +14,7 @@ class PauseMenu
 		Entity* currentRender;
 
 		float windowHeight, windowWidth;
+		bool hover; 
 
 	public:
 		PauseMenu();
@@ -22,7 +23,7 @@ class PauseMenu
 		bool Initialize(FlyGame* entry, float windowHeight, float windowWidth);
 
 		void Render(ViewFrustum f, bool one, bool two, bool three);
-		int Update(int mouseX, int mouseY); // 0 Render again, 1 Continue, 2 Exit
+		int Update(int mouseX, int mouseY, FlyGame* entry); // 0 Render again, 1 Continue, 2 Exit
 
 		void Release();
 };

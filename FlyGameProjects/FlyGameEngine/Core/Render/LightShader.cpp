@@ -32,9 +32,7 @@ void LightShader::draw(PER_FRAME_DATA& frameData)
 {
 	int indexC = 0;
 	int vertexC = 0;
-
-	D3DShell::self()->setDefferedSRV();
-	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_NoCullNoMs);
+	
 
 	this->shader->Render(); // set vertex and pixel shader
 	

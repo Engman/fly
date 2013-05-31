@@ -25,12 +25,14 @@ class FlyEngine_Core	:public FlyEngine
 
 		SmartPtrStd<IShader>					gbufferShader;
 		SmartPtrStd<IShader>					gBufferNoDepthShader;
+		SmartPtrStd<IShader>					gbufferNoCullShader;
 		SmartPtrStd<IShader>					gbufferBumpShader; 
 		SmartPtrStd<IShader>					gBufferAnimationShader;
 		SmartPtrStd<IShader>					finalShader; 
 		SmartPtrStd<IShader>					finalColorShader; 
 		SmartPtrStd<IShader>					dirLightShader;
-		SmartPtrStd<IShader>					pointLightShader; 
+		SmartPtrStd<IShader>					pointLightFrontShader; 
+		SmartPtrStd<IShader>					pointLightBackShader; 
 		SmartPtrStd<IShader>					shadowMapShader;
 		SmartPtrStd<IShader>					blurHorizontShader;
 		SmartPtrStd<IShader>					blurVerticalShader;
@@ -112,6 +114,7 @@ class FlyEngine_Core	:public FlyEngine
 		void		FLYCALL		Audio_PlaySound				(FlyLevelSounds sound);
 		void		FLYCALL		Audio_PlayMenuSound			(FlyMenuSounds sound);
 		void		FLYCALL		Audio_Shutdown				();	
+		void		FLYCALL		Audio_Update				();
 		void		FLYCALL		Audio_Update				(D3DXVECTOR3 pos, float speed);
 
 		static void  _Interface();

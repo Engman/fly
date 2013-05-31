@@ -4,7 +4,8 @@ m pauseMenu
 a 0.500000 0.500000 0.500000 1.000000
 d 1.000000 1.000000 1.000000 1.000000
 s 0.500000 0.000000 0.000000 1.000000
-sp 5
+sp 3
+
 ta 
 td ..\\Resources\\Textures\\paused.jpg
 ts ..\Resources\Textures\noGlow.png

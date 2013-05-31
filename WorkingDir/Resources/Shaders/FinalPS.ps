@@ -61,12 +61,14 @@ float4 FPixelShader(PSIn input) :  SV_Target
 	
 	float4 color = colorSRV.Sample( SampleTypeClamp, UV ); //input.TextCoord); 
 	
-	float4 glowColor =  BluredSRV.Sample( SampleTypeClamp,UV); // input.TextCoord);
+	float4 glowColor =  BluredSRV.Sample( SampleTypeClamp, input.TextCoord); //UV); //
   
-	float4 lighting = LightSRV.Sample( SampleTypeClamp,UV); // , input.TextCoord);
+	float4 lighting = LightSRV.Sample( SampleTypeClamp , input.TextCoord); //,UV); //
  
-	float depth = DephtSRV.Sample( SampleTypeClamp,UV).a; // , input.TextCoord).a;
-	
+	float depth = DephtSRV.Sample( SampleTypeClamp, input.TextCoord).r; //UV).a; //
+	//depth= pow(depth,200);
+	//color = float4(depth, depth, depth, 1);
+	//return color; 
 	float4 position = float4(0,0,0,1);
 	
 	position.x = input.ScreenPos.x;
@@ -82,7 +84,7 @@ float4 FPixelShader(PSIn input) :  SV_Target
 	LightScreenPos/= LightScreenPos.w;
 	
 	float depthLightVP = LightScreenPos.z;
-	float2 lightSamp =  0.5f * (float2(LightScreenPos.x, - LightScreenPos.y) + 1);
+	float2 lightSamp =  0.5f * (float2(LightScreenPos.x, - LightScreenPos.y) + 1); //- float2(1.0f / GBufferTextureSize.xy);
 	
 	float shadow = 1;
 	if(lighting.w >0) // to avoid shadowing the skybox
@@ -90,13 +92,14 @@ float4 FPixelShader(PSIn input) :  SV_Target
 		float scale = depth;
 		shadow = ShadowFactor( depthLightVP, lightSamp, scale);
 		shadow = clamp(shadow, 0.4, 1.0f);
-		finalColor = saturate(color*0.5 + lighting*0.5)*(shadow+0.1);
+		finalColor = saturate(color*0.5 + lighting*0.5)*(shadow);
+
 		//finalColor = lighting;
 		return finalColor;
 	}
 	
-	//shadow = ShadowSRV.Sample(SampleTypeClamp, input.TextCoord).r; // + 0.001 < depthLightVP) ? 0.0f : 1.0f;
-	//shadow= pow(shadow,200);
+	shadow = ShadowSRV.Sample(SampleTypeClamp, input.TextCoord).r; // + 0.001 < depthLightVP) ? 0.0f : 1.0f;
+	shadow= pow(shadow,200);
 	//color = float4(shadow, shadow, shadow, 1);
 	
 	finalColor = color; 

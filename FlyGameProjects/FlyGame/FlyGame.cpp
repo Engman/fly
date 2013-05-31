@@ -60,7 +60,7 @@ struct FlyGame::_DATA_
 	bool stateChanged;
 	HANDLE loadingThread;
 	FlyGameSystemState enumState;
-
+	SaveFile savedData; 
 	wstring levelPath;
 
 	
@@ -129,6 +129,8 @@ bool FlyGame::Initiate()
 		return false;
 
 	this->_pData->fly->Audio_Initialize();
+
+	loadSaveFile(L"..\\Resources\\Levels\\saveFile.txt");
 
 
 	this->_pData->loadingThread	= CreateThread(NULL , 4*255, FlyGame::playCutscene, (void*)this->_pData->fly, CREATE_SUSPENDED, NULL);
@@ -278,4 +280,101 @@ FlyGameSystemState FlyGame::getCurrState() const
 const wchar_t* FlyGame::getLevel()
 {
 	return this->_pData->levelPath.c_str();
+}
+
+std::vector<int> FlyGame::getLvlSavedData()
+{
+	return this->_pData->savedData.levels[_pData->enumState].cargoTaken; 
+}
+void FlyGame::setLvlSaveData(int cargoTaken)
+{
+
+	this->_pData->savedData.levels[_pData->enumState].cargoTaken[cargoTaken] = true; 
+	this->_pData->savedData.cargoCount++; 
+
+	bool taken = true; 
+	int nr = 0; 
+	while(taken && nr<CARGO_COUNT)
+	{
+		if(!this->_pData->savedData.levels[_pData->enumState].cargoTaken[nr])
+			taken = false; 
+		nr ++; 
+	}
+	if(taken)
+		this->_pData->savedData.levels[_pData->enumState].lvlCompleted = true; 
+
+
+	WriteSaveFile(_pData->savedData.path, _pData->savedData); 
+}
+bool FlyGame::isLvlCompleted()
+{
+	return this->_pData->savedData.levels[_pData->enumState].lvlCompleted; 
+}
+void FlyGame::loadSaveFile(const wchar_t* fileName)
+{
+	readSaveFile(fileName, _pData->savedData); 
+	 _pData->savedData.path = fileName; 
+}
+
+bool FlyGame::readSaveFile(const wchar_t* fileName, SaveFile & savedData)
+{
+	wifstream file(fileName);
+	if(!file.is_open())	
+		return false;
+
+	wstring name; 
+	std::vector<int> cargo; 
+	cargo.resize(CARGO_COUNT);
+	bool completed; 
+	savedData.cargoCount = 0; 
+	for(int i =0; i<CARGO_COUNT; i++)
+	{
+
+		file >> name; 
+
+		for(int k =0; k<CARGO_COUNT; k++)
+		{
+			file >> cargo[k];
+			if(cargo[k] == 1)
+				savedData.cargoCount++; 
+		}
+		file >> completed;
+
+		savedData.levels[i].name = name; 
+		savedData.levels[i].cargoTaken = cargo;
+		savedData.levels[i].lvlCompleted = completed;
+	}
+
+	return true; 
+}
+
+bool FlyGame::WriteSaveFile(const wchar_t* fileName, SaveFile & savedData)
+{
+	wofstream file(fileName);
+	if(!file.is_open())	
+		return false;
+
+	wstring save; 
+
+	for(int i =0; i<CARGO_COUNT; i++)
+	{
+		file << savedData.levels[i].name; 
+		file << L" "; 
+		file << savedData.levels[i].cargoTaken[0]; 
+		file << L" ";
+		file << savedData.levels[i].cargoTaken[1]; 
+		file << L" ";
+		file << savedData.levels[i].cargoTaken[2]; 
+		file << L" ";
+		file << savedData.levels[i].lvlCompleted; 
+		file << L" ";
+		file << L"\n"; 
+	}
+
+	return true;
+}
+
+int FlyGame::getCargoCount()
+{
+	return this->_pData->savedData.cargoCount;
 }

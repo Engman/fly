@@ -17,7 +17,7 @@ extern "C"
 	#include <Lua/lauxlib.h>
 }
 
-
+#include "..\FlyGameEngine\Util\misc.h"
 
 
 class FlyEngine;
@@ -32,11 +32,26 @@ enum FlyGameSystemState
 	Editor,
 };
 
+static const int CARGO_COUNT = 3;
 
+struct LevelData
+{
+	std::wstring name;
+	std::vector<int> cargoTaken;
+	bool lvlCompleted; 
+};
+struct SaveFile
+{
+	const wchar_t* path; 
+	int cargoCount; 
+	LevelData levels [CARGO_COUNT]; 
+};
 class FlyGame
 {
 	public:
 		
+		
+
 	private:
 		struct _DATA_;
 		_DATA_ *_pData;
@@ -48,7 +63,15 @@ class FlyGame
 		void setState(FlyGameSystemState state);
 		void handleStateChange();
 		FlyGameSystemState getCurrState() const;
+		std::vector<int> getLvlSavedData(); 
+		void setLvlSaveData(int cargoTaken);
+		bool isLvlCompleted();
+		int getCargoCount(); 
+		void loadSaveFile(const wchar_t* fileName); 
 		static DWORD WINAPI FlyGame::playCutscene(LPVOID lpParameter);
+		bool readSaveFile(const wchar_t* fileName, SaveFile & savedData);
+		bool WriteSaveFile(const wchar_t* fileName, SaveFile & savedData); 
+
 
 	public:
 		FlyGame();
@@ -66,6 +89,7 @@ class FlyGame
 		void Update();
 		void Render();
 		const wchar_t* getLevel();
+
 };
 
 #endif

@@ -15,7 +15,6 @@ void GBufferShader::draw(PER_FRAME_DATA& frameData)
 	int vertexC = 0;
 	
 	FLAGS::STATE_SAMPLING samp[1] =  { FLAGS::SAMPLER_Linear };
-	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_NoCullNoMs); //BackCullNoMS);
 	D3DShell::self()->setSamplerState(samp, FLAGS::PS, 0, 1);
 
 	this->shader->Render();

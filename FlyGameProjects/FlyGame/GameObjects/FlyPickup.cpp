@@ -38,10 +38,10 @@ void FlyPickup::Render(ViewFrustum& f)
 	this->pickupModel[0]->Render(f);
 }
 
-void FlyPickup::Update()
+void FlyPickup::Update(float dt)
 {
 	if(this->pickupModel.size() > 0)
-		((FlyMeshAnimated*)this->pickupModel[0])->UpdateAnimation(0); 
+		((FlyMeshAnimated*)this->pickupModel[0])->LoopAnimation(0, dt); 
 }
 
 void FlyPickup::SetPickTaken(bool taken)

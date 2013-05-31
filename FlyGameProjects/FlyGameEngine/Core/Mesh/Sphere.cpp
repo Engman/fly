@@ -20,6 +20,7 @@ void Sphere::Initiate(float radius, UINT sliceCount, UINT stackCount, ID3D11Devi
 	m_shader = shader;
 	D3DXMatrixIdentity(&this->world);
 	this->world *= translate;
+	this->radie = radius; 
 }
 
 void Sphere::CreateSphere(float radius, UINT sliceCount, UINT stackCount, MeshData& meshData)
@@ -245,4 +246,8 @@ void Sphere::Render(BaseBuffer* light, D3DXMATRIX world)
 Sphere::MeshData Sphere::GetSphere()
 {
 	return sphereObj; 
+}
+float Sphere::getRadie()
+{
+	return this->radie; 
 }

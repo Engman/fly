@@ -6,10 +6,10 @@ d 1.000000 1.000000 1.000000 1.000000
 s 0.500000 0.000000 0.000000 1.000000
 sp 10
 ta 
-td ..\Resources\Textures\default.jpg
+td ..\Resources\Textures\bright_blue.jpg
 ts 
 tg 
-tn 
+tn ..\Resources\Textures\WaterNormal.png
 endmtl 
 an 0 1 
 fr 0 0.0 

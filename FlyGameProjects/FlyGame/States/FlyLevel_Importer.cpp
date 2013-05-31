@@ -85,7 +85,14 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 	//Cursor
 	this->entryInstance->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\mouse_cursor.fgm", &this->cursor);
 	this->cursor[0]->setShader(shaders[FlyShader_gBufferDefault]);
-	
+	this->cursor[0]->setScale(vec3(3,3,3));
+	this->cursor[0]->setPosition(vec3(0.0f, 0.0f, 0.0f));
+
+	BoundingSphere* sphere = new BoundingSphere();
+	sphere->center = vec3(0.0f, 0.0f, -1.0f);
+	sphere->radius = 1200.0f;
+	this->cursor[0]->setBoundingSphere(sphere);
+
 	//UI
 	this->entryInstance->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\energyBar.fgm", &this->UIorthographic);
 	this->UIorthographic[0]->setShader(shaders[FlyShader_gBufferDefault]);
@@ -109,7 +116,8 @@ bool FlyState_Level::_ImportTerrain(wifstream& file, vector<IShader*>& shaders)
 	ReadVector3(file);
 	ReadVector3(file);	
 	ReadVector3(file);
-	this->theWorld[0]->setShader(shaders[ReadInt(file)]);
+	ReadInt(file);
+	this->theWorld[0]->setShader(shaders[FlyShader_gBufferDefault]);
 
 	return true;
 }
@@ -118,8 +126,11 @@ bool FlyState_Level::_ImportSkybox(wifstream& file, vector<IShader*>& shaders)
 	wstring dummy = L"";
 	if(!this->entryInstance->GetCoreInstance()->Geometry_Load(ReadString(file, dummy).c_str(), &this->skyBox))
 		return false;
-	
-	this->skyBox[0]->setShader(shaders[ReadInt(file)]);
+
+	ReadInt(file);
+	this->skyBox[0]->setShader(shaders[FlyShader_gBufferNoDepth]);
+	this->skyBox[0]->setScale(vec3(20 , 20 ,20));
+
 
 	return true;
 }
@@ -130,14 +141,14 @@ bool FlyState_Level::_ImportWater(wifstream& file, vector<IShader*>& shaders)
 	if(!this->entryInstance->GetCoreInstance()->Geometry_Load(ReadString(file, dummy).c_str(), &this->water, FlyGeometry_Water, 1, 3))
 		return false;
 
-	//this->water[0]->setPosition(ReadVector3(file));
-	//this->water[0]->setRotation(ReadVector3(file));
-	//this->water[0]->setScale(ReadVector3(file));
-	ReadVector3(file);
-	ReadVector3(file);	
-	ReadVector3(file);
-
-	this->water[0]->setShader(shaders[ReadInt(file)]);
+	this->water[0]->setPosition(ReadVector3(file));
+	this->water[0]->setRotation(ReadVector3(file));
+	this->water[0]->setScale(ReadVector3(file));
+	//ReadVector3(file);
+	//ReadVector3(file);	
+	//ReadVector3(file);
+	ReadInt(file);
+	this->water[0]->setShader(shaders[FlyShader_gBufferBump]);
 
 	return true;
 }
@@ -147,12 +158,12 @@ bool FlyState_Level::_ImportStatic(wifstream& file, vector<IShader*>& shaders)
 	if(this->entryInstance->GetCoreInstance()->Geometry_Load(ReadString(file, dummy).c_str(), &this->levelEntities, FlyGeometry_Terrain, 1, 3))
 	{
 		int k = (int)this->levelEntities.size() - 1;
-		//this->levelEntities[k]->setPosition(ReadVector3(file));
-		//this->levelEntities[k]->setRotation(ReadVector3(file));
-		//this->levelEntities[k]->setScale(ReadVector3(file));
-		ReadVector3(file);
+		this->levelEntities[k]->setPosition(ReadVector3(file));
+		this->levelEntities[k]->setRotation(ReadVector3(file));
+		this->levelEntities[k]->setScale(ReadVector3(file));
+		/*ReadVector3(file);
 		ReadVector3(file);	
-		ReadVector3(file);
+		ReadVector3(file);*/
 		this->levelEntities[k]->setShader(shaders[FlyShader_gBufferDefault]);
 		dynamic_cast<Terrain*>(this->levelEntities[k])->TransformBoxes();
 	}
@@ -178,7 +189,7 @@ bool FlyState_Level::_ImportPickups(wifstream& file, vector<IShader*>& shaders)
 		vec3 p = ReadVector3(file);
 		vec3 r = ReadVector3(file);
 		vec3 s = ReadVector3(file);
-		if(!this->pickups[i].Initialize(this->entryInstance, fgmPath, p, r, s, FlyShader_gBufferDefault))
+		if(!this->pickups[i].Initialize(this->entryInstance, fgmPath, p, r, s, FlyShader_gBufferNoCull))
 			return false;
 	}
 	return true;
@@ -195,7 +206,7 @@ bool FlyState_Level::_ImportEnergy(wifstream& file, vector<IShader*>& shaders)
 		vec3 p = ReadVector3(file);
 		vec3 r = ReadVector3(file);
 		vec3 s = ReadVector3(file);
-		if(!this->energy[i].Initialize(this->entryInstance, readString, p, r, s, FlyShader_gBufferDefault))
+		if(!this->energy[i].Initialize(this->entryInstance, readString, p, r, s, FlyShader_gBufferNoCull))
 			return false;
 	}
 
@@ -224,16 +235,18 @@ bool FlyState_Level::_ImportLights(wifstream& file, vector<IShader*>& shaders)
 		int count = ReadInt(file);
 
 		D3DXMATRIX viewMatrix, projectionMatrix;
+		//D3DXMatrixLookAtLH(&viewMatrix, &D3DXVECTOR3(1000, 200, 0), &D3DXVECTOR3(0,-1,0), &D3DXVECTOR3(0,1,0));
 		D3DXMatrixLookAtLH(&viewMatrix, &pos, &D3DXVECTOR3(dirLightProxy.direction.x, dirLightProxy.direction.y, dirLightProxy.direction.z ), &D3DXVECTOR3(0.0, 1.0, 0.0));
 
 		D3DXMatrixPerspectiveFovLH(&projectionMatrix,(float)D3DX_PI*0.2f, D3DShell::self()->getAspectRatio(), 1, 10000);
 		//int w, h;this->entryInstance->GetCoreInstance()->Core_Dimensions(w, h);
 		//D3DXMatrixOrthoLH(&projectionMatrix, (float)w, (float)h, 0.1, 10000);
 
+
   
 		LightViewProj *lightViewProj = new LightViewProj(); 
-		lightViewProj->lView = viewMatrix;//lightCam.GetViewMatrix();
-		lightViewProj->lProj = projectionMatrix;//lightCam.GetProjectionMatrix();
+		lightViewProj->lView = viewMatrix;
+		lightViewProj->lProj = projectionMatrix;
   
 		DirectionLight* light = new DirectionLight(Type::LIGHT);
 		DirectionLight::DIRLIGHT_DESC dirLight; 
@@ -247,8 +260,8 @@ bool FlyState_Level::_ImportLights(wifstream& file, vector<IShader*>& shaders)
 
 		if(hasShadow)
 		{
-			this->lightCamera.SetProjectionMatrix(projectionMatrix);
-			this->lightCamera.SetViewMatrix(viewMatrix); 
+			//this->lightCamera.SetProjectionMatrix(projectionMatrix);
+			//this->lightCamera.SetViewMatrix(viewMatrix); 
 			shadowViews.push_back(lightViewProj);
 		}
   
@@ -264,7 +277,8 @@ bool FlyState_Level::_ImportLights(wifstream& file, vector<IShader*>& shaders)
 		lightProxy.diffuse		= ReadVector4(file);
 		lightProxy.specular		= ReadVector4(file);
 		lightProxy.posRange		= ReadVector4(file);
-		light->Initialize(lightProxy,  shaders[ReadInt(file)]);
+		ReadInt(file); 
+		light->Initialize(lightProxy,  shaders[FlyShader_PointLightBack]);
 		pointLights.push_back(light);
 	}
 
@@ -272,7 +286,7 @@ bool FlyState_Level::_ImportLights(wifstream& file, vector<IShader*>& shaders)
 }
 bool FlyState_Level::_ImportPlayer(wifstream& file, vector<IShader*>& shaders)
 {
-	if(!this->entryInstance->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\character.fgm", this->player.GetModel()))
+	if(!this->entryInstance->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\characterMOD_anim.fgm", this->player.GetModel(), FlyGeometry_AnimatedMesh, 1, 3))
 		return false;
 	
 	this->player.GetModel()->at(0)->setPosition(ReadVector3(file));
@@ -298,6 +312,7 @@ bool FlyState_Level::_ImportPlayer(wifstream& file, vector<IShader*>& shaders)
 
 	return true;
 }
+
 
 vec4 FlyState_Level::ReadVector4(wifstream& in)
 {

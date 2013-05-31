@@ -106,7 +106,7 @@ PSOut FPixelShader(PSIn input)
 	
 	//specular power
 	float pow = gBufferText[2].Sample( SampleTypeClamp, input.TextCoord).w;
-	pow*= 255;
+	//pow*= 255;
 	
 	float4 LightColor = float4(0,0,0,0);
 	if(intens != 0) 

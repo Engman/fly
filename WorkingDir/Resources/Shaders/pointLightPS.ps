@@ -110,7 +110,7 @@ float4 Phong(float3 Position, float3 N, float SpecularIntensity, float SpecularP
 	//Calculate Final Product
 	float LightIntensity = 1.0;
 	return  LightIntensity* newIntensity *float4(Diffuse.rgb, 1);
-	//return Attenuation * LightIntensity * float4(Diffuse.rgb, Specular);
+	return Attenuation * LightIntensity * float4(Diffuse.rgb, 1); //Specular);
 }
 
   
@@ -156,7 +156,7 @@ PSOut FPixelShader(PS_IN input)
 	
 	//specular power
 	float pow = gBufferText[2].Sample( SampleTypeClamp, UV).w;
-	pow*= 255;
+	//pow*= 255;
 	
 	float4 LightColor = float4(0,0,0,0);
 	if(intens != 0) 

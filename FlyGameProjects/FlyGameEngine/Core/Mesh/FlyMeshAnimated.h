@@ -65,8 +65,13 @@ class FlyMeshAnimated		:public Entity
 		/** Override to update logic diffrent than default */
 		virtual void Update() override;
 
-		void UpdateAnimation(int nr);
-		void StopAnimation(int nr);
+		/** Loop the animation */
+		void LoopAnimation(int nr, float deltaTime);
+		/** Play until the second frame is 100% */
+		void StartAnimation(int nr, float dt);
+		/** Play until the first frame is 100% */
+		void StopAnimation(int nr, float deltaTime);
+
 		/** Override to render with diffrent than default */
 		virtual void Render(ViewFrustum& frustum) override;
 

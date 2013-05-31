@@ -76,11 +76,13 @@ enum FlyEngineShaders
 {
 	FlyShader_gBufferDefault,
 	FlyShader_gBufferNoDepth,
+	FlyShader_gBufferNoCull,
 	FlyShader_gBufferBump,
 	FlyShader_gBufferAnimated,
 	FlyShader_Final,
 	FlyShader_DirLight,
-	FlyShader_PointLight,
+	FlyShader_PointLightFront,
+	FlyShader_PointLightBack,
 	FlyShader_Shadow,
 	FlyShader_BlurHorizont,
 	FlyShader_BlurVertical,
@@ -172,6 +174,7 @@ class FlyEngine
 		virtual void		FLYCALL		Audio_PlaySound				(FlyLevelSounds sound)												= 0;
 		virtual void		FLYCALL		Audio_PlayMenuSound			(FlyMenuSounds sound) 												= 0;		
 		virtual void		FLYCALL		Audio_Shutdown				()																	= 0;
+		virtual void		FLYCALL		Audio_Update				()																	= 0;
 		virtual void		FLYCALL		Audio_Update				(D3DXVECTOR3 pos, float speed)										= 0; 
 
 		//---------------------

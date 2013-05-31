@@ -26,6 +26,7 @@ public:
 
 
 	BaseBuffer* getLight();
+	float getRadie();
 
 };
 #endif
