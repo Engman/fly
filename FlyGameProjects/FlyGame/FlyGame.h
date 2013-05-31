@@ -32,12 +32,12 @@ enum FlyGameSystemState
 	Editor,
 };
 
-static const int CARGO_COUNT = 3;
+#define CARGO_COUNT		3
 
 struct LevelData
 {
 	std::wstring name;
-	std::vector<int> cargoTaken;
+	std::vector<bool> cargoTaken;
 	bool lvlCompleted; 
 };
 struct SaveFile
@@ -46,6 +46,7 @@ struct SaveFile
 	int cargoCount; 
 	LevelData levels [CARGO_COUNT]; 
 };
+
 class FlyGame
 {
 	public:
@@ -63,7 +64,7 @@ class FlyGame
 		void setState(FlyGameSystemState state);
 		void handleStateChange();
 		FlyGameSystemState getCurrState() const;
-		std::vector<int> getLvlSavedData(); 
+		std::vector<bool> getLvlSavedData(); 
 		void setLvlSaveData(int cargoTaken);
 		bool isLvlCompleted();
 		int getCargoCount(); 

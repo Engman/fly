@@ -6,6 +6,7 @@ FinalShader::FinalShader()
 
 }
 
+
 void FinalShader::draw(PER_FRAME_DATA& frameData)
 {
 	int indexC = 0;

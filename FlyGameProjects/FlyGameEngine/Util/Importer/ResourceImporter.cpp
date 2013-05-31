@@ -45,6 +45,7 @@ bool ResourceImporter::ImportObject(const wchar_t* filename, ImportedObjectData*
 	static bool bussy = false;
 	while(bussy);
 	bussy = true;
+
 #if defined(_DEBUG) || defined(DEBUG)
 	time_t start = clock();
 	if(!fgmImporter.Import(getDir(filename), object))
@@ -71,6 +72,8 @@ bool ResourceImporter::ImportObject(std::vector<const wchar_t*>& filenames, vect
 {
 
 	static bool bussy = false;
+	while(bussy);
+	bussy = true;
 
 
 	if(!filenames.size())
@@ -79,9 +82,6 @@ bool ResourceImporter::ImportObject(std::vector<const wchar_t*>& filenames, vect
 	objData->clear();
 	if(objData->size() !=  filenames.size())
 		objData->resize(filenames.size());
-
-	while(bussy);
-	bussy = true;
 
 	for (int i = 0; i < (int)filenames.size(); i++)
 	{

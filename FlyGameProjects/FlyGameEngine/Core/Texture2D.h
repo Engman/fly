@@ -28,6 +28,8 @@ class Texture2D
 		
 		/** Loads a texture from file as shader resource view */
 		bool loadTexture(ID3D11Device *device, std::wstring file);
+
+		void Texture2D::GetDimensions(int& w, int& h);
 };
 
 #endif

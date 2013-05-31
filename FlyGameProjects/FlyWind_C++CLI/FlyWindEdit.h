@@ -31,7 +31,6 @@ namespace System
 			public ref class FlyWindEdit
 			{
 				protected:
-					vector<SmartPtrStd<FlyMesh>> *models;
 					FlyEngine* flyEngine;
 
 					void Render();

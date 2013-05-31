@@ -73,28 +73,28 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\WorkingDir\Bin\</OutDir>
-    <IntDir>$(SolutionDir)..\WorkingDir\Assembly\CLI\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)..\WorkingDir\AssemblyFiles\CLI\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)x86D</TargetName>
     <IncludePath>$(IncludePath);$(SolutionDir)..\Dependencies\Include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\WorkingDir\Bin\</OutDir>
-    <IntDir>$(SolutionDir)..\WorkingDir\Assembly\CLI\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)..\WorkingDir\AssemblyFiles\CLI\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)x64D</TargetName>
     <IncludePath>$(IncludePath);$(SolutionDir)..\Dependencies\Include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\WorkingDir\Bin\</OutDir>
-    <IntDir>$(SolutionDir)..\WorkingDir\Assembly\CLI\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)..\WorkingDir\AssemblyFiles\CLI\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)x86</TargetName>
     <IncludePath>$(IncludePath);$(SolutionDir)..\Dependencies\Include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\WorkingDir\Bin\</OutDir>
-    <IntDir>$(SolutionDir)..\WorkingDir\Assembly\CLI\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)..\WorkingDir\AssemblyFiles\CLI\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)x64</TargetName>
     <IncludePath>$(IncludePath);$(SolutionDir)..\Dependencies\Include</IncludePath>
   </PropertyGroup>
@@ -163,11 +163,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FlyGameEngine\FlyGameEngine.vcxproj">
-      <Project>{efdf4530-ecd5-4f9d-b472-b511005713e0}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -181,6 +176,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FlyWindEdit.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FlyWindCoreWrapper\FlyWindCoreWrapper.vcxproj">
+      <Project>{e7727f0c-ef29-446b-8553-8d39622428d5}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

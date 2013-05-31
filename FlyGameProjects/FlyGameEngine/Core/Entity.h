@@ -134,7 +134,7 @@ class Entity abstract
 		{
 			return &this->buffers;
 		}
-		const ObjectMaterial* getMaterial		()
+		ObjectMaterial* getMaterial		()
 		{
 			return this->material;
 		}

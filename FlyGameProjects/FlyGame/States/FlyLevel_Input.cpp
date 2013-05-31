@@ -25,9 +25,8 @@ void FlyState_Level::_Input()
 
 		if(this->state == 0)
 			this->state = 1;
-		else if(this->state == 1)
-			this->state = 0;
-
+		//else if(this->state == 1)
+		//	this->state = 0;
 		
 	}
 }

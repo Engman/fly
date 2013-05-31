@@ -11,6 +11,17 @@
 #include "States\FlyState_Menu.h"
 #include "..\FlyGameEngine\Util\SmartPtrs.h"
 
+inline bool fileExists (const std::wstring& name) {
+    wifstream f(name.c_str());
+    if (f.good()) {
+        f.close();
+        return true;
+    } else {
+        f.close();
+        return false;
+    }   
+}
+
 
 #if defined(_DEBUG) || defined(DEBUG)
 #include <fcntl.h>
@@ -55,13 +66,15 @@ struct FlyGame::_DATA_
 	SmartPtrStd<IFlySystemState> level;
 	SmartPtrStd<IFlySystemState> mainMenu;
 	FlyEngine* fly;
-	IFlySystemState* state;
+	IFlySystemState* curState;
+	IFlySystemState* prevState;
 	lua_State* luaState;
 	bool stateChanged;
 	HANDLE loadingThread;
 	FlyGameSystemState enumState;
 	SaveFile savedData; 
 	wstring levelPath;
+
 
 	
 };
@@ -80,7 +93,7 @@ FlyGame::FlyGame()
 {
 	this->_pData = new _DATA_();
 	this->_pData->fly = 0;
-	this->_pData->state = 0;
+	this->_pData->curState = 0;
 	this->_pData->levelPath = L"";
 	this->_pData->stateChanged = false;
 	this->_pData->enumState = Menu;
@@ -95,7 +108,7 @@ FlyGame::~FlyGame()
 	
 	if(this->_pData->level.IsValid())		this->_pData->level->Release();
 	if(this->_pData->mainMenu.IsValid())	this->_pData->mainMenu->Release();
-	this->_pData->state = NULL;
+	this->_pData->curState = NULL;
 
 
 	delete this->_pData;
@@ -115,7 +128,7 @@ bool FlyGame::Initiate()
 
 
 	this->_pData->mainMenu = new FlyState_Menu();
-	this->_pData->state = this->_pData->mainMenu;
+	this->_pData->curState = this->_pData->mainMenu;
 
 
 	this->_pData->luaState = luaL_newstate();
@@ -130,24 +143,21 @@ bool FlyGame::Initiate()
 
 	this->_pData->fly->Audio_Initialize();
 
-	loadSaveFile(L"..\\Resources\\Levels\\saveFile.txt");
+	loadSaveFile(L"..\\Resources\\Levels\\saveFile.fgs");
 
-	//SECURITY_ATTRIBUTES attr;
-	//attr.nLength = sizeof(SECURITY_ATTRIBUTES);
-	//attr.lpSecurityDescriptor = THREAD_SUSPEND_RESUME;
 
 	this->_pData->loadingThread	= CreateThread(NULL , 4*255, FlyGame::playCutscene, (void*)this->_pData->fly, CREATE_SUSPENDED, NULL);
-	DWORD test = ResumeThread(this->_pData->loadingThread);
+	ResumeThread(this->_pData->loadingThread);
 	/** Fix resource importers to handle multiple loads, to actualy win some time */
 	
 
 #if defined(_DEBUG) || defined(DEBUG)
 	time_t start = clock();
-	if(!this->_pData->state->Initiate(this))
+	if(!this->_pData->curState->Initiate(this))
 		return false;
 	std::cout << "State loaded on " << clock()-start << "ms\n";
 #else
-	if(!this->_pData->state->Initiate(this))
+	if(!this->_pData->curState->Initiate(this))
 		return false;
 #endif
 
@@ -164,12 +174,12 @@ void FlyGame::Run()
 		return;
 	}
 
-	if(!this->_pData->state)
+	if(!this->_pData->curState)
 		return;
 
 
 	MSG msg;
-	while (this->_pData->state)
+	while (this->_pData->curState)
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{ 
@@ -181,7 +191,7 @@ void FlyGame::Run()
 		}
 		else
 		{
-			this->_pData->state->Frame();
+			this->_pData->curState->Frame();
 
 			if(this->_pData->stateChanged)
 				handleStateChange();
@@ -209,23 +219,27 @@ void FlyGame::setLevelPath(wchar_t* level)
 }
 void FlyGame::setState(IFlySystemState* _state)
 {
-	this->_pData->state = _state;
+	this->_pData->prevState = this->_pData->curState;
+	this->_pData->curState = _state;
 	this->_pData->stateChanged = true;
 }
 void FlyGame::setState(FlyGameSystemState _state)
 {
+	this->_pData->prevState = this->_pData->curState;
 	switch (_state)
 	{
 		case Level_1:
 		case Level_2:
 		case Level_3:
-			this->_pData->level = new FlyState_Level();
-			this->_pData->state = this->_pData->level;
+			if(!this->_pData->level.IsValid())
+				this->_pData->level = new FlyState_Level();
+			this->_pData->curState = this->_pData->level;
 		break;
 
 		case Menu:
-			this->_pData->mainMenu = new FlyState_Menu();
-			this->_pData->state = this->_pData->mainMenu;
+			if(!this->_pData->mainMenu.IsValid())
+				this->_pData->mainMenu = new FlyState_Menu();
+			this->_pData->curState = this->_pData->mainMenu;
 		break;
 	}
 	this->_pData->enumState = _state;
@@ -233,33 +247,44 @@ void FlyGame::setState(FlyGameSystemState _state)
 }
 void FlyGame::handleStateChange()
 {
+	bool doCut = false;
 	this->_pData->stateChanged = false;
 
-	if(this->_pData->state)
+	if(this->_pData->curState)
 	{
 		switch (this->_pData->enumState)
 		{
 			case Level_1:
 				currentCut = FlyCutsceneType_Level1;
+				doCut = true;
 			break;
 
 			case Level_2:
 				currentCut = FlyCutsceneType_Level2;
+				doCut = true;
 			break;
 
 			case Level_3:
 				currentCut = FlyCutsceneType_Level3;
+				doCut = true;
 			break;
 		}
 		
-		this->_pData->loadingThread	= CreateThread(NULL , 4*255, FlyGame::playCutscene, (void*)this->_pData->fly, CREATE_SUSPENDED, NULL);
-		ResumeThread(this->_pData->loadingThread);
+		if(doCut)
+		{
+			this->_pData->loadingThread	= CreateThread(NULL , 4*255, FlyGame::playCutscene, (void*)this->_pData->fly, CREATE_SUSPENDED, NULL);
+			ResumeThread(this->_pData->loadingThread);
 
-		if(!this->_pData->state->Initiate(this))
-			this->_pData->state = 0;
+			if(!this->_pData->curState->Initiate(this))
+				this->_pData->curState = 0;
 
-		WaitForSingleObject(this->_pData->loadingThread, INFINITE);
-		TerminateThread(this->_pData->loadingThread, 0);
+			WaitForSingleObject(this->_pData->loadingThread, INFINITE);
+			TerminateThread(this->_pData->loadingThread, 0);
+		}
+		else
+		{
+			this->_pData->level.Destroy();
+		}
 	}
 }
 FlyGameSystemState FlyGame::getCurrState() const
@@ -272,7 +297,7 @@ const wchar_t* FlyGame::getLevel()
 	return this->_pData->levelPath.c_str();
 }
 
-std::vector<int> FlyGame::getLvlSavedData()
+std::vector<bool> FlyGame::getLvlSavedData()
 {
 	return this->_pData->savedData.levels[_pData->enumState].cargoTaken; 
 }
@@ -308,23 +333,43 @@ void FlyGame::loadSaveFile(const wchar_t* fileName)
 
 bool FlyGame::readSaveFile(const wchar_t* fileName, SaveFile & savedData)
 {
+	if(!fileExists(fileName))
+	{
+		std::vector<bool> cargo = std::vector<bool>(CARGO_COUNT);
+		for (int i = 0; i < CARGO_COUNT; i++)
+			cargo[i] = 0;
+		savedData.cargoCount = 0;
+		for (int i = 0; i < CARGO_COUNT; i++)
+		{
+			std::wstring lv = L"lvl";
+			wchar_t buff[4];
+			_itow_s(i, buff, 10);
+			lv.append(buff);
+
+			savedData.levels[i].cargoTaken = cargo;
+			savedData.levels[i].lvlCompleted = 0;
+			savedData.levels[i].name = lv;
+		}
+	}
 	wifstream file(fileName);
 	if(!file.is_open())	
 		return false;
 
 	wstring name; 
-	std::vector<int> cargo; 
+	std::vector<bool> cargo; 
 	cargo.resize(CARGO_COUNT);
 	bool completed; 
 	savedData.cargoCount = 0; 
-	for(int i =0; i<CARGO_COUNT; i++)
+	for(int i = 0; i<CARGO_COUNT; i++)
 	{
 
 		file >> name; 
 
-		for(int k =0; k<CARGO_COUNT; k++)
+		for(int k = 0; k<CARGO_COUNT; k++)
 		{
-			file >> cargo[k];
+			bool t = 0;
+			file >> t;
+			cargo[k] = t;
 			if(cargo[k] == 1)
 				savedData.cargoCount++; 
 		}

@@ -11,7 +11,6 @@ GID::GID()
 { 
 	this->id = usft();
 	gidAlloc.push_back(id);
-
 }  
 GID::~GID()
 {

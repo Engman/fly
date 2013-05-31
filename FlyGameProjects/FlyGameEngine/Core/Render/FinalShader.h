@@ -8,12 +8,11 @@
 
 class FinalShader : public IShader
 {
-public:
+	public:
+		FinalShader();
+		void draw(PER_FRAME_DATA& drawData);
 
-	FinalShader();
-	void draw(PER_FRAME_DATA& drawData);
-
-private:
+	private:
 
 };
 #endif

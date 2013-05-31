@@ -67,7 +67,8 @@ bool PauseMenu::Initialize(FlyGame* entry, float windowHeight, float windowWidth
 }
 void PauseMenu::Render(ViewFrustum f, bool one, bool two, bool three)
 {
-	this->currentRender->Render(f);
+	if(this->currentRender)
+		this->currentRender->Render(f);
 
 	if(one)
 		this->models[3]->Render(f);
@@ -79,6 +80,9 @@ void PauseMenu::Render(ViewFrustum f, bool one, bool two, bool three)
 
 int PauseMenu::Update(int mouseX, int mouseY, FlyGame* entry)
 {
+	if(this->currentRender)
+		this->currentRender->Update();
+
 	if((448.0f/1920.0f)*this->windowWidth < mouseX && mouseX < (881.0f/1920.0f)*this->windowWidth && (948.0f/1080.0f)*this->windowHeight < mouseY && mouseY < this->windowHeight)
 	{
 		this->currentRender = this->models[1];
@@ -105,6 +109,10 @@ int PauseMenu::Update(int mouseX, int mouseY, FlyGame* entry)
 		}
 		hover = true; 
 	}
+	else if (Input::self()->IsButtonPressed(DIK_ESCAPE))
+	{
+		return 1;
+	}
 	else
 	{
 		this->currentRender = this->models[0];
@@ -116,5 +124,9 @@ int PauseMenu::Update(int mouseX, int mouseY, FlyGame* entry)
 
 void PauseMenu::Release()
 {
-	
+	for (int i = 0; i < (int)this->models.size(); i++)
+	{
+		this->models[i]->Release();
+		delete this->models[i];
+	}
 }

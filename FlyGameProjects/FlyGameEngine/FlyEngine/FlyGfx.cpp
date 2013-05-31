@@ -218,11 +218,11 @@ void FLYCALL FlyEngine_Core::Gfx_DrawFinalPicture(vector<LightViewProj*> *shadow
 	D3DXMatrixTranspose(&lViewProj, &lViewProj);
 	D3DXMatrixTranspose(&invCameraViewProj, &invCameraViewProj);
 
-	CameraView* camView = (CameraView*)cameraBuffer->Map();
-	camView->mInvViewProj = invCameraViewProj;
-	camView->mInvView	  = lViewProj; 
-	camView->cameraPos	= this->activeCamera->GetPosition();
-	camView->padd		= 600;
+	CameraView* camView		= (CameraView*)cameraBuffer->Map();
+	camView->mInvViewProj	= invCameraViewProj;
+	camView->mInvView		= lViewProj; 
+	camView->cameraPos		= this->activeCamera->GetPosition();
+	camView->padd			= 600;
 	cameraBuffer->Unmap();
 
 	finalPictureDrawData.camForLight = cameraBuffer;
