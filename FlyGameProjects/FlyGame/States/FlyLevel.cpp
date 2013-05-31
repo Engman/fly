@@ -41,11 +41,11 @@ bool FlyState_Level::Initiate(FlyGame* instance)
 	 
 
 	//Read level data
-	//if(!this->ReadLevel(this->entryInstance->getLevel()))
-	//	return false;
-	////Read level data
-	if(!this->ReadLevel(L"..\\Resources\\Levels\\testLinda2.fgl"))
+	if(!this->ReadLevel(this->entryInstance->getLevel()))
 		return false;
+	////Read level data
+	//if(!this->ReadLevel(L"..\\Resources\\Levels\\testLinda2.fgl"))
+	//	return false;
 	
 	int lvl = this->entryInstance->getCurrState();
 
