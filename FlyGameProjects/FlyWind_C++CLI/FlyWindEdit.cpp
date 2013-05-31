@@ -20,12 +20,10 @@ namespace System { namespace Windows { namespace Interop {
 	FlyWindEdit::FlyWindEdit()
 	{
 		this->flyEngine = FlyEngineCreate();
-		this->models = new std::vector<SmartPtrStd<FlyMesh>>();
 	}
 			
 	FlyWindEdit::~FlyWindEdit()
 	{
-		delete this->models;
 		delete this->flyEngine;
 	}
 

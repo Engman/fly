@@ -1,7 +1,7 @@
 testCanyon
 111
 ..\Resources\Models\terrain_terrain.fgm 16.9490966797 171.84928894 -67.8244018555 0.0 -0.0 0.0 1.0 1.0 1.0 0
-..\Resources\Models\skybox.fgm 1
+..\Resources\Models\skySphere.fgm 1
 ..\Resources\Models\water_pPlane2.fgm 481.910400391 -1.41482400894 -139.368286133 0.0 -0.0 0.0 1.0 1.0 1.0 2
 ..\Resources\Models\Canyon_section2_pillar_polySurface34.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
 ..\Resources\Models\Canyon_section2_pillar_polySurface35.fgm 0.0 0.0 0.0 0.0 -0.0 0.0 1.0 1.0 1.0
