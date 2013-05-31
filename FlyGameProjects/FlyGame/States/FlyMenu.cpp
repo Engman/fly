@@ -65,6 +65,8 @@ bool FlyState_Menu::Initiate(FlyGame* instance)
 	
 	//if(!entryInstance->GetCoreInstance()->Input_Initialize())
 	//	return false;
+	this->entryInstance->GetCoreInstance()->Audio_LoadMenuSound();
+	this->entryInstance->GetCoreInstance()->Audio_PlayMenuSound(FlySound_MenuSoundTrack);
 
 	int w,h;
 	this->entryInstance->GetCoreInstance()->Core_Dimensions(w, h);
@@ -90,6 +92,8 @@ void FlyState_Menu::update()
 	this->entryInstance->GetCoreInstance()->Gfx_SetCamera(&this->mainMenuCam, true);
 
 	this->entryInstance->GetCoreInstance()->Gfx_Update();
+
+	this->entryInstance->GetCoreInstance()->Audio_Update();
 
 	for (int i = 0; i < (int)this->ui.size(); i++)
 	{
@@ -132,6 +136,8 @@ void FlyState_Menu::input()
 
 	if(Input::self()->IsMouseButtonPressed(0) && this->highlightBtn != -1)
 	{
+		this->entryInstance->GetCoreInstance()->Audio_PlayMenuSound(FlySound_MenuClick);
+
 		switch (this->highlightBtn)
 		{
 			case MENU_UI_ButtonLv1:
@@ -145,6 +151,7 @@ void FlyState_Menu::input()
 			break;
 			case MENU_UI_ButtonStart:
 			{
+				int cargoCount = this->entryInstance->getCargoCount(); 
 				if(!this->subMenu)
 					return;
 
@@ -156,13 +163,29 @@ void FlyState_Menu::input()
 				}
 				else if(id == this->ui[MENU_UI_LevelInfo2]->getID())
 				{
-					this->entryInstance->setLevelPath(L"..\\Resources\\Levels\\ocean.fgl");
-					this->entryInstance->setState(Level_2);
+					//locked
+					if(cargoCount < 2)
+					{
+						this->subMenu = this->ui[MENU_UI_LevelInfo3];
+					}
+					else
+					{
+						this->entryInstance->setLevelPath(L"..\\Resources\\Levels\\ocean.fgl");	
+						this->entryInstance->setState(Level_2);
+					}
 				}
 				else if(id == this->ui[MENU_UI_LevelInfo3]->getID())
 				{
-					this->entryInstance->setLevelPath(L"..\\Resources\\Levels\\city.fgl");
-					this->entryInstance->setState(Level_3);
+					//locked
+					if(cargoCount < 4)
+					{
+						this->subMenu = this->ui[MENU_UI_LevelInfo3];
+					}
+					else
+					{
+						this->entryInstance->setLevelPath(L"..\\Resources\\Levels\\city.fgl");
+						this->entryInstance->setState(Level_3);
+					}
 				}
 			}
 			break;
@@ -247,6 +270,8 @@ void FlyState_Menu::PickMenu()
 
 		FlyMesh* temp = (FlyMesh*)ui[i];
 		vector<vec3> *tris = temp->GetTriangles();
+		
+		int lastFrame = this->highlightBtn; 
 		if(tris)
 		{
 			for (int k = 0; k < (int)tris->size(); k+=3)
@@ -258,9 +283,13 @@ void FlyState_Menu::PickMenu()
 					(*tris)[k + 2]
 				};
 	
+				
 				if(RayVSTriangle(rayObjDirection, rayObjOrigin, tri))
 				{
 					this->highlightBtn = i;
+					if(lastFrame == -1)
+						this->entryInstance->GetCoreInstance()->Audio_PlayMenuSound(FlySound_MenuHover);
+
 					return;
 				}
 				else

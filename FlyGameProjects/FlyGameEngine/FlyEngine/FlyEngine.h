@@ -174,6 +174,7 @@ class FlyEngine
 		virtual void		FLYCALL		Audio_PlaySound				(FlyLevelSounds sound)												= 0;
 		virtual void		FLYCALL		Audio_PlayMenuSound			(FlyMenuSounds sound) 												= 0;		
 		virtual void		FLYCALL		Audio_Shutdown				()																	= 0;
+		virtual void		FLYCALL		Audio_Update				()																	= 0;
 		virtual void		FLYCALL		Audio_Update				(D3DXVECTOR3 pos, float speed)										= 0; 
 
 		//---------------------

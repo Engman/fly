@@ -34,7 +34,7 @@ void FlyMeshAnimated::Update()
 	//	}
 	//}
 }
-void FlyMeshAnimated::UpdateAnimation(int nr, float dt)
+void FlyMeshAnimated::LoopAnimation(int nr, float dt)
 {
 	this->time.at(nr) += dt; //0.01f;
 	if( this->time.at(nr) > this->frameData->at(nr).at(this->currFrame.at(nr)).frameTime)
@@ -53,17 +53,40 @@ void FlyMeshAnimated::UpdateAnimation(int nr, float dt)
 		rotation.y = 0; 
 	}
 }
-void FlyMeshAnimated::StopAnimation(int nr)
+void FlyMeshAnimated::StartAnimation(int nr, float dt)
+{
+	if( this->time.at(nr)< 1.0f)
+	{
+		this->time.at(nr) += dt; 
+		this->currFrame.at(nr) = 1;
+		if(time.at(nr)>this->frameData->at(nr).at(this->currFrame.at(nr)).frameTime)
+		{
+			time.at(nr) = this->frameData->at(nr).at(this->currFrame.at(nr)).frameTime; 
+		}
+	}
+	/*if( this->time.at(nr) > this->frameData->at(nr).at(this->currFrame.at(nr)).frameTime)
+	{
+		this->time.at(nr) = 0.0f;
+		this->currFrame.at(nr) ; 
+
+		if(this->currFrame.at(nr)>=(int) this->frameData->at(nr).size())
+		{
+			this->currFrame.at(nr) = 0; 
+		}
+	}
+	*/
+}
+void FlyMeshAnimated::StopAnimation(int nr, float dt)
 {
 	if( this->time.at(nr)> 0.0f)
 	{
 
-		this->time.at(nr) += 0.01f;
+		this->time.at(nr) += dt;
 		if( this->time.at(nr) > this->frameData->at(nr).at(this->currFrame.at(nr)).frameTime)
 		{
 			this->time.at(nr) = 0.0f;
 		
-			this->currFrame.at(nr) = 0; 
+			this->currFrame.at(nr) = 1; 
 			
 		}
 	}

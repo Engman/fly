@@ -45,7 +45,7 @@ void AudioClass::intitialize()
 	result = fmodSystem->init(maxChannels, FMOD_INIT_3D_RIGHTHANDED,0);
 	result = fmodSystem->set3DSettings(1.0f, 1.0f, 1.0f);
 
-	channel.resize(10);
+	channel.resize(15);
 }
 bool AudioClass::loadSound(FlySoundState state, std::vector<const char*> path)
 {
@@ -80,13 +80,13 @@ bool AudioClass::loadMenuSound(std::vector<const char*> path)
 		return false;
 	sounds[FlySound_MenuSoundTrack]->setMode(FMOD_LOOP_NORMAL);
 
-	if ( !FmodErrorCheck( fmodSystem->createSound(path[FlySound_Hover], FMOD_DEFAULT, 0, & sounds[FlySound_Hover]) ) )
+	if ( !FmodErrorCheck( fmodSystem->createSound(path[FlySound_MenuHover], FMOD_DEFAULT, 0, & sounds[FlySound_MenuHover]) ) )
 		return false;
-	sounds[FlySound_Hover]->setMode(FMOD_LOOP_NORMAL);
+	sounds[FlySound_MenuHover]->setMode(FMOD_LOOP_OFF);
 
-	if ( !FmodErrorCheck( fmodSystem->createSound(path[FlySound_Click], FMOD_DEFAULT, 0, & sounds[FlySound_Click]) ) )
+	if ( !FmodErrorCheck( fmodSystem->createSound(path[FlySound_MenuClick], FMOD_DEFAULT, 0, & sounds[FlySound_MenuClick]) ) )
 		return false;
-	sounds[FlySound_Click]->setMode(FMOD_LOOP_NORMAL);
+	sounds[FlySound_MenuClick]->setMode(FMOD_LOOP_OFF);
 
 	return true; 
 }
@@ -100,6 +100,18 @@ bool AudioClass::loadLevelSound(std::vector<const char*> path)
 
 	unLoadSounds();
 	sounds.resize(SOUNDLEVEL_COUNT);
+
+	if ( !FmodErrorCheck( fmodSystem->createStream(path[FlySound_LevelMenuSoundTrack], FMOD_DEFAULT, 0 ,& sounds[FlySound_LevelMenuSoundTrack]) ) )
+		return false;
+	sounds[FlySound_LevelMenuSoundTrack]->setMode(FMOD_LOOP_NORMAL);
+
+	if ( !FmodErrorCheck( fmodSystem->createSound(path[FlySound_LevelMenuHover], FMOD_DEFAULT, 0, & sounds[FlySound_LevelMenuHover]) ) )
+		return false;
+	sounds[FlySound_LevelMenuHover]->setMode(FMOD_LOOP_OFF);
+
+	if ( !FmodErrorCheck( fmodSystem->createSound(path[FlySound_LevelMenuClick], FMOD_DEFAULT, 0, & sounds[FlySound_LevelMenuClick]) ) )
+		return false;
+	sounds[FlySound_LevelMenuClick]->setMode(FMOD_LOOP_OFF);
 
 	//stream the big sound files 
 	if ( !FmodErrorCheck( fmodSystem->createStream(path[FlySound_LevelSoundTrack], FMOD_DEFAULT, 0 ,& sounds[FlySound_LevelSoundTrack]) ) )
@@ -172,10 +184,17 @@ void AudioClass::uppdateSounds(playerSoundData soundData)
 	{
 		speed = 1;
 	}
-	result = channel[FlySound_Wind]->setVolume(speed);
+	if(channel.size()>= FlySound_Wind)
+		result = channel[FlySound_Wind]->setVolume(speed);
 	//FMOD_VECTOR pos = {listenerPos.x, listenerPos.y, listenerPos.z};
 	//fmodSystem->set3DListenerAttributes(0, pos, )
 }
+
+void AudioClass::uppdateSounds()
+{
+	result = fmodSystem->update();
+}
+
 void AudioClass::playLevelSound(FlyLevelSounds sound)
 {	
 	if(this->sounds.size() < SOUNDLEVEL_COUNT)
@@ -184,7 +203,32 @@ void AudioClass::playLevelSound(FlyLevelSounds sound)
 	bool playing; 
 	switch(sound)
 	{
-		
+	case FlySound_LevelMenuSoundTrack:
+
+		channel[FlySound_LevelMenuSoundTrack]->isPlaying(&playing);
+		if(!playing)
+		{
+			result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_LevelMenuSoundTrack], false,&channel[FlySound_LevelMenuSoundTrack]);
+			result = channel[FlySound_LevelMenuSoundTrack]->setVolume(0.2f);
+		}
+		break;
+	case FlySound_LevelMenuHover:
+		channel[FlySound_LevelMenuHover]->isPlaying(&playing);
+		if(!playing)
+		{
+			result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_LevelMenuHover], false,&channel[FlySound_LevelMenuHover]);
+			result = channel[FlySound_LevelMenuHover]->setVolume(0.4f);
+		}
+
+		break;
+	case FlySound_LevelMenuClick:
+		channel[FlySound_LevelMenuClick]->isPlaying(&playing);
+		if(!playing)
+		{
+			result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_LevelMenuClick], false,&channel[FlySound_LevelMenuClick]);
+			result = channel[FlySound_LevelMenuClick]->setVolume(0.4f);
+		}		
+		break;
 		case FlySound_LevelSoundTrack:
 			
 			channel[FlySound_LevelSoundTrack]->isPlaying(&playing);
@@ -269,21 +313,21 @@ void AudioClass::playMenuSound(FlyMenuSounds sound)
 			result = channel[FlySound_MenuSoundTrack]->setVolume(0.2f);
 		}
 		break;
-	case FlySound_Hover:
-		channel[FlySound_Hover]->isPlaying(&playing);
+	case FlySound_MenuHover:
+		channel[FlySound_MenuHover]->isPlaying(&playing);
 		if(!playing)
 		{
-			result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_Hover], false,&channel[FlySound_Hover]);
-			result = channel[FlySound_Hover]->setVolume(0.8f);
+			result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_MenuHover], false,&channel[FlySound_MenuHover]);
+			result = channel[FlySound_MenuHover]->setVolume(0.4f);
 		}
 
 		break;
-	case FlySound_Click:
-		channel[FlySound_Click]->isPlaying(&playing);
+	case FlySound_MenuClick:
+		channel[FlySound_MenuClick]->isPlaying(&playing);
 		if(!playing)
 		{
-			result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_Click], false,&channel[FlySound_Click]);
-			result = channel[FlySound_Click]->setVolume(0.8f);
+			result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_MenuClick], false,&channel[FlySound_MenuClick]);
+			result = channel[FlySound_MenuClick]->setVolume(0.4f);
 		}		
 		break;
 	}

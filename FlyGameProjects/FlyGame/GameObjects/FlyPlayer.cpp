@@ -161,12 +161,12 @@ void FlyPlayer::SetBoundingSphere(BoundingSphere* sphere)
 
 void FlyPlayer::UpdateAnimation(int nr, float dt)
 {
-	((FlyMeshAnimated*)this->playerModel[0])->UpdateAnimation(nr, dt); 
+	((FlyMeshAnimated*)this->playerModel[0])->StartAnimation(nr, dt); 
 }
 
-void FlyPlayer::StopAnimation(int nr)
+void FlyPlayer::StopAnimation(int nr, float dt)
 {
-	((FlyMeshAnimated*)this->playerModel[0])->StopAnimation(nr); 
+	((FlyMeshAnimated*)this->playerModel[0])->StopAnimation(nr, dt); 
 }
 
 

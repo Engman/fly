@@ -21,6 +21,7 @@
 #include "..\GameObjects\EnergyPickup.h"
 
 
+
 class FlyState_Level		:public IFlySystemState
 {
 	private:
@@ -61,13 +62,16 @@ class FlyState_Level		:public IFlySystemState
 
 		int state;							// 0 = MainGame, 1 = PauseMenu
 		InuptControlScheme controlScheme;	//See IFlySystemState.h
+		
 
+		
+		
 
 	private:
 		vec3 SlideCollision(vec3 oldPosition, vec3 velocity, int iterations, vec3 safeLocation);
 
 		bool ReadLevel(const wchar_t* fileName);
-
+		
 		bool Update();
 		bool UpdatePlayer();
 		bool Render();

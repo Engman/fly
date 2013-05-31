@@ -23,16 +23,19 @@ enum FlySoundState
 enum FlyMenuSounds
 {	
 	FlySound_MenuSoundTrack,
-	FlySound_Hover,
-	FlySound_Click,
+	FlySound_MenuHover,
+	FlySound_MenuClick,
 
 	SOUNDMENU_COUNT
 };
 
 enum FlyLevelSounds
 {	
-	FlySound_LevelSoundTrack,
+	FlySound_LevelMenuSoundTrack,
+	FlySound_LevelMenuHover,
+	FlySound_LevelMenuClick,
 
+	FlySound_LevelSoundTrack,
 	FlySound_Collision,
 	FlySound_EnergyPickup, 
 	FlySound_CargoPickup, 
@@ -85,7 +88,7 @@ public:
 	void shutdown();
 	bool loadSound(FlySoundState state, std::vector<const char*> path);
 
-
+	void uppdateSounds();
 	void uppdateSounds(playerSoundData soundData);
 	void playLevelSound(FlyLevelSounds sound);
 	void playMenuSound(FlyMenuSounds sound);

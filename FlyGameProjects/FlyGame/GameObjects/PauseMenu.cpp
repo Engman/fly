@@ -61,6 +61,7 @@ bool PauseMenu::Initialize(FlyGame* entry, float windowHeight, float windowWidth
 		models.at(i)->Update();
 	}
 	this->currentRender = this->models[0];
+	this->hover = false; 
 
 	return true;
 }
@@ -76,29 +77,39 @@ void PauseMenu::Render(ViewFrustum f, bool one, bool two, bool three)
 		this->models[5]->Render(f);
 }
 
-int PauseMenu::Update(int mouseX, int mouseY)
+int PauseMenu::Update(int mouseX, int mouseY, FlyGame* entry)
 {
 	if((448.0f/1920.0f)*this->windowWidth < mouseX && mouseX < (881.0f/1920.0f)*this->windowWidth && (948.0f/1080.0f)*this->windowHeight < mouseY && mouseY < this->windowHeight)
 	{
 		this->currentRender = this->models[1];
+		if(!hover)
+			entry->GetCoreInstance()->Audio_PlaySound(FlySound_LevelMenuHover); 
 
 		if(Input::self()->IsMouseButtonPressed(0))
 		{
+			entry->GetCoreInstance()->Audio_PlaySound(FlySound_LevelMenuClick);
 			return 1;
 		}
+		hover = true; 
 	}
 	else if((999.0f/1920.0f)*this->windowWidth < mouseX && mouseX < (1646.0f/1920.0f)*this->windowWidth && (948.0f/1080.0f)*this->windowHeight < mouseY && mouseY < this->windowHeight)
 	{
 		this->currentRender = this->models[2];
+		if(!hover)
+			entry->GetCoreInstance()->Audio_PlaySound(FlySound_LevelMenuHover); 
 
 		if(Input::self()->IsMouseButtonPressed(0))
 		{
+			entry->GetCoreInstance()->Audio_PlaySound(FlySound_LevelMenuClick);
 			return 2;
 		}
+		hover = true; 
 	}
 	else
+	{
 		this->currentRender = this->models[0];
-
+		hover = false; 
+	}
 
 	return 0;
 }

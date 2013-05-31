@@ -28,7 +28,7 @@ void FlyState_Level::_Input()
 		else if(this->state == 1)
 			this->state = 0;
 
-		//PostQuitMessage(0);
+		
 	}
 }
 
@@ -83,12 +83,16 @@ void FlyState_Level::_InputCasual()
 	if(Input::self()->IsButtonPressed(DIK_LSHIFT))
 	{
 		this->player.SetEllipseVector(vec3(0.5f, 0.5f, 0.5f));
+		player.UpdateAnimation(0, this->mainTimer->GetDeltaTime());
 	}
 	else if(this->player.GetEllipse().radiusVector.x == 0.5f)
 	{
 		this->player.SetEllipseVector(vec3(2.0f, 0.5f, 2.0f));
 		this->player.SetSmall(true);
 	}
+	//if shift is not pressed the wigs will go out
+	else
+		player.StopAnimation(0, this->mainTimer->GetDeltaTime());
 }
 void FlyState_Level::_InputAdvance()
 {
@@ -120,12 +124,17 @@ void FlyState_Level::_InputAdvance()
 	if(Input::self()->IsButtonPressed(DIK_LSHIFT))
 	{
 		this->player.SetEllipseVector(vec3(0.5f, 0.5f, 0.5f));
+		player.UpdateAnimation(0, this->mainTimer->GetDeltaTime()); 
 	}
 	else if(this->player.GetEllipse().radiusVector.x == 0.5f)
 	{
 		this->player.SetEllipseVector(vec3(2.0f, 0.5f, 2.0f));
 		this->player.SetSmall(true);
 	}
+	//if shift is not pressed the wigs will go out
+	else
+		player.StopAnimation(0, this->mainTimer->GetDeltaTime());
+
 	if(Input::self()->IsButtonPressed(DIK_A))
 	{
 		if(this->player.GetVelocity().x > -this->player.GetMaxVelocity().x)
@@ -208,6 +217,10 @@ void FlyState_Level::_InputDebug()
 		this->mainCamera.RelativeUp(-5.2f);
 		this->player.SetVelocity(vec3(0.0, 0.0f, 0.0f));
 
+	}
+	if(Input::self()->IsButtonPressed(DIK_LSHIFT))
+	{
+		player.UpdateAnimation(0, this->mainTimer->GetDeltaTime()); 
 	}
 	if(mouseY < 0)
 	{

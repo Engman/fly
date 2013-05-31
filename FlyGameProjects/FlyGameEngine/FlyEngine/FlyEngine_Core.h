@@ -114,6 +114,7 @@ class FlyEngine_Core	:public FlyEngine
 		void		FLYCALL		Audio_PlaySound				(FlyLevelSounds sound);
 		void		FLYCALL		Audio_PlayMenuSound			(FlyMenuSounds sound);
 		void		FLYCALL		Audio_Shutdown				();	
+		void		FLYCALL		Audio_Update				();
 		void		FLYCALL		Audio_Update				(D3DXVECTOR3 pos, float speed);
 
 		static void  _Interface();

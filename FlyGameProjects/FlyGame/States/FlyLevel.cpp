@@ -25,8 +25,8 @@ bool FlyState_Level::Initiate(FlyGame* instance)
 	this->state = 0;
 	this->lastState = 0; 
 
-	this->controlScheme = CONTROL_Debug;
-	//this->controlScheme = CONTROL_Casual;
+	//this->controlScheme = CONTROL_Debug;
+	this->controlScheme = CONTROL_Casual;
 
 	this->entryInstance = instance;
 
@@ -38,6 +38,8 @@ bool FlyState_Level::Initiate(FlyGame* instance)
 	//if(!this->entryInstance->GetCoreInstance()->Input_Initialize())
 	//	return false;
 
+	 
+
 	//Read level data
 	//if(!this->ReadLevel(this->entryInstance->getLevel()))
 	//	return false;
@@ -45,6 +47,19 @@ bool FlyState_Level::Initiate(FlyGame* instance)
 	if(!this->ReadLevel(L"..\\Resources\\Levels\\testLinda2.fgl"))
 		return false;
 	
+	int lvl = this->entryInstance->getCurrState();
+
+	//If the lvl was not completed you will continue with the cargo you already picked up
+	if(!this->entryInstance->isLvlCompleted())
+	{	
+		std::vector<int> taken = this->entryInstance->getLvlSavedData(); 
+
+		for(int i =0; i<CARGO_COUNT; i++)
+		{
+			this->pickups[i].SetPickTaken((bool)taken[i]);  
+		}
+
+	}	
 	//Timer activation
 	this->mainTimer = new Timer();
 	if(!this->mainTimer->Initialize())
@@ -76,7 +91,6 @@ bool FlyState_Level::Initiate(FlyGame* instance)
 	this->windCollision.Initialize(this->entryInstance->GetLuaState());
 
 	//Audio initialization
-	//this->entryInstance->GetCoreInstance()->Audio_Initialize();
 	const char* path = "..\\Resources\\Sound\\level_background.mp3";	
 	this->entryInstance->GetCoreInstance()->Audio_LoadLevelSound(path);
 	this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_LevelSoundTrack);
@@ -133,7 +147,9 @@ bool FlyState_Level::Update()
 				this->pickups[i].SetPickTaken(true);
 
 				//Save data to file
-
+				std::vector<int> taken = this->entryInstance->getLvlSavedData(); 
+				if(taken[i] != 1)
+					this->entryInstance->setLvlSaveData(i); 
 			}
 		}
 
@@ -185,6 +201,8 @@ bool FlyState_Level::Update()
 		this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_LowEnergy);
 	}
 
+	float playerVel = this->player.GetVelocity().z/this->player.GetMaxVelocity().z;
+	this->entryInstance->GetCoreInstance()->Audio_Update(this->player.GetPosition(),playerVel);
 
 
 	return true;
@@ -386,7 +404,6 @@ bool FlyState_Level::UpdatePlayer()
 			this->player.SetVelocity(this->player.GetVelocity() + vec3(0.0f, 0.0f, 0.001f));
 		this->player.DeductEnergy(5);
 		this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Thrust);
-		player.UpdateAnimation(0, this->mainTimer->GetDeltaTime()); 
 	}
 	if(Input::self()->IsButtonPressed(DIK_S))
 	{
@@ -555,7 +572,7 @@ bool FlyState_Level::MenuUpdate()
 	this->cursor[0]->setPosition(vec3(mouseX-600.0f, -(mouseY-300.0f) , 0.0f));
 	this->cursor[0]->Update();
 
-	switch(this->pauseMenu.Update(mouseX, mouseY))
+	switch(this->pauseMenu.Update(mouseX, mouseY, this->entryInstance))
 	{
 		case 1:
 			this->state = 0;
@@ -1002,4 +1019,3 @@ void FlyState_Level::Release()
 
 	this->player.Release();
 }
-

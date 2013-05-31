@@ -52,7 +52,7 @@ class FlyPlayer
 		void SetBoundingSphere(BoundingSphere* sphere);
 
 		void UpdateAnimation(int nr, float deltaTime);
-		void StopAnimation(int nr);
+		void StopAnimation(int nr, float deltaTime);
 	
 		void Release();
 

@@ -41,7 +41,7 @@ void EnergyPickup::Render(ViewFrustum& f)
 void EnergyPickup::Update(float dt)
 {
 	if(this->pickupModel.size() > 0)
-		((FlyMeshAnimated*)this->pickupModel[0])->UpdateAnimation(0, dt); 
+		((FlyMeshAnimated*)this->pickupModel[0])->LoopAnimation(0, dt); 
 }
 
 void EnergyPickup::SetPickTaken(bool taken)

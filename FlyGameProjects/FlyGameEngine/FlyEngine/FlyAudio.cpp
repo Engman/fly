@@ -12,7 +12,7 @@ void FLYCALL FlyEngine_Core::Audio_Initialize()
 void FLYCALL FlyEngine_Core::Audio_LoadMenuSound()
 {
 	vector<const char*> paths;
-	paths.push_back("../../WorkingDir/Resources/Sound/jaguar.wav");	//soundTrack
+	paths.push_back("../../WorkingDir/Resources/Sound/level_background.mp3");	//soundTrack
 	paths.push_back("../../WorkingDir/Resources/Sound/button_hover.wav");	//hover
 	paths.push_back("../../WorkingDir/Resources/Sound/button_click.wav");	//click
 
@@ -21,6 +21,9 @@ void FLYCALL FlyEngine_Core::Audio_LoadMenuSound()
 void FLYCALL FlyEngine_Core::Audio_LoadLevelSound(const char* soundTrack)
 {
 	vector<const char*> paths;
+	paths.push_back("../../WorkingDir/Resources/Sound/level_background.mp3");	//soundTrack
+	paths.push_back("../../WorkingDir/Resources/Sound/button_hover.wav");	//hover
+	paths.push_back("../../WorkingDir/Resources/Sound/button_click.wav");	//click
 	paths.push_back(soundTrack);
 	paths.push_back("../Resources/Sound/collision_grinding.wav");	//collision
 	paths.push_back("../Resources/Sound/energy_pickup.wav");	//energyPickup
@@ -57,4 +60,8 @@ void FLYCALL FlyEngine_Core::Audio_Update(D3DXVECTOR3 pos, float speed)
 	data.pos = pos; 
 	data.vel = speed; 
 	AudioClass::self()->uppdateSounds(data); 
+}
+void FLYCALL FlyEngine_Core::Audio_Update()
+{
+	AudioClass::self()->uppdateSounds(); 
 }

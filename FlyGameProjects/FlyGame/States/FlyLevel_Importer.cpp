@@ -313,6 +313,7 @@ bool FlyState_Level::_ImportPlayer(wifstream& file, vector<IShader*>& shaders)
 	return true;
 }
 
+
 vec4 FlyState_Level::ReadVector4(wifstream& in)
 {
 	vec4 ret = vec4(0.0f, 0.0f, 0.0f, 0.0f);
