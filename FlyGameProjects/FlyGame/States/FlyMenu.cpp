@@ -198,6 +198,7 @@ void FlyState_Menu::input()
 }
 
 
+
 void FlyState_Menu::PickMenu()
 {
 	int mx = 0;
@@ -212,39 +213,21 @@ void FlyState_Menu::PickMenu()
 	Input::self()->GetMouseLocation(mx, my);
 	Matrix P = this->mainMenuCam.GetOrthogonalMatrix();
 	Matrix V = this->mainMenuCam.GetViewMatrix();
+	
 
 	// Compute picking ray in view space.
-	v.x = (+2.0f * mx / w - 1.0f) / P._11;
-	v.y = (-2.0f * my / h + 1.0f) / P._22;
+	v.x =  ( ( ( +2.0f * mx ) / w ) - 1.0f ) / P._11;
+	v.y = -( ( ( +2.0f * my ) / h ) - 1.0f ) / P._22;
 	v.z = 1.0f;
-
-	Matrix invView;
-	D3DXMatrixInverse(&invView, 0, &V);
-	rayDir.x	= (v.x * invView._11) + (v.y * invView._21) + (v.z * invView._31);
-	rayDir.y	= (v.x * invView._12) + (v.y * invView._22) + (v.z * invView._32);
-	rayDir.z	= (v.x * invView._13) + (v.y * invView._23) + (v.z * invView._33);
-	rayOrigin.x = invView._41;
-	rayOrigin.y = invView._42;
-	rayOrigin.z = invView._43;
-	
 
 	for(int i = MENU_UI_ButtonLv1; i <= MENU_UI_ButtonQuit; i++)
 	{
 		if(i == MENU_UI_ButtonStart && !this->subMenu)
 			continue;
 
+		Matrix WV = this->ui[i]->getWorld() * V;
 
-		// Use inverse of matrix
-		D3DXMATRIX matInverse;
-		D3DXMatrixInverse(&matInverse, NULL, &this->ui[i]->getWorld());
-
-		// Transform ray origin and direction by inv matrix
-		D3DXVECTOR3 rayObjOrigin,rayObjDirection;
-		
-		D3DXVec3TransformCoord(&rayObjOrigin, &rayOrigin,&matInverse);
-		D3DXVec3TransformNormal(&rayObjDirection, &rayDir,&matInverse);
-		D3DXVec3Normalize(&rayObjDirection, &rayObjDirection);
-
+		//Do ray triangle intersect
 		FlyMesh* temp = (FlyMesh*)ui[i];
 		vector<vec3> *tris = temp->GetTriangles();
 		if(tris)
@@ -257,8 +240,12 @@ void FlyState_Menu::PickMenu()
 					(*tris)[k + 1],
 					(*tris)[k + 2]
 				};
-	
-				if(RayVSTriangle(rayObjDirection, rayObjOrigin, tri))
+				D3DXVec3TransformCoord(&tri[0], &tri[0], &WV);
+				D3DXVec3TransformCoord(&tri[1], &tri[1], &WV);
+				D3DXVec3TransformCoord(&tri[2], &tri[2], &WV);
+
+				if(RayVSTriangle(v, vec3(0.0f, 0.0f, 1.0f), tri))
+				//if(RayVSTriangle(rayOrigin, rayDir, tri))
 				{
 					this->highlightBtn = i;
 					return;
@@ -267,8 +254,11 @@ void FlyState_Menu::PickMenu()
 					this->highlightBtn = -1;
 			}
 		}
+		
 	}
+	
 }
+
 
 
 bool FlyState_Menu::ReadData()

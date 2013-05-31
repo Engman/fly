@@ -48,11 +48,11 @@ FlyEngine_Core::FlyEngine_Core()
 
 	this->gbufferShader				= new GBufferShader();
 	this->gBufferNoDepthShader		= new GBufferShader();
-	this->gbufferBumpShader		= new GBufferShader();
+	this->gbufferBumpShader			= new GBufferShader();
 	this->gBufferAnimationShader	= new GBufferAnimationShader();
 	this->finalShader				= new FinalShader();
 	this->finalColorShader			= new FinalShader();
-	this->pointLightShader		= new LightShader();
+	this->pointLightShader			= new LightShader();
 	this->dirLightShader			= new LightShader();
 	this->shadowMapShader			= new ShadowMapShader();
 	this->blurHorizontShader		= new BlurShader();

@@ -27,9 +27,11 @@ struct Texture2D::_Data
 {
 	static std::vector<SmartPtrStd<User>> resources;	//List of all loaded textures
 	std::vector<ID3D11ShaderResourceView*> texture;
+	int width;
+	int height;
 
 	_Data()
-		:texture(0)
+		:texture(0), width(0), height(0)
 	{}
 	User* find(std::wstring file)
 	{
@@ -93,7 +95,8 @@ bool Texture2D::loadTexture(ID3D11Device *device, std::wstring file)
 			SmartPtrStd<User> user = new User();
 			D3D11_TEXTURE2D_DESC texDesc;
 			tex->GetDesc(&texDesc);
-
+			this->_data->width = texDesc.Width;
+			this->_data->height = texDesc.Height;
 			D3D11_SHADER_RESOURCE_VIEW_DESC desc;
 			ZeroMemory( &desc, sizeof( desc ) );
 			desc.Format = texDesc.Format;
@@ -130,4 +133,11 @@ ID3D11ShaderResourceView* Texture2D::getTexture()
 	if(this->_data->texture.size())
 		return this->_data->texture[0];
 	return NULL;
+}
+
+
+void Texture2D::GetDimensions(int& w, int& h)
+{
+	w = this->_data->width;
+	h = this->_data->height;
 }

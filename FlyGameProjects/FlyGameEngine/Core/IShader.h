@@ -23,6 +23,7 @@ class IShader
 			//buffer for view, projection and camPos in light PS
 			BaseBuffer* camForLight;
 
+
 			PER_FRAME_DATA()
 				:dc(0), lights(0), camForLight(0)
 			{}
@@ -57,9 +58,7 @@ class IShader
 			this->drawData = std::vector<DRAW_DATA>(); 
 		}
 		virtual ~IShader()
-		{
-
-		}
+		{}
 		virtual void draw(PER_FRAME_DATA&) = 0;
 		/** Use this each frame to clear old content */
 		void clearData()
@@ -70,17 +69,16 @@ class IShader
 
 		virtual bool init(BaseShader::BASE_SHADER_DESC& desc)
 		{
+			
 			this->shader = new BaseShader();
 			if( FAILED (this->shader->Initialize(desc) ) )
 				return false;
 
 			
+			//BaseBuffer* mb = new BaseBuffer();
 			static SmartPtrStd<BaseBuffer> mb = new BaseBuffer();
 			static bool initiated = false;
-
 			if(!initiated)
-
-
 			{
 				BaseBuffer::BUFFER_INIT_DESC matrixBufferDesc;
 				matrixBufferDesc.dc = desc.dc;

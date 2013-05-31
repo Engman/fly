@@ -130,12 +130,9 @@ bool FlyGame::Initiate()
 
 	this->_pData->fly->Audio_Initialize();
 
-	//SECURITY_ATTRIBUTES attr;
-	//attr.nLength = sizeof(SECURITY_ATTRIBUTES);
-	//attr.lpSecurityDescriptor = THREAD_SUSPEND_RESUME;
 
 	this->_pData->loadingThread	= CreateThread(NULL , 4*255, FlyGame::playCutscene, (void*)this->_pData->fly, CREATE_SUSPENDED, NULL);
-	DWORD test = ResumeThread(this->_pData->loadingThread);
+	ResumeThread(this->_pData->loadingThread);
 	/** Fix resource importers to handle multiple loads, to actualy win some time */
 	
 
@@ -217,12 +214,14 @@ void FlyGame::setState(FlyGameSystemState _state)
 		case Level_1:
 		case Level_2:
 		case Level_3:
-			this->_pData->level = new FlyState_Level();
+			if(!this->_pData->level.IsValid())
+				this->_pData->level = new FlyState_Level();
 			this->_pData->state = this->_pData->level;
 		break;
 
 		case Menu:
-			this->_pData->mainMenu = new FlyState_Menu();
+			if(!this->_pData->mainMenu.IsValid())
+				this->_pData->mainMenu = new FlyState_Menu();
 			this->_pData->state = this->_pData->mainMenu;
 		break;
 	}
@@ -231,6 +230,7 @@ void FlyGame::setState(FlyGameSystemState _state)
 }
 void FlyGame::handleStateChange()
 {
+	bool doCut = false;
 	this->_pData->stateChanged = false;
 
 	if(this->_pData->state)
@@ -239,25 +239,35 @@ void FlyGame::handleStateChange()
 		{
 			case Level_1:
 				currentCut = FlyCutsceneType_Level1;
+				doCut = true;
 			break;
 
 			case Level_2:
 				currentCut = FlyCutsceneType_Level2;
+				doCut = true;
 			break;
 
 			case Level_3:
 				currentCut = FlyCutsceneType_Level3;
+				doCut = true;
 			break;
 		}
 		
-		this->_pData->loadingThread	= CreateThread(NULL , 4*255, FlyGame::playCutscene, (void*)this->_pData->fly, CREATE_SUSPENDED, NULL);
-		ResumeThread(this->_pData->loadingThread);
+		if(doCut)
+		{
+			this->_pData->loadingThread	= CreateThread(NULL , 4*255, FlyGame::playCutscene, (void*)this->_pData->fly, CREATE_SUSPENDED, NULL);
+			ResumeThread(this->_pData->loadingThread);
 
-		if(!this->_pData->state->Initiate(this))
-			this->_pData->state = 0;
+			if(!this->_pData->state->Initiate(this))
+				this->_pData->state = 0;
 
-		WaitForSingleObject(this->_pData->loadingThread, INFINITE);
-		TerminateThread(this->_pData->loadingThread, 0);
+			WaitForSingleObject(this->_pData->loadingThread, INFINITE);
+			TerminateThread(this->_pData->loadingThread, 0);
+		}
+		else
+		{
+
+		}
 	}
 }
 FlyGameSystemState FlyGame::getCurrState() const

@@ -15,8 +15,7 @@ FlyState_Level::FlyState_Level()
 { }
 FlyState_Level::~FlyState_Level()
 {
-	//delete this->mainTimer;
-	//this->entryInstance->GetCoreInstance()->Audio_Shutdown();
+	
 }
 
 
@@ -535,12 +534,15 @@ bool FlyState_Level::MenuUpdate()
 	{
 		case 1:
 			this->state = 0;
-			break;
+		break;
+
 		case 2:
-			PostQuitMessage(0);
-			break;
+			this->entryInstance->setState(Menu);
+		break;
+
 		default:
-			break;
+
+		break;
 	}
 
 	return true;
