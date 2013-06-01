@@ -78,6 +78,12 @@ struct LightViewProj
 	D3DXMATRIX lProj;
 };
 
+struct WaterBuffer
+{
+	D3DXVECTOR2 waterTranslation; 
+	D3DXVECTOR2 padd; 
+};
+
 
 
 #endif

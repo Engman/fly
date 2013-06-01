@@ -209,7 +209,7 @@ void AudioClass::playLevelSound(FlyLevelSounds sound)
 		if(!playing)
 		{
 			result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_LevelMenuSoundTrack], false,&channel[FlySound_LevelMenuSoundTrack]);
-			result = channel[FlySound_LevelMenuSoundTrack]->setVolume(0.2f);
+			result = channel[FlySound_LevelMenuSoundTrack]->setVolume(0.8f);
 		}
 		break;
 	case FlySound_LevelMenuHover:
@@ -235,7 +235,7 @@ void AudioClass::playLevelSound(FlyLevelSounds sound)
 			if(!playing)
 			{
 				result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_LevelSoundTrack], false,&channel[FlySound_LevelSoundTrack]);
-				result = channel[FlySound_LevelSoundTrack]->setVolume(0.4f);
+				result = channel[FlySound_LevelSoundTrack]->setVolume(0.8f);
 			}
 		break;
 		case FlySound_Collision:
@@ -243,7 +243,7 @@ void AudioClass::playLevelSound(FlyLevelSounds sound)
 			if(!playing)
 			{
 				result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_Collision], false,&channel[FlySound_Collision]);
-				result = channel[FlySound_Collision]->setVolume(0.8f);
+				result = channel[FlySound_Collision]->setVolume(0.7f);
 			}
 			
 		break;
@@ -252,19 +252,19 @@ void AudioClass::playLevelSound(FlyLevelSounds sound)
 			if(!playing)
 			{
 				result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_EnergyPickup], false,&channel[FlySound_EnergyPickup]);
-				result = channel[FlySound_EnergyPickup]->setVolume(0.8f);
+				result = channel[FlySound_EnergyPickup]->setVolume(0.6f);
 			}		
 			break;
 		case FlySound_CargoPickup:
 			result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_CargoPickup], false,&channel[FlySound_CargoPickup]);
-			result = channel[FlySound_CargoPickup]->setVolume(0.8f);
+			result = channel[FlySound_CargoPickup]->setVolume(0.6f);
 		break;
 		case FlySound_LowEnergy:
 			channel[FlySound_LowEnergy]->isPlaying(&playing);
 			if(!playing)
 			{
 				result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_LowEnergy], false,&channel[FlySound_LowEnergy]);
-				result = channel[FlySound_LowEnergy]->setVolume(0.8f);
+				result = channel[FlySound_LowEnergy]->setVolume(0.5f);
 			}	
 		break;
 		case FlySound_NoEnergy:
@@ -272,7 +272,7 @@ void AudioClass::playLevelSound(FlyLevelSounds sound)
 			if(!playing)
 			{
 				result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_NoEnergy], false,&channel[FlySound_NoEnergy]);
-				result = channel[FlySound_NoEnergy]->setVolume(0.8f);
+				result = channel[FlySound_NoEnergy]->setVolume(0.5f);
 			}	
 			break;
 		case FlySound_Thrust:

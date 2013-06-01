@@ -48,6 +48,7 @@
     <ClCompile Include="Core\Render\FinalShader.cpp" />
     <ClCompile Include="Core\Render\GBufferAnimationShader.cpp" />
     <ClCompile Include="Core\Render\GBufferShader.cpp" />
+    <ClCompile Include="Core\Render\GBufferWaterShader.cpp" />
     <ClCompile Include="Core\Render\LightShader.cpp" />
     <ClCompile Include="Core\Render\ShadowMapShader.cpp" />
     <ClCompile Include="Core\SamplerState.cpp" />
@@ -90,6 +91,7 @@
     <ClInclude Include="Core\Render\BlurShader.h" />
     <ClInclude Include="Core\Render\FinalShader.h" />
     <ClInclude Include="Core\Render\GBufferAnimationShader.h" />
+    <ClInclude Include="Core\Render\GBufferWaterShader.h" />
     <ClInclude Include="Core\Render\ShadowMapShader.h" />
     <ClInclude Include="FlyEngine\FlyEngine.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>

@@ -119,7 +119,7 @@ class FlyEngine
 		/** End deferred scene with ortho */
 		virtual void		FLYCALL		Gfx_EndDeferredSceneOrtho	()																	= 0;
 		virtual void		FLYCALL		Gfx_DrawSkyBox				()																	= 0;
-		virtual void		FLYCALL		Gfx_DrawGbuffer				()																	= 0;
+		virtual void		FLYCALL		Gfx_DrawGbuffer				(BaseBuffer* waterBuffer)																	= 0;
 		virtual void		FLYCALL		Gfx_DrawGbufferOrtho		()																	= 0;
 		virtual void		FLYCALL		Gfx_DrawShadows				(vector<LightViewProj*> *shadowViews)								= 0;
 		virtual void		FLYCALL		Gfx_DrawLighting			()																	= 0;

@@ -4,9 +4,6 @@
 #include "..\Entity.h"
 #include "..\..\Util\vertex.h"
 #include "..\..\Util\Importer\ObjectImporter.h"
-//#include "BoundingVolumes"
-
-
 
 
 /** 
@@ -55,14 +52,15 @@ class FlyMeshAnimated		:public Entity
 		SmartPtrStd<std::vector<std::vector<FrameData>>> frameData; 
 		SmartPtrStd<std::vector<std::vector<VERTEX::VertexPNT>>> keyFramesVertices; 
 		
-
-		void MorphAmination();
-		void MorphAmination2();
+		/** Morph between all the animations of the object */
+		void MorphAminations();
+		/** Morph between two key frames in one animation */
+		void MorphKeyframe();
 	public:
 		FlyMeshAnimated();
 		virtual~FlyMeshAnimated();
 
-		/** Override to update logic diffrent than default */
+		/** Override to update logic different than default */
 		virtual void Update() override;
 
 		/** Loop the animation */
@@ -72,7 +70,7 @@ class FlyMeshAnimated		:public Entity
 		/** Play until the first frame is 100% */
 		void StopAnimation(int nr, float deltaTime);
 
-		/** Override to render with diffrent than default */
+		/** Override to render with different than default */
 		virtual void Render(ViewFrustum& frustum) override;
 
 		/** Builds a FlyMesh than is ready for rendering */

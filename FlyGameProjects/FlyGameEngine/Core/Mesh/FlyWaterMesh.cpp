@@ -159,6 +159,26 @@ bool FlyWaterMesh::Initialize(OBJECT_DESC& data)
 	this->name				= data.name;
 	this->boundingSphere	= data.boundingSphere;
 
+	this->waterTranslation = D3DXVECTOR2(0,0);
+	WaterBuffer wdata; 
+	wdata.waterTranslation =  this->waterTranslation; 
+
+	this->waterBuffer = new BaseBuffer(); 
+	BaseBuffer::BUFFER_INIT_DESC wdesc;
+	wdesc.device		= data.device;
+	wdesc.dc			= data.deviceContext;
+	wdesc.data			= &wdata;
+	wdesc.elementSize	= sizeof(WaterBuffer);
+	wdesc.nrOfElements	= 1;
+	wdesc.type			= BUFFER_FLAG::TYPE_CONSTANT_PS_BUFFER;
+	wdesc.usage			= BUFFER_FLAG::USAGE_DYNAMIC_CPU_WRITE_DISCARD;
+	if( FAILED( this->waterBuffer->Initialize(wdesc) ) )
+	{
+		DisplayText("Failed to initiate Buffer in FlyBumpMesh");
+		return false;
+	}
+	
+	
 
 	return true;
 }
@@ -201,4 +221,21 @@ void FlyWaterMesh::CalculateTangentBinormal(VERTEX::VertexPNT vertex1, VERTEX::V
 	D3DXVec4Normalize(&binormal, &binormal);
 
 	return;
+}
+
+BaseBuffer* FlyWaterMesh::getWaterBuffer()
+{
+	return this->waterBuffer; 
+}
+void FlyWaterMesh::UpdateWater(float dt)
+{
+	this->waterTranslation.x += dt*0.3f; 
+
+	if( waterTranslation.x> 1.0f)
+	{
+		waterTranslation.x =0; 
+	}
+	WaterBuffer* wb = (WaterBuffer*)this->waterBuffer->Map(); 
+	wb->waterTranslation = this->waterTranslation; 
+	this->waterBuffer->Unmap();
 }
