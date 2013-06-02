@@ -163,6 +163,10 @@ class Entity abstract
 		{
 			this->boundingSphere = _sphere;
 		}
+		void			setBoundingSphere		(BoundingSphere _sphere)
+		{
+			this->boundingSphere = new BoundingSphere(_sphere);
+		}
 		
 
 		virtual void	Update					()						{  }

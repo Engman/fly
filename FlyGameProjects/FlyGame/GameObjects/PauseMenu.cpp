@@ -18,9 +18,9 @@ bool PauseMenu::Initialize(FlyGame* entry, float windowHeight, float windowWidth
 	vector<IShader*> shaders;
 	entry->GetCoreInstance()->Gfx_GetShader(shaders);
 
-	BoundingSphere* sphere = new BoundingSphere();
-	sphere->center = vec3(0.0f, 0.0f, -1.0f);
-	sphere->radius = 2000.0f;
+	BoundingSphere sphere = BoundingSphere();
+	sphere.center = vec3(0.0f, 0.0f, -1.0f);
+	sphere.radius = 2000.0f;
 	
 	if(!entry->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\pauseMenu.fgm", &this->models))
 		return false;
@@ -108,10 +108,6 @@ int PauseMenu::Update(int mouseX, int mouseY, FlyGame* entry)
 			return 2;
 		}
 		hover = true; 
-	}
-	else if (Input::self()->IsButtonPressed(DIK_ESCAPE))
-	{
-		return 1;
 	}
 	else
 	{

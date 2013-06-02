@@ -158,12 +158,15 @@ bool FlyGame::Initiate()
 	std::cout << "State loaded on " << clock()-start << "ms\n";
 #else
 	if(!this->_pData->curState->Initiate(this))
+	{
+		TerminateThread(this->_pData->loadingThread, 0);
 		return false;
+	}
 #endif
 
 	WaitForSingleObject(this->_pData->loadingThread, INFINITE);
 	TerminateThread(this->_pData->loadingThread, 0);
-
+	
 	return true;
 }
 void FlyGame::Run()							  
@@ -283,7 +286,9 @@ void FlyGame::handleStateChange()
 		}
 		else
 		{
+			this->_pData->level->Release();
 			this->_pData->level.Destroy();
+			this->_pData->fly->Audio_PlayMenuSound(FlySound_MenuSoundTrack);
 		}
 	}
 }
