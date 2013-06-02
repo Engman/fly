@@ -5,6 +5,7 @@
 #include "..\..\FlyGameEngine\Core\Light\DirectionLight.h"
 #include "..\..\FlyGameEngine\Core\Light\PointLight.h"
 #include "..\..\FlyGameEngine\Util\Proxy.h"
+#include "..\..\FlyGameEngine\Core\Mesh\FlyWaterMesh.h"
 
 
 #include <fstream>
@@ -31,10 +32,12 @@ bool FlyState_Level::Initiate(FlyGame* instance)
 
 
 	//Read level data
-	if(!this->ReadLevel(this->entryInstance->getLevel()))
+	//if(!this->ReadLevel(this->entryInstance->getLevel()))
+	//	return false;
+	////Read level data
+	if(!this->ReadLevel(L"..\\Resources\\Levels\\testLinda2.fgl"))
 		return false;
 	
-	int lvl = this->entryInstance->getCurrState();
 
 	//If the lvl was not completed you will continue with the cargo you already picked up
 	if(!this->entryInstance->isLvlCompleted())
@@ -68,6 +71,7 @@ bool FlyState_Level::Initiate(FlyGame* instance)
 	if(!this->collisionParticle.Initialize())		return false;
 	if(!this->pickupParticle.Initialize())			return false;
 	
+
 	//Menu when paused
 	if(!this->pauseMenu.Initialize(this->entryInstance, (float)h, (float)w))
 		return false;
@@ -163,7 +167,9 @@ bool FlyState_Level::Update()
 	//Check if all energy is lost
 	if(this->player.GetEnergy() < 0.0f)
 	{
-		this->player.DeductEnergy(-10000.0f);
+		this->state = 1; 
+		return true; 
+		//this->player.DeductEnergy(-10000.0f);
 	}
 	
 	//Update skybox position
@@ -181,11 +187,12 @@ bool FlyState_Level::Update()
 	
 	this->player.GetModel()->at(0)->Update();
 	
-	this->UIorthographic[0]->setScale(vec3((this->player.GetEnergy()/this->player.GetMaxEnergy())*20.0f,1.0f,1.0f));
-
+	float en = (this->player.GetEnergy()/this->player.GetMaxEnergy())*20.0f;
+	this->UIorthographic[0]->setScale(vec3(en,1.0f,1.0f));
+	this->UIorthographic[0]->Update();
 
 	//play a warning sound when the energy is low
-	if(this->player.GetEnergy()<500)
+	if(this->player.GetEnergy()<8000)
 	{
 		this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_LowEnergy);
 	}
@@ -193,6 +200,7 @@ bool FlyState_Level::Update()
 	float playerVel = this->player.GetVelocity().z/this->player.GetMaxVelocity().z;
 	this->entryInstance->GetCoreInstance()->Audio_Update(this->player.GetPosition(),playerVel);
 
+	((FlyWaterMesh*)this->water[0])->UpdateWater(this->mainTimer->GetDeltaTime());
 
 	return true;
 }
@@ -221,90 +229,90 @@ bool FlyState_Level::UpdatePlayer()
 		this->player.SetVelocity(this->player.GetVelocity()-vec3(0.0f, 0.0f, 0.004f));
 	}
 
-	//Collision against world wind walls
-	Terrain* tempTerrain = dynamic_cast<Terrain*>(this->theWorld[0]);
+	////Collision against world wind walls
+	//Terrain* tempTerrain = dynamic_cast<Terrain*>(this->theWorld[0]);
 
-	if(this->mainCamera.GetPosition().x <= tempTerrain->GetBoundingBox().minPoint.x+2.0f)
-	{
-		this->worldWind.x += 0.032f;
-		if(this->player.GetVelocity().z < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.0f, 0.0f, 0.032f));
-		if(this->player.GetVelocity().z > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.0f, 0.0f, 0.032f));
-		if(this->player.GetVelocity().x < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.032f, 0.0f, 0.0f));
-		if(this->player.GetVelocity().x > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.032f, 0.0f, 0.0f));
-	}
-	else if(this->mainCamera.GetPosition().x >= tempTerrain->GetBoundingBox().maxPoint.x-2.0f)
-	{
-		this->worldWind.x -= 0.032f;
-		if(this->player.GetVelocity().z < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.0f, 0.0f, 0.032f));
-		if(this->player.GetVelocity().z > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.0f, 0.0f, 0.032f));
-		if(this->player.GetVelocity().x < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.032f, 0.0f, 0.0f));
-		if(this->player.GetVelocity().x > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.032f, 0.0f, 0.0f));
-	}
-	else
-	{
-		if(this->worldWind.x < 0.0f)
-		{
-			this->worldWind.x += 0.032f;
-		}
-		else if(this->worldWind.x > 0.0f)
-		{
-			this->worldWind.x -= 0.032f;
-		}
-	}
-	if(this->mainCamera.GetPosition().z <= tempTerrain->GetBoundingBox().minPoint.z+2.0f)
-	{
-		this->worldWind.z += 0.064f;
-		if(this->player.GetVelocity().z < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.0f, 0.0f, 0.032f));
-		if(this->player.GetVelocity().z > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.0f, 0.0f, 0.032f));
-		if(this->player.GetVelocity().x < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.032f, 0.0f, 0.0f));
-		if(this->player.GetVelocity().x > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.032f, 0.0f, 0.0f));
-	}
-	else if(this->mainCamera.GetPosition().z >= tempTerrain->GetBoundingBox().maxPoint.z-2.0f)
-	{
-		this->worldWind.z -= 0.032f;
-		if(this->player.GetVelocity().z < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.0f, 0.0f, 0.032f));
-		if(this->player.GetVelocity().z > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.0f, 0.0f, 0.032f));
-		if(this->player.GetVelocity().x < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.032f, 0.0f, 0.0f));
-		if(this->player.GetVelocity().x > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.032f, 0.0f, 0.0f));
-	}
-	else
-	{
-		if(this->worldWind.z < 0.0f)
-		{
-			this->worldWind.z += 0.032f;
-		}
-		else if(this->worldWind.z > 0.0f)
-		{
-			this->worldWind.z -= 0.032f;
-		}
-	}
-	if(this->mainCamera.GetPosition().y <= tempTerrain->GetBoundingBox().minPoint.y+2.0f)
-	{
-		this->worldWind.y += 0.032f;
-		if(this->player.GetVelocity().z < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.0f, 0.0f, 0.032f));
-		if(this->player.GetVelocity().z > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.0f, 0.0f, 0.032f));
-		if(this->player.GetVelocity().x < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.032f, 0.0f, 0.0f));
-		if(this->player.GetVelocity().x > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.032f, 0.0f, 0.0f));
-	}
-	else if(this->mainCamera.GetPosition().y >= tempTerrain->GetBoundingBox().maxPoint.y-2.0f)
-	{
-		this->worldWind.y -= 0.032f;
-		if(this->player.GetVelocity().z < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.0f, 0.0f, 0.032f));
-		if(this->player.GetVelocity().z > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.0f, 0.0f, 0.032f));
-		if(this->player.GetVelocity().x < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.032f, 0.0f, 0.0f));
-		if(this->player.GetVelocity().x > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.032f, 0.0f, 0.0f));
-	}
-	else
-	{
-		if(this->worldWind.y < 0.0f)
-		{
-			this->worldWind.y += 0.032f;
-		}
-		else if(this->worldWind.y > 0.0f)
-		{
-			this->worldWind.y -= 0.032f;
-		}
-	}
+	//if(this->mainCamera.GetPosition().x <= tempTerrain->GetBoundingBox().minPoint.x+2.0f)
+	//{
+	//	this->worldWind.x += 0.032f;
+	//	if(this->player.GetVelocity().z < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.0f, 0.0f, 0.032f));
+	//	if(this->player.GetVelocity().z > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.0f, 0.0f, 0.032f));
+	//	if(this->player.GetVelocity().x < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.032f, 0.0f, 0.0f));
+	//	if(this->player.GetVelocity().x > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.032f, 0.0f, 0.0f));
+	//}
+	//else if(this->mainCamera.GetPosition().x >= tempTerrain->GetBoundingBox().maxPoint.x-2.0f)
+	//{
+	//	this->worldWind.x -= 0.032f;
+	//	if(this->player.GetVelocity().z < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.0f, 0.0f, 0.032f));
+	//	if(this->player.GetVelocity().z > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.0f, 0.0f, 0.032f));
+	//	if(this->player.GetVelocity().x < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.032f, 0.0f, 0.0f));
+	//	if(this->player.GetVelocity().x > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.032f, 0.0f, 0.0f));
+	//}
+	//else
+	//{
+	//	if(this->worldWind.x < 0.0f)
+	//	{
+	//		this->worldWind.x += 0.032f;
+	//	}
+	//	else if(this->worldWind.x > 0.0f)
+	//	{
+	//		this->worldWind.x -= 0.032f;
+	//	}
+	//}
+	//if(this->mainCamera.GetPosition().z <= tempTerrain->GetBoundingBox().minPoint.z+2.0f)
+	//{
+	//	this->worldWind.z += 0.064f;
+	//	if(this->player.GetVelocity().z < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.0f, 0.0f, 0.032f));
+	//	if(this->player.GetVelocity().z > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.0f, 0.0f, 0.032f));
+	//	if(this->player.GetVelocity().x < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.032f, 0.0f, 0.0f));
+	//	if(this->player.GetVelocity().x > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.032f, 0.0f, 0.0f));
+	//}
+	//else if(this->mainCamera.GetPosition().z >= tempTerrain->GetBoundingBox().maxPoint.z-2.0f)
+	//{
+	//	this->worldWind.z -= 0.032f;
+	//	if(this->player.GetVelocity().z < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.0f, 0.0f, 0.032f));
+	//	if(this->player.GetVelocity().z > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.0f, 0.0f, 0.032f));
+	//	if(this->player.GetVelocity().x < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.032f, 0.0f, 0.0f));
+	//	if(this->player.GetVelocity().x > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.032f, 0.0f, 0.0f));
+	//}
+	//else
+	//{
+	//	if(this->worldWind.z < 0.0f)
+	//	{
+	//		this->worldWind.z += 0.032f;
+	//	}
+	//	else if(this->worldWind.z > 0.0f)
+	//	{
+	//		this->worldWind.z -= 0.032f;
+	//	}
+	//}
+	//if(this->mainCamera.GetPosition().y <= tempTerrain->GetBoundingBox().minPoint.y+2.0f)
+	//{
+	//	this->worldWind.y += 0.032f;
+	//	if(this->player.GetVelocity().z < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.0f, 0.0f, 0.032f));
+	//	if(this->player.GetVelocity().z > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.0f, 0.0f, 0.032f));
+	//	if(this->player.GetVelocity().x < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.032f, 0.0f, 0.0f));
+	//	if(this->player.GetVelocity().x > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.032f, 0.0f, 0.0f));
+	//}
+	//else if(this->mainCamera.GetPosition().y >= tempTerrain->GetBoundingBox().maxPoint.y-2.0f)
+	//{
+	//	this->worldWind.y -= 0.032f;
+	//	if(this->player.GetVelocity().z < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.0f, 0.0f, 0.032f));
+	//	if(this->player.GetVelocity().z > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.0f, 0.0f, 0.032f));
+	//	if(this->player.GetVelocity().x < 0.0f) this->player.SetVelocity(this->player.GetVelocity()+vec3(0.032f, 0.0f, 0.0f));
+	//	if(this->player.GetVelocity().x > 0.0f) this->player.SetVelocity(this->player.GetVelocity()-vec3(0.032f, 0.0f, 0.0f));
+	//}
+	//else
+	//{
+	//	if(this->worldWind.y < 0.0f)
+	//	{
+	//		this->worldWind.y += 0.032f;
+	//	}
+	//	else if(this->worldWind.y > 0.0f)
+	//	{
+	//		this->worldWind.y -= 0.032f;
+	//	}
+	//}
 
 	//Wind collision
 	//this->localWind = this->windCollision.PlayerVSWind(&this->localWind, this->player.GetBoundingSphere(), spheres);
@@ -516,7 +524,8 @@ bool FlyState_Level::Render()
 
 
 	this->entryInstance->GetCoreInstance()->Gfx_DrawSkyBox();
-	this->entryInstance->GetCoreInstance()->Gfx_DrawGbuffer();
+	
+	this->entryInstance->GetCoreInstance()->Gfx_DrawGbuffer(((FlyWaterMesh*)this->water[0])->getWaterBuffer());
 	
 	//switch back to player camera view
 	this->menuCamera.ConstructViewFrustum(f);

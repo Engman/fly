@@ -3,6 +3,7 @@
 #include "..\Core\WindowShell.h"
 #include "..\Core\Input.h"
 #include "..\Core\Render\GBufferShader.h"
+#include "..\Core\Render\GBufferWaterShader.h"
 #include "..\Core\Render\GBufferAnimationShader.h"
 #include "..\Core\Render\FinalShader.h"
 #include "..\Core\Render\LightShader.h"
@@ -49,7 +50,7 @@ FlyEngine_Core::FlyEngine_Core()
 	this->gbufferShader				= new GBufferShader();
 	this->gBufferNoDepthShader		= new GBufferShader();
 	this->gbufferNoCullShader		= new GBufferShader();
-	this->gbufferBumpShader			= new GBufferShader();
+	this->gbufferBumpShader			= new GBufferWaterShader();
 	this->gBufferAnimationShader	= new GBufferAnimationShader();
 	this->finalShader				= new FinalShader();
 	this->finalColorShader			= new FinalShader();
@@ -108,7 +109,7 @@ bool FLYCALL FlyEngine_Core::Core_Run()
 			// add all the objects to the draw data 
 			this->deferredRenderFunc();
 			Gfx_DrawSkyBox();
-			Gfx_DrawGbuffer();
+			//Gfx_DrawGbuffer();
 			Gfx_DrawBlur();
 			//Gfx_DrawShadows();
 			Gfx_DrawLighting();

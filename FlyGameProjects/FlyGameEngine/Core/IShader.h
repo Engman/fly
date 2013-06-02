@@ -23,6 +23,7 @@ class IShader
 			BaseBuffer* lights;
 			//buffer for view, projection and camPos in light PS
 			BaseBuffer* camForLight;
+			BaseBuffer* waterBuffer; 
 
 
 			PER_FRAME_DATA()

@@ -54,7 +54,7 @@ void FLYCALL FlyEngine_Core::Gfx_DrawSkyBox()
 
 }
 
-void FLYCALL FlyEngine_Core::Gfx_DrawGbuffer()
+void FLYCALL FlyEngine_Core::Gfx_DrawGbuffer( BaseBuffer* waterBuffer)
 {
 	D3DShell::self()->BeginGBufferRenderTargets(true);
 
@@ -66,6 +66,8 @@ void FLYCALL FlyEngine_Core::Gfx_DrawGbuffer()
 	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_BackCullNoMS);
 	this->gbufferShader->draw(gBufferDrawData);
 	
+
+	gBufferDrawData.waterBuffer = waterBuffer; 
 	this->gbufferBumpShader->draw(gBufferDrawData);
 	
 	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_NoCullNoMs);
@@ -77,7 +79,7 @@ void FLYCALL FlyEngine_Core::Gfx_DrawGbufferOrtho()
 {
 	float blend[4] = {1.0f,1.0f,1.0f,1.0f};
 
-	D3DShell::self()->setBlendModeState(FLAGS::BLEND_MODE_AlphaBlend, blend,  0xffffffff);
+	//D3DShell::self()->setBlendModeState(FLAGS::BLEND_MODE_AlphaBlend, blend,  0xffffffff);
 	D3DShell::self()->setDepthStencilState(FLAGS::DEPTH_STENCIL_DisabledDepth,1); 
 
 	IShader::PER_FRAME_DATA gBufferDrawData;
@@ -88,7 +90,7 @@ void FLYCALL FlyEngine_Core::Gfx_DrawGbufferOrtho()
 	this->gbufferShader->draw(gBufferDrawData);
 
 	//reset the blend state to normal
-	D3DShell::self()->getDeviceContext()->OMSetBlendState(0,0,0xffffffff);
+	//D3DShell::self()->getDeviceContext()->OMSetBlendState(0,0,0xffffffff);
 	D3DShell::self()->setDepthStencilState(FLAGS::DEPTH_STENCIL_EnabledDepth,1);
 }
 void FLYCALL FlyEngine_Core::Gfx_DrawShadows(vector<LightViewProj*> *shadowViews)

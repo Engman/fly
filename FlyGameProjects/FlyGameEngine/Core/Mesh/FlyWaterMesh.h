@@ -43,6 +43,8 @@ class FlyWaterMesh		:public Entity
 		};
 	private:
 		SmartPtrStd<std::vector<vec3>> vertexList;
+		SmartPtrStd<BaseBuffer> waterBuffer; 
+		D3DXVECTOR2 waterTranslation; 
 
 		void CalculateTangentBinormal(VERTEX::VertexPNT vertex1,VERTEX::VertexPNT vertex2,VERTEX::VertexPNT vertex3,D3DXVECTOR4& tangent,D3DXVECTOR4& binormal);
 
@@ -62,6 +64,9 @@ class FlyWaterMesh		:public Entity
 
 		/** Get triangles for mesh */
 		virtual vector<vec3>* GetTriangles();
+
+		BaseBuffer* getWaterBuffer(); 
+		void UpdateWater(float deltaTime); 
 };
 
 

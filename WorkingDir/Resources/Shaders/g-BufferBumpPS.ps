@@ -2,12 +2,18 @@
 Texture2D objTexture[4] 		: register(t0);		
 SamplerState SampleTypeClamp 	: register(s0);
 
+
 cbuffer MaterialData
 {
 	float4 ambient;
 	float4 diffuse;
 	float4 specular;
 	int specularPower;
+};
+
+cbuffer WaterBuffer
+{
+  float2 waterTranslation; 
 };
 
 struct PS_IN
@@ -33,23 +39,24 @@ PS_OUT FPixelShader( PS_IN input )
 {
 	PS_OUT output= ( PS_OUT )0;
 
+  float2 translatedUV = input.textCoord + waterTranslation; 
 	//albedo color
-	output.ColorRGBA  	= objTexture[0].Sample(SampleTypeClamp, input.textCoord);
+	output.ColorRGBA  	= objTexture[0].Sample(SampleTypeClamp, translatedUV);
 	output.ColorRGBA  *= diffuse;
 	
 	
 	//normal
 	float3 normal = (input.normal.xyz +1)* 0.5f ;
 	float3 bumpNormal = float3(0,0,0); 
-	bumpNormal = objTexture[1].Sample(SampleTypeClamp, input.textCoord).xyz * 2.0f -1;
-	bumpNormal *= 10; //waveHeight
+	bumpNormal = objTexture[1].Sample(SampleTypeClamp, translatedUV).xyz * 2.0f -1;
+	bumpNormal *= 4; //waveHeight
 	//normal += bumpNormal.xyz;
 	//saturate( normal);
 	//normalize(normal);
 	
 	
-	float4 dullColor = float4(0.3f, 0.3f, 0.5f, 1.0f);
-	output.ColorRGBA = dullColor; 
+	//float4 dullColor = float4(0.3f, 0.3f, 0.5f, 1.0f);
+	//output.ColorRGBA = dullColor; 
 	
 	//float3x3 TBN = float3x3(input.Tangent.xyz, input.Binormal.xyz, input.normal.xyz);
 	//bumpNormal = normalize(mul(bumpNormal, TBN));

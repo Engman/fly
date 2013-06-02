@@ -36,7 +36,7 @@ void FlyMeshAnimated::Update()
 }
 void FlyMeshAnimated::LoopAnimation(int nr, float dt)
 {
-	this->time.at(nr) += dt; //0.01f;
+	this->time.at(nr) += dt;
 	if( this->time.at(nr) > this->frameData->at(nr).at(this->currFrame.at(nr)).frameTime)
 	{
 		this->time.at(nr) = 0.0f;
@@ -64,41 +64,30 @@ void FlyMeshAnimated::StartAnimation(int nr, float dt)
 			time.at(nr) = this->frameData->at(nr).at(this->currFrame.at(nr)).frameTime; 
 		}
 	}
-	/*if( this->time.at(nr) > this->frameData->at(nr).at(this->currFrame.at(nr)).frameTime)
-	{
-		this->time.at(nr) = 0.0f;
-		this->currFrame.at(nr) ; 
-
-		if(this->currFrame.at(nr)>=(int) this->frameData->at(nr).size())
-		{
-			this->currFrame.at(nr) = 0; 
-		}
-	}
-	*/
 }
 void FlyMeshAnimated::StopAnimation(int nr, float dt)
 {
 	if( this->time.at(nr)> 0.0f)
 	{
 
-		this->time.at(nr) += dt;
+		this->time.at(nr) -= dt;
 		if( this->time.at(nr) > this->frameData->at(nr).at(this->currFrame.at(nr)).frameTime)
 		{
 			this->time.at(nr) = 0.0f;
 		
-			this->currFrame.at(nr) = 1; 
+			this->currFrame.at(nr) = 0; 
 			
 		}
 	}
 }
 void FlyMeshAnimated::Render(ViewFrustum& frustum)
 {
-	if(animationCount<2)
+	if(animationCount == 1)
 	{
-		MorphAmination2();
+		MorphKeyframe();
 	}
 	else
-		MorphAmination();
+		MorphAminations();
 
 	if(this->boundingSphere.IsValid())
 	{
@@ -265,7 +254,7 @@ vector<vec3>* FlyMeshAnimated::GetTriangles()
 	return this->triangleList;
 }
 
-void FlyMeshAnimated::MorphAmination()
+void FlyMeshAnimated::MorphAminations()
 {
 	VERTEX::VertexPNT* morphedMesh = (VERTEX::VertexPNT*)this->buffers[0]->Map();
 
@@ -329,7 +318,7 @@ void FlyMeshAnimated::MorphAmination()
 	delete [] weights;
 }
 
-void FlyMeshAnimated::MorphAmination2()
+void FlyMeshAnimated::MorphKeyframe()
 {
 	VERTEX::VertexPNT* morphedMesh = (VERTEX::VertexPNT*)this->buffers[0]->Map();
 
