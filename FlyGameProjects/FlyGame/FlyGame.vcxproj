@@ -88,7 +88,7 @@
     <IntDir>$(SolutionDir)..\WorkingDir\AssemblyFiles\$(ProjectName)\x86\Release\</IntDir>
     <TargetName>$(ProjectName)x86</TargetName>
     <IncludePath>$(IncludePath);$(SolutionDir)..\Dependencies\Include</IncludePath>
-    <LibraryPath>$(LibraryPath);$(SolutionDir)..\Dependencies\Lib\D3DX11\x86\;$(SolutionDir)..\Dependencies\Lib\Python\x86\;$(OutDir)</LibraryPath>
+    <LibraryPath>$(LibraryPath);$(SolutionDir)..\Dependencies\Lib\D3DX11\x86\;$(SolutionDir)..\Dependencies\Lib\Lua\;$(OutDir)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

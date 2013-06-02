@@ -2,6 +2,7 @@
 #include "ObjectImporter.h"
 #include "FGMImport.h"
 #include "..\..\Core\Entity.h"
+#include "..\..\Util\MutexHandler.h"
 
 #if defined(_DEBUG) || defined(DEBUG)
 #include <ctime>
@@ -17,6 +18,8 @@
 	
 
 #pragma endregion
+
+
 
 wstring getDir(const wchar_t* path)
 {
@@ -42,15 +45,14 @@ wstring getDir(const wchar_t* path)
 
 bool ResourceImporter::ImportObject(const wchar_t* filename, ImportedObjectData* object)
 {
-	static bool bussy = false;
-	while(bussy);
-	bussy = true;
+	if(!MutexHandler::SetMutex(MATERIAL_HANDLER, true))
+		return false;
 
 #if defined(_DEBUG) || defined(DEBUG)
 	time_t start = clock();
 	if(!fgmImporter.Import(getDir(filename), object))
 	{
-		bussy = false;
+		MutexHandler::SetMutex(MATERIAL_HANDLER);
 		return false;
 	}
 	else
@@ -61,24 +63,25 @@ bool ResourceImporter::ImportObject(const wchar_t* filename, ImportedObjectData*
 #else
 	if(!fgmImporter.Import(getDir(filename), object))
 	{
-		bussy = false;
+		MutexHandler::SetMutex(MATERIAL_HANDLER);
 		return false;
 	}
 #endif
-	bussy = false;
+	MutexHandler::SetMutex(MATERIAL_HANDLER);
 	return true;
 }
 bool ResourceImporter::ImportObject(std::vector<const wchar_t*>& filenames, vector<ImportedObjectData>* objData)
 {
 
-	static bool bussy = false;
-	while(bussy);
-	bussy = true;
+	if(!MutexHandler::SetMutex(MATERIAL_HANDLER, true))
+		return false;
 
 
 	if(!filenames.size())
+	{
+		MutexHandler::SetMutex(MATERIAL_HANDLER);
 		return false;
-	
+	}
 	objData->clear();
 	if(objData->size() !=  filenames.size())
 		objData->resize(filenames.size());
@@ -93,7 +96,7 @@ bool ResourceImporter::ImportObject(std::vector<const wchar_t*>& filenames, vect
 			time_t start = clock();
 			if(!fgmImporter.Import(getDir(filenames[i]), &(*objData)[i]))
 			{
-				bussy = false;
+				MutexHandler::SetMutex(MATERIAL_HANDLER);
 				return false;
 			}
 			else
@@ -105,14 +108,14 @@ bool ResourceImporter::ImportObject(std::vector<const wchar_t*>& filenames, vect
 		#else
 			if(!fgmImporter.Import(getDir(filenames[i]), &(*objData)[i]))
 			{
-				bussy = false;
+				MutexHandler::SetMutex(MATERIAL_HANDLER);
 				return false;
 			}
 		#endif
 	}
 
 
-	bussy = false;
+	MutexHandler::SetMutex(MATERIAL_HANDLER);
 	return true;
 }
 

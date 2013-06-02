@@ -49,7 +49,7 @@ bool FlyState_Level::Initiate(FlyGame* instance)
 			this->pickups[i].SetPickTaken((bool)taken[i]);  
 		}
 
-	}	
+	}
 	//Timer activation
 	this->mainTimer = new Timer();
 	if(!this->mainTimer->Initialize())
@@ -392,29 +392,33 @@ bool FlyState_Level::UpdatePlayer()
 	}
 	//END
 
-	//Engines
-	if(Input::self()->IsButtonPressed(DIK_W))
+	if(!Input::self()->IsButtonPressed(DIK_LSHIFT))
 	{
-		this->engineParticlesLeft.EmitParticles(this->mainTimer->GetDeltaTime()*1000.0f, this->player.GetPosition() - oldPosition);
-		this->engineParticlesRight.EmitParticles(this->mainTimer->GetDeltaTime()*1000.0f, this->player.GetPosition() - oldPosition);
-		if(this->player.GetVelocity().z < this->player.GetMaxVelocity().z)
-			this->player.SetVelocity(this->player.GetVelocity() + vec3(0.0f, 0.0f, 0.001f));
-		this->player.DeductEnergy(5);
-		this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Thrust);
-	}
-	if(Input::self()->IsButtonPressed(DIK_S))
-	{
-		this->engineParticlesLeft.EmitParticles(this->mainTimer->GetDeltaTime()*1000.0f, this->player.GetPosition() - oldPosition);
-		this->engineParticlesRight.EmitParticles(this->mainTimer->GetDeltaTime()*1000.0f, this->player.GetPosition() - oldPosition);
-		if(this->player.GetVelocity().z > -this->player.GetMaxVelocity().z)
-			this->player.SetVelocity(this->player.GetVelocity() + vec3(0.0f, 0.0f, -0.001f));
-		this->player.DeductEnergy(5);
-		this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Thrust);
+		//Engines
+		if(Input::self()->IsButtonPressed(DIK_W))
+		{
+			this->engineParticlesLeft.EmitParticles(this->mainTimer->GetDeltaTime()*1000.0f, this->player.GetPosition() - oldPosition);
+			this->engineParticlesRight.EmitParticles(this->mainTimer->GetDeltaTime()*1000.0f, this->player.GetPosition() - oldPosition);
+			if(this->player.GetVelocity().z < this->player.GetMaxVelocity().z)
+				this->player.SetVelocity(this->player.GetVelocity() + vec3(0.0f, 0.0f, 0.001f));
+			this->player.DeductEnergy(5);
+			this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Thrust);
+		}
+		if(Input::self()->IsButtonPressed(DIK_S))
+		{
+			this->engineParticlesLeft.EmitParticles(this->mainTimer->GetDeltaTime()*1000.0f, this->player.GetPosition() - oldPosition);
+			this->engineParticlesRight.EmitParticles(this->mainTimer->GetDeltaTime()*1000.0f, this->player.GetPosition() - oldPosition);
+			if(this->player.GetVelocity().z > -this->player.GetMaxVelocity().z)
+				this->player.SetVelocity(this->player.GetVelocity() + vec3(0.0f, 0.0f, -0.001f));
+			this->player.DeductEnergy(5);
+			this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_Thrust);
+		}
 	}
 
 	this->engineParticlesLeft.Frame(this->player.GetPosition() - oldPosition, this->mainTimer->GetDeltaTime());
 	this->engineParticlesRight.Frame(this->player.GetPosition() - oldPosition, this->mainTimer->GetDeltaTime());
 	//Engines end
+	
 
 	this->player.Update();
 

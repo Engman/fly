@@ -131,7 +131,7 @@ void FlyState_Menu::input()
 	this->PickMenu();
 
 	if(Input::self()->IsButtonPressed(DIK_ESCAPE))
-		PostQuitMessage(0);
+		this->entryInstance->setState(0);
 
 	if(Input::self()->IsMouseButtonPressed(0) && this->highlightBtn != -1)
 	{

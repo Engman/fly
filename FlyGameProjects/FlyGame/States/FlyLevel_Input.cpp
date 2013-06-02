@@ -13,21 +13,17 @@ void FlyState_Level::_Input()
 		case CONTROL_Advance:
 			_InputAdvance();
 		break;
+
 #if defined(_DEBUG) || defined(DEBUG)
 		case CONTROL_Debug:
 			_InputDebug();
 		break;
 #endif
-	}
 
+	}
 	if(Input::self()->IsButtonPressed(DIK_ESCAPE))
 	{
-
-		if(this->state == 0)
-			this->state = 1;
-		//else if(this->state == 1)
-		//	this->state = 0;
-		
+		this->state = 1;
 	}
 }
 
@@ -61,15 +57,18 @@ void FlyState_Level::_InputCasual()
 			this->player.SetVelocity(this->player.GetVelocity() + vec3(-0.008f, 0.0f, 0.0f));
 	}
 
-	if(Input::self()->IsButtonPressed(DIK_W))
+	if(!Input::self()->IsButtonPressed(DIK_LSHIFT))
 	{
-		if(this->player.GetVelocity().z < this->player.GetMaxVelocity().z)
-			this->player.SetVelocity(this->player.GetVelocity() + vec3(0.0f, 0.0f, 0.008f));
-	}
-	else if(Input::self()->IsButtonPressed(DIK_S))
-	{
-		if(this->player.GetVelocity().z > -this->player.GetMaxVelocity().z)
-			this->player.SetVelocity(this->player.GetVelocity() + vec3(0.0f, 0.0f, -0.008f));
+		if(Input::self()->IsButtonPressed(DIK_W))
+		{
+			if(this->player.GetVelocity().z < this->player.GetMaxVelocity().z)
+				this->player.SetVelocity(this->player.GetVelocity() + vec3(0.0f, 0.0f, 0.008f));
+		}
+		else if(Input::self()->IsButtonPressed(DIK_S))
+		{
+			if(this->player.GetVelocity().z > -this->player.GetMaxVelocity().z)
+				this->player.SetVelocity(this->player.GetVelocity() + vec3(0.0f, 0.0f, -0.008f));
+		}
 	}
 	else
 	{

@@ -1,7 +1,8 @@
 #include "MaterialHandler.h"
+#include "..\..\Util\MutexHandler.h"
 
 
-
+static HANDLE MaterialResourceMutex = CreateMutex(0, FALSE, 0);
 static std::vector<SmartPtrStd<ObjectMaterial>> MaterialHandlerMaterialList = std::vector<SmartPtrStd<ObjectMaterial>>();
 
 int findExistingMaterial(std::wstring name)
@@ -15,13 +16,12 @@ int findExistingMaterial(std::wstring name)
 }
 
 
+
 int MaterialHandler::AddMaterial(ObjectMaterial::OBJECT_MATERIAL_DESC& desc)
 {
-	static bool bussy = false;
-
-	while (bussy);
-
-	bussy = true;
+	
+	if(!MutexHandler::SetMutex(MATERIAL_HANDLER, true))
+		return -1;
 
 	int k = findExistingMaterial(desc.name);
 	//if(k != -1)
@@ -30,7 +30,7 @@ int MaterialHandler::AddMaterial(ObjectMaterial::OBJECT_MATERIAL_DESC& desc)
 	SmartPtrStd<ObjectMaterial> m = new ObjectMaterial();
 	if(!m->CreateMaterial(desc))
 	{
-		bussy = false;
+		MutexHandler::SetMutex(MATERIAL_HANDLER);
 		return -1;
 	}
 	bool done = false;
@@ -56,36 +56,47 @@ int MaterialHandler::AddMaterial(ObjectMaterial::OBJECT_MATERIAL_DESC& desc)
 
 	MaterialHandlerMaterialList[insertIndex] = m;
 
-	bussy = false;
+	MutexHandler::SetMutex(MATERIAL_HANDLER);
 
 	return MaterialHandlerMaterialList[insertIndex]->GetID();
 }
 
+// Gör en klass som hanterar singleton resurserna för inladdning osv
+
 bool MaterialHandler::RemoveMaterial(int GID)
 {
+	if(!MutexHandler::SetMutex(MATERIAL_HANDLER, true))
+		return false;
 
+	bool done = false;
 	for (int i = 0; i < (int)MaterialHandlerMaterialList.size(); i++)
 	{
 		if(MaterialHandlerMaterialList[i]->GetID() == GID)
 		{
 			MaterialHandlerMaterialList.erase(MaterialHandlerMaterialList.begin() + i);
-			return true;
+			done = true;
+			break;
 		}
 	}
-
-	return false;
+	MutexHandler::SetMutex(MATERIAL_HANDLER);
+	return done;
 }
 
 ObjectMaterial* MaterialHandler::GetMaterial(int GID)
 {
+	if(!MutexHandler::SetMutex(MATERIAL_HANDLER, true))
+		return 0;
+
 	int first = 0;
 	int last = (int)MaterialHandlerMaterialList.size()-1;
 	int mid = (int)last/2;
 
 	//If only one material
 	if(first == last)
+	{
+		MutexHandler::SetMutex(MATERIAL_HANDLER);
 		return (GID == MaterialHandlerMaterialList[mid]->GetID()) ? MaterialHandlerMaterialList[mid] : NULL;
-	
+	}
 	while (first <= last)
 	{
 		if(MaterialHandlerMaterialList[mid]->GetID() > GID)
@@ -100,10 +111,11 @@ ObjectMaterial* MaterialHandler::GetMaterial(int GID)
 		}
 		else
 		{
+			MutexHandler::SetMutex(MATERIAL_HANDLER);
 			return MaterialHandlerMaterialList[mid];
 		}
 	}
-
+	MutexHandler::SetMutex(MATERIAL_HANDLER);
 	return NULL;
 }
 ObjectMaterial* MaterialHandler::GetMaterial(std::wstring materialName)

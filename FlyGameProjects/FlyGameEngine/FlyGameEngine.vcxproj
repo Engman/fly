@@ -138,6 +138,7 @@
     <ClInclude Include="Util\misc.h" />
     <ClInclude Include="Util\Importer\ObjectImporter.h" />
     <ClInclude Include="Util\Importer\ResourceImporter.h" />
+    <ClInclude Include="Util\MutexHandler.h" />
     <ClInclude Include="Util\OctTree.h" />
     <ClInclude Include="Util\Proxy.h" />
     <ClInclude Include="Util\SmartPtrs.h" />
