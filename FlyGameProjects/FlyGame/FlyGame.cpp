@@ -130,7 +130,7 @@ bool FlyGame::Initiate()
 	long vertical = desktop.bottom;
 
 	FLY_ENGINE_INIT_DESC cd;
-	cd.winWidth			= 800;
+	cd.winWidth			= 1200;
 	cd.winHeight		= 600;
 	cd.fullscreen		= false;
 	cd.showSplash		= false;
@@ -348,22 +348,26 @@ void FlyGame::setLvlSaveData(int cargoTaken)
 
 	nr = 0; 
 	bool completed = true; 
-	//while(completed && nr<CARGO_COUNT)
-	//{
-	//	if(!this->_pData->savedData.levels[_pData->enumState].lvlCompleted)
-	//		completed = false; 
-	//	nr++; 
-	//}
-	//if(completed)
-	//{
-	//	for(int i = 0; i< CARGO_COUNT; i++)
-	//	{
-	//		for(int k = 0; k<CARGO_COUNT; k ++)
-	//			this->_pData->savedData.levels[i].cargoTaken.at(k) = false; 
-	//		this->_pData->savedData.levels[i].lvlCompleted = false; 
-	//	}
-	//	// play outro cutscene
-	//}
+	while(completed && nr<CARGO_COUNT)
+	{
+		if(!this->_pData->savedData.levels[_pData->enumState].lvlCompleted)
+			completed = false; 
+		nr++; 
+	}
+	if(completed)
+	{
+		for(int i = 0; i< CARGO_COUNT; i++)
+		{
+			for(int k = 0; k<CARGO_COUNT; k ++)
+				this->_pData->savedData.levels[i].cargoTaken.at(k) = false; 
+			this->_pData->savedData.levels[i].lvlCompleted = false; 
+		}
+
+		currentCut = FlyCutsceneType_Outro;
+		this->_pData->loadingThread	= CreateThread(NULL , 4*255, FlyGame::playCutscene, (void*)this->_pData->fly, 0, NULL);
+		WaitForSingleObject(this->_pData->loadingThread, INFINITE);
+		TerminateThread(this->_pData->loadingThread, 0);
+	}
 
 
 	WriteSaveFile(_pData->savedData.path, _pData->savedData); 

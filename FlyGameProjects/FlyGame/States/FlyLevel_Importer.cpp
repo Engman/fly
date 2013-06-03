@@ -133,7 +133,10 @@ bool FlyState_Level::_ImportTerrain(wifstream& file, vector<IShader*>& shaders)
 	if(!this->entryInstance->GetCoreInstance()->Geometry_Load(ReadString(file, dummy).c_str(), &this->theWorld, FlyGeometry_Terrain, 1, 5))
 		return false;
 
-	this->theWorld[0]->setShader(shaders[FlyShader_gBufferDefault]);
+	this->theWorld[0]->setPosition	( ReadVector3(file) );
+	this->theWorld[0]->setRotation	( ReadVector3(file) );
+	this->theWorld[0]->setScale		( ReadVector3(file) );
+	this->theWorld[0]->setShader	(shaders[FlyShader_gBufferDefault]);
 
 	return true;
 }
@@ -144,7 +147,7 @@ bool FlyState_Level::_ImportSkybox(wifstream& file, vector<IShader*>& shaders)
 		return false;
 
 	this->skyBox[0]->setShader(shaders[FlyShader_gBufferNoDepth]);
-	this->skyBox[0]->setScale(vec3(20 , 20 ,20));
+	//this->skyBox[0]->setScale(vec3(20 , 20 ,20));
 
 
 	return true;
