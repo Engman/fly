@@ -470,6 +470,22 @@ bool D3DShell::init(D3D_INIT_DESC& desc)
 	ds.FrontFace.StencilFunc				= D3D11_COMPARISON_ALWAYS;
 	ds.BackFace                             = ds.FrontFace;
 
+	D3D11_SAMPLER_DESC sd;
+	ZeroMemory(&sd, sizeof(sd));
+	sd.Filter			= D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sd.AddressU			= D3D11_TEXTURE_ADDRESS_BORDER;
+	sd.AddressV			= D3D11_TEXTURE_ADDRESS_BORDER;
+	sd.AddressW			= D3D11_TEXTURE_ADDRESS_BORDER;
+	sd.MipLODBias		= 0.0f;
+	sd.MaxAnisotropy	= 16;
+	sd.ComparisonFunc	= D3D11_COMPARISON_ALWAYS;
+	sd.BorderColor[0]	= 1.0f;
+	sd.BorderColor[1]	= 1.0f;
+	sd.BorderColor[2]	= 1.0f;
+	sd.BorderColor[3]	= 1.0f;
+	sd.MinLOD			= 0.0f;
+	sd.MaxLOD			= D3D11_FLOAT32_MAX;
+
 
 	if(!this->_prDatPtr->blendModeState.init(this->_prDatPtr->d3dDevice, &blendDesc))
 		return false;
@@ -477,7 +493,7 @@ bool D3DShell::init(D3D_INIT_DESC& desc)
 		return false;
 	if(!this->_prDatPtr->depthStencilState.init(this->_prDatPtr->d3dDevice, &ds)) 
 		return false;
-	if(!this->_prDatPtr->samplerState.init(this->_prDatPtr->d3dDevice))  
+	if(!this->_prDatPtr->samplerState.init(this->_prDatPtr->d3dDevice, &sd))  
 		return false;
 
 	// init render targets
@@ -828,7 +844,7 @@ void D3DShell::setLightSRV()
 	srv[1] = this->_prDatPtr->lightTexture.getColorSRV();		
 	srv[2] = this->_prDatPtr->shadowTexture.getDepthSRV();//	
 	srv[3] = this->_prDatPtr->g_bufferDepthTexture.getDepthSRV();  //g_buffTextures[1].getColorSRV();	//	
-	srv[4] = this->_prDatPtr->blurTexture.getColorSRV();			
+	srv[4] = this->_prDatPtr->blurTexture.getColorSRV();	
 	D3DShell::self()->getDeviceContext()->PSSetShaderResources(0,nrOfsrv,srv);
 }
 
