@@ -7,7 +7,7 @@ s 0.200000 0.000000 0.000000 1.000000
 sp 10
 
 ta 
-td ..\Resources\Menu\TEX\cursor.png
+td ..\Resources\Menu\TEX\miniCargo_blue.png
 ts ..\Resources\Textures\noGlow.png
 tg ..\Resources\Textures\noGlow.png
 tn ..\Resources\Textures\noGlow.png

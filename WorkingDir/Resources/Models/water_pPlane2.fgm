@@ -9,7 +9,7 @@ ta
 td ..\Resources\Textures\bright_blue.jpg
 ts 
 tg 
-tn ..\Resources\Textures\WaterNormal.png
+tn ..\Resources\Textures\bump_water.jpg
 endmtl 
 an 0 1 
 fr 0 0.0 

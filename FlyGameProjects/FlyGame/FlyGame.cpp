@@ -145,7 +145,6 @@ bool FlyGame::Initiate()
 	this->_pData->mainMenu = new FlyState_Menu();
 	this->_pData->curState = this->_pData->mainMenu;
 
-
 	this->_pData->luaState = luaL_newstate();
 	luaL_openlibs(this->_pData->luaState);
 
@@ -346,6 +345,25 @@ void FlyGame::setLvlSaveData(int cargoTaken)
 	}
 	if(taken)
 		this->_pData->savedData.levels[_pData->enumState].lvlCompleted = true; 
+
+	nr = 0; 
+	bool completed = true; 
+	//while(completed && nr<CARGO_COUNT)
+	//{
+	//	if(!this->_pData->savedData.levels[_pData->enumState].lvlCompleted)
+	//		completed = false; 
+	//	nr++; 
+	//}
+	//if(completed)
+	//{
+	//	for(int i = 0; i< CARGO_COUNT; i++)
+	//	{
+	//		for(int k = 0; k<CARGO_COUNT; k ++)
+	//			this->_pData->savedData.levels[i].cargoTaken.at(k) = false; 
+	//		this->_pData->savedData.levels[i].lvlCompleted = false; 
+	//	}
+	//	// play outro cutscene
+	//}
 
 
 	WriteSaveFile(_pData->savedData.path, _pData->savedData); 

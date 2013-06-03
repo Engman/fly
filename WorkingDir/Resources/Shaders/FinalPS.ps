@@ -92,19 +92,32 @@ float4 FPixelShader(PSIn input) :  SV_Target
 		float scale = depth;
 		shadow = ShadowFactor( depthLightVP, lightSamp, scale);
 		shadow = clamp(shadow, 0.4, 1.0f);
-		finalColor = saturate(color*0.5 + lighting*0.5)*(shadow);
-
-		//finalColor = lighting;
-		return finalColor = saturate( finalColor + glowColor );
+		finalColor = color*0.5 + lighting*0.5*(shadow);
+		
+		
+		if(glowColor.r > 0.0f && glowColor.g > 0.0f && glowColor.b > 0.0f )
+		{
+			return finalColor = saturate( finalColor + glowColor*0.4f );
+		}
+		return finalColor = saturate(finalColor);
 	}
 	
-	shadow = ShadowSRV.Sample(SampleTypeClamp, input.TextCoord).r; // + 0.001 < depthLightVP) ? 0.0f : 1.0f;
-	shadow= pow(shadow,200);
+	//shadow = ShadowSRV.Sample(SampleTypeClamp, input.TextCoord).r; // + 0.001 < depthLightVP) ? 0.0f : 1.0f;
+	//shadow= pow(shadow,200);
 	//color = float4(shadow, shadow, shadow, 1);
 	
-	finalColor = color; 
+	//finalColor = color; 
+	//return finalColor;
 	
-	//finalColor = saturate( finalColor + glowColor );
+	if(glowColor.r > 0.0f && glowColor.g > 0.0f && glowColor.b > 0.0f )
+	{
+		finalColor = saturate( color + glowColor*0.4f );
+	}
+	else
+	{
+		finalColor = color; 
+	}
+	
 	return finalColor;
 }
 

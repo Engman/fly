@@ -39,33 +39,17 @@ float4 FPixelShader(PSIn input) :  SV_Target
 
 	float4 neighborNormalDepth;
 	float totalWeight = Weight[0];
-	float scale = blurFactor; //* centerNormalDepth.z; //I want the scale to decay with the depht * 	(centerNormalDepth.w );
-		
+
+	//float scale = blurFactor  * centerNormalDepth.w; 	
+	float scale = 1  * centerNormalDepth.w; 
+	//scale = clamp(scale, 2, 7); 
     for( int i = 1; i < 5; i++ )
     {
 		sum += GlowSRV.Sample(SampleTypeClamp,  input.TextCoord  + float2(PixOffset[i], 0.0) * scale * dx ) * Weight[i];
 		sum += GlowSRV.Sample(SampleTypeClamp,  input.TextCoord - float2(PixOffset[i], 0.0) * scale * dx ) * Weight[i];
     }
 	
-    /*for( int i = 1; i < 5; i++ )
-    {
-		neighborNormalDepth = gNormal_Depth_SRV.Sample(SampleTypeClamp, input.TextCoord  + float2(PixOffset[i], 0.0) * scale * dx );
-		if(dot(neighborNormalDepth.xyz, centerNormalDepth.xyz) >= 0.8f &&
-			abs(neighborNormalDepth.w - centerNormalDepth.w) <= 0.2f)
-		{
-			sum += GlowSRV.Sample(SampleTypeClamp,  input.TextCoord  + float2(PixOffset[i], 0.0) * scale * dx ) * Weight[i];
-			totalWeight += Weight[i];
-		}
-		neighborNormalDepth = gNormal_Depth_SRV.Sample(SampleTypeClamp, input.TextCoord  - float2(PixOffset[i], 0.0) * scale * dx );
-		
-		if(dot(neighborNormalDepth.xyz, centerNormalDepth.xyz) >= 0.8f &&
-			abs(neighborNormalDepth.w - centerNormalDepth.w) <= 0.2f)
-		{
-			sum += GlowSRV.Sample(SampleTypeClamp,  input.TextCoord - float2(PixOffset[i], 0.0) * scale * dx ) * Weight[i];
-			totalWeight += Weight[i];
-		}
-    }*/
-    return sum; // totalWeight;
+    return sum; 
   
 }
 

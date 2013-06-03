@@ -6,6 +6,7 @@ FlyPlayer::FlyPlayer()
 	this->maxVelocity = vec3(0.4f, 0.4f, 0.8f);
 	this->maxEnergy = 10000;
 	this->energy = maxEnergy;
+	this->closeCargo = false; 
 }
 
 FlyPlayer::~FlyPlayer()
@@ -167,6 +168,15 @@ void FlyPlayer::StopAnimation(int nr, float dt)
 	((FlyMeshAnimated*)this->playerModel[0])->StopAnimation(nr, dt); 
 }
 
+void FlyPlayer::setCloseCargo(bool close)
+{
+	this->closeCargo = close; 
+}
+
+bool FlyPlayer::getCloseCargo() const
+{
+	return this->closeCargo; 
+}
 
 void FlyPlayer::Release()
 {

@@ -25,7 +25,6 @@ struct PS_IN
 {
   float4 position 			: SV_POSITION;
   float4 ScreenPos 			: TEXCOORD;
-  //float2 TextCoord 			: TEXCOORD;
 };
 
 struct PSOut
@@ -36,44 +35,32 @@ struct PSOut
 //-----------------------------------------------------------------------------------------
 // PixelShader: PSSceneMain
 //-----------------------------------------------------------------------------------------
-
-
-  //float4 ColorRGBA 				: SV_TARGET0;
-  //float4 NormalRGB_DepthA 		: SV_TARGET1;
-  //float4 AmbR_diffG_specB_powA 	: SV_TARGET2;
-  //float4 PositionRGB_ 			: SV_TARGET3;
-  
-  float4 LightFactor(PointLight gPointLight, float4 posWorld, float3 normal, float textSpec )
+float ManualSample(float2 UV, int text)
 {
 	
-	float3 lightToPixel = pointLight.Position.xyz-posWorld.xyz;
+	float w = 1200.0f;
+	float h = 600.0f;
+
 	
-	float distance		= length(lightToPixel);
+	float dx = 1.0f / w;
 	
-	float intensity		= dot(normalize(lightToPixel), normalize(normal.xyz));
-	
-	//distance = radius => newIntensity = 0
-	//distance = 0 => newIntensity = intensity
-	//position.w holds the range 
-	float newIntensity	= ((pointLight.Position.w - distance) /pointLight.Position.w) * intensity * 10; 
-	float4 color		= pointLight.Ambient;	
-		
-	if(newIntensity>0.0)
+	float2 off[9] = 
 	{
-		float3 reflection	= reflect(-lightToPixel, normal.xyz);
-
-		float s		= max(dot(normalize(reflection), normalize(cameraPos)),0.0); 
-		float spec = pow(s,6);
-		//spec+= textSpec;
-		normalize(spec);
-
-		//newIntensity += spec ; //add specular light	
-		color = pointLight.Diffuse; 
-		color = color * newIntensity;
+		float2(-dx, -dx ),	float2(0.0f, -dx ),	float2(dx, -dx),
+		float2(-dx, 0.0f),	float2(0.0f, 0.0f),	float2(dx, 0.0f),
+		float2(-dx, dx  ),	float2(0.0f, dx  ),	float2(dx, dx),
+	};
+	
+	float4 color = 0.0f;
+	for(int i = 0; i<9; i++)
+	{
+		color += gBufferText[text].Sample(SampleTypeClamp, UV + off[i]);
 	}
+
+	color /= 9;
 	return color;
+
 }
-  
 
  //Phong Shader
 float4 Phong(float3 Position, float3 N, float SpecularIntensity, float SpecularPower)
@@ -110,7 +97,7 @@ float4 Phong(float3 Position, float3 N, float SpecularIntensity, float SpecularP
 	//Calculate Final Product
 	float LightIntensity = 1.0;
 	return  LightIntensity* newIntensity *float4(Diffuse.rgb, 1);
-	return Attenuation * LightIntensity * float4(Diffuse.rgb, 1); //Specular);
+	return  LightIntensity * float4(Diffuse.rgb, 1); //Specular);Attenuation *
 }
 
   
@@ -129,10 +116,10 @@ PSOut FPixelShader(PS_IN input)
 	float2 UV = 0.5f * (float2(input.ScreenPos.x,- input.ScreenPos.y) + 1) - float2(1.0f / GBufferTextureSize.xy);
 	
 	//sample albedo color
-	float4 color = gBufferText[0].Sample( SampleTypeClamp, UV);
+	float4 color = ManualSample(UV, 0);
 	
 	//normal already in world space
-	float3 normal  = gBufferText[1].Sample( SampleTypeClamp, UV).xyz;
+	float3 normal = ManualSample(UV, 1);
 	normal = 2.0f* normal - 1;
 	normal = normalize(normal);
 	//normal = mul(normal, mInvView);
@@ -141,11 +128,9 @@ PSOut FPixelShader(PS_IN input)
 	
 	// projected positions
 	float4 position = float4(0,0,0,1);
-	
 	position.x = input.ScreenPos.x;
 	position.y = input.ScreenPos.y;
 	position.z = depth;
-	
 	
 	//pos in world space
 	position = mul(position,mInvViewProj);
@@ -156,99 +141,15 @@ PSOut FPixelShader(PS_IN input)
 	
 	//specular power
 	float pow = gBufferText[2].Sample( SampleTypeClamp, UV).w;
-	//pow*= 255;
 	
 	float4 LightColor = float4(0,0,0,0);
 	if(intens != 0) 
 	{
 		LightColor =  Phong(position, normal, intens, pow);
-		//LightColor = LightFactor(pointLight, position, normal, intens );
 		LightColor.w = 1;
 	}
 	
 	output.LightMap = LightColor;
 	
 	return output;
-	
-	
-	
-
-	/*albedo RGBA, normalRGB_depthA, specular, worldPosition
-	PSOut output= ( PSOut )0;
-	
-	//sample albedo color
-	float4 color = gBufferText[0].Sample( SampleTypeClamp, input.textCoord);
-	
-	float3 normal  = gBufferText[1].Sample( SampleTypeClamp, input.textCoord).xyz;
-	normal = mul((2*normal -1),(float3x3)mInvView);
-	
-	float depth = gBufferText[1].Sample( SampleTypeClamp, input.textCoord).w;
-
-	//pos in homogenus clipspace
-	float4 position = 1.0f;
-	position.x = input.textCoord.x * 2.0f - 1.0f;
-	position.y = -(input.textCoord.x * 2.0f - 1.0f);
-	position.z = depth;
-	
-	position.xyz = gBufferText[3].Sample( SampleTypeClamp, input.textCoord).xyz;
-	
-	//specular intensity
-	float textSpec= gBufferText[2].Sample( SampleTypeClamp, input.textCoord).r;
-	
-	
-	//specular power
-	float pow;
-	pow = gBufferText[2].Sample( SampleTypeClamp, input.textCoord).w;
-	
-	
-	//pos in world space
-	//position = mul(position,mInvViewProj);
-	//position /= position.w;
-	LightOutData finalLight;
-	
-	//float4 LightColor  = Phong( position.xyz, normal, intens, pow);
-	//output.LightMap = clamp((LightColor*0.3) + (color*0.7), 0,1);
-
-	float4 lightColor; 
-	
-	lightColor = LightFactor(pointLight, position, normal, textSpec );
-	output.LightMap = lightColor;// * color; //*textSpec;
-	output.LightMap.w = 1; //set alpha 
-	
-	
-	if(intens != 0) 
-	{
-		LightColor = Phong( position.xyz, normal, intens, pow);
-		LightColor.w = 1;
-	}
-	
-	
-	//output.LightMap = pointLight.Diffuse; 
-	//output.LightMap = color;
-	//ComputePointLight( pointLight, position.xyz, normal, cameraPos, finalLight);
-	//output.LightMap =  clamp((finalLight.Diffuse*0.5) * (color*0.5), 0,1);
-	//output.LightMap = color* pointLight.Diffuse;
-	//ComputeDirLight( dirLight, normal, cameraPos, finalLight);
-	//output.LightMap = clamp((finalLight.Diffuse*0.3) + (color*0.7), 0,1);
-	
-	//-----------------------------
-	
-	float3 lightToPixel = -dirLight.Direction; //vector from the light source to the pixle
-	
-	float intensity		= dot(normalize(lightToPixel), normalize(normal.xyz));
-	float4 lightColor		= dirLight.Ambient;
-
-	if(intensity>0.0) //if light hits the pixle
-	{
-		lightColor+=dirLight.Diffuse * intensity;
-	}
-	output.LightMap 		= lightColor * 0.5 + color * 0.5; 	
-
-	//--------------------------------------------
-	
-	//output.LightMap = LightColor; 
-	
-	
-	return output;
-	*/
 }

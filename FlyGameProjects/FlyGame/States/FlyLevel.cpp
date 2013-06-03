@@ -37,15 +37,14 @@ bool FlyState_Level::Initiate(FlyGame* instance)
 	this->state = 0;
 	this->lastState = 0; 
 
-	//this->controlScheme = CONTROL_Debug;
-	this->controlScheme = CONTROL_Casual;
+	this->controlScheme = CONTROL_Debug;
+	//this->controlScheme = CONTROL_Casual;
 
 	this->entryInstance = instance;
 
 
 	//Read level data
 	if(!this->ReadLevel(this->entryInstance->getLevel()))
-	//if(!this->ReadLevel(L"..\\Resources\\Levels\\testLinda2.fgl"))
 		return false;
 	
 
@@ -136,12 +135,18 @@ bool FlyState_Level::Update()
 	//Moves and collides player against the world/tilts player model accordingly
 	this->UpdatePlayer();
 
+	player.setCloseCargo(false);
 	//Collision against pickups
 	for(unsigned int i = 0; i < 3; i++)
 	{
 		if(!this->pickups[i].GetTaken())
 		{
 			this->pickups[i].Update(this->mainTimer->GetDeltaTime());
+			D3DXVECTOR3 dir;
+			dir = player.GetPosition() - pickups[i].GetPosition();
+			float distance = D3DXVec3Length(&dir); 
+			if(distance<2000)
+				player.setCloseCargo(true);
 			if(SphereVSSphere(*this->pickups[i].GetBoundingSphere(), *this->player.GetBoundingSphere()))
 			{
 				this->pickupParticle.SetPosition(this->pickups[i].GetPosition());
@@ -194,7 +199,7 @@ bool FlyState_Level::Update()
 	this->UIorthographic[0]->Update();
 
 	//play a warning sound when the energy is low
-	if(this->player.GetEnergy()<8000)
+	if(this->player.GetEnergy()<1000)
 	{
 		this->entryInstance->GetCoreInstance()->Audio_PlaySound(FlySound_LowEnergy);
 	}
@@ -549,10 +554,11 @@ bool FlyState_Level::Render()
 		this->player.Render(f);
 	}
 
+	bool glowOn = player.getCloseCargo(); 
 
 	this->entryInstance->GetCoreInstance()->Gfx_DrawSkyBox();
 	
-	this->entryInstance->GetCoreInstance()->Gfx_DrawGbuffer(((FlyWaterMesh*)this->water[0])->getWaterBuffer());
+	this->entryInstance->GetCoreInstance()->Gfx_DrawGbuffer(((FlyWaterMesh*)this->water[0])->getWaterBuffer(), glowOn);
 	
 	//switch back to player camera view
 	this->menuCamera.ConstructViewFrustum(f);

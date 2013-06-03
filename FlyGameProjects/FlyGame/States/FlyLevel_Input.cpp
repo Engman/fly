@@ -220,6 +220,10 @@ void FlyState_Level::_InputDebug()
 	{
 		player.UpdateAnimation(0, this->mainTimer->GetDeltaTime()); 
 	}
+	//if shift is not pressed the wigs will go out
+	else
+		player.StopAnimation(0, this->mainTimer->GetDeltaTime());
+
 	if(mouseY < 0)
 	{
 		this->mainCamera.RelativePitch(0.05f*mouseY);

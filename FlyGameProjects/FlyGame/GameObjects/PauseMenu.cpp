@@ -40,18 +40,18 @@ bool PauseMenu::Initialize(FlyGame* entry, float windowHeight, float windowWidth
 	this->models[2]->setShader(shaders[FlyShader_gBufferDefault]);
 	this->models[2]->setBoundingSphere(sphere);
 
-	entry->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\mouse_cursor.fgm", &this->models);
-	this->models[3]->setScale(vec3(3.0f, 3.0f, 1.0f));
+	entry->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Menu\\UI\\mini_cargo1.fgm", &this->models);
+	this->models[3]->setScale(vec3(20.0f, 20.0f, 1.0f));
 	this->models[3]->setPosition(vec3(-this->windowWidth*0.165f, 0.0f, 0.0f));
 	this->models[3]->setShader(shaders[FlyShader_gBufferDefault]);
 	this->models[3]->setBoundingSphere(sphere);
-	entry->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\mouse_cursor.fgm", &this->models);
-	this->models[4]->setScale(vec3(3.0f, 3.0f, 1.0f));
+	entry->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Menu\\UI\\mini_cargo2.fgm", &this->models);
+	this->models[4]->setScale(vec3(20.0f, 20.0f, 1.0f));
 	this->models[4]->setPosition(vec3(0.0f, 0.0f, 0.0f));
 	this->models[4]->setShader(shaders[FlyShader_gBufferDefault]);
 	this->models[4]->setBoundingSphere(sphere);
-	entry->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\mouse_cursor.fgm", &this->models);
-	this->models[5]->setScale(vec3(3.0f, 3.0f, 1.0f));
+	entry->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Menu\\UI\\mini_cargo3.fgm", &this->models);
+	this->models[5]->setScale(vec3(20.0f, 20.0f, 1.0f));
 	this->models[5]->setPosition(vec3(this->windowWidth*0.165f, 0.0f, 0.0f));
 	this->models[5]->setShader(shaders[FlyShader_gBufferDefault]);
 	this->models[5]->setBoundingSphere(sphere);
