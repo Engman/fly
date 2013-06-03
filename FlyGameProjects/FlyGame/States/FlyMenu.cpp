@@ -6,6 +6,7 @@
 #include "..\..\FlyGameEngine\Core\D3DShell.h"
 #include "..\..\FlyGameEngine\Core\WindowShell.h"
 #include "..\..\FlyGameEngine\Util\CollisionLib.h"
+#include "..\..\FlyGameEngine\Util\MutexHandler.h"
 #include <iostream>
 
 
@@ -73,8 +74,10 @@ bool FlyState_Menu::Initiate(FlyGame* instance)
 	this->mainMenuCam.Render();
 	this->mainMenuCam.SetPosition(0.0f, 0.0f, -5.0f);
 	
+	MutexHandler::SetMutex(MutexResource_ALL, true);
 	if(!ReadData())
 		return false;
+	MutexHandler::SetMutex(MutexResource_ALL);
 
 
 	return true;
@@ -306,6 +309,7 @@ bool FlyState_Menu::ReadData()
 	//__________________________________//
 	//			Load menu items			//
 	//__________________________________//
+	
 	do
 	{
 		in >> inData;

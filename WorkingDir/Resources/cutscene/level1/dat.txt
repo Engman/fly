@@ -1,3 +1,4 @@
-..\Resources\cutscene\level1\demo1.JPG
-..\Resources\cutscene\level1\demo4.JPG
-..\Resources\cutscene\level1\demo5.JPG
+..\Resources\cutscene\level1\lvl1_1.jpg
+..\Resources\cutscene\level1\lvl1_2.jpg
+..\Resources\cutscene\level1\lvl1_3.jpg
+..\Resources\cutscene\level1\lvl1_4.jpg

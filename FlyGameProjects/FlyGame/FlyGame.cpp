@@ -1,5 +1,6 @@
 #include "FlyGame.h"
 #include "GameObjects\Cutscene.h"
+#include "..\FlyGameEngine\Util\MutexHandler.h"
 
 #ifndef FLY_CORE_DLL
 #define FLY_CORE_DLL
@@ -74,7 +75,7 @@ struct FlyGame::_DATA_
 	FlyGameSystemState enumState;
 	SaveFile savedData; 
 	wstring levelPath;
-
+	bool idle;
 
 	
 };
@@ -97,6 +98,7 @@ FlyGame::FlyGame()
 	this->_pData->levelPath = L"";
 	this->_pData->stateChanged = false;
 	this->_pData->enumState = Menu;
+	this->_pData->idle = false;
 }
 FlyGame::~FlyGame()
 {
@@ -121,10 +123,23 @@ bool FlyGame::Initiate()
 
 	//We should load an .ini file to determinate initialization values
 
+	RECT desktop;
+	const HWND hDesktop = GetDesktopWindow();
+	GetWindowRect(hDesktop, &desktop);
+	long horizontal = desktop.right;
+	long vertical = desktop.bottom;
+
 	FLY_ENGINE_INIT_DESC cd;
-	cd.winWidth			= 1200;
+	cd.winWidth			= 800;
 	cd.winHeight		= 600;
 	cd.fullscreen		= false;
+	cd.showSplash		= false;
+	cd.windowName		= L"Sky Travler";
+	cd.vSync			= true;
+	cd.multisampling	= true;
+	cd.winPosX			= 50;
+	cd.winPosY			= 50;
+	
 
 
 	this->_pData->mainMenu = new FlyState_Menu();
@@ -182,27 +197,35 @@ void FlyGame::Run()
 
 
 	MSG msg;
+	
 	while (this->_pData->curState)
 	{
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-		{ 
-			if (msg.message == WM_QUIT)
-			{
-				break;
-			}
-			DispatchMessage(&msg);
-		}
-		else
+		if (!this->_pData->idle)
 		{
-			this->_pData->curState->Frame();
+			if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+			{ 
+				if (msg.message == WM_QUIT)
+				{
+					break;
+				}
+				DispatchMessage(&msg);
+			}
+			else
+			{
+				this->_pData->curState->Frame();
 
-			if(this->_pData->stateChanged)
-				handleStateChange();
+				if(this->_pData->stateChanged)
+					handleStateChange();
 
+			}
 		}
 	}
 }
 
+void FlyGame::setIdle(bool idle)
+{
+	this->_pData->idle = idle;
+}
 
 
 FlyEngine* FlyGame::GetCoreInstance() const
@@ -283,6 +306,7 @@ void FlyGame::handleStateChange()
 
 			WaitForSingleObject(this->_pData->loadingThread, INFINITE);
 			TerminateThread(this->_pData->loadingThread, 0);
+			//this->_pData->idle = true;
 		}
 		else
 		{

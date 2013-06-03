@@ -1,6 +1,8 @@
 #ifndef RESOURCE_IMPORT_H
 #define RESOURCE_IMPORT_H
 
+#include "..\..\Util\MutexHandler.h"
+
 #include <vector>
 
 using namespace std;

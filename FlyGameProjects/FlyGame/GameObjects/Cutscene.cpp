@@ -50,6 +50,10 @@ bool FlyCutscene::RunCutscene(FlyCutsceneType scene, FlyEngine* _core)
 			p = L"..\\Resources\\cutscene\\level3\\dat.txt";
 		break;
 
+		case FlyCutsceneType_Outro:
+			p = L"..\\Resources\\cutscene\\outro\\dat.txt";
+		break;
+
 		default:
 			return false;
 	}
@@ -140,6 +144,8 @@ bool doLoad(const wchar_t* scene)
 		(*v)[i] = mesh[i];
 	}
 	
+	if(!MutexHandler::SetMutex(MutexResource_ALL, true))	return false;
+
 	while (!in.eof())
 	{
 		wchar_t temp[255];
@@ -162,7 +168,11 @@ bool doLoad(const wchar_t* scene)
 			md.normalTexture	= L"";
 			int i = MaterialHandler::AddMaterial(md);
 
-			if(i == -1)			return false;
+			if(i == -1)			
+			{
+				MutexHandler::SetMutex(MutexResource_ALL);
+				return false;
+			}
 
 			FlyMesh::OBJECT_DESC fd;
 			fd.device			= D3DShell::self()->getDevice();
@@ -174,10 +184,14 @@ bool doLoad(const wchar_t* scene)
 			fd.shader			= core->Gfx_GetShader(FlyShader_gBufferDefault);
 			FlyMesh* a = new FlyMesh();
 			if(!a->Initialize(fd))
+			{
+				MutexHandler::SetMutex(MutexResource_ALL);
 				return false;
+			}
 			parts.push_back(a);
 		}
 	}
+	MutexHandler::SetMutex(MutexResource_ALL);
 
 	in.close();
 

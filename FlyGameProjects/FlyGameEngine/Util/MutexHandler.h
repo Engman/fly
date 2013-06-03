@@ -5,8 +5,9 @@
 
 enum MutexResource
 {
-	MATERIAL_HANDLER,
-	RESOURCE_IMPORTER,
+	MutexResource_MATERIAL_HANDLER,
+	MutexResource_RESOURCE_IMPORTER,
+	MutexResource_ALL,
 };
 
 class MutexHandler
@@ -19,38 +20,39 @@ class MutexHandler
 			static HANDLE importer = CreateMutex(NULL, 0, NULL);
 
 			
-			if(res == MATERIAL_HANDLER)
+			if(res == MutexResource_ALL)
 			{
 				if(!get)
 				{
-					if(ReleaseMutex(material) == FALSE)
-						return false;
+					if(ReleaseMutex(material) == FALSE)	return false;
+					if(ReleaseMutex(importer) == FALSE)	return false;
 				}
 				else
 				{
-					DWORD result = WaitForSingleObject(material, INFINITE);
-					//Something bad happend
-					if(WAIT_OBJECT_0 != result)
-						return false;
+					if(WaitForSingleObject(material, INFINITE) != WAIT_OBJECT_0)	return false;
+					if(WaitForSingleObject(importer, INFINITE) != WAIT_OBJECT_0 )	return false;
 				}
 
 				return true;
 			}
-			else if(res == RESOURCE_IMPORTER)
+			else if(res == MutexResource_MATERIAL_HANDLER)
 			{
 				if(!get)
-				{
-					if(ReleaseMutex(importer) == FALSE)
-						return false;
-				}
+					if(ReleaseMutex(material) == FALSE)	return false;
 				else
-				{
-					DWORD result = WaitForSingleObject(importer, INFINITE);
-					//Something bad happend
-					if(WAIT_OBJECT_0 != result)
-						return false;
-				}
+					if(WAIT_OBJECT_0 != WaitForSingleObject(material, INFINITE))	return false;
+				
 
+				return true;
+			}
+			else if(res == MutexResource_RESOURCE_IMPORTER)
+			{
+				if(!get)
+					if(ReleaseMutex(importer) == FALSE)		return false;
+				
+				else
+					if(WAIT_OBJECT_0 != WaitForSingleObject(importer, INFINITE))	return false;
+				
 				return true;
 			}
 
