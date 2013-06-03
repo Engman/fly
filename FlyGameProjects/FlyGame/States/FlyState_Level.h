@@ -33,7 +33,7 @@ class FlyState_Level		:public IFlySystemState
 		vector<Entity*> pointLights; 
 		vector<Entity*> cursor;
 		vector<Entity*> UIorthographic; 
-		vector<LightViewProj*> shadowViews;
+		vector<Camera*> shadowViews;
 
 		FlyPlayer player;
 		FlyPickup pickups[3];

@@ -244,25 +244,25 @@ bool FlyState_Level::_ImportLights(wifstream& file, vector<IShader*>& shaders)
 
 		D3DXMATRIX viewMatrix, projectionMatrix;
 		//D3DXMatrixLookAtLH(&viewMatrix, &D3DXVECTOR3(1000, 200, 0), &D3DXVECTOR3(0,-1,0), &D3DXVECTOR3(0,1,0));
-		D3DXMatrixLookAtLH(&viewMatrix, &pos, &D3DXVECTOR3(dirLightProxy.direction.x, dirLightProxy.direction.y, dirLightProxy.direction.z ), &D3DXVECTOR3(0.0, 1.0, 0.0));
+		//D3DXMatrixLookAtLH(&viewMatrix, &pos, &D3DXVECTOR3(dirLightProxy.direction.x, dirLightProxy.direction.y, dirLightProxy.direction.z ), &D3DXVECTOR3(0.0, 1.0, 0.0));
 
-		D3DXMatrixPerspectiveFovLH(&projectionMatrix,(float)D3DX_PI*0.2f, D3DShell::self()->getAspectRatio(), 1, 10000);
+		//D3DXMatrixPerspectiveFovLH(&projectionMatrix,(float)D3DX_PI*0.2f, D3DShell::self()->getAspectRatio(), 1, 10000);
 		//int w, h;this->entryInstance->GetCoreInstance()->Core_Dimensions(w, h);
 		//D3DXMatrixOrthoLH(&projectionMatrix, (float)w, (float)h, 0.1, 10000);
 
-		Camera ShadowCamera; 
-		ShadowCamera.SetPosition(vec3(0, 800, 0));
-		ShadowCamera.SetRotation(vec3( 90, 0 , 0));
+		Camera* ShadowCamera = new Camera(); 
+		ShadowCamera->SetPosition(pos);
+		ShadowCamera->SetRotation(vec3( 90, 0 , 0));
 
 		int w = 0;
 		int h = 0;
 		this->entryInstance->GetCoreInstance()->Core_Dimensions(w, h);
-		ShadowCamera.SetProjectionMatrix((float)D3DX_PI*0.2f, (float)w/h, 0.2f, 4000.0f);
-		//ShadowCamera.SetOrthogonalMatrix(200, 400, 0.2f, 4000.0f); 
-		ShadowCamera.Render(); 
+		ShadowCamera->SetProjectionMatrix((float)D3DX_PI*0.2f, (float)w/h, 0.2f, 4000.0f);
+		ShadowCamera->SetOrthogonalMatrix(2000, 2000, 0.2f, 4000.0f); 
+		ShadowCamera->Render(); 
 
-		viewMatrix = ShadowCamera.GetViewMatrix(); 
-		projectionMatrix = ShadowCamera.GetProjectionMatrix(); 
+		viewMatrix = ShadowCamera->GetViewMatrix(); 
+		projectionMatrix = ShadowCamera->GetProjectionMatrix(); 
   
 		LightViewProj *lightViewProj = new LightViewProj(); 
 		lightViewProj->lView = viewMatrix;
@@ -282,7 +282,8 @@ bool FlyState_Level::_ImportLights(wifstream& file, vector<IShader*>& shaders)
 		{
 			//this->lightCamera.SetProjectionMatrix(projectionMatrix);
 			//this->lightCamera.SetViewMatrix(viewMatrix); 
-			shadowViews.push_back(lightViewProj);
+			//shadowViews.push_back(lightViewProj);
+			shadowViews.push_back(ShadowCamera);
 		}
   
 	}

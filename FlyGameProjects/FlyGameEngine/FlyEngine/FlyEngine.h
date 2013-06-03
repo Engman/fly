@@ -121,10 +121,10 @@ class FlyEngine
 		virtual void		FLYCALL		Gfx_DrawSkyBox				()																	= 0;
 		virtual void		FLYCALL		Gfx_DrawGbuffer				(BaseBuffer* waterBuffer, bool glowOn)																	= 0;
 		virtual void		FLYCALL		Gfx_DrawGbufferOrtho		()																	= 0;
-		virtual void		FLYCALL		Gfx_DrawShadows				(vector<LightViewProj*> *shadowViews)								= 0;
+		virtual void		FLYCALL		Gfx_DrawShadows				(vector<Camera*> *shadowViews)										= 0;
 		virtual void		FLYCALL		Gfx_DrawLighting			()																	= 0;
 		virtual void		FLYCALL		Gfx_DrawBlur				()																	= 0;
-		virtual void		FLYCALL 	Gfx_DrawFinalPicture		(vector<LightViewProj*> *shadowViews)=0;
+		virtual void		FLYCALL 	Gfx_DrawFinalPicture		(vector<Camera*> *shadowViews)										= 0;
 
 		/** Resizes the render targets */
 		virtual void		FLYCALL		Gfx_Resize					(int width, int height)												= 0;

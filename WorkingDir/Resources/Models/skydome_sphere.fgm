@@ -1,16 +1,17 @@
 ac 0 
 vc 2880
-m skydome:Material1
+m spireMat2
 a 0.500000 0.500000 0.500000 1.000000
 d 1.000000 1.000000 1.000000 1.000000
 s 0.500000 0.000000 0.000000 1.000000
-sp 10
+sp 0
 ta 
-td ..\Resources\Textures\default.jpg
-ts 
-td 
-tn 
-endmtl 
+td ..\\Resources\\Textures\\sky2.png
+ts ..\Resources\Textures\noGlow.png
+tg ..\Resources\Textures\noGlow.png
+tn ..\Resources\Textures\noGlow.png
+endmtl
+
 an 0 1 
 fr 0 0.0 
 v 

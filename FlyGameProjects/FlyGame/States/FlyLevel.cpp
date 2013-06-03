@@ -169,6 +169,7 @@ bool FlyState_Level::Update()
 		}
 
 	}
+
 	//Collision against energy
 	for(unsigned int i = 0; i < this->energy.size(); i++)
 	{
@@ -541,25 +542,26 @@ bool FlyState_Level::Render()
 	for(unsigned int i = 0; i <(int) this->shadowViews.size(); i++)
 	{
 		//cull objects from the shadowCamera view
-		Camera ShadowCamera;
+		//Camera ShadowCamera;
 		/*	ShadowCamera.SetPosition(0.0, 100.0, 0.0);
 		ShadowCamera.SetViewMatrix(shadowViews[0]->lView);
 		ShadowCamera.SetProjectionMatrix(shadowViews[0]->lProj);
 		ShadowCamera.SetProjectionMatrix(D3DShell::self()->getWidth(), D3DShell::self()->getHeight(), 0.1f, 1000.0f);
 		ShadowCamera.Render();
 		*/
-		ShadowCamera.SetPosition(vec3(0, 800, 0));
-		ShadowCamera.SetRotation(vec3( 90, 0 , 0));
+		//ShadowCamera.SetPosition(vec3(0, 800, 0));
+		//ShadowCamera.SetRotation(vec3( 90, 0 , 0));
 
-		int w = 0;
-		int h = 0;
-		this->entryInstance->GetCoreInstance()->Core_Dimensions(w, h);
-		ShadowCamera.SetProjectionMatrix((float)D3DX_PI*0.2f, (float)w/h, 0.2f, 4000.0f);
-		//ShadowCamera.SetOrthogonalMatrix(200, 400, 0.2f, 4000.0f); 
-		ShadowCamera.Render(); 
+		//int w = 0;
+		//int h = 0;
+		//this->entryInstance->GetCoreInstance()->Core_Dimensions(w, h);
+		//ShadowCamera.SetProjectionMatrix((float)D3DX_PI*0.2f, (float)w/h, 0.2f, 4000.0f);
+		////ShadowCamera.SetOrthogonalMatrix(200, 400, 0.2f, 4000.0f); 
+		//ShadowCamera.Render(); 
 
-		ShadowCamera.ConstructViewFrustum(f);
-
+		//ShadowCamera.ConstructViewFrustum(f);
+		shadowViews.at(i)->ConstructViewFrustum(f);
+		 
 		for(unsigned int i = 0; i <(int) this->levelEntities.size(); i++)
 		{	
 			this->levelEntities[i]->setShader(shaders[FlyShader_Shadow]);
