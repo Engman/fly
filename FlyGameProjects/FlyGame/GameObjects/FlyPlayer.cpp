@@ -71,8 +71,6 @@ void FlyPlayer::Update()
 
 	this->boundingEllipse.radiusVector = (box.maxPoint - box.minPoint)*0.5f+vec3(0.1f, 0.0f, 0.1f);
 	this->boundingEllipse.center = this->GetPosition();
-
-	this->boundingEllipse.center = this->GetPosition();
 }
 
 vector<Entity*>* FlyPlayer::GetModel()

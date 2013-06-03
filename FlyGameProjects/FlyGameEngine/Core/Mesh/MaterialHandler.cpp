@@ -1,5 +1,4 @@
 #include "MaterialHandler.h"
-#include "..\..\Util\MutexHandler.h"
 
 
 static HANDLE MaterialResourceMutex = CreateMutex(0, FALSE, 0);
@@ -19,9 +18,6 @@ int findExistingMaterial(std::wstring name)
 
 int MaterialHandler::AddMaterial(ObjectMaterial::OBJECT_MATERIAL_DESC& desc)
 {
-	
-	if(!MutexHandler::SetMutex(MATERIAL_HANDLER, true))
-		return -1;
 
 	int k = findExistingMaterial(desc.name);
 	//if(k != -1)
@@ -29,10 +25,8 @@ int MaterialHandler::AddMaterial(ObjectMaterial::OBJECT_MATERIAL_DESC& desc)
 
 	SmartPtrStd<ObjectMaterial> m = new ObjectMaterial();
 	if(!m->CreateMaterial(desc))
-	{
-		MutexHandler::SetMutex(MATERIAL_HANDLER);
 		return -1;
-	}
+	
 	bool done = false;
 	int insertIndex = 0;
 	MaterialHandlerMaterialList.resize(MaterialHandlerMaterialList.size()+1);
@@ -56,7 +50,6 @@ int MaterialHandler::AddMaterial(ObjectMaterial::OBJECT_MATERIAL_DESC& desc)
 
 	MaterialHandlerMaterialList[insertIndex] = m;
 
-	MutexHandler::SetMutex(MATERIAL_HANDLER);
 
 	return MaterialHandlerMaterialList[insertIndex]->GetID();
 }
@@ -65,8 +58,6 @@ int MaterialHandler::AddMaterial(ObjectMaterial::OBJECT_MATERIAL_DESC& desc)
 
 bool MaterialHandler::RemoveMaterial(int GID)
 {
-	if(!MutexHandler::SetMutex(MATERIAL_HANDLER, true))
-		return false;
 
 	bool done = false;
 	for (int i = 0; i < (int)MaterialHandlerMaterialList.size(); i++)
@@ -78,25 +69,20 @@ bool MaterialHandler::RemoveMaterial(int GID)
 			break;
 		}
 	}
-	MutexHandler::SetMutex(MATERIAL_HANDLER);
+
 	return done;
 }
 
 ObjectMaterial* MaterialHandler::GetMaterial(int GID)
 {
-	if(!MutexHandler::SetMutex(MATERIAL_HANDLER, true))
-		return 0;
-
 	int first = 0;
 	int last = (int)MaterialHandlerMaterialList.size()-1;
 	int mid = (int)last/2;
 
 	//If only one material
 	if(first == last)
-	{
-		MutexHandler::SetMutex(MATERIAL_HANDLER);
 		return (GID == MaterialHandlerMaterialList[mid]->GetID()) ? MaterialHandlerMaterialList[mid] : NULL;
-	}
+	
 	while (first <= last)
 	{
 		if(MaterialHandlerMaterialList[mid]->GetID() > GID)
@@ -110,12 +96,10 @@ ObjectMaterial* MaterialHandler::GetMaterial(int GID)
 			mid = first + ((int)(last-first)/2);
 		}
 		else
-		{
-			MutexHandler::SetMutex(MATERIAL_HANDLER);
 			return MaterialHandlerMaterialList[mid];
-		}
+		
 	}
-	MutexHandler::SetMutex(MATERIAL_HANDLER);
+
 	return NULL;
 }
 ObjectMaterial* MaterialHandler::GetMaterial(std::wstring materialName)

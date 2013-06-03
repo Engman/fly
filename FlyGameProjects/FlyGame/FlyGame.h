@@ -90,6 +90,7 @@ class FlyGame
 		void Update();
 		void Render();
 		const wchar_t* getLevel();
+		void setIdle(bool idle);
 
 };
 

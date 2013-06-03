@@ -1,4 +1,5 @@
 #include "FlyState_Level.h"
+#include "..\..\FlyGameEngine\Util\MutexHandler.h"
 
 
 #if defined (_DEBUG) || defined (DEBUG)
@@ -30,17 +31,17 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 	this->entryInstance->GetCoreInstance()->Gfx_GetShader(shaders);
 
 
-		//Loading table:
-//---------------------------
-// - Terrain (0)
-// - Skybox (1)
-// - Water (2)
-// - Static objects (*)
-// - Pickups(3)
-// - Energy orbs
-// - Directional lights
-// - Point lights
-//---------------------------
+			//Loading table:
+	//---------------------------
+	// - Terrain (0)
+	// - Skybox (1)
+	// - Water (2)
+	// - Static objects (*)
+	// - Pickups(3)
+	// - Energy orbs
+	// - Directional lights
+	// - Point lights
+	//---------------------------
 
 
 	//Read the name of the file/level
@@ -48,6 +49,9 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 
 	//Read number of "static" objects on level
 	nrOfStuff = ReadInt(file);
+
+	//Get the mutex
+	MutexHandler::SetMutex(MutexResource_ALL, true);
 	
 	bool status = false;
 	for(int i = 0; i < nrOfStuff; i++)
@@ -69,17 +73,32 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 		}
 
 		if(!status)
+		{
+			MutexHandler::SetMutex(MutexResource_ALL);
 			return false;
+		}
 	}
 
-	if(!_ImportPickups(file, shaders))	return false;
-	if(!_ImportEnergy(file, shaders))	return false;
-	if(!_ImportLights(file, shaders))	return false;
-	if(!_ImportPlayer(file, shaders))	return false;
+	if(!_ImportPickups(file, shaders))	
+	{ 
+		MutexHandler::SetMutex(MutexResource_ALL); return false; 
+	}
+	if(!_ImportEnergy(file, shaders))	
+	{ 
+		MutexHandler::SetMutex(MutexResource_ALL); return false; 
+	}
+	if(!_ImportLights(file, shaders))	
+	{ 
+		MutexHandler::SetMutex(MutexResource_ALL); return false; 
+	}
+	if(!_ImportPlayer(file, shaders))	
+	{ 
+		MutexHandler::SetMutex(MutexResource_ALL); return false; 
+	}
 
 
 	file.close();
-/*________________________________END OF FILE_______________________________________*/
+	/*________________________________END OF FILE_______________________________________*/
 
 	
 	//Cursor
@@ -100,6 +119,8 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 	this->UIorthographic[0]->setScale(vec3((this->player.GetEnergy()/this->player.GetMaxEnergy())*20.0f,2.0f,1.0f));
 	this->UIorthographic[0]->setPosition(vec3(0.0f, -250.0f, 0.0f));
 	this->UIorthographic[0]->setBoundingSphere(0);
+
+	MutexHandler::SetMutex(MutexResource_ALL);
 
 	return true;
 }

@@ -111,6 +111,8 @@ class FlyState_Level		:public IFlySystemState
 		void Frame() override;
 
 		void Release() override;
+
+		void PlayLevelSound(bool play);
 };
 
 
