@@ -8,7 +8,7 @@ sp 10
 ta 
 td ..\Resources\Textures\default.jpg
 ts 
-td ..\Resources\Textures\halfGlow.png
+tg ..\Resources\Textures\fullGlow.png
 tn 
 endmtl 
 an 0 1 

@@ -299,7 +299,7 @@ void FlyGame::handleStateChange()
 		{
 			this->_pData->loadingThread	= CreateThread(NULL , 4*255, FlyGame::playCutscene, (void*)this->_pData->fly, CREATE_SUSPENDED, NULL);
 			ResumeThread(this->_pData->loadingThread);
-
+			Sleep(10);
 			if(!this->_pData->curState->Initiate(this))
 				this->_pData->curState = 0;
 

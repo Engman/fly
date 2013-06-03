@@ -82,17 +82,18 @@ void FlyMeshAnimated::StopAnimation(int nr, float dt)
 }
 void FlyMeshAnimated::Render(ViewFrustum& frustum)
 {
-	if(animationCount == 1)
-	{
-		MorphKeyframe();
-	}
-	else
-		MorphAminations();
-
+	
 	if(this->boundingSphere.IsValid())
 	{
 		if(this->shader && FrustumVSSphere(frustum, *this->boundingSphere))
 		{
+			if(animationCount == 1)
+			{
+				MorphKeyframe();
+			}
+			else
+				MorphAminations();
+
 			D3DXMATRIX rotation, translation;
 			D3DXMatrixRotationYawPitchRoll(&rotation, this->rotation.y, this->rotation.x, this->rotation.z);
 			D3DXMatrixTranslation(&translation, this->translation.x, this->translation.y, this->translation.z);
@@ -116,6 +117,13 @@ void FlyMeshAnimated::Render(ViewFrustum& frustum)
 	}
 	else
 	{
+		if(animationCount == 1)
+		{
+			MorphKeyframe();
+		}
+		else
+			MorphAminations();
+
 		D3DXMATRIX rotation, translation;
 		D3DXMatrixRotationYawPitchRoll(&rotation, this->rotation.y, this->rotation.x, this->rotation.z);
 		D3DXMatrixTranslation(&translation, this->translation.x, this->translation.y, this->translation.z);

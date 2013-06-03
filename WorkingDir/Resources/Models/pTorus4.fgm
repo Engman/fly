@@ -8,7 +8,7 @@ sp 10
 ta 
 td ..\Resources\Textures\red_brown.jpg
 ts 
-td 
+tg 
 tn 
 endmtl 
 an 0 1 

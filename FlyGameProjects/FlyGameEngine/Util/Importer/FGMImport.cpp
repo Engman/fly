@@ -347,12 +347,35 @@ int ParseMaterial				(std::string& in)
 			else if(buff		== ObjImpFormat::diffuse)			{ ParseVector4(in, md.diffuse); }
 			else if(buff		== ObjImpFormat::specular)			{ ParseVector4(in, md.specular); }
 			else if(buff		== ObjImpFormat::specularPower)		{ ParseInteger(in, md.specualarPow); }
-			else if(buff		== ObjImpFormat::ambientTexture)	{ md.ambientTexture		= toW(readToendl(in, buff).c_str(), wdummy);  }
-			else if(buff		== ObjImpFormat::diffuseTexture)	{ md.diffuseTexture		= toW(readToendl(in, buff).c_str(), wdummy);  }
-			else if(buff		== ObjImpFormat::specularTexture)	{ md.specularTexture	= toW(readToendl(in, buff).c_str(), wdummy);  }
-			else if(buff		== ObjImpFormat::glowTexture)		{ md.glowTexture		= toW(readToendl(in, buff).c_str(), wdummy);  }
-			else if(buff		== ObjImpFormat::normalTexture)		{ md.normalTexture		= toW(readToendl(in, buff).c_str(), wdummy);  }
-			else if(buff		== ObjImpFormat::comment)			{ ParseLine(in, buff, true); }
+			else if(buff		== ObjImpFormat::ambientTexture)	
+			{ 
+				readToendl(in, buff);
+				md.ambientTexture		= toW(buff.c_str(), wdummy);  
+			}
+			else if(buff		== ObjImpFormat::diffuseTexture)	
+			{ 
+				readToendl(in, buff);
+				md.diffuseTexture		= toW(buff.c_str(), wdummy);  
+			}
+			else if(buff		== ObjImpFormat::specularTexture)	
+			{ 
+				readToendl(in, buff);
+				md.specularTexture	= toW(buff.c_str(), wdummy);  
+			}
+			else if(buff		== ObjImpFormat::glowTexture)		
+			{ 
+				readToendl(in, buff);
+				md.glowTexture		= toW(buff.c_str(), wdummy);  
+			}
+			else if(buff		== ObjImpFormat::normalTexture)		
+			{ 
+				readToendl(in, buff);
+				md.normalTexture		= toW(buff.c_str(), wdummy);  
+			}
+			else if(buff		== ObjImpFormat::comment)			
+			{ 
+				ParseLine(in, buff, true); 
+			}
 			else if(buff		== ObjImpFormat::endMaterial)
 			{
 				done = true;
