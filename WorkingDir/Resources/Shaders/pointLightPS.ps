@@ -96,8 +96,8 @@ float4 Phong(float3 Position, float3 N, float SpecularIntensity, float SpecularP
 
 	//Calculate Final Product
 	float LightIntensity = 1.0;
-	return  LightIntensity* newIntensity *float4(Diffuse.rgb, 1);
-	return  LightIntensity * float4(Diffuse.rgb, 1); //Specular);Attenuation *
+	//return  LightIntensity* newIntensity *float4(Diffuse.rgb, 1);
+	return  Attenuation *LightIntensity * float4(Diffuse.rgb, 1); //Specular);
 }
 
   

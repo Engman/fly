@@ -33,14 +33,14 @@ float ShadowFactor( float depth, float2 smTex, float scale)
 {	
 
 	// 2x2 percentage closest filter.
-	float dx = (1.0f / shadowMapSize) ; //* scale;
+	float dx = (1.0f / shadowMapSize)* scale;
 
-	float s0 = (ShadowSRV.Sample(SampleTypeClamp, smTex).r + 0.001 < depth) ? 0.0f : 1.0f;
-	float s1 = (ShadowSRV.Sample(SampleTypeClamp, smTex + float2(dx, 0.0f)).r + 0.001 < depth) ? 0.0f : 1.0f;
-	float s2 = (ShadowSRV.Sample(SampleTypeClamp, smTex + float2(0.0f, dx)).r + 0.001 < depth) ? 0.0f : 1.0f;
-	float s3 = (ShadowSRV.Sample(SampleTypeClamp, smTex + float2(dx, dx)).r + 0.001 < depth) ? 0.0f : 1.0f;
+	float s0 = (ShadowSRV.Sample(SampleTypeClamp, smTex).r + 0.0001 < depth) ? 0.0f : 1.0f;
+	float s1 = (ShadowSRV.Sample(SampleTypeClamp, smTex + float2(dx, 0.0f)).r + 0.0001 < depth) ? 0.0f : 1.0f;
+	float s2 = (ShadowSRV.Sample(SampleTypeClamp, smTex + float2(0.0f, dx)).r + 0.0001 < depth) ? 0.0f : 1.0f;
+	float s3 = (ShadowSRV.Sample(SampleTypeClamp, smTex + float2(dx, dx)).r + 0.0001 < depth) ? 0.0f : 1.0f;
 	// Transform to texel space
-	float2 texelPos = (smTex * shadowMapSize); // * scale;
+	float2 texelPos = (smTex * shadowMapSize) * scale;
 	// Determine the lerp amounts.
 	float2 lerps = frac( texelPos );
 	float shadowCoeff =  lerp( lerp( s0, s1, lerps.x ),lerp( s2, s3, lerps.x ), lerps.y );
@@ -91,7 +91,8 @@ float4 FPixelShader(PSIn input) :  SV_Target
 	LightScreenPos /= LightScreenPos.w;
 	
 	float depthLightVP = LightScreenPos.z;
-	float2 lightSamp =  0.5f * (float2(LightScreenPos.x, - LightScreenPos.y) + 1); //- float2(1.0f / GBufferTextureSize.xy);
+	GBufferTextureSize = float2(2000, 2000);
+	float2 lightSamp =  0.5f * (float2(LightScreenPos.x, - LightScreenPos.y) + 1) - float2(1.0f / GBufferTextureSize.xy);
 	
 	float shadow = 1;
 	
@@ -104,10 +105,10 @@ float4 FPixelShader(PSIn input) :  SV_Target
 	if(lighting.w >0) // to avoid shadowing the skybox
 	{
 		float scale = depth;
-		//shadow = ShadowFactor( depthLightVP, lightSamp, scale);
-		//shadow = clamp(shadow, 0.4, 1.0f);
-		shadow = (ShadowSRV.Sample(SampleTypeClamp, lightSamp).r + 0.000001 < depthLightVP) ? 0.0f : 1.0f;
-		shadow = clamp(shadow, 0.4, 1);
+		shadow = ShadowFactor( depthLightVP, lightSamp, scale);
+		shadow = clamp(shadow, 0.4, 1.0f);
+		//shadow = (ShadowSRV.Sample(SampleTypeClamp, lightSamp).r + 0.000001 < depthLightVP) ? 0.0f : 1.0f;
+		//shadow = clamp(shadow, 0.4, 1);
 		finalColor = (color*0.5 + lighting*0.5)*(shadow);
 		
 
@@ -119,12 +120,12 @@ float4 FPixelShader(PSIn input) :  SV_Target
 		return finalColor = saturate(finalColor);
 	}
 	
-	shadow = ShadowSRV.Sample(SampleTypeClamp, input.TextCoord).r; // + 0.001 < depthLightVP) ? 0.0f : 1.0f;
-	shadow= pow(shadow,200);
-	color = float4(shadow, shadow, shadow, 1);
+	//shadow = ShadowSRV.Sample(SampleTypeClamp, input.TextCoord).r; // + 0.001 < depthLightVP) ? 0.0f : 1.0f;
+	//shadow= pow(shadow,200);
+	//color = float4(shadow, shadow, shadow, 1);
 	
-	finalColor = color; 
-	return finalColor;
+	//finalColor = color; 
+	//return finalColor;
 	
 	if(glowColor.r > 0.0f && glowColor.g > 0.0f && glowColor.b > 0.0f )
 	{

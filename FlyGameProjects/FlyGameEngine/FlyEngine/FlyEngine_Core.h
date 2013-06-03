@@ -77,10 +77,10 @@ class FlyEngine_Core	:public FlyEngine
 		void		FLYCALL		Gfx_DrawSkyBox				();
 		void		FLYCALL		Gfx_DrawGbuffer				(BaseBuffer* waterBuffer, bool glowOn);
 		void		FLYCALL		Gfx_DrawGbufferOrtho		();
-		void		FLYCALL		Gfx_DrawShadows				(vector<LightViewProj*>* shadowViews);
+		void		FLYCALL		Gfx_DrawShadows				(vector<Camera*>* shadowViews);
 		void		FLYCALL		Gfx_DrawLighting			();
 		void		FLYCALL		Gfx_DrawBlur				();
-		void		FLYCALL		Gfx_DrawFinalPicture		(vector<LightViewProj*> *shadowViews);
+		void		FLYCALL		Gfx_DrawFinalPicture		(vector<Camera*> *shadowViews);
 		void		FLYCALL		Gfx_EndDeferredScene		();
 		void		FLYCALL		Gfx_EndDeferredSceneOrtho	();
 		void		FLYCALL		Gfx_Resize					(int width, int height);

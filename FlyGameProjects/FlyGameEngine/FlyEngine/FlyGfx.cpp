@@ -95,7 +95,7 @@ void FLYCALL FlyEngine_Core::Gfx_DrawGbufferOrtho()
 	//D3DShell::self()->getDeviceContext()->OMSetBlendState(0,0,0xffffffff);
 	D3DShell::self()->setDepthStencilState(FLAGS::DEPTH_STENCIL_EnabledDepth,1);
 }
-void FLYCALL FlyEngine_Core::Gfx_DrawShadows(vector<LightViewProj*> *shadowViews)
+void FLYCALL FlyEngine_Core::Gfx_DrawShadows(vector<Camera*> *shadowViews)
 {
 	IShader::PER_FRAME_DATA shadowsDrawData;
 	shadowsDrawData.dc = D3DShell::self()->getDeviceContext(); 
@@ -104,8 +104,8 @@ void FLYCALL FlyEngine_Core::Gfx_DrawShadows(vector<LightViewProj*> *shadowViews
 	{
 		D3DShell::self()->BeginShadowRenderTarget(i);
 
-		shadowsDrawData.view = shadowViews->at(0)->lView; 
-		shadowsDrawData.projection = shadowViews->at(0)->lProj; 
+		shadowsDrawData.view = shadowViews->at(0)->GetViewMatrix(); 
+		shadowsDrawData.projection = shadowViews->at(0)->GetOrthogonalMatrix();//GetProjectionMatrix(); 
 		D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_BackCullNoMS);
 		this->shadowMapShader->draw(shadowsDrawData);
 	}
@@ -185,7 +185,7 @@ void FLYCALL FlyEngine_Core::Gfx_DrawBlur()
 	this->blurVerticalShader->draw(blurDrawData);
 }
 
-void FLYCALL FlyEngine_Core::Gfx_DrawFinalPicture(vector<LightViewProj*> *shadowViews)
+void FLYCALL FlyEngine_Core::Gfx_DrawFinalPicture(vector<Camera*> *shadowViews)
 {
 	D3DShell::self()->setRenderTarget();
 
@@ -208,8 +208,8 @@ void FLYCALL FlyEngine_Core::Gfx_DrawFinalPicture(vector<LightViewProj*> *shadow
 	D3DXMATRIX lProj;
 	if((*shadowViews).size())
 	{
-		lView = shadowViews->at(0)->lView;
-		lProj = shadowViews->at(0)->lProj; 
+		lView = shadowViews->at(0)->GetViewMatrix();
+		lProj = shadowViews->at(0)->GetOrthogonalMatrix();//GetProjectionMatrix(); 
 	}
 	else
 	{
