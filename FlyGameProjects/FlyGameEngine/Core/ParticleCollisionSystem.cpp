@@ -3,6 +3,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "ParticleCollisionSystem.h"
 #include "../Core/Mesh/MaterialHandler.h"
+#include "..\Util\MutexHandler.h"
+
 
 ParticleCollisionSystem::ParticleCollisionSystem()
 {
@@ -21,6 +23,7 @@ ParticleCollisionSystem::~ParticleCollisionSystem()
 
 bool ParticleCollisionSystem::Initialize()
 {
+	MutexHandler::SetMutex(MutexResource_ALL, true);
 	// Set the random deviation of where the particles can be located when emitted.
 	this->particleDeviationX = 20.0f;
 	this->particleDeviationY = 20.0f;
@@ -123,7 +126,7 @@ bool ParticleCollisionSystem::Initialize()
 		dynamic_cast<ParticleMesh*>(tempPoint)->Initialize(desc);
 	}
 
-	
+	MutexHandler::SetMutex(MutexResource_ALL);
 
 	return true;
 }

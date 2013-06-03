@@ -12,6 +12,8 @@
 #include <iostream>
 #include <string>
 
+bool wingsIn = false;
+
 FlyState_Level::FlyState_Level()
 { }
 FlyState_Level::~FlyState_Level()
@@ -233,7 +235,8 @@ bool FlyState_Level::UpdatePlayer()
 
 	if(Input::self()->IsButtonPressed(DIK_LSHIFT))
 	{
-		float newVelocityZ = 0.0f;//(downVelocity*-1.0f) * 0.08f;
+		wingsIn = true;
+		float newVelocityZ = (downVelocity*-1.0f) * 0.04f;
 		float curVel = this->player.GetVelocity().z;
 
 		//Birdie has made a dive or something..
@@ -252,9 +255,25 @@ bool FlyState_Level::UpdatePlayer()
 	else if(this->player.GetEnergy() <= 0)
 	{
 		this->player.SetVelocity(this->player.GetVelocity()+vec3(0.0f, 0.0f, 0.01f));
+		wingsIn = false;
 	}
 	else
 	{
+		static int breakCount = 0;
+
+		if(wingsIn)
+		{
+			if(breakCount < 5)
+			{
+				breakCount++;
+				vec3 nw = vec3(0.0f, 0.0f, 0.0f);
+				nw.z = this->player.GetVelocity().z/breakCount;
+				//Break when wings come out
+				this->player.SetVelocity(nw);
+			}
+			else
+				breakCount = 0;
+		}
 		if(downVelocity < 0.0f && downVelocity > -1.0f && this->player.GetVelocity().z < this->player.GetMaxVelocity().z+1.0f*-downVelocity)
 		{
 			this->player.SetVelocity(this->player.GetVelocity()+vec3(0.0f, 0.0f, 0.004f));
@@ -263,6 +282,7 @@ bool FlyState_Level::UpdatePlayer()
 		{
 			this->player.SetVelocity(this->player.GetVelocity()-vec3(0.0f, 0.0f, 0.004f));
 		}
+		wingsIn = false;
 	}
 	
 	//Collision against world wind walls

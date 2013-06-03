@@ -1,3 +1,4 @@
-..\Resources\cutscene\level3\demo1.JPG
-..\Resources\cutscene\level3\demo2.JPG
-..\Resources\cutscene\level3\demo3.JPG
+..\Resources\cutscene\level3\lvl3_1.jpg
+..\Resources\cutscene\level3\lvl3_2.jpg
+..\Resources\cutscene\level3\lvl3_3.jpg
+..\Resources\cutscene\controls.jpg
