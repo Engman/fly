@@ -1,3 +1,3 @@
-..\Resources\cutscene\intro\LEVEL 1.jpg
-..\Resources\cutscene\intro\LEVEL 2.jpg
-..\Resources\cutscene\intro\LEVEL 3.jpg
+..\Resources\cutscene\intro\intro_1.jpg
+..\Resources\cutscene\intro\intro_2.jpg
+..\Resources\cutscene\intro\intro_3.jpg

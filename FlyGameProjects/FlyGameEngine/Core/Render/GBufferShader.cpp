@@ -56,19 +56,41 @@ void GBufferShader::draw(PER_FRAME_DATA& frameData)
 			else if(this->drawData[i].buffers[k]->getType() == BUFFER_FLAG::TYPE_VERTEX_BUFFER)
 				vertexC = this->drawData[i].buffers[k]->getNrOfElements();
 		}
-	
-		if(this->drawData[i].material)
+
+		if(frameData.glowOn)
 		{
+			if(this->drawData[i].material)
+			{
 
-			ID3D11ShaderResourceView* temp[4] = { 
-				drawData[i].material->GetDiffuseTexture() , 
-				drawData[i].material->GetNormalTexture() , 
-				drawData[i].material->GetSpecularTexture(), 
-				drawData[i].material->GetGlowTexture()
-			};
+				ID3D11ShaderResourceView* temp[4] = { 
+					drawData[i].material->GetDiffuseTexture() , 
+					drawData[i].material->GetNormalTexture() , 
+					drawData[i].material->GetSpecularTexture(), 
+					drawData[i].material->GetGlowTexture()
+				};
 
-			frameData.dc->PSSetShaderResources(0, 4, temp);
+				frameData.dc->PSSetShaderResources(0, 4, temp);
+			}
 		}
+		else
+		{
+			if(this->drawData[i].material)
+			{
+
+				ID3D11ShaderResourceView* temp[4] = { 
+					drawData[i].material->GetDiffuseTexture() , 
+					drawData[i].material->GetNormalTexture() , 
+					drawData[i].material->GetSpecularTexture(), 
+					NULL
+				};
+
+				frameData.dc->PSSetShaderResources(0, 4, temp);
+			}
+			// can only be false on the first object in the list, which is the bird
+			frameData.glowOn = true; 
+		}
+
+
 
 		BaseBuffer* mat = 0;
 		if(drawData[i].material)

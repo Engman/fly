@@ -24,10 +24,11 @@ class IShader
 			//buffer for view, projection and camPos in light PS
 			BaseBuffer* camForLight;
 			BaseBuffer* waterBuffer; 
+			bool glowOn; 
 
 
 			PER_FRAME_DATA()
-				:dc(0), lights(0), camForLight(0)
+				:dc(0), lights(0), camForLight(0), glowOn(true)
 			{}
 		};
 

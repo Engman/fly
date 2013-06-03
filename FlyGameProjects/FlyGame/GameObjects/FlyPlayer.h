@@ -21,6 +21,7 @@ class FlyPlayer
 		float energy;
 		float maxEnergy;
 
+		bool closeCargo; 
 	public:
 		FlyPlayer();
 		virtual~FlyPlayer();
@@ -54,6 +55,9 @@ class FlyPlayer
 		void UpdateAnimation(int nr, float deltaTime);
 		void StopAnimation(int nr, float deltaTime);
 	
+		void setCloseCargo(bool close); 
+		bool getCloseCargo() const;
+
 		void Release();
 
 		void DeductEnergy(float howMuch);

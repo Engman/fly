@@ -54,7 +54,7 @@ void FLYCALL FlyEngine_Core::Gfx_DrawSkyBox()
 
 }
 
-void FLYCALL FlyEngine_Core::Gfx_DrawGbuffer( BaseBuffer* waterBuffer)
+void FLYCALL FlyEngine_Core::Gfx_DrawGbuffer( BaseBuffer* waterBuffer, bool glowOn)
 {
 	D3DShell::self()->BeginGBufferRenderTargets(true);
 
@@ -63,13 +63,15 @@ void FLYCALL FlyEngine_Core::Gfx_DrawGbuffer( BaseBuffer* waterBuffer)
 	gBufferDrawData.view = this->activeCamera->GetViewMatrix();
 	gBufferDrawData.projection = this->activeCamera->GetProjectionMatrix();
 	
+	
 	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_BackCullNoMS);
 	this->gbufferShader->draw(gBufferDrawData);
 	
 
 	gBufferDrawData.waterBuffer = waterBuffer; 
 	this->gbufferBumpShader->draw(gBufferDrawData);
-	
+
+	gBufferDrawData.glowOn = glowOn;   
 	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_NoCullNoMs);
 	this->gbufferNoCullShader->draw(gBufferDrawData);
 
