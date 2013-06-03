@@ -266,7 +266,7 @@ bool FlyState_Level::UpdatePlayer()
 
 		if(wingsIn)
 		{
-			if(breakCount < 5)
+			if(breakCount < 30)
 			{
 				breakCount++;
 				vec3 nw = vec3(0.0f, 0.0f, 0.0f);
