@@ -8,7 +8,7 @@ sp 5.000000
 ta 
 td ..\Resources\Textures\energy.png
 ts ..\Resources\Textures\noGlow.png
-tg ..\Resources\Textures\halfGlow.png
+tg ..\Resources\Textures\fullGlow.png
 tn ..\Resources\Textures\noGlow.png
 endmtl
 
