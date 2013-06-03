@@ -48,6 +48,9 @@ bool FlyState_Level::Initiate(FlyGame* instance)
 	//Read level data
 	if(!this->ReadLevel(this->entryInstance->getLevel()))
 		return false;
+	//Read level data
+	//if(!this->ReadLevel(L"..\\Resources\\Levels\\testLinda2.fgl"))
+	//	return false;
 	
 
 	//If the lvl was not completed you will continue with the cargo you already picked up
@@ -498,6 +501,7 @@ bool FlyState_Level::Render()
 	this->theWorld[0]->setShader(shaders[FlyShader_gBufferDefault]);
 	this->theWorld[0]->Render(f);
 	this->skyBox[0]->Render(f);
+	this->water[0]->setShader(shaders[FlyShader_gBufferBump]);
 	this->water[0]->Render(f);
 	this->player.GetModel()->at(0)->setShader(shaders[FlyShader_gBufferNoCull]);
 	this->player.Render(f);
@@ -558,12 +562,22 @@ bool FlyState_Level::Render()
 	{
 		//cull objects from the shadowCamera view
 		Camera ShadowCamera;
-		ShadowCamera.SetPosition(500.0, 200.0, 0.0);
+		/*	ShadowCamera.SetPosition(0.0, 100.0, 0.0);
 		ShadowCamera.SetViewMatrix(shadowViews[0]->lView);
 		ShadowCamera.SetProjectionMatrix(shadowViews[0]->lProj);
 		ShadowCamera.SetProjectionMatrix(D3DShell::self()->getWidth(), D3DShell::self()->getHeight(), 0.1f, 1000.0f);
 		ShadowCamera.Render();
-		
+		*/
+		ShadowCamera.SetPosition(vec3(0, 800, 0));
+		ShadowCamera.SetRotation(vec3( 90, 0 , 0));
+
+		int w = 0;
+		int h = 0;
+		this->entryInstance->GetCoreInstance()->Core_Dimensions(w, h);
+		ShadowCamera.SetProjectionMatrix((float)D3DX_PI*0.2f, (float)w/h, 0.2f, 4000.0f);
+		//ShadowCamera.SetOrthogonalMatrix(200, 400, 0.2f, 4000.0f); 
+		ShadowCamera.Render(); 
+
 		ShadowCamera.ConstructViewFrustum(f);
 
 		for(unsigned int i = 0; i <(int) this->levelEntities.size(); i++)
@@ -576,6 +590,8 @@ bool FlyState_Level::Render()
 		this->theWorld[0]->Render(f);
 		this->player.GetModel()->at(0)->setShader(shaders[FlyShader_Shadow]);
 		this->player.Render(f);
+		this->water[0]->setShader(shaders[FlyShader_Shadow]);
+		this->water[0]->Render(f);
 	}
 
 	bool glowOn = player.getCloseCargo(); 

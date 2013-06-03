@@ -76,6 +76,8 @@ class Camera
 		float GetNearZ() const;
 
 		 void ConstructViewFrustum(ViewFrustum& frustum);
+		 
+
 };
 
 #endif

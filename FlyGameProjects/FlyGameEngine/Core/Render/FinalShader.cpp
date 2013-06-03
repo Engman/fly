@@ -16,7 +16,8 @@ void FinalShader::draw(PER_FRAME_DATA& frameData)
 
 	this->shader->Render();
 	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_NoCullNoMs);
-	FLAGS::STATE_SAMPLING samp[1] = {FLAGS::SAMPLER_LinearClamp};
+	//FLAGS::STATE_SAMPLING samp[1] = {FLAGS::SAMPLER_LinearClamp};
+	FLAGS::STATE_SAMPLING samp[1] = {FLAGS::SAMPLER_Custom};
 	D3DShell::self()->setSamplerState(samp, FLAGS::PS, 0, 1);
 	
 	int count = (int)this->drawData.size();

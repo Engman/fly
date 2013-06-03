@@ -115,7 +115,6 @@ bool FlyState_Level::ReadLevel(const wchar_t* fileName)
 	//UI
 	this->entryInstance->GetCoreInstance()->Geometry_Load(L"..\\Resources\\Models\\energyBar.fgm", &this->UIorthographic);
 	this->UIorthographic[0]->setShader(shaders[FlyShader_gBufferDefault]);
-	//this->UIorthographic[0]->setScale(vec3((this->player.GetEnergy()/10000.0f)*20.0f,2.0f,1.0f));
 	this->UIorthographic[0]->setScale(vec3((this->player.GetEnergy()/this->player.GetMaxEnergy())*20.0f,2.0f,1.0f));
 	this->UIorthographic[0]->setPosition(vec3(0.0f, -250.0f, 0.0f));
 	this->UIorthographic[0]->setBoundingSphere(0);
@@ -251,7 +250,19 @@ bool FlyState_Level::_ImportLights(wifstream& file, vector<IShader*>& shaders)
 		//int w, h;this->entryInstance->GetCoreInstance()->Core_Dimensions(w, h);
 		//D3DXMatrixOrthoLH(&projectionMatrix, (float)w, (float)h, 0.1, 10000);
 
+		Camera ShadowCamera; 
+		ShadowCamera.SetPosition(vec3(0, 800, 0));
+		ShadowCamera.SetRotation(vec3( 90, 0 , 0));
 
+		int w = 0;
+		int h = 0;
+		this->entryInstance->GetCoreInstance()->Core_Dimensions(w, h);
+		ShadowCamera.SetProjectionMatrix((float)D3DX_PI*0.2f, (float)w/h, 0.2f, 4000.0f);
+		//ShadowCamera.SetOrthogonalMatrix(200, 400, 0.2f, 4000.0f); 
+		ShadowCamera.Render(); 
+
+		viewMatrix = ShadowCamera.GetViewMatrix(); 
+		projectionMatrix = ShadowCamera.GetProjectionMatrix(); 
   
 		LightViewProj *lightViewProj = new LightViewProj(); 
 		lightViewProj->lView = viewMatrix;
