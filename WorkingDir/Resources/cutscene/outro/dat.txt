@@ -1,2 +1,2 @@
-..\Resources\cutscene\level3\outro_2.jpg
-..\Resources\cutscene\level3\outro_3.jpg
+..\Resources\cutscene\outro\outro_2.jpg
+..\Resources\cutscene\outro\outro_3.jpg

@@ -25,6 +25,8 @@ enum MenuLayout
 	MENU_UI_ButtonStart,
 	MENU_UI_ButtonQuit,
 	MENU_UI_MouseBtn,
+	MENU_UI_LevelErr2,
+	MENU_UI_LevelErr3,
 	MENU_UI_ITEM_COUNT
 };
 
@@ -115,7 +117,8 @@ void FlyState_Menu::render()
 	this->ui[MENU_UI_LevelPanel]->Render(f);
 
 	if(this->highlightBtn != -1)
-		this->ui[this->highlightBtn]->Render(f);
+		if( this->highlightBtn == MENU_UI_ButtonQuit || this->highlightBtn == MENU_UI_ButtonStart)
+			this->ui[this->highlightBtn]->Render(f);
 
 	if(this->subMenu)
 		this->subMenu->Render(f);
@@ -160,7 +163,7 @@ void FlyState_Menu::input()
 				int id = this->subMenu->getID();
 				if(id == this->ui[MENU_UI_LevelInfo1]->getID())
 				{
-					this->entryInstance->setLevelPath(L"..\\Resources\\Levels\\canyon.fgl");
+					this->entryInstance->setLevelPath(L"..\\Resources\\Levels\\ocean.fgl");
 					this->entryInstance->setState(Level_1);
 				}
 				else if(id == this->ui[MENU_UI_LevelInfo2]->getID())
@@ -168,11 +171,11 @@ void FlyState_Menu::input()
 					//locked
 					if(cargoCount < 2)
 					{
-						this->subMenu = this->ui[MENU_UI_LevelInfo3];
+						this->subMenu = this->ui[MENU_UI_LevelErr2];
 					}
 					else
 					{
-						this->entryInstance->setLevelPath(L"..\\Resources\\Levels\\ocean.fgl");	
+						this->entryInstance->setLevelPath(L"..\\Resources\\Levels\\canyon.fgl");	
 						this->entryInstance->setState(Level_2);
 					}
 				}
@@ -181,7 +184,7 @@ void FlyState_Menu::input()
 					//locked
 					if(cargoCount < 4)
 					{
-						this->subMenu = this->ui[MENU_UI_LevelInfo3];
+						this->subMenu = this->ui[MENU_UI_LevelErr3];
 					}
 					else
 					{

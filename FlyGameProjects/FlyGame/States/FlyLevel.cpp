@@ -78,10 +78,14 @@ bool FlyState_Level::Initiate(FlyGame* instance)
 	
 	
 	//Particle effects
-	if(!this->engineParticlesLeft.Initialize())		return false;
-	if(!this->engineParticlesRight.Initialize())	return false;
-	if(!this->collisionParticle.Initialize())		return false;
-	if(!this->pickupParticle.Initialize())			return false;
+	if(!this->engineParticlesLeft.Initialize())		
+		return false;
+	if(!this->engineParticlesRight.Initialize())	
+		return false;
+	if(!this->collisionParticle.Initialize())		
+		return false;
+	if(!this->pickupParticle.Initialize())			
+		return false;
 	
 	
 	//Menu when paused
