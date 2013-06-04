@@ -118,6 +118,7 @@ void FLYCALL FlyEngine_Core::Gfx_DrawLighting()
 	float blend[4] = {0.75f,0.75f,0.75f,1.0f};
 
 	D3DShell::self()->setBlendModeState(FLAGS::BLEND_MODE_Custom, blend,  0xffffffff);
+	//D3DShell::self()->setBlendModeState(FLAGS::BLEND_MODE_AlphaBlend, blend,  0xffffffff);
 	//D3DShell::self()->setDepthStencilState(FLAGS::DEPTH_STENCIL_Custom,1); //read only
 	D3DShell::self()->setDepthStencilState(FLAGS::DEPTH_STENCIL_DisabledDepth,1); //read only
 
@@ -146,15 +147,16 @@ void FLYCALL FlyEngine_Core::Gfx_DrawLighting()
 
 
 	D3DShell::self()->setDefferedSRV();
-	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_BackCullNoMS);
-	this->dirLightShader->draw(lightDrawData);
+	//D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_BackCullNoMS);
+	
 	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_FrontCullNoMS);
 	
 	this->pointLightBackShader->draw(lightDrawData);
 	
 	D3DShell::self()->setRasterizerState(FLAGS::RASTERIZER_BackCullNoMS);
 	this->pointLightFrontShader->draw(lightDrawData);
-
+	
+	this->dirLightShader->draw(lightDrawData);
 	//reset the blend state to normal
 	D3DShell::self()->getDeviceContext()->OMSetBlendState(0,0,0xffffffff);
 	D3DShell::self()->setDepthStencilState(FLAGS::DEPTH_STENCIL_EnabledDepth,1);

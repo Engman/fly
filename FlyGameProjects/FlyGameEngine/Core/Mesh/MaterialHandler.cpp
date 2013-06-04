@@ -33,7 +33,7 @@ int MaterialHandler::AddMaterial(ObjectMaterial::OBJECT_MATERIAL_DESC& desc)
 
 	for (int i = 0; !done && i < (int)MaterialHandlerMaterialList.size()-1; i++)
 	{
-		if(MaterialHandlerMaterialList[i]->GetID() > m->GetID())
+		if(MaterialHandlerMaterialList[i].IsValid() && MaterialHandlerMaterialList[i]->GetID() > m->GetID())
 		{
 			for (int k = (int)(MaterialHandlerMaterialList.size() - 1); !done && (k < i); k++)
 			{
@@ -54,7 +54,6 @@ int MaterialHandler::AddMaterial(ObjectMaterial::OBJECT_MATERIAL_DESC& desc)
 	return MaterialHandlerMaterialList[insertIndex]->GetID();
 }
 
-// Gör en klass som hanterar singleton resurserna för inladdning osv
 
 bool MaterialHandler::RemoveMaterial(int GID)
 {
@@ -62,7 +61,7 @@ bool MaterialHandler::RemoveMaterial(int GID)
 	bool done = false;
 	for (int i = 0; i < (int)MaterialHandlerMaterialList.size(); i++)
 	{
-		if(MaterialHandlerMaterialList[i]->GetID() == GID)
+		if(MaterialHandlerMaterialList[i].IsValid() && MaterialHandlerMaterialList[i]->GetID() == GID)
 		{
 			MaterialHandlerMaterialList.erase(MaterialHandlerMaterialList.begin() + i);
 			done = true;

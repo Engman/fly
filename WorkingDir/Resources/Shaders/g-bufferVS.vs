@@ -36,7 +36,7 @@ PS_IN FVertexShader( VS_IN input)
 	output.position = mul(  output.position, mProj );
   
 	output.positionWorld = output.position;
-	output.normal = mul(normalize(input.normal), mWorld); //mWorldInvTrans );
+	output.normal = mul(normalize(input.normal), mWorld); //,mWorldInvTrans ); //
 	output.normal = normalize(output.normal);
 	
 	

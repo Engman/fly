@@ -35,10 +35,10 @@ float ShadowFactor( float depth, float2 smTex, float scale)
 	// 2x2 percentage closest filter.
 	float dx = (1.0f / shadowMapSize)* scale;
 
-	float s0 = (ShadowSRV.Sample(SampleTypeClamp, smTex).r + 0.0001 < depth) ? 0.0f : 1.0f;
-	float s1 = (ShadowSRV.Sample(SampleTypeClamp, smTex + float2(dx, 0.0f)).r + 0.0001 < depth) ? 0.0f : 1.0f;
-	float s2 = (ShadowSRV.Sample(SampleTypeClamp, smTex + float2(0.0f, dx)).r + 0.0001 < depth) ? 0.0f : 1.0f;
-	float s3 = (ShadowSRV.Sample(SampleTypeClamp, smTex + float2(dx, dx)).r + 0.0001 < depth) ? 0.0f : 1.0f;
+	float s0 = (ShadowSRV.Sample(SampleTypeClamp, smTex).r + 0.000001 < depth) ? 0.0f : 1.0f;
+	float s1 = (ShadowSRV.Sample(SampleTypeClamp, smTex + float2(dx, 0.0f)).r + 0.000001 < depth) ? 0.0f : 1.0f;
+	float s2 = (ShadowSRV.Sample(SampleTypeClamp, smTex + float2(0.0f, dx)).r + 0.000001 < depth) ? 0.0f : 1.0f;
+	float s3 = (ShadowSRV.Sample(SampleTypeClamp, smTex + float2(dx, dx)).r + 0.000001 < depth) ? 0.0f : 1.0f;
 	// Transform to texel space
 	float2 texelPos = (smTex * shadowMapSize) * scale;
 	// Determine the lerp amounts.
@@ -91,8 +91,8 @@ float4 FPixelShader(PSIn input) :  SV_Target
 	LightScreenPos /= LightScreenPos.w;
 	
 	float depthLightVP = LightScreenPos.z;
-	GBufferTextureSize = float2(2000, 2000);
-	float2 lightSamp =  0.5f * (float2(LightScreenPos.x, - LightScreenPos.y) + 1) - float2(1.0f / GBufferTextureSize.xy);
+	
+	float2 lightSamp =  0.5f * (float2(LightScreenPos.x, - LightScreenPos.y) + 1); // - float2(1.0f / GBufferTextureSize.xy);
 	
 	float shadow = 1;
 	

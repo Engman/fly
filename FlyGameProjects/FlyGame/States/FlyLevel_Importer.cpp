@@ -313,6 +313,7 @@ bool FlyState_Level::_ImportPlayer(wifstream& file, vector<IShader*>& shaders)
 	this->player.GetModel()->at(0)->setRotation(ReadVector3(file));
 	this->player.GetModel()->at(0)->setScale(ReadVector3(file));
 	this->player.GetModel()->at(0)->setShader(shaders[FlyShader_gBufferDefault]);
+	this->player.SetVelocity(vec3(0.0f, 0.0f, 0.35f));
 
 	this->mainCamera.SetPosition(this->player.GetPosition());
 	this->mainCamera.SetRotation(this->player.GetRotation());

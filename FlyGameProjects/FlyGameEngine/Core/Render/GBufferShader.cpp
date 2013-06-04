@@ -28,12 +28,14 @@ void GBufferShader::draw(PER_FRAME_DATA& frameData)
 			cb->world = *this->drawData[i].worldMatrix;
 			cb->view = frameData.view;
 			cb->projection = frameData.projection;
-
+			
+			cb->worldInvTranspose =  *this->drawData[i].worldMatrix * frameData.view;
 			Matrix temp;
-			float det = D3DXMatrixDeterminant(this->drawData[i].worldMatrix);
+			float det = D3DXMatrixDeterminant(&cb->worldInvTranspose);
 			if(det)
 			{
-				D3DXMatrixInverse(&temp, &det, this->drawData[i].worldMatrix);
+				 
+				D3DXMatrixInverse(&temp, &det, &cb->worldInvTranspose);
 				//D3DXMatrixTranspose(&temp, &temp);
 				cb->worldInvTranspose = temp;
 			}

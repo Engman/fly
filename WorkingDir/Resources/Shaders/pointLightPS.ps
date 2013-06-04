@@ -113,7 +113,7 @@ PSOut FPixelShader(PS_IN input)
 	input.ScreenPos.xy /=  input.ScreenPos.w;
 	float2 GBufferTextureSize = float2(1200,600);
 	
-	float2 UV = 0.5f * (float2(input.ScreenPos.x,- input.ScreenPos.y) + 1) - float2(1.0f / GBufferTextureSize.xy);
+	float2 UV = 0.5f * (float2(input.ScreenPos.x,- input.ScreenPos.y) + 1); // - float2(1.0f / GBufferTextureSize.xy);
 	
 	//sample albedo color
 	float4 color = ManualSample(UV, 0);
@@ -121,7 +121,7 @@ PSOut FPixelShader(PS_IN input)
 	//normal already in world space
 	float3 normal = ManualSample(UV, 1);
 	normal = 2.0f* normal - 1;
-	normal = normalize(normal);
+	//normal = normalize(normal);
 	//normal = mul(normal, mInvView);
 	
 	float depth = gBufferText[1].Sample( SampleTypeClamp, UV).a;
