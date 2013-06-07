@@ -2,11 +2,20 @@
 #define FLY_GAME_H
 
 
-#if defined(_DEBUG) || defined(DEBUG)
-#pragma comment(lib, "FlyGameEngineDx86.lib")
+#if defined(_WIN64)
+	#if defined(_DEBUG) || defined(DEBUG)
+	#pragma comment(lib, "FlyGameEngineDx64.lib")
+	#else
+	#pragma comment(lib, "FlyGameEnginex64.lib")
+	#endif
 #else
-#pragma comment(lib, "FlyGameEnginex86.lib")
+	#if defined(_DEBUG) || defined(DEBUG)
+	#pragma comment(lib, "FlyGameEnginex86.lib")
+	#else
+	#pragma comment(lib, "FlyGameEnginex86.lib")
+	#endif
 #endif
+
 #pragma comment(lib, "lua52.lib")
 
 #include <Windows.h>
@@ -18,6 +27,7 @@ extern "C"
 }
 
 #include "..\FlyGameEngine\Util\misc.h"
+#include "GameObjects\Cutscene.h"
 
 
 class FlyEngine;
@@ -31,6 +41,8 @@ enum FlyGameSystemState
 	Menu,
 	Editor,
 };
+
+
 
 #define CARGO_COUNT		3
 
@@ -69,9 +81,11 @@ class FlyGame
 		bool isLvlCompleted();
 		int getCargoCount(); 
 		void loadSaveFile(const wchar_t* fileName); 
-		static DWORD WINAPI FlyGame::playCutscene(LPVOID lpParameter);
+		static DWORD WINAPI playCutscene(LPVOID lpParameter);
+		static DWORD WINAPI loadingM(LPVOID lpParameter);
 		bool readSaveFile(const wchar_t* fileName, SaveFile & savedData);
 		bool WriteSaveFile(const wchar_t* fileName, SaveFile & savedData); 
+		void setCutscene(FlyCutscene c);
 
 
 	public:

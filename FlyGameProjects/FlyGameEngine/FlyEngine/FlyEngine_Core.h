@@ -46,6 +46,7 @@ class FlyEngine_Core	:public FlyEngine
 
 		bool									splash;
 		bool									orthographicCamera;
+		bool									muteSound;
 
 	private:
 		bool		_InitGBufferShader						();

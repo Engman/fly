@@ -43,19 +43,30 @@ void FLYCALL FlyEngine_Core::Audio_Shutdown()
 }
 void FLYCALL FlyEngine_Core::Audio_PlaySound(FlyLevelSounds sound)
 {
+	if(this->muteSound)
+		return;
+
 	AudioClass::self()->playLevelSound(sound);
 }
 void FLYCALL FlyEngine_Core::Audio_PlayMenuSound(FlyMenuSounds sound)
 {
+	if(this->muteSound)
+		return;
+
 	AudioClass::self()->playMenuSound(sound);
 }
 
 void FLYCALL FlyEngine_Core::Audio_ToggleSoundTrack()
 {
+	if(this->muteSound)
+		return;
+
 	AudioClass::self()->toggleSoundTrack(); 
 }
 void FLYCALL FlyEngine_Core::Audio_Update(D3DXVECTOR3 pos, float speed)
 {
+	if(this->muteSound)
+		return;
 	AudioClass::playerSoundData data; 
 	data.pos = pos; 
 	data.vel = speed; 
@@ -63,5 +74,7 @@ void FLYCALL FlyEngine_Core::Audio_Update(D3DXVECTOR3 pos, float speed)
 }
 void FLYCALL FlyEngine_Core::Audio_Update()
 {
+	if(this->muteSound)
+		return;
 	AudioClass::self()->uppdateSounds(); 
 }

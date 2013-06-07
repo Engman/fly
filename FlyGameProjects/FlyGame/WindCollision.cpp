@@ -6,7 +6,7 @@ int GetWindArray(lua_State* luaState)
 	int argc = lua_gettop(luaState);
 
 	vector<WindEmiter::WindSphere>* temp = (vector<WindEmiter::WindSphere>*)lua_touserdata(luaState, 1);
-	int index = lua_tointeger(luaState, 2);
+	int index = (int)lua_tointeger(luaState, 2);
 	lua_pop(luaState, 2);
 	luaL_argcheck(luaState, temp != NULL, 1, "`array' expected");
 	lua_pushlightuserdata(luaState, (void*)&(temp->at(index))); // return value

@@ -11,6 +11,8 @@ class FlyPlayer
 	private:
 		vector<Entity*> playerModel;
 
+		vec3 initialPos;
+		vec3 initialRot;
 		vec3 velocity;
 		vec3 maxVelocity;
 
@@ -45,6 +47,10 @@ class FlyPlayer
 		vec3 GetVelocity() const;
 		vec3 GetMaxVelocity() const;
 		bool GetSmall() const;
+		void setInitialPos(vec3 p);
+		vec3 getInitialPos();
+		void setInitialRot(vec3 r);
+		vec3 getInitialRot();
 		BoundingEllipse GetEllipse() const;
 		float GetEnergy() const;
 		float GetMaxEnergy() const;

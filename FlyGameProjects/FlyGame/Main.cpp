@@ -2,7 +2,6 @@
 
 #include "FlyGame.h"
 #include "..\FlyGameEngine\Core\stdafx.h"
-
 #include "..\FlyGameEngine\Util\GID.h"
 
 
@@ -14,7 +13,8 @@ int WINAPI WinMain( HINSTANCE hInst, HINSTANCE prevInst, PSTR cmdLine, int cmdSh
 
 	if(!fg->Initiate())
 	{
-		MessageBox(0, L"Failed to initialize Fly Game", L"Error!", 0);
+		MessageBox(0, L"Fatal error!", L"Error!", 0);
+		delete fg;
 		return cmdShow;
 	}
 	fg->Run();

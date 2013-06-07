@@ -19,6 +19,7 @@
 #include "../GameObjects/FlyPickup.h"
 #include "../WindCollision.h"
 #include "..\GameObjects\EnergyPickup.h"
+#include "..\GameObjects\Cutscene.h"
 
 
 
@@ -60,7 +61,7 @@ class FlyState_Level		:public IFlySystemState
 		ParticleCollisionSystem collisionParticle;
 		ParticlePickupSystem pickupParticle;
 
-		int state;							// 0 = MainGame, 1 = PauseMenu
+		int state;							// 0 = MainGame, 1 = PauseMenu, 2 = NoEnergyAndDead
 		InuptControlScheme controlScheme;	//See IFlySystemState.h
 		
 
@@ -102,6 +103,8 @@ class FlyState_Level		:public IFlySystemState
 		vec3 ReadVector3(wifstream& in);
 		int ReadInt(wifstream& in);
 		wstring& ReadString(wifstream& in, wstring& outStr);
+
+		void FrameDead();
 
 	public:
 		FlyState_Level();

@@ -141,13 +141,18 @@ bool FlyState_Level::_ImportTerrain(wifstream& file, vector<IShader*>& shaders)
 }
 bool FlyState_Level::_ImportSkybox(wifstream& file, vector<IShader*>& shaders)	
 {
-	wstring dummy = L"";
-	if(!this->entryInstance->GetCoreInstance()->Geometry_Load(ReadString(file, dummy).c_str(), &this->skyBox))
+	wstring p;
+	if(ReadInt(file) == 0)
+		p = L"..\\Resources\\Models\\skybox_sky.fgm";
+	else 
+		p = ReadString(file, p);
+
+
+	if(!this->entryInstance->GetCoreInstance()->Geometry_Load(p.c_str(), &this->skyBox))
 		return false;
 
 	this->skyBox[0]->setShader(shaders[FlyShader_gBufferNoDepth]);
-	//this->skyBox[0]->setScale(vec3(20 , 20 ,20));
-
+	
 
 	return true;
 }
@@ -155,13 +160,16 @@ bool FlyState_Level::_ImportWater(wifstream& file, vector<IShader*>& shaders)
 {
 	wstring dummy = L"";
 	
-	if(!this->entryInstance->GetCoreInstance()->Geometry_Load(ReadString(file, dummy).c_str(), &this->water, FlyGeometry_Water, 1, 3))
-		return false;
+	if(ReadInt(file) > 0)
+	{
+		if(!this->entryInstance->GetCoreInstance()->Geometry_Load(ReadString(file, dummy).c_str(), &this->water, FlyGeometry_Water, 1, 3))
+			return false;
 
-	this->water[0]->setPosition(ReadVector3(file));
-	this->water[0]->setRotation(ReadVector3(file));
-	this->water[0]->setScale(ReadVector3(file));
-	this->water[0]->setShader(shaders[FlyShader_gBufferBump]);
+		this->water[0]->setPosition(ReadVector3(file));
+		this->water[0]->setRotation(ReadVector3(file));
+		this->water[0]->setScale(ReadVector3(file));
+		this->water[0]->setShader(shaders[FlyShader_gBufferBump]);
+	}
 
 	return true;
 }
@@ -215,6 +223,7 @@ bool FlyState_Level::_ImportEnergy(wifstream& file, vector<IShader*>& shaders)
 		vec3 p = ReadVector3(file);
 		vec3 r = ReadVector3(file);
 		vec3 s = ReadVector3(file);
+		s = vec3(2.0f, 2.0f, 2.0f);
 		if(!this->energy[i].Initialize(this->entryInstance, readString, p, r, s, FlyShader_gBufferNoCull))
 			return false;
 	}
@@ -313,17 +322,18 @@ bool FlyState_Level::_ImportPlayer(wifstream& file, vector<IShader*>& shaders)
 	this->player.GetModel()->at(0)->setRotation(ReadVector3(file));
 	this->player.GetModel()->at(0)->setScale(ReadVector3(file));
 	this->player.GetModel()->at(0)->setShader(shaders[FlyShader_gBufferDefault]);
-	this->player.SetVelocity(vec3(0.0f, 0.0f, 0.35f));
+	this->player.SetVelocity(vec3(0.0f, 0.0f, 0.45f));
 
 	this->mainCamera.SetPosition(this->player.GetPosition());
 	this->mainCamera.SetRotation(this->player.GetRotation());
+	this->player.setInitialPos(this->mainCamera.GetPosition());
+	this->player.setInitialRot(this->player.GetRotation());
 
 
 	int w = 0;
 	int h = 0;
 	this->entryInstance->GetCoreInstance()->Core_Dimensions(w, h);
-	this->mainCamera.SetProjectionMatrix((float)D3DX_PI*0.2f, (float)w/h, 0.2f, 4000.0f);
-	this->entryInstance->GetCoreInstance()->Gfx_SetCamera(&this->mainCamera);
+	this->mainCamera.SetProjectionMatrix((float)D3DX_PI*0.2f, (float)w/h, 0.2f, 6000.0f);
 
 	//Set player bounding info
 	BoundingSphere* playerSphere = new BoundingSphere;

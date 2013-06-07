@@ -45,6 +45,7 @@ struct FLY_ENGINE_INIT_DESC
 	bool vSync;
 	bool fullscreen;
 	bool showSplash;
+	bool mute;
 	const wchar_t* windowName;
 	ForwardUpdateFunc forwardUpdateFunc;
 	ForwardRenderFunc forwardRenderFunc;
@@ -52,7 +53,7 @@ struct FLY_ENGINE_INIT_DESC
 	DeferredRenderFunc deferredRenderFunc;
 
 	FLY_ENGINE_INIT_DESC()
-		:parent(0), handle(0), winHeight(0), winWidth(0), winPosX(0), winPosY(0), 
+		:parent(0), handle(0), winHeight(0), winWidth(0), winPosX(0), winPosY(0), mute(0),
 		multisampling(0), vSync(0), fullscreen(0), windowName(L"FlyEngine"),
 		forwardRenderFunc(0), forwardUpdateFunc(0),
 		deferredRenderFunc(0), deferredUpdateFunc(0)

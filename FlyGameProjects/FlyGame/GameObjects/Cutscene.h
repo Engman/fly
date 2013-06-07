@@ -8,6 +8,7 @@ enum FlyCutsceneType
 	FlyCutsceneType_Level2,
 	FlyCutsceneType_Level3,
 	FlyCutsceneType_Outro,
+	FlyCutsceneType_DIED,
 
 	NONE,
 	FlyCutsceneType_COUNT
