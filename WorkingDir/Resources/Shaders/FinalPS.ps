@@ -55,16 +55,16 @@ float4 FPixelShader(PSIn input) :  SV_Target
 	float4 finalColor;
 	
 	input.ScreenPos.xy /=  input.ScreenPos.w;
-	float2 GBufferTextureSize = float2(1200,600);
+	float2 GBufferTextureSize = float2(1200*2,600*2);
 	
-	float2 UV = 0.5f * (float2(input.ScreenPos.x,- input.ScreenPos.y) + 1) - float2(1.0f / GBufferTextureSize.xy);
+	float2 UV = 0.5f * (float2(input.ScreenPos.x,- input.ScreenPos.y) + 1); // - float2(1.0f / GBufferTextureSize.xy);
 	
 	
-	float4 color = colorSRV.Sample( SampleTypeClamp, UV ); //input.TextCoord); 
+	float4 color = colorSRV.Sample( SampleTypeClamp, input.TextCoord); // UV ); //
 	
 	float4 glowColor =  BluredSRV.Sample( SampleTypeClamp, input.TextCoord); //UV); //
   
-	float4 lighting = LightSRV.Sample( SampleTypeClamp , input.TextCoord); //,UV); //
+	float4 lighting = LightSRV.Sample( SampleTypeClamp ,UV); //, input.TextCoord); //
  
 	float depth = DephtSRV.Sample( SampleTypeClamp, input.TextCoord).r; //UV).a; //
 	//depth= pow(depth,200);

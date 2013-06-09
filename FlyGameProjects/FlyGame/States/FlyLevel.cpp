@@ -39,8 +39,8 @@ bool FlyState_Level::Initiate(FlyGame* instance)
 	this->state = 0;
 	this->lastState = 0; 
 
-	this->controlScheme = CONTROL_Debug;
-	//this->controlScheme = CONTROL_Casual;
+	//this->controlScheme = CONTROL_Debug;
+	this->controlScheme = CONTROL_Casual;
 
 	this->entryInstance = instance;
 
