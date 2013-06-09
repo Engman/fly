@@ -2,11 +2,17 @@
 
 FlyPlayer::FlyPlayer()
 {
-	this->velocity = vec3(0.0f, 0.0f, 0.0f);
-	this->maxVelocity = vec3(0.4f, 0.4f, 0.8f);
+	this->velocity = vec3(0.0f, 0.0f, 1.0f);
+	this->maxVelocity = vec3(0.45f, 0.45f, 1.0f);
 	this->maxEnergy = 10000;
 	this->energy = maxEnergy;
 	this->closeCargo = false; 
+	this->boundingEllipse.center = vec3(0.0f, 0.0f, 0.0f);
+	this->boundingEllipse.radiusVector = vec3(1.0f, 1.0f, 1.0f);
+	this->initialPos = vec3(0.0f, 0.0f, 0.0f);
+	this->initialRot = vec3(0.0f, 0.0f, 0.0f);
+	this->smallModel = false;
+	this->velocity = vec3(0.0f, 0.0f, 0.0f);
 }
 
 FlyPlayer::~FlyPlayer()
@@ -69,7 +75,7 @@ void FlyPlayer::Update()
 		}
 	}
 
-	this->boundingEllipse.radiusVector = (box.maxPoint - box.minPoint)*0.5f+vec3(0.1f, 0.0f, 0.1f);
+	this->boundingEllipse.radiusVector = (box.maxPoint - box.minPoint)*0.5f+vec3(0.1f, 1.0f, 0.1f);
 	this->boundingEllipse.center = this->GetPosition();
 }
 
@@ -87,6 +93,7 @@ void FlyPlayer::SetRotation(vec3 rotation)
 {
 	this->playerModel[0]->setRotation(rotation);
 }
+
 
 void FlyPlayer::SetScale(vec3 scale)
 {
@@ -192,6 +199,8 @@ void FlyPlayer::DeductEnergy(float howMuch)
 
 	if(this->energy > this->maxEnergy)
 		this->energy = this->maxEnergy;
+	else if(this->energy < 0.0f)
+		this->energy = 0.0f;
 }
 
 //Controlls
@@ -210,4 +219,24 @@ void FlyPlayer::BankLeft()
 void FlyPlayer::BankRight()
 {
 
+}
+
+
+void FlyPlayer::setInitialPos(vec3 p)
+{
+	this->initialPos = p;
+}
+vec3 FlyPlayer::getInitialPos()	
+{
+	return this->initialPos;
+}
+
+
+void FlyPlayer::setInitialRot(vec3 r)
+{
+	this->initialRot = r;
+}
+vec3 FlyPlayer::getInitialRot()
+{
+	return this->initialRot;
 }

@@ -4,8 +4,11 @@
 
 
 /** Use to find memoryleaks in your code */
+#if defined(DEBUG) || defined (_DEBUG)
 #define FIND_MEMORY_LEAKS _CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF)
-
+#else
+#define FIND_MEMORY_LEAKS
+#endif
 
 #ifndef WIN32_LEAN_AND_MEAN
 	#define WIN32_LEAN_AND_MEAN

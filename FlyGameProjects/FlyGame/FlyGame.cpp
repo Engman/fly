@@ -1,5 +1,4 @@
 #include "FlyGame.h"
-#include "GameObjects\Cutscene.h"
 #include "..\FlyGameEngine\Util\MutexHandler.h"
 
 #ifndef FLY_CORE_DLL
@@ -80,12 +79,24 @@ struct FlyGame::_DATA_
 	
 };
 FlyCutsceneType currentCut = FlyCutsceneType_Intro;
-
+bool cutDone = false;
 
 DWORD WINAPI FlyGame::playCutscene(LPVOID lpParameter)
 {
-	if(!FlyCutscene::RunCutscene(currentCut, (FlyEngine*)lpParameter))
-		return E_FAIL;
+	cutDone = FlyCutscene::RunCutscene(currentCut, (FlyEngine*)lpParameter);
+	//if(!FlyCutscene::RunCutscene(currentCut, (FlyEngine*)lpParameter))
+	//	return E_FAIL;
+	Sleep(20);
+	cutDone = false;
+
+	return 1;
+}
+DWORD WINAPI FlyGame::loadingM(LPVOID lpParameter)
+{
+	((FlyGame*)lpParameter)->_pData->curState->Initiate((FlyGame*)lpParameter);
+	//if(!FlyCutscene::RunCutscene(currentCut, (FlyEngine*)lpParameter))
+	//	return E_FAIL;
+	cutDone = false;
 
 	return 1;
 }
@@ -121,7 +132,51 @@ bool FlyGame::Initiate()
 
 	SetStdOutToNewConsole();
 
+	int width = 800;
+	int height = 600;
+	bool fullscreen = false;
+	bool sound = true;
+
 	//We should load an .ini file to determinate initialization values
+	std::wifstream in("..\\settings.ini");
+	if(in.is_open())
+	{
+		wstring b = L"";
+		while (!in.eof())
+		{
+			in >> b;
+
+			if(b == L"fullScreen" || b == L"fullscreen")
+			{
+				in >> b;
+				int temp = 0;
+				in >> temp;
+				fullscreen = (bool)temp;
+			}
+			else if (b == L"window")
+			{
+				in >> b;
+				in >> b;
+				int i = 0;
+				for(i; i<b.size(); i++)
+				{
+					if(b[i] == 'x')
+						break;
+				}
+				
+				wstring w = b.substr(0, i);
+				wstring h = b.substr(i+1, b.size()-1);
+				width = _wtoi(w.c_str());
+				height = _wtoi(h.c_str());
+			}
+			else if (b == L"sound")
+			{
+				in >> b;
+				in >> sound;
+			}
+		}
+		in.close();
+	}
 
 	RECT desktop;
 	const HWND hDesktop = GetDesktopWindow();
@@ -130,15 +185,16 @@ bool FlyGame::Initiate()
 	long vertical = desktop.bottom;
 
 	FLY_ENGINE_INIT_DESC cd;
-	cd.winWidth			= 1200;
-	cd.winHeight		= 600;
-	cd.fullscreen		= false;
+	cd.winWidth			= width;
+	cd.winHeight		= height;
+	cd.fullscreen		= fullscreen;
 	cd.showSplash		= false;
 	cd.windowName		= L"Sky Travler";
-	cd.vSync			= true;
-	cd.multisampling	= true;
+	cd.vSync			= false;
+	cd.multisampling	= false;
 	cd.winPosX			= 50;
 	cd.winPosY			= 50;
+	cd.mute				= !sound;
 	
 
 
@@ -159,24 +215,9 @@ bool FlyGame::Initiate()
 
 	loadSaveFile(L"..\\Resources\\Levels\\saveFile.fgs");
 
-
-	this->_pData->loadingThread	= CreateThread(NULL , 4*255, FlyGame::playCutscene, (void*)this->_pData->fly, CREATE_SUSPENDED, NULL);
-	ResumeThread(this->_pData->loadingThread);
-	/** Fix resource importers to handle multiple loads, to actualy win some time */
+	this->_pData->loadingThread	= CreateThread(NULL , 4*255, FlyGame::loadingM, (void*)this, 0, NULL);
 	
-
-#if defined(_DEBUG) || defined(DEBUG)
-	time_t start = clock();
-	if(!this->_pData->curState->Initiate(this))
-		return false;
-	std::cout << "State loaded on " << clock()-start << "ms\n";
-#else
-	if(!this->_pData->curState->Initiate(this))
-	{
-		TerminateThread(this->_pData->loadingThread, 0);
-		return false;
-	}
-#endif
+	FlyCutscene::RunCutscene(FlyCutsceneType_Intro, this->_pData->fly);
 
 	WaitForSingleObject(this->_pData->loadingThread, INFINITE);
 	TerminateThread(this->_pData->loadingThread, 0);
@@ -297,15 +338,13 @@ void FlyGame::handleStateChange()
 		
 		if(doCut)
 		{
-			this->_pData->loadingThread	= CreateThread(NULL , 4*255, FlyGame::playCutscene, (void*)this->_pData->fly, CREATE_SUSPENDED, NULL);
-			ResumeThread(this->_pData->loadingThread);
-			Sleep(10);
-			if(!this->_pData->curState->Initiate(this))
-				this->_pData->curState = 0;
+			this->_pData->loadingThread	= CreateThread(NULL , 4*255, loadingM, (void*)this, 0, NULL);
 
+			FlyCutscene::RunCutscene(currentCut, this->_pData->fly);
+			
 			WaitForSingleObject(this->_pData->loadingThread, INFINITE);
 			TerminateThread(this->_pData->loadingThread, 0);
-			//this->_pData->idle = true;
+
 		}
 		else
 		{
@@ -380,6 +419,11 @@ void FlyGame::loadSaveFile(const wchar_t* fileName)
 {
 	readSaveFile(fileName, _pData->savedData); 
 	 _pData->savedData.path = fileName; 
+}
+
+void FlyGame::setCutscene(FlyCutscene c)
+{
+	
 }
 
 bool FlyGame::readSaveFile(const wchar_t* fileName, SaveFile & savedData)

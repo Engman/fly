@@ -73,6 +73,9 @@ void doScene()
 
 	while (!done)
 	{
+		//To prevent the window from hanging we must proccess the messages
+		core->Core_Message();
+
 		doInput();
 
 		if(!rendered && current < (int)parts.size())

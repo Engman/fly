@@ -1,53 +1,59 @@
 ocean
-48
-..\Resources\Models\terrain_mountains.fgm -2979.90600586 999.454650879 1463.73071289 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\skydome_sphere.fgm
-..\Resources\Models\water.fgm 9.115234375 -7.28309011459 13.533203125 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\birdcage_one.fgm -6.01025390625 1186.37524414 -4303.0625 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\birdcage_three.fgm -2771.09399414 977.560852051 4535.74267578 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\birdcage_two.fgm -6549.1796875 1163.2355957 -1210.89453125 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\bridge_five.fgm 1925.49023438 110.409606934 2770.9909668 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\bridge_four.fgm -7399.23925781 174.489929199 1343.32421875 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\bridge_one.fgm -4125.03588867 354.976806641 1394.45825195 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\bridge_seven.fgm -4107.0 224.506134033 -3281.41503906 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\bridge_six.fgm -2921.54614258 120.452728271 5370.51464844 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\bridge_two.fgm -219.48046875 440.387969971 -828.001953125 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\cave_one.fgm -8328.38574219 561.114379883 3392.81933594 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\cave_three.fgm 1406.75390625 633.706350327 6978.63085938 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\cave_two.fgm -5554.57666016 584.313720703 -2980.03735352 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\circletower.fgm -2244.55664063 1155.46881104 1300.72277832 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\crystals.fgm -2065.20666504 2228.78955078 491.436523438 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\guardtower_four.fgm 1620.04589844 306.935249329 534.268554688 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\guardtower_one.fgm 2386.16162109 297.862915039 5025.92773438 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\guardtower_three.fgm -8454.97265625 202.178466797 -2476.14257813 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\guardtower_two.fgm 860.431213379 235.891052246 -2755.15820313 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\longlegs_one.fgm -2494.83203125 568.676025391 -3212.13574219 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\longlegs_three.fgm -1440.33203125 575.773506165 3744.60644531 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\longlegs_two.fgm -5285.01171875 590.365966797 3345.1953125 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\palm_five.fgm 2278.19140625 345.750366211 2624.02978516 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\palm_four.fgm -3316.11230469 146.036697388 -1035.74169922 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\palm_one.fgm 270.28125 820.683410645 6093.72265625 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\palm_seven.fgm 2663.78710938 345.750366211 1760.02734375 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\palm_six.fgm 935.43359375 252.059814453 1528.38574219 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\palm_three.fgm -3978.85009766 198.154785156 3345.35839844 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\palm_two.fgm -1462.1171875 506.187042236 2624.02978516 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\platform.fgm -2293.66088867 652.992805481 1203.67913818 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\spireboxes_one.fgm -584.568359375 527.805908203 2878.25097656 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\spireboxes_two.fgm -1151.53503418 518.307373047 -2038.51367188 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\spirecone_four.fgm 3088.0 348.565917969 -1911.04675293 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\spirecone_three.fgm -5469.48925781 352.10534668 275.285644531 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\spirecone_two.fgm -6191.04785156 350.424316406 4956.53320313 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\spirestar_one.fgm 3123.45507813 391.373596191 -905.060058594 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\spirestar_two.fgm 4495.45507813 343.212532043 678.574890137 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\trench_one_a.fgm -9623.75683594 953.252929688 1070.16943359 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\trench_one_b.fgm -9650.39941406 929.478759766 843.548095703 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\trench_one_c.fgm -9775.76855469 927.760009766 702.617248535 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\trench_one_d.fgm -10068.2304688 909.680419922 586.516357422 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\trench_one_e.fgm -10332.6591797 855.864074707 557.854492188 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\trench_one_f.fgm -10601.5234375 1028.26513672 -204.989257813 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\trench_two_a.fgm -2772.06103516 527.505859375 6089.26367188 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\trench_two_e.fgm -2466.65136719 1012.08129883 6794.22070313 0.0 -0.0 0.0 1.0 1.0 1.0
-..\Resources\Models\trench_two_f.fgm -2772.82006836 1046.23242188 7273.5546875 0.0 -0.0 0.0 1.0 1.0 1.0
+54
+..\Resources\Models\Ocean\terrain_ocean.fgm -276.404010574 513.618794274 763.711119069 0.0 -0.0 0.0 1.0 1.0 1.0
+1 ..\Resources\Models\skybox_sky.fgm
+1 ..\Resources\Models\Ocean\water_ocean.fgm 1.23530754489 94.4555632862 919.236417834 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\birdcage_one.fgm -989.012221816 576.755857079 -756.645090994 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\birdcage_three.fgm -226.844147373 562.389193615 2124.3617972 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\birdcage_two.fgm 1545.59579024 550.968074794 -442.429765244 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\bridge_five.fgm 2026.68901389 96.8645064274 1375.46873383 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\bridge_four.fgm 2527.50502653 131.573781525 -503.006504547 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\bridge_one.fgm -897.977246987 117.78662858 760.509318021 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\bridge_seven.fgm -783.332805194 143.684612588 -1461.67865637 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\bridge_six.fgm -235.846158003 91.1169684995 2614.98402194 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\bridge_two.fgm -2591.89866513 107.965017585 -306.966051691 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\cave_one.fgm -2276.93864971 309.800378363 3209.30805696 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\cave_three.fgm 3082.40151494 316.254696821 3070.49482327 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\cave_two.fgm -3156.59672739 311.470226543 -1522.22849975 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\circletower.fgm 47.661907165 709.917753224 696.834838314 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\crystals.fgm 155.258578724 1112.40308059 280.876654078 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\guardtower_four.fgm -2303.43589263 185.395157336 -2112.09407889 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\guardtower_one.fgm 837.358926901 207.553530688 2023.19507244 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\guardtower_three.fgm -1826.88663839 207.553530688 338.178411686 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\guardtower_two.fgm 149.798273434 186.211335474 -2621.90048482 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\longlegs_one.fgm 2072.50468016 335.158437919 2374.74837996 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\longlegs_three.fgm -1139.87252532 335.158437919 1960.61172348 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\longlegs_two.fgm -1697.86150282 335.158437919 -1326.83975907 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\palm_five.fgm 3593.04129912 198.67136586 1480.34942968 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\palm_four.fgm 1676.9776473 73.1239941336 -223.293098301 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\palm_one.fgm 3406.79566512 286.571633388 1802.18399752 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\palm_seven.fgm 3263.01458144 198.67136586 2174.97093314 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\palm_six.fgm 3428.67634957 132.203684321 1296.91433694 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\palm_three.fgm 1513.47743516 120.40572994 -135.399523156 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\palm_two.fgm 3246.1054894 81.4588168495 1480.34942968 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\platform.fgm 43.1071973195 452.894611641 625.910683466 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\trench_two_b.fgm -1.03185943284 532.034469778 3424.59366643 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\spireboxes_one.fgm -1611.25507927 297.852004223 -2419.55819683 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\spireboxes_two.fgm 264.413145734 297.852004223 -1306.00751639 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\spirecone_four.fgm 1098.52828956 219.857292378 450.680452304 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\spirecone_one.fgm 1966.22053625 236.957932581 -1514.90898533 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\spirecone_three.fgm -2674.29472858 222.726385925 1757.92302123 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\spirecone_two.fgm 2021.3425265 231.89287805 3324.56975204 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\spirestar_one.fgm 2997.86122901 212.818724012 1064.43427627 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\spirestar_two.fgm 743.218908796 212.781599936 1033.98836631 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\trench_one_a.fgm -3409.98311645 480.18338539 604.583261738 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\trench_one_b.fgm -3311.80422354 504.917591003 458.770026306 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\trench_one_c.fgm -3414.35382577 478.2485001 488.658274515 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\trench_one_d.fgm -3418.54559651 486.448617476 449.99594034 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\trench_one_e.fgm -3496.31964203 491.637560944 385.073869147 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\trench_one_f.fgm -3615.75704784 466.899397287 349.617797182 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\trench_one_g.fgm -3697.9903331 403.81315733 340.040490599 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\trench_one_h.fgm -3788.13235375 352.473940802 323.512839333 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\trench_two_a.fgm -35.8955021069 534.992131974 3275.96703254 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\trench_two_d.fgm -151.151311425 525.237123565 3452.2853127 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\trench_two_e.fgm -186.593681394 506.249565685 3563.22928555 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\trench_two_f.fgm -173.03974205 467.37576789 3649.53579074 0.0 -0.0 0.0 1.0 1.0 1.0
+..\Resources\Models\Ocean\trench_two_c.fgm -155.614222046 549.794071561 3336.85814474 0.0 -0.0 0.0 1.0 1.0 1.0
 3
 -34003.7539063 313.352508545 -22152.8046875 0.0 -0.0 0.0 1.0 1.0 1.0
 -8449.90527344 425.530639648 -2465.83837891 0.0 -0.0 0.0 1.0 1.0 1.0
@@ -120,7 +126,10 @@ ocean
 1
 1
 0.2 0.2 0.2 1
-1.0 1.0 1.0 1.0
+0.4 0.1 0.1 1
 0.9 0.8 0.8 1
--1825.84974099 1712.53855227 -952.321685867 200
--34.52734375 1180.39832031 1012.23046875 0.0 -0.0 0.0 1.0 1.0 1.0
+0.778678931134 -0.627369102288 -0.014396238852
+74.4090829745 428.893029676 -56.5862848715
+1
+0
+2616.56781981 415.714588671 3330.96738577 0.0 -120.0 0.0 1.0 1.0 1.0

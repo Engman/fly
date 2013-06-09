@@ -46,7 +46,8 @@ bool ResourceImporter::ImportObject(const wchar_t* filename, ImportedObjectData*
 {
 #if defined(_DEBUG) || defined(DEBUG)
 	time_t start = clock();
-	if(!fgmImporter.Import(getDir(filename), object))
+	if(!fgmImporter.Import(getDir(filename), object))		//faster
+	//if(!objectImporter.Import(getDir(filename), object))  //slower
 	{
 		return false;
 	}

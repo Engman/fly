@@ -24,7 +24,7 @@ class PauseMenu
 
 		void Render(ViewFrustum f, bool one, bool two, bool three);
 		int Update(int mouseX, int mouseY, FlyGame* entry); // 0 Render again, 1 Continue, 2 Exit
-
+		int MenuFrameDead(ViewFrustum f, int mouseX, int mouseY, FlyGame* entry);
 		void Release();
 };
 

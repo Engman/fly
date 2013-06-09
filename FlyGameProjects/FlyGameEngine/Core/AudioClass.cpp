@@ -272,7 +272,7 @@ void AudioClass::playLevelSound(FlyLevelSounds sound)
 			if(!playing)
 			{
 				result = fmodSystem->playSound(FMOD_CHANNEL_FREE, sounds[FlySound_NoEnergy], false,&channel[FlySound_NoEnergy]);
-				result = channel[FlySound_NoEnergy]->setVolume(0.5f);
+				result = channel[FlySound_NoEnergy]->setVolume(0.8f);
 			}	
 			break;
 		case FlySound_Thrust:

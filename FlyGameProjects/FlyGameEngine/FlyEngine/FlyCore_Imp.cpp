@@ -139,6 +139,7 @@ bool FLYCALL FlyEngine_Core::Core_Initialize(FLY_ENGINE_INIT_DESC& desc)
 	this->forwardRenderFunc		= desc.forwardRenderFunc;
 	this->forwardUpdateFunc		= desc.forwardUpdateFunc;
 	this->splash				= desc.showSplash;
+	this->muteSound				= desc.mute;
 	
 	if(!this->_InitWin(desc))			return false;
 	if(!this->_InitGfx(desc))			return false;
