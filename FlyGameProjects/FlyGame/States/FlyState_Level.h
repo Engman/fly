@@ -88,6 +88,7 @@ class FlyState_Level		:public IFlySystemState
 		void _InputAdvance();
 		/* Debug input function */
 		void _InputDebug();
+		void WaterplaneIntesect();
 
 		
 		bool _ImportTerrain(wifstream& file, vector<IShader*>& shaders);

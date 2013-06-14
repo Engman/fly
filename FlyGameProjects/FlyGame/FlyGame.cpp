@@ -83,7 +83,8 @@ bool cutDone = false;
 
 DWORD WINAPI FlyGame::playCutscene(LPVOID lpParameter)
 {
-	cutDone = FlyCutscene::RunCutscene(currentCut, (FlyEngine*)lpParameter);
+	if(FlyCutscene::InitCut(currentCut, (FlyEngine*)lpParameter))
+		cutDone = FlyCutscene::RunCutscene();
 	//if(!FlyCutscene::RunCutscene(currentCut, (FlyEngine*)lpParameter))
 	//	return E_FAIL;
 	Sleep(20);
@@ -215,9 +216,11 @@ bool FlyGame::Initiate()
 
 	loadSaveFile(L"..\\Resources\\Levels\\saveFile.fgs");
 
-	this->_pData->loadingThread	= CreateThread(NULL , 4*255, FlyGame::loadingM, (void*)this, 0, NULL);
+	this->_pData->loadingThread	= CreateThread(NULL , 4*255, FlyGame::loadingM, (void*)this, CREATE_SUSPENDED, NULL);
 	
-	FlyCutscene::RunCutscene(FlyCutsceneType_Intro, this->_pData->fly);
+	FlyCutscene::InitCut(FlyCutsceneType_Intro, this->_pData->fly);
+	ResumeThread(this->_pData->loadingThread);
+	FlyCutscene::RunCutscene();
 
 	WaitForSingleObject(this->_pData->loadingThread, INFINITE);
 	TerminateThread(this->_pData->loadingThread, 0);
@@ -338,9 +341,11 @@ void FlyGame::handleStateChange()
 		
 		if(doCut)
 		{
-			this->_pData->loadingThread	= CreateThread(NULL , 4*255, loadingM, (void*)this, 0, NULL);
+			this->_pData->loadingThread	= CreateThread(NULL , 4*255, loadingM, (void*)this, CREATE_SUSPENDED, NULL);
 
-			FlyCutscene::RunCutscene(currentCut, this->_pData->fly);
+			FlyCutscene::InitCut(currentCut, this->_pData->fly);
+			ResumeThread(this->_pData->loadingThread);
+			FlyCutscene::RunCutscene();
 			
 			WaitForSingleObject(this->_pData->loadingThread, INFINITE);
 			TerminateThread(this->_pData->loadingThread, 0);

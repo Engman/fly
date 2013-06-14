@@ -19,7 +19,8 @@ class FlyEngine;
 class FlyCutscene
 {
 	public:
-		static bool RunCutscene(FlyCutsceneType scene, FlyEngine* _core);
+		static bool InitCut(FlyCutsceneType scene, FlyEngine* _core);
+		static bool RunCutscene();
 };
 
 

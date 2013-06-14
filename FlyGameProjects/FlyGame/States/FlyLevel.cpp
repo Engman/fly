@@ -150,6 +150,8 @@ bool FlyState_Level::Update()
 	//Moves and collides player against the world/tilts player model accordingly
 	this->UpdatePlayer();
 
+	WaterplaneIntesect();
+
 	if(this->player.GetEnergy() <= 0.0f && collide)
 	{
 		this->state = 2;
@@ -1142,7 +1144,29 @@ vec3 FlyState_Level::SlideCollision(vec3 oldPosition, vec3 velocity, int iterati
 }
 
 
+void FlyState_Level::WaterplaneIntesect()
+{
+	Matrix m = this->water[0]->getWorld();
+	vec3 p = this->player.GetPosition();
+	vec3 a;
+	vec3 b;
+	vec3 c;
+	vec3 d;
+	vec3 e;
+	vec3 f;
+	D3DXVec3TransformCoord(&a, &(*((FlyMesh*) this->water[0])->GetTriangles())[0], &m);
+	D3DXVec3TransformCoord(&b, &(*((FlyMesh*) this->water[0])->GetTriangles())[1], &m);
+	D3DXVec3TransformCoord(&c, &(*((FlyMesh*) this->water[0])->GetTriangles())[2], &m);
+	D3DXVec3TransformCoord(&d, &(*((FlyMesh*) this->water[0])->GetTriangles())[3], &m);
+	D3DXVec3TransformCoord(&e, &(*((FlyMesh*) this->water[0])->GetTriangles())[4], &m);
+	D3DXVec3TransformCoord(&f, &(*((FlyMesh*) this->water[0])->GetTriangles())[5], &m);
 
+	if(CheckPointInTriangle(p, a, b, c) || CheckPointInTriangle(p, d, e, f))
+	{
+		this->player.DeductEnergy(this->player.GetMaxEnergy());
+		collide = true;
+	}
+}
 
 void FlyState_Level::Release()
 {

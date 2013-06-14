@@ -195,6 +195,8 @@ void FlyPlayer::Release()
 
 void FlyPlayer::DeductEnergy(float howMuch)
 {
+	if(howMuch < 0.0f)
+		int i = 0;
 	this->energy -= howMuch;
 
 	if(this->energy > this->maxEnergy)

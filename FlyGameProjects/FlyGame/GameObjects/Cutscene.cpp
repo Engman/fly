@@ -21,9 +21,9 @@ bool keyPressed = false;
 bool rendered = false;
 FlyEngine* core;
 float transitionTime = 1.0f;
+bool loaded = false;
 
-
-bool FlyCutscene::RunCutscene(FlyCutsceneType scene, FlyEngine* _core)
+bool FlyCutscene::InitCut(FlyCutsceneType scene, FlyEngine* _core)
 {
 	if(!_core)
 		return false;
@@ -59,6 +59,13 @@ bool FlyCutscene::RunCutscene(FlyCutsceneType scene, FlyEngine* _core)
 	}
 
 	if(!doLoad(p))
+		return false;
+	loaded = true;
+	return true;
+}
+bool FlyCutscene::RunCutscene()
+{
+	if(!loaded)
 		return false;
 
 	doScene();

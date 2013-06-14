@@ -116,7 +116,22 @@ class Entity abstract
 		}
 		Matrix			getWorld				()	const
 		{
-			return this->world;
+			Matrix m;
+			D3DXMatrixIdentity(&m);
+
+			Matrix s;
+			Matrix r;
+			Matrix t;
+
+			D3DXMatrixScaling(&s, this->scale.x, this->scale.y, this->scale.z);
+			D3DXMatrixRotationYawPitchRoll(&r, this->rotation.x, this->rotation.y, this->rotation.z);
+			D3DXMatrixTranslation(&t, this->translation.x, this->translation.y, this->translation.z);
+
+			m *= s;
+			m *= r;
+			m *= t;
+
+			return m;
 		}
 		IShader*		getShader				()
 		{

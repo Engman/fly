@@ -567,13 +567,17 @@ bool CheckPointInTriangle(D3DXVECTOR3 point, D3DXVECTOR3 a, D3DXVECTOR3 b, D3DXV
 	float total_angles = 0.0f;
        
 	// make the 3 vectors
-	D3DXVECTOR3 v1 = point-a;
-	D3DXVECTOR3 v2 = point-b;
-	D3DXVECTOR3 v3 = point-c;
+	D3DXVECTOR3 v1;
+	D3DXVECTOR3 v2;
+	D3DXVECTOR3 v3;
+
+	D3DXVECTOR3 v1n = point-a;
+	D3DXVECTOR3 v2n = point-b;
+	D3DXVECTOR3 v3n = point-c;
   
-	D3DXVec3Normalize(&v1, &v1);
-	D3DXVec3Normalize(&v2, &v2);
-	D3DXVec3Normalize(&v3, &v3);
+	D3DXVec3Normalize(&v1, &v1n);
+	D3DXVec3Normalize(&v2, &v2n);
+	D3DXVec3Normalize(&v3, &v3n);
 
 	total_angles += acos(D3DXVec3Dot(&v1,&v2));   
 	total_angles += acos(D3DXVec3Dot(&v2,&v3));
@@ -581,6 +585,8 @@ bool CheckPointInTriangle(D3DXVECTOR3 point, D3DXVECTOR3 a, D3DXVECTOR3 b, D3DXV
     
 	// allow a small margin because of the limited precision of
 	// floating point math.
+	float temp = 2*D3DX_PI;
+	temp = total_angles - temp;
 	if (fabs(total_angles-2*D3DX_PI) <= 0.005)
 		return true;
      
