@@ -570,7 +570,7 @@ bool FlyState_Level::Render()
 			vec3 p2 = this->energy[i].GetPosition();
 			float l = D3DXVec3Length(&(p2-p1));
 			
-			if(l < 500.0f)
+			if(l < 1500.0f)
 			{
 				this->energy[i].SetShader(shaders[FlyShader_gBufferNoCull]);
 				this->energy[i].Render(f);
@@ -1146,25 +1146,14 @@ vec3 FlyState_Level::SlideCollision(vec3 oldPosition, vec3 velocity, int iterati
 
 void FlyState_Level::WaterplaneIntesect()
 {
-	Matrix m = this->water[0]->getWorld();
-	vec3 p = this->player.GetPosition();
-	vec3 a;
-	vec3 b;
-	vec3 c;
-	vec3 d;
-	vec3 e;
-	vec3 f;
-	D3DXVec3TransformCoord(&a, &(*((FlyMesh*) this->water[0])->GetTriangles())[0], &m);
-	D3DXVec3TransformCoord(&b, &(*((FlyMesh*) this->water[0])->GetTriangles())[1], &m);
-	D3DXVec3TransformCoord(&c, &(*((FlyMesh*) this->water[0])->GetTriangles())[2], &m);
-	D3DXVec3TransformCoord(&d, &(*((FlyMesh*) this->water[0])->GetTriangles())[3], &m);
-	D3DXVec3TransformCoord(&e, &(*((FlyMesh*) this->water[0])->GetTriangles())[4], &m);
-	D3DXVec3TransformCoord(&f, &(*((FlyMesh*) this->water[0])->GetTriangles())[5], &m);
-
-	if(CheckPointInTriangle(p, a, b, c) || CheckPointInTriangle(p, d, e, f))
+	
+	if(this->player.GetPosition().y <= this->water[0]->getPosition().y)
 	{
-		this->player.DeductEnergy(this->player.GetMaxEnergy());
-		collide = true;
+		if(this->entryInstance->getCurrState() == Level_1)
+		{
+			this->player.DeductEnergy(this->player.GetMaxEnergy());
+			collide = true;
+		}
 	}
 }
 

@@ -94,12 +94,14 @@ void FlyMeshAnimated::Render(ViewFrustum& frustum)
 			else
 				MorphAminations();
 
-			D3DXMATRIX rotation, translation;
+			D3DXMATRIX rotation, translation, scale;
 			D3DXMatrixRotationYawPitchRoll(&rotation, this->rotation.y, this->rotation.x, this->rotation.z);
 			D3DXMatrixTranslation(&translation, this->translation.x, this->translation.y, this->translation.z);
+			D3DXMatrixScaling(&scale, this->scale.x, this->scale.y, this->scale.z);
 
 			D3DXMatrixIdentity(&this->world);
 
+			this->world *= scale;
 			this->world *= rotation;
 			this->world *= translation;
 

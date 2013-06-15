@@ -229,7 +229,7 @@ BaseBuffer* FlyWaterMesh::getWaterBuffer()
 }
 void FlyWaterMesh::UpdateWater(float dt)
 {
-	this->waterTranslation.x += dt*0.05f; 
+	this->waterTranslation.x += 0.00015f; 
 
 	if( waterTranslation.x> 1.0f)
 	{

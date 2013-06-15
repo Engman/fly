@@ -586,7 +586,7 @@ bool CheckPointInTriangle(D3DXVECTOR3 point, D3DXVECTOR3 a, D3DXVECTOR3 b, D3DXV
 	// allow a small margin because of the limited precision of
 	// floating point math.
 	float temp = 2*D3DX_PI;
-	temp = total_angles - temp;
+	float at = total_angles - temp;
 	if (fabs(total_angles-2*D3DX_PI) <= 0.005)
 		return true;
      

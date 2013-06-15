@@ -223,7 +223,7 @@ bool FlyState_Level::_ImportEnergy(wifstream& file, vector<IShader*>& shaders)
 		vec3 p = ReadVector3(file);
 		vec3 r = ReadVector3(file);
 		vec3 s = ReadVector3(file);
-		s = vec3(2.0f, 2.0f, 2.0f);
+		s = vec3(7.0f, 7.0f, 7.0f);
 		if(!this->energy[i].Initialize(this->entryInstance, readString, p, r, s, FlyShader_gBufferNoCull))
 			return false;
 	}

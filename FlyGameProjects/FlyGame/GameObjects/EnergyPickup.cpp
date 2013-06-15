@@ -24,9 +24,8 @@ bool EnergyPickup::Initialize(FlyGame* entry, wstring modelName, vec3 position, 
 	
 	if(!entry->GetCoreInstance()->Geometry_Load(modelName.c_str(), &this->pickupModel, FlyGeometry_AnimatedMesh, 1, 3))
 		return false;
-	this->pickupModel[0]->setScale(vec3(1.0f, 1.0f, 1.0f));
-	this->pickupModel[0]->setPosition(vec3(position));
-	this->pickupModel[0]->setRotation(vec3(rotation));
+	this->pickupModel[0]->setPosition(position);
+	this->pickupModel[0]->setRotation(rotation);
 	this->pickupModel[0]->setScale(scale);
 	this->pickupModel[0]->setShader(shaders[shader]);
 	this->pickupModel[0]->setBoundingSphere(sphere);
