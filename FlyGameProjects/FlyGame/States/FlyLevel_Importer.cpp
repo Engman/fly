@@ -267,7 +267,7 @@ bool FlyState_Level::_ImportLights(wifstream& file, vector<IShader*>& shaders)
 		int h = 0;
 		this->entryInstance->GetCoreInstance()->Core_Dimensions(w, h);
 		ShadowCamera->SetProjectionMatrix((float)D3DX_PI*0.2f, (float)w/h, 0.2f, 4000.0f);
-		ShadowCamera->SetOrthogonalMatrix(2000, 2000, 0.2f, 4000.0f); 
+		ShadowCamera->SetOrthogonalMatrix(1000, 1000, 0.2f, 2000.0f); 
 		ShadowCamera->Render(); 
 
 		viewMatrix = ShadowCamera->GetViewMatrix(); 

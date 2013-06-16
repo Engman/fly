@@ -504,7 +504,7 @@ bool D3DShell::init(D3D_INIT_DESC& desc)
 	this->_prDatPtr->g_bufferDepthTexture.init(desc.width, desc.height, false, DXGI_FORMAT_R32_TYPELESS, true);
 
 	this->_prDatPtr->lightTexture.init(desc.width, desc.height, true, DXGI_FORMAT_R16G16B16A16_UNORM, true );
-	this->_prDatPtr->shadowTexture.init(desc.width, desc.height, false, DXGI_FORMAT_R32_TYPELESS, true);
+	this->_prDatPtr->shadowTexture.init(desc.width*2, desc.height*2, false, DXGI_FORMAT_R32_TYPELESS, true);
 	this->_prDatPtr->blurTexture.init(desc.width, desc.height, true, DXGI_FORMAT_R16G16B16A16_UNORM, false );
 	this->_prDatPtr->blurTempTexture.init(desc.width, desc.height, true, DXGI_FORMAT_R16G16B16A16_UNORM, false );
 

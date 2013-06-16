@@ -29,16 +29,51 @@ struct PSIn
 	float2 TextCoord  	: TEXCOORD; 
 };
 
+float CalcShadow(in float2 shadowPosH, Texture2D shadowMap, float depth)
+{
+ float EPSILON = 0.000001f;
+
+ float w = 0.0f;
+ float h = 0.0f;
+
+ shadowMap.GetDimensions(w, h);
+ 
+ // Project the texture coords and scale/offset to [0, 1].
+ //shadowPosH.xy /= shadowPosH.w;
+ //float depth = shadowPosH.z/shadowPosH.w; // pixel depth for shadowing.
+ float dx = 1.0f / w;
+ float2 smTex = float2(0.5f*shadowPosH.x, -0.5f*shadowPosH.y) + 0.5f; //Compute shadow map tex coord
+ smTex.x = shadowPosH.x - 1.0f / w;
+ smTex.y = shadowPosH.y - 1.0f / h; 
+ 
+ float2 off[9] = 
+ {
+  float2(-dx, -dx ), float2(0.0f, -dx ), float2(dx, -dx),
+  float2(-dx, 0.0f), float2(0.0f, 0.0f), float2(dx, 0.0f),
+  float2(-dx, dx  ), float2(0.0f, dx  ), float2(dx, dx),
+ };
+ 
+ float lit = 0.0f;
+ for(int i = 0; i<9; i++)
+ {
+  lit += (shadowMap.Sample(SampleTypeClamp, smTex + off[i]).r + 0.01 < depth) ? 0.0f : 1.0f;
+ }
+
+ lit /= 9;
+ return lit;
+ //return shadowCoeff;
+}
+
 float ShadowFactor( float depth, float2 smTex, float scale)
 {	
 
 	// 2x2 percentage closest filter.
 	float dx = (1.0f / shadowMapSize)* scale;
 
-	float s0 = (ShadowSRV.Sample(SampleTypeClamp, smTex).r + 0.000001 < depth) ? 0.0f : 1.0f;
-	float s1 = (ShadowSRV.Sample(SampleTypeClamp, smTex + float2(dx, 0.0f)).r + 0.000001 < depth) ? 0.0f : 1.0f;
-	float s2 = (ShadowSRV.Sample(SampleTypeClamp, smTex + float2(0.0f, dx)).r + 0.000001 < depth) ? 0.0f : 1.0f;
-	float s3 = (ShadowSRV.Sample(SampleTypeClamp, smTex + float2(dx, dx)).r + 0.000001 < depth) ? 0.0f : 1.0f;
+	float s0 = (ShadowSRV.Sample(SampleTypeClamp, smTex).r + 0.01 < depth) ? 0.0f : 1.0f;
+	float s1 = (ShadowSRV.Sample(SampleTypeClamp, smTex + float2(dx, 0.0f)).r + 0.01 < depth) ? 0.0f : 1.0f;
+	float s2 = (ShadowSRV.Sample(SampleTypeClamp, smTex + float2(0.0f, dx)).r + 0.01 < depth) ? 0.0f : 1.0f;
+	float s3 = (ShadowSRV.Sample(SampleTypeClamp, smTex + float2(dx, dx)).r + 0.01 < depth) ? 0.0f : 1.0f;
 	// Transform to texel space
 	float2 texelPos = (smTex * shadowMapSize) * scale;
 	// Determine the lerp amounts.
@@ -66,7 +101,10 @@ float4 FPixelShader(PSIn input) :  SV_Target
   
 	float4 lighting = LightSRV.Sample( SampleTypeClamp ,UV); //, input.TextCoord); //
  
-	float depth = DephtSRV.Sample( SampleTypeClamp, input.TextCoord).r; //UV).a; //
+	float2 size; 
+	
+	DephtSRV.GetDimensions(size.x, size.y); 
+	float depth = DephtSRV.Sample( SampleTypeClamp, input.TextCoord- float2(1.0f /  size)).r; //UV).a; //
 	//depth= pow(depth,200);
 	//color = float4(depth, depth, depth, 1);
 	//return color; 
@@ -105,7 +143,8 @@ float4 FPixelShader(PSIn input) :  SV_Target
 	if(lighting.w >0) // to avoid shadowing the skybox
 	{
 		float scale = depth;
-		shadow = ShadowFactor( depthLightVP, lightSamp, scale);
+		shadow =  CalcShadow(lightSamp, ShadowSRV, depthLightVP);
+		//shadow = ShadowFactor( depthLightVP, lightSamp, scale);
 		shadow = clamp(shadow, 0.4, 1.0f);
 		//shadow = (ShadowSRV.Sample(SampleTypeClamp, lightSamp).r + 0.000001 < depthLightVP) ? 0.0f : 1.0f;
 		//shadow = clamp(shadow, 0.4, 1);

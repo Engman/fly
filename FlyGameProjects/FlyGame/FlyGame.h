@@ -10,7 +10,7 @@
 	#endif
 #else
 	#if defined(_DEBUG) || defined(DEBUG)
-	#pragma comment(lib, "FlyGameEnginex86.lib")
+	#pragma comment(lib, "FlyGameEngineDx86.lib")
 	#else
 	#pragma comment(lib, "FlyGameEnginex86.lib")
 	#endif

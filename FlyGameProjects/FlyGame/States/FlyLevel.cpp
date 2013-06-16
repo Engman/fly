@@ -40,8 +40,8 @@ bool FlyState_Level::Initiate(FlyGame* instance)
 	this->state = 0;
 	this->lastState = 0; 
 
-	//this->controlScheme = CONTROL_Debug;
-	this->controlScheme = CONTROL_Casual;
+	this->controlScheme = CONTROL_Debug;
+	//this->controlScheme = CONTROL_Casual;
 
 	this->entryInstance = instance;
 
@@ -264,7 +264,11 @@ bool FlyState_Level::UpdatePlayer()
 		upsideDown = -1.0f;
 	}
 
-	this->dirLights[0]->setPosition(this->player.GetPosition());
+	//this->dirLights[0]->setPosition(this->player.GetPosition());
+	this->shadowViews.at(0)->SetPosition(this->player.GetPosition());
+	this->shadowViews.at(0)->SetPositionY(this->player.GetPosition().y + 1000);
+	this->shadowViews.at(0)->Render(); 
+
 
 	//Move camera and bird
 	this->mainCamera.SetPosition(oldPosition);
@@ -598,8 +602,8 @@ bool FlyState_Level::Render()
 		this->pointLights[i]->Render(f);
 	}
 
-	if(shadowViews.size() > 0)
-		shadowViews[0]->SetPosition(this->player.GetPosition() + (this->mainCamera.GetForward() * 100) + vec3(0.0f, 200.0f, 0.0f));
+	//if(shadowViews.size() > 0)
+	//	shadowViews[0]->SetPosition(this->player.GetPosition() + (this->mainCamera.GetForward() * 100) + vec3(0.0f, 200.0f, 0.0f));
 
 	for(unsigned int i = 0; i <(int) this->shadowViews.size(); i++)
 	{

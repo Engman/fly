@@ -79,7 +79,7 @@ void FLYCALL FlyEngine_Core::Gfx_DrawGbuffer( BaseBuffer* waterBuffer, bool glow
 }
 void FLYCALL FlyEngine_Core::Gfx_DrawGbufferOrtho()
 {
-	float blend[4] = {1.0f,1.0f,1.0f,1.0f};
+	//float blend[4] = {1.0f,1.0f,1.0f,1.0f};
 
 	//D3DShell::self()->setBlendModeState(FLAGS::BLEND_MODE_AlphaBlend, blend,  0xffffffff);
 	D3DShell::self()->setDepthStencilState(FLAGS::DEPTH_STENCIL_DisabledDepth,1); 
@@ -158,7 +158,10 @@ void FLYCALL FlyEngine_Core::Gfx_DrawLighting()
 	
 	this->dirLightShader->draw(lightDrawData);
 	//reset the blend state to normal
-	D3DShell::self()->getDeviceContext()->OMSetBlendState(0,0,0xffffffff);
+	//D3DShell::self()->getDeviceContext()->OMSetBlendState(0,0,0xffffffff);
+
+	D3DShell::self()->setBlendModeState(FLAGS::BLEND_MODE_DisabledBlend, blend,  0xffffffff);
+
 	D3DShell::self()->setDepthStencilState(FLAGS::DEPTH_STENCIL_EnabledDepth,1);
 
 }
